@@ -1,3 +1,3 @@
-import settings from 'config/config.yml'
+import settings from '@config/config.yml'
 
 export default settings

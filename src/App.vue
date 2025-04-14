@@ -10,7 +10,7 @@ const isModeLoaded = ref(false)
 /** Loads mode code for side effects, if present */
 async function loadModeModule() {
   try {
-    await import(`config/modes/${mode}_mode.js`)
+    await import(`@config/modes/${mode}_mode.js`)
   } catch (error: unknown) {
     console.error(error)
   }

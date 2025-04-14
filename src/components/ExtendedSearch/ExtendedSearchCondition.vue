@@ -12,7 +12,7 @@ const components = shallowRef<Record<string, Component>>()
 async function importExtendedComponents() {
   try {
     // @ts-expect-error TS does not know about the "config/" alias.
-    return (await import('config/components/extended')).default
+    return (await import('@config/components/extended')).default
   } catch (error) {
     console.error(error)
     return {}
