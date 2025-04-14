@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 import config from 'config/config.yml'
+import ExtendedSearchCondition from './components/ExtendedSearch/ExtendedSearchCondition.vue'
 </script>
 
 <template>
   <header>
-    <HelloWorld msg="Korp Vue" />
     <div v-html="config.description.eng"></div>
+    <hr />
+    <ExtendedSearchCondition />
   </header>
 </template>
