@@ -26,7 +26,6 @@ importExtendedComponents().then((customComponents) => {
 
 <template>
   <div>
-    <h2>Extended Search Condition</h2>
     <div v-for="(component, name) in components" :key="name">
       <h3>{{ name }}</h3>
       <component :is="component" />
