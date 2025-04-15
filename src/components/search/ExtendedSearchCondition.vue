@@ -7,15 +7,12 @@ const standardComponents = {
 }
 
 // Use shallowRef to avoid deep reactivity
-const components = shallowRef<Record<string, Component>>()
+const components = shallowRef<Record<string, Component>>(standardComponents)
 
 async function importExtendedComponents() {
   try {
-    // @ts-expect-error TS is not aware of dynamic imports
-    return (await import('@config/components/extended')).default
-  } catch (error) {
-    console.error(error)
-  }
+    return (await import('@instance/components/search')).default
+  } catch {}
 }
 
 importExtendedComponents().then((customComponents) => {
@@ -26,7 +23,7 @@ importExtendedComponents().then((customComponents) => {
 <template>
   <div>
     <div v-for="(component, name) in components" :key="name">
-      <h3>{{ name }}</h3>
+      <code>{{ name }}: </code>
       <component :is="component" />
     </div>
   </div>

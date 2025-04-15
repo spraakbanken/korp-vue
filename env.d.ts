@@ -6,5 +6,5 @@ interface ImportMeta {
 
 // Declares vars available in `process.env`
 interface ImportMetaEnv {
-  readonly KORP_CONFIG_DIR: string
+  readonly KORP_HOST: string
 }

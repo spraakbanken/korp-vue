@@ -1,34 +1,16 @@
 <script setup lang="ts">
-import settings from '@/settings'
-import ExtendedSearchCondition from './components/ExtendedSearch/ExtendedSearchCondition.vue'
-import { ref } from 'vue'
-
-// This will come from url
-const mode = 'default'
-const isModeLoaded = ref(false)
-
-/** Loads mode code for side effects, if present */
-async function loadModeModule() {
-  try {
-    await import(`@config/modes/${mode}_mode.js`)
-  } catch {}
-  isModeLoaded.value = true
-}
-
-loadModeModule()
+import settings from '@instance/settings'
+import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition.vue'
 </script>
 
 <template>
-  <header>
-    <h2>Config dir config.yml</h2>
-    <div v-html="settings.description.eng"></div>
+  <header>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a></header>
 
-    <h2>Side effects from mode code</h2>
-    <div v-if="isModeLoaded">
-      {{ settings.frontpage?.examples?.[0] }}
-    </div>
+  <main>
+    <h2>Settings</h2>
+    <pre>{{ settings.description.eng }}</pre>
 
-    <h2>Custom component</h2>
+    <h2>Custom components</h2>
     <ExtendedSearchCondition />
-  </header>
+  </main>
 </template>

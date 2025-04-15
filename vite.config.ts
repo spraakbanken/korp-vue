@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         // Resolve imports of app settings and custom code
-        '@config': fileURLToPath(new URL(env.KORP_CONFIG_DIR, import.meta.url)),
+        '@instance': fileURLToPath(new URL('./instance', import.meta.url)),
       },
     },
   }
