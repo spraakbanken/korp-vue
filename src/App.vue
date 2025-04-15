@@ -8,7 +8,7 @@ import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition
   <p>{{ $t('tagline') }}</p>
   <header>
     Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a> Språk:
-    <a href="?lang=sv">sv</a>, <a href="?lang=en">en</a>
+    <a href="?lang=sv">sv</a>, <a href="?lang=en">en</a>, <a href="?lang=de">de (instance)</a>
   </header>
 
   <main>
