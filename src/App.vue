@@ -11,9 +11,7 @@ const isModeLoaded = ref(false)
 async function loadModeModule() {
   try {
     await import(`@config/modes/${mode}_mode.js`)
-  } catch (error: unknown) {
-    console.error(error)
-  }
+  } catch {}
   isModeLoaded.value = true
 }
 
@@ -27,7 +25,7 @@ loadModeModule()
 
     <h2>Side effects from mode code</h2>
     <div v-if="isModeLoaded">
-      {{ settings.frontpage.examples[0] }}
+      {{ settings.frontpage?.examples?.[0] }}
     </div>
 
     <h2>Custom component</h2>
