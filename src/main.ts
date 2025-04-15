@@ -18,8 +18,10 @@ app.use(setupI18n(lang))
 
 async function loadMode() {
   // Load mode-specific code if available
-  const { setup } = await import(`@instance/modes/${mode}.ts`)
-  if (setup) setup(app)
+  try {
+    const modePlugin = await import(`@instance/modes/${mode}.ts`)
+    app.use(modePlugin, { params })
+  } catch {}
 }
 
 loadMode().then(() => {
