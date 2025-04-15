@@ -4,7 +4,12 @@ import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition
 </script>
 
 <template>
-  <header>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a></header>
+  <h1>Korp-vue</h1>
+  <p>{{ $t('tagline') }}</p>
+  <header>
+    Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a> Språk:
+    <a href="?lang=sv">sv</a>, <a href="?lang=en">en</a>
+  </header>
 
   <main>
     <h2>Settings</h2>
