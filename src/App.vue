@@ -5,17 +5,37 @@ import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition
 
 <template>
   <h1>Korp-vue</h1>
-  <p>{{ $t('tagline') }}</p>
   <header>
-    Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a> Språk:
-    <a href="?lang=sv">sv</a>, <a href="?lang=en">en</a>, <a href="?lang=de">de (instance)</a>
+    Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a> (has a mode plugin),
+    <a href="?mode=segreg">segreg</a> (has no custom stuff)
   </header>
 
-  <main>
+  <section>
     <h2>Settings</h2>
-    <pre>{{ settings.description.eng }}</pre>
+    <p>The kubhist mode code modifies the default value.</p>
+    <pre>korp_backend_url: {{ settings.korp_backend_url }}</pre>
+  </section>
 
+  <section>
     <h2>Custom components</h2>
+    <p>
+      This models what would show in the Extended search query builder for a given attribute. The
+      widget for <code>word</code> is in core, and the one for <code>msd</code> is added by the
+      instance.
+    </p>
     <ExtendedSearchCondition />
-  </main>
+  </section>
+
+  <section>
+    <h2>I18n</h2>
+    <p>The Deutsch locale is added by the instance.</p>
+    <button
+      v-for="{ value, label } in settings.languages"
+      :key="value"
+      @click="$i18n.locale = value"
+    >
+      {{ label }}
+    </button>
+    <p>{{ $i18n.locale }} {{ $t('tagline') }}</p>
+  </section>
 </template>
