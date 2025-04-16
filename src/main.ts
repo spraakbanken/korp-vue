@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import instancePlugin from '@instance/plugin'
 import settings from '@instance/settings'
 import setupI18n from '@/i18n'
 import App from './App.vue'
@@ -15,15 +16,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(setupI18n(lang))
+app.use(instancePlugin, { mode })
 
-async function loadMode() {
-  // Load mode-specific code if available
-  try {
-    const modePlugin = await import(`@instance/modes/${mode}.ts`)
-    app.use(modePlugin, { params })
-  } catch {}
-}
-
-loadMode().then(() => {
-  app.mount('#app')
-})
+app.mount('#app')

@@ -1,3 +1,3 @@
 <template>
-  <input type="text" placeholder="I'm a core component" />
+  <input type="text" placeholder="Standard word component" />
 </template>
