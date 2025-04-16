@@ -2,7 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import instancePlugin from '@instance/plugin'
+import createInstancePlugin from '@instance/plugin'
 import settings from '@instance/settings'
 import setupI18n from '@/i18n'
 import App from './App.vue'
@@ -19,7 +19,7 @@ app.use(createPinia())
 // These plugins depend on dynamic loading, and must be in async.
 async function setup() {
   app.use(await setupI18n(lang))
-  app.use(instancePlugin, { mode })
+  app.use(await createInstancePlugin({ mode }))
   app.mount('#app')
 }
 
