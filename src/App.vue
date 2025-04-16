@@ -37,10 +37,12 @@ import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition
     <button
       v-for="{ value, label } in settings.languages"
       :key="value"
+      :disabled="value == $i18n.locale"
       @click="$i18n.locale = value"
     >
       {{ label }}
     </button>
     <p>{{ $i18n.locale }} {{ $t('tagline') }}</p>
+    <p>{{ settings.description[$i18n.locale] }}</p>
   </section>
 </template>
