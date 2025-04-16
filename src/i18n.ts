@@ -2,40 +2,27 @@ import { createI18n } from 'vue-i18n'
 import eng from '@/locale/eng.yaml'
 import swe from '@/locale/swe.yaml'
 import settings from '@instance/settings'
+import type { LocalesByLang } from './types/app.types'
 
-const messages = { eng, swe }
+const messages: LocalesByLang = { eng, swe }
 
-export default function setupI18n(locale: string) {
-  const i18n = createI18n({
+export default async function setupI18n(locale: string) {
+  // Load instance locales.
+  const instanceLocales = await loadInstanceLocales()
+
+  return createI18n({
     locale,
     fallbackLocale: 'eng',
-    messages,
+    messages: { eng, swe, ...instanceLocales },
   })
+}
 
-  // Add instance locales async.
-  // TODO App code may be using locales before they are loaded.
-  loadInstanceLocales().then((locales) =>
-    Object.entries(locales).forEach(([locale, messages]) => {
-      i18n.global.setLocaleMessage(locale, messages)
-    }),
+/** Load named locales */
+async function loadInstanceLocales(): Promise<LocalesByLang> {
+  const langs = settings.languages.map((item) => item.value).filter((lang) => !(lang in messages))
+  // const locales = await Promise.all(langs.map(loadInstanceLocale))
+  const locales = await Promise.all(
+    langs.map(async (lang) => (await import(`@instance/locale/${lang}.yaml`)).default),
   )
-
-  return i18n
-}
-
-async function loadInstanceLocales(): Promise<Record<string, Record<string, string>>> {
-  const langs: string[] = settings.languages
-    .map((item) => item.value)
-    .filter((lang) => !(lang in messages))
-  const locales = await Promise.all(langs.map((lang) => loadInstanceLocale(lang)))
   return Object.fromEntries(langs.map((lang, i) => [lang, locales[i]]))
-}
-
-async function loadInstanceLocale(code: string): Promise<Record<string, string>> {
-  try {
-    return (await import(`@instance/locale/${code}.yaml`)).default
-  } catch (error) {
-    console.error(`Could not load locale ${code}:`, error)
-    return {}
-  }
 }

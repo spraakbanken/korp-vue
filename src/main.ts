@@ -15,7 +15,12 @@ const lang = params.get('lang') || settings.default_language
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(setupI18n(lang))
-app.use(instancePlugin, { mode })
 
-app.mount('#app')
+// These plugins depend on dynamic loading, and must be in async.
+async function setup() {
+  app.use(await setupI18n(lang))
+  app.use(instancePlugin, { mode })
+  app.mount('#app')
+}
+
+setup()

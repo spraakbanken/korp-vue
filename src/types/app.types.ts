@@ -3,3 +3,9 @@
 export type InstancePluginOptions = {
   mode: string
 }
+
+// I18n //
+
+export type Locale = Record<string, string>
+
+export type LocalesByLang = Record<string, Locale>
