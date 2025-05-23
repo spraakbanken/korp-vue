@@ -13,7 +13,7 @@ import UrlDemo from './components/UrlDemo.vue'
   </header>
 
   <section>
-    <h2>Tabs</h2>
+    <h2>State, URL, tabs</h2>
     <UrlDemo />
   </section>
 
