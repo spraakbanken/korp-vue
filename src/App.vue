@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import settings from '@instance/settings'
 import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition.vue'
-import TabsetDemo from './components/TabsetDemo.vue'
+import UrlDemo from './components/UrlDemo.vue'
 </script>
 
 <template>
@@ -14,7 +14,7 @@ import TabsetDemo from './components/TabsetDemo.vue'
 
   <section>
     <h2>Tabs</h2>
-    <TabsetDemo />
+    <UrlDemo />
   </section>
 
   <section>
