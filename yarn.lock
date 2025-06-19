@@ -1084,24 +1084,24 @@
   resolved "https://registry.yarnpkg.com/@vue/tsconfig/-/tsconfig-0.7.0.tgz#67044c847b7a137b8cbfd6b23104c36dbaf80d1d"
   integrity sha512-ku2uNz5MaZ9IerPPUyOHzyjhXoX2kVJaVf7hL315DC17vS6IiZRmmCPfggNbU16QTvM80+uYYy3eYJB59WCtvg==
 
-"@vueuse/core@^13.2.0":
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-13.2.0.tgz#f19afa06449110ff3a649ea06b661c3c37c43c34"
-  integrity sha512-n5TZoIAxbWAQ3PqdVPDzLgIRQOujFfMlatdI+f7ditSmoEeNpPBvp7h2zamzikCmrhFIePAwdEQB6ENccHr7Rg==
+"@vueuse/core@^13.4.0":
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-13.4.0.tgz#c9b3c21e2e284797e9d899ca2ae01b143d1e901e"
+  integrity sha512-OnK7zW3bTq/QclEk17+vDFN3tuAm8ONb9zQUIHrYQkkFesu3WeGUx/3YzpEp+ly53IfDAT9rsYXgGW6piNZC5w==
   dependencies:
     "@types/web-bluetooth" "^0.0.21"
-    "@vueuse/metadata" "13.2.0"
-    "@vueuse/shared" "13.2.0"
+    "@vueuse/metadata" "13.4.0"
+    "@vueuse/shared" "13.4.0"
 
-"@vueuse/metadata@13.2.0":
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-13.2.0.tgz#a839028d43c3206b674dd1d59a77b9c80f4d9d5f"
-  integrity sha512-kPpzuQCU0+D8DZCzK0iPpIcXI+6ufWSgwnjJ6//GNpEn+SHViaCtR+XurzORChSgvpHO9YC8gGM97Y1kB+UabA==
+"@vueuse/metadata@13.4.0":
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-13.4.0.tgz#c65ca82dc920548d655307f6f3a3344fe3b28a44"
+  integrity sha512-CPDQ/IgOeWbqItg1c/pS+Ulum63MNbpJ4eecjFJqgD/JUCJ822zLfpw6M9HzSvL6wbzMieOtIAW/H8deQASKHg==
 
-"@vueuse/shared@13.2.0":
-  version "13.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-13.2.0.tgz#26d89103201bafc7daa4dfc5bc92b512526b788b"
-  integrity sha512-vx9ZPDF5HcU9up3Jgt3G62dMUfZEdk6tLyBAHYAG4F4n73vpaA7J5hdncDI/lS9Vm7GA/FPlbOmh9TrDZROTpg==
+"@vueuse/shared@13.4.0":
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-13.4.0.tgz#0bc48d961bc8154b2fb96c26de869659ead55b71"
+  integrity sha512-+AxuKbw8R1gYy5T21V5yhadeNM7rJqb4cPaRI9DdGnnNl3uqXh+unvQ3uCaA2DjYLbNr1+l7ht/B4qEsRegX6A==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"

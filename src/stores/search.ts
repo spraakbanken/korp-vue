@@ -4,7 +4,9 @@ import type { SearchParams } from '@/url.types'
 import { computed } from 'vue'
 
 export const useSearchStore = defineStore('search', () => {
-  const params = useUrlSearchParams<SearchParams>('hash-params')
+  const params = useUrlSearchParams<SearchParams>('hash-params', {
+    stringify: (params) => params.toString().replace(/=($|&)/g, '$1'),
+  })
 
   // Wrap params with rename, in/out converters and default values.
   // cqp has a default value
