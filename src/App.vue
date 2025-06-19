@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import settings from '@instance/settings'
 import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition.vue'
-import UrlDemo from './components/UrlDemo.vue'
+import SearchSection from './components/search/SearchSection.vue'
 </script>
 
 <template>
   <h1>Korp-vue</h1>
-  <header>
-    Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a> (has a mode plugin),
-    <a href="?mode=mink">mink</a> (has settings overrides) <a href="?mode=segreg">segreg</a> (has no
-    custom stuff)
-  </header>
+  <header>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a>.</header>
 
-  <section>
-    <h2>State, URL, tabs</h2>
-    <UrlDemo />
-  </section>
+  <SearchSection></SearchSection>
 
   <section>
     <h2>Settings</h2>
