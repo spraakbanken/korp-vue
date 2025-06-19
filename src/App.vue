@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import settings from '@instance/settings'
 import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition.vue'
+import UrlDemo from './components/UrlDemo.vue'
 </script>
 
 <template>
@@ -10,6 +11,11 @@ import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition
     <a href="?mode=mink">mink</a> (has settings overrides) <a href="?mode=segreg">segreg</a> (has no
     custom stuff)
   </header>
+
+  <section>
+    <h2>State, URL, tabs</h2>
+    <UrlDemo />
+  </section>
 
   <section>
     <h2>Settings</h2>
