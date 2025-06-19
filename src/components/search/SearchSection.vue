@@ -3,6 +3,7 @@ import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primevue'
 import SimpleSearch from './SimpleSearch.vue'
+import ExtendedSearch from './extended/ExtendedSearch.vue'
 
 const searchStore = useSearchStore()
 const { searchTab } = storeToRefs(searchStore)
@@ -17,7 +18,7 @@ const { searchTab } = storeToRefs(searchStore)
     </TabList>
     <TabPanels>
       <TabPanel value=""><SimpleSearch></SimpleSearch></TabPanel>
-      <TabPanel value="1">TODO: Extended search</TabPanel>
+      <TabPanel value="1"><ExtendedSearch></ExtendedSearch></TabPanel>
       <TabPanel value="2">TODO: Advanced search</TabPanel>
     </TabPanels>
   </Tabs>
