@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import settings from '@instance/settings'
-import ExtendedSearchCondition from '@/components/search/ExtendedSearchCondition.vue'
+import ExtendedSearchCondition from '@/components/search/extended/ExtendedSearchCondition.vue'
 import SearchSection from './components/search/SearchSection.vue'
 </script>
 
