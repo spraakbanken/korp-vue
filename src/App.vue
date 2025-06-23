@@ -5,6 +5,7 @@ import CorpusSelector from './components/CorpusSelector.vue'
 import { useInit } from './useInit'
 import { ref } from 'vue'
 import { whenever } from '@vueuse/core'
+import ModeSelector from './components/ModeSelector.vue'
 
 const { initialize, settings } = useInit()
 
@@ -19,8 +20,8 @@ whenever(settings, (settings) => {
 
 <template>
   <header class="container mb-2">
-    <div class="flex justify-between">
-      <div>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a></div>
+    <div class="flex justify-between text-sm py-1">
+      <ModeSelector />
     </div>
 
     <div class="flex justify-between">

@@ -10,7 +10,14 @@ export type CorpusConfigResponse = CorpusConfig
 
 export type CorpusConfig = {
   corpora: Record<string, Corpus>
+  modes: Mode[]
   preselected_corpora?: string[]
+}
+
+export type Mode = {
+  mode: string
+  label: string | Record<string, string>
+  labOnly?: boolean
 }
 
 export type Corpus = {
