@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
+import { Button, Checkbox, InputText } from 'primevue'
 import { ref } from 'vue'
 
 const searchStore = useSearchStore()
@@ -32,13 +33,13 @@ function submit() {
 </script>
 
 <template>
-  <div>
-    <label>Word(s): <input v-model="input" /></label>
-    <input type="submit" @click="submit" value="Search" />
+  <form @submit.prevent="submit()">
+    <label>Word(s): <InputText v-model="input" /></label>
+    <Button type="submit" label="Search" />
+  </form>
+  <div class="flex flex-wrap gap-4">
+    <label><Checkbox binary v-model="freeOrderLocal" /> free order</label>
+    <label><Checkbox binary v-model="prefixLocal" /> prefix</label>
   </div>
-  <div>
-    <label><input type="checkbox" v-model="freeOrderLocal" /> free order</label>
-    <label><input type="checkbox" v-model="prefixLocal" /> prefix</label>
-  </div>
-  <pre>{{ cqp }}</pre>
+  <pre class="my-2 p-2 bg-surface-200">{{ cqp }}</pre>
 </template>
