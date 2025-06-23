@@ -1,19 +1,38 @@
 <script setup lang="ts">
-import settings from '@instance/settings'
 import ExtendedSearchCondition from '@/components/search/extended/ExtendedSearchCondition.vue'
 import SearchSection from './components/search/SearchSection.vue'
+import CorpusSelector from './components/CorpusSelector.vue'
+import { useInit } from './useInit'
+import { ref } from 'vue'
+import { whenever } from '@vueuse/core'
+
+const { initialize, settings } = useInit()
+
+const corpusSelection = ref<string[]>([])
+
+initialize()
+
+whenever(settings, (settings) => {
+  corpusSelection.value = settings.preselected_corpora || []
+})
 </script>
 
 <template>
   <h1>Korp-vue</h1>
   <header>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a>.</header>
 
+  <CorpusSelector
+    v-if="settings"
+    :items="Object.values(settings.corpora)"
+    v-model="corpusSelection"
+  ></CorpusSelector>
+
   <SearchSection></SearchSection>
 
   <section>
     <h2>Settings</h2>
     <p>The kubhist and mink modes modify the default value.</p>
-    <pre>korp_backend_url: {{ settings.korp_backend_url }}</pre>
+    <pre>korp_backend_url: {{ settings?.korp_backend_url }}</pre>
   </section>
 
   <section>
@@ -34,7 +53,7 @@ import SearchSection from './components/search/SearchSection.vue'
     <h2>I18n</h2>
     <p>The Deutsch locale is added by the instance.</p>
     <button
-      v-for="{ value, label } in settings.languages"
+      v-for="{ value, label } in settings?.languages"
       :key="value"
       :disabled="value == $i18n.locale"
       @click="$i18n.locale = value"
@@ -42,6 +61,6 @@ import SearchSection from './components/search/SearchSection.vue'
       {{ label }}
     </button>
     <p>{{ $i18n.locale }} {{ $t('tagline') }}</p>
-    <p>{{ settings.description[$i18n.locale] }}</p>
+    <p>{{ settings?.description[$i18n.locale] }}</p>
   </section>
 </template>

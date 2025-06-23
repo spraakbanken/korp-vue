@@ -5,6 +5,7 @@ export type AppSettings = {
   description: Record<string, string>
   korp_backend_url: string
   languages: { value: string; label: string }[]
+  backendURLMaxLength: number
 }
 
 export type AttributeConfig = {

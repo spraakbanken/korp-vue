@@ -18,6 +18,7 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(PrimeVue, { theme: { preset: Nora } })
+app.provide('mode', mode)
 
 // These plugins depend on dynamic loading, and must be in async.
 async function setup() {

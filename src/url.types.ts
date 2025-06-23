@@ -1,5 +1,9 @@
 /** Values in the URL parameters. */
-export type HashParams = SearchParams & ResultParams & UiParams
+export type HashParams = AppParams & SearchParams & ResultParams & UiParams
+
+export type AppParams = {
+  corpus?: string
+}
 
 export type SearchParams = {
   cqp?: string

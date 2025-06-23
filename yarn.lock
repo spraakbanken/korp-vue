@@ -1315,6 +1315,11 @@ error-stack-parser-es@^0.1.5:
   resolved "https://registry.yarnpkg.com/error-stack-parser-es/-/error-stack-parser-es-0.1.5.tgz#15b50b67bea4b6ed6596976ee07c7867ae25bb1c"
   integrity sha512-xHku1X40RO+fO8yJ8Wh2f2rZWVjqyhb1zgq1yZ8aZRQkv6OOKhKWRUaht3eSCUbAOBaKIgM+ykwFLE+QUxgGeg==
 
+es-toolkit@^1.39.4:
+  version "1.39.4"
+  resolved "https://registry.yarnpkg.com/es-toolkit/-/es-toolkit-1.39.4.tgz#73d1128933d46bf463666bc05b8f3c5ad876f3d0"
+  integrity sha512-hHqQ0yJERMNrJUyYHnf02qDuIxjRnnJlx1CFdR9Ia6tw6jPA7kXmb+tWzc7trJDHwMsc393hZ/m2XMxYXGAfqQ==
+
 esbuild@^0.25.0:
   version "0.25.2"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.2.tgz#55a1d9ebcb3aa2f95e8bba9e900c1a5061bc168b"
