@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
-import { Button, Card, Checkbox, InputText, Select } from 'primevue'
+import { Button, Checkbox, IftaLabel, InputText, Panel, Select, Textarea } from 'primevue'
 import { reactive, ref, watchEffect } from 'vue'
 
 type Token = {
@@ -43,39 +43,43 @@ function submit() {
 
 <template>
   <div class="flex flex-wrap items-center-safe gap-4 mb-4">
-    <Card v-for="(token, i) in tokens" :key="i">
+    <Panel v-for="(token, i) in tokens" :key="i">
       <template #header>
-        <div class="flex justify-between items-baseline">
-          <header class="px-4 font-medium">Token</header>
-          <Button
-            v-if="tokens.length > 1"
-            @click="removeToken(i)"
-            icon="pi pi-times"
-            aria-label="Remove token"
-            size="small"
-            variant="text"
-            severity="secondary"
-          />
-        </div>
+        <span class="font-medium">Token</span>
+      </template>
+      <template #icons>
+        <Button
+          v-if="tokens.length > 1"
+          @click="removeToken(i)"
+          icon="pi pi-times"
+          aria-label="Remove token"
+          size="small"
+          text
+          rounded
+          severity="secondary"
+          class="-my-1"
+        />
       </template>
 
-      <template #content>
-        <Select v-model="token.attr" :options="['lemgram', 'word']" class="mr-2" />
-        <Select v-model="token.op" :options="['!=', '=']" />
-        <div class="mt-2">
-          <InputText v-model="token.val" />
-        </div>
-      </template>
-    </Card>
+      <Select v-model="token.attr" :options="['lemgram', 'word']" class="mr-2" />
+      <Select v-model="token.op" :options="['!=', '=']" />
+      <div class="mt-2">
+        <InputText v-model="token.val" />
+      </div>
+    </Panel>
 
     <Button @click="addToken()" label="Add token" />
   </div>
 
   <div class="my-4 flex flex-wrap gap-4">
+    Options:
     <label><Checkbox binary v-model="freeOrderLocal" /> free order</label>
   </div>
 
   <Button @click="submit()" label="Search" />
 
-  <pre class="my-2 p-2 bg-surface-200">{{ cqpLocal }}</pre>
+  <IftaLabel class="my-2">
+    <label>Search query</label>
+    <Textarea v-model="cqpLocal" disabled auto-resize rows="1" class="w-full" />
+  </IftaLabel>
 </template>

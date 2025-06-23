@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
-import { Button, Checkbox, InputText } from 'primevue'
+import { Button, Checkbox, IftaLabel, InputText, Textarea } from 'primevue'
 import { ref, watchEffect } from 'vue'
 
 const searchStore = useSearchStore()
@@ -39,12 +39,17 @@ function submit() {
 
 <template>
   <form @submit.prevent="submit()">
-    <label>Word(s): <InputText v-model="input" /></label>
+    <label>Words: <InputText v-model="input" /></label>
     <Button type="submit" label="Search" />
   </form>
   <div class="flex flex-wrap gap-4">
+    Options:
     <label><Checkbox binary v-model="freeOrderLocal" /> free order</label>
     <label><Checkbox binary v-model="prefixLocal" /> prefix</label>
   </div>
-  <pre class="my-2 p-2 bg-surface-200">{{ cqpLocal }}</pre>
+
+  <IftaLabel class="my-2">
+    <label>Search query</label>
+    <Textarea v-model="cqpLocal" disabled auto-resize rows="1" class="w-full" />
+  </IftaLabel>
 </template>
