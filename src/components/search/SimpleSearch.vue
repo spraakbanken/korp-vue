@@ -2,7 +2,7 @@
 import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
 import { Button, Checkbox, InputText } from 'primevue'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 const searchStore = useSearchStore()
 const { cqp, freeOrder, prefix } = storeToRefs(searchStore)
@@ -10,6 +10,11 @@ const { cqp, freeOrder, prefix } = storeToRefs(searchStore)
 const input = ref(parseQuery())
 const freeOrderLocal = ref(freeOrder.value)
 const prefixLocal = ref(prefix.value)
+const cqpLocal = ref(cqp.value)
+
+watchEffect(() => {
+  cqpLocal.value = buildQuery()
+})
 
 function parseQuery() {
   return 'TODO fix parsing'
@@ -22,7 +27,7 @@ function buildQuery() {
 }
 
 function buildToken(word: string) {
-  return `[word = "${word}${prefix.value ? '.*' : ''}"]`
+  return `[word = "${word}${prefixLocal.value ? '.*' : ''}"]`
 }
 
 function submit() {
@@ -41,5 +46,5 @@ function submit() {
     <label><Checkbox binary v-model="freeOrderLocal" /> free order</label>
     <label><Checkbox binary v-model="prefixLocal" /> prefix</label>
   </div>
-  <pre class="my-2 p-2 bg-surface-200">{{ cqp }}</pre>
+  <pre class="my-2 p-2 bg-surface-200">{{ cqpLocal }}</pre>
 </template>

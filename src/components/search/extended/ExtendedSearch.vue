@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
-import { Button, Card, InputText, Select } from 'primevue'
-import { reactive } from 'vue'
+import { Button, Card, Checkbox, InputText, Select } from 'primevue'
+import { reactive, ref, watchEffect } from 'vue'
 
 type Token = {
   attr: string
@@ -10,12 +10,18 @@ type Token = {
   val: string
 }
 
-const searchStore = useSearchStore()
-const { cqp } = storeToRefs(searchStore)
-
 const createToken = (): Token => ({ attr: 'word', op: '=', val: '' })
 
+const searchStore = useSearchStore()
+const { cqp, freeOrder } = storeToRefs(searchStore)
+
 const tokens = reactive<Token[]>([createToken()])
+const freeOrderLocal = ref(freeOrder.value)
+const cqpLocal = ref(cqp.value)
+
+watchEffect(() => {
+  cqpLocal.value = buildQuery()
+})
 
 function addToken() {
   tokens.push(createToken())
@@ -30,6 +36,7 @@ function buildQuery() {
 }
 
 function submit() {
+  freeOrder.value = freeOrderLocal.value
   cqp.value = buildQuery()
 }
 </script>
@@ -64,7 +71,11 @@ function submit() {
     <Button @click="addToken()" label="Add token" />
   </div>
 
+  <div class="my-4 flex flex-wrap gap-4">
+    <label><Checkbox binary v-model="freeOrderLocal" /> free order</label>
+  </div>
+
   <Button @click="submit()" label="Search" />
 
-  <pre class="my-2 p-2 bg-surface-200">{{ cqp }}</pre>
+  <pre class="my-2 p-2 bg-surface-200">{{ cqpLocal }}</pre>
 </template>
