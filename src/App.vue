@@ -18,16 +18,22 @@ whenever(settings, (settings) => {
 </script>
 
 <template>
-  <h1>Korp-vue</h1>
-  <header>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a>.</header>
+  <header class="container mb-2">
+    <div class="flex justify-between">
+      <div>Mode: <a href=".">default</a>, <a href="?mode=kubhist">kubhist</a></div>
+    </div>
 
-  <CorpusSelector
-    v-if="settings"
-    :items="Object.values(settings.corpora)"
-    v-model="corpusSelection"
-  ></CorpusSelector>
+    <div class="flex justify-between">
+      (Korp logo)
+      <CorpusSelector
+        v-if="settings"
+        :items="Object.values(settings.corpora)"
+        v-model="corpusSelection"
+      ></CorpusSelector>
+    </div>
+  </header>
 
-  <SearchSection></SearchSection>
+  <SearchSection class="container"></SearchSection>
 
   <section>
     <h2>Settings</h2>

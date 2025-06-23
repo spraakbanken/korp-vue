@@ -16,12 +16,10 @@ const { corpusInfo } = useInit()
 const props = defineProps<{
   items: DeepReadonly<Corpus[]>
 }>()
-console.log('items', props.items)
 
 const selection = defineModel<string[]>({ required: true })
 
 const nodes = ref<TreeNode[]>(props.items.map((item) => ({ key: item.id, label: th(item.title) })))
-// TODO reactive?
 const treeSelection = ref<Record<string, { checked: boolean }>>(
   Object.fromEntries(
     props.items.map((item) => [

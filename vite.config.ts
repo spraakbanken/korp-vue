@@ -4,6 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import yaml from '@modyfi/vite-plugin-yaml'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -13,7 +14,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [vue(), vueDevTools(), yaml()],
+    plugins: [vue(), vueDevTools(), yaml(), tailwindcss()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

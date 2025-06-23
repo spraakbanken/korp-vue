@@ -14,10 +14,13 @@
   },
   "dependencies": {
     "@primeuix/themes": "^1.1.1",
+    "@tailwindcss/vite": "^4.1.10",
     "@vueuse/core": "^13.4.0",
     "es-toolkit": "^1.39.4",
     "pinia": "^3.0.1",
     "primevue": "^4.3.4",
+    "tailwindcss": "^4.1.10",
+    "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.13",
     "vue-i18n": "10"
   },
