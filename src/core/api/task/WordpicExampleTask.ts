@@ -1,0 +1,20 @@
+import { RelationsSentencesProxy } from '../proxy/RelationsSentencesProxy'
+import type { RelationsSentencesResponse } from '../types/relations-sentences'
+import { TaskBase } from './TaskBase'
+
+export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
+  readonly isReadingInit = false // Context param is not supported by /relations_sentences
+  readonly proxy = new RelationsSentencesProxy()
+
+  constructor(readonly source: string) {
+    super()
+  }
+
+  abort(): void {
+    this.proxy.abort()
+  }
+
+  send(page: number, hpp: number): Promise<RelationsSentencesResponse> {
+    return this.proxy.makeRequest(this.source, page, hpp)
+  }
+}
