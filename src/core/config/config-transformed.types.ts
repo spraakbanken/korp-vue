@@ -1,6 +1,6 @@
 import type { LangString } from '../model/locale'
 import type { Attribute, Config, Corpus, CustomAttribute, Folder } from './config.types'
-import type { CorpusInfoInfo } from '@/core/api/types/corpus-info'
+import type { CorpusInfoInfo } from '@/core/api/types/corpusInfo'
 
 /** Config as transformed after being fetched from backend */
 export type ConfigTransformed = Omit<Config, 'attributes' | 'corpora' | 'label'> & {
