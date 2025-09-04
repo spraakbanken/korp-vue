@@ -3,7 +3,7 @@ import type { ApiKwic, Token } from '../types'
 import { omit } from 'lodash'
 import { TaskBase } from './TaskBase'
 import { corpusListing } from '@/core/corpora/corpusListing'
-import type { CorpusTransformed } from '@/core/config/config-transformed.types'
+import type { Corpus } from '@/core/config/corpusConfig.types'
 
 export type TextReaderDataContainer = {
   corpus: string
@@ -24,7 +24,7 @@ export type ReaderToken = {
 export type TextReaderData = Omit<ApiKwic, 'tokens'> & ReaderTokenContainer
 
 export class TextTask extends TaskBase<TextReaderData> {
-  corpus: CorpusTransformed
+  corpus: Corpus
   textId: string
   constructor(
     readonly corpusId: string,

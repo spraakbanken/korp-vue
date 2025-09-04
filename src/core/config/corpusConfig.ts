@@ -2,20 +2,26 @@ import { keyBy, mapValues, omit, pick } from 'lodash'
 import { korpRequest } from '../api/common'
 import currentMode from '../corpora/mode'
 import { fromKeys } from '../util'
-import type { AppSettings } from './app-config.types'
-import type { ConfigTransformed, CorpusTransformed } from './config-transformed.types'
-import type { Attribute, Config, Corpus, CustomAttribute } from './config.types'
+import type { InstanceConfig } from './instanceConfig.types'
+import type { CorpusConfig, Corpus } from './corpusConfig.types'
+import type {
+  Attribute,
+  CorpusConfigRaw,
+  CorpusRaw,
+  CustomAttribute,
+} from './corpusConfigRaw.types'
 import type { Labeled } from '../model/locale'
 
-type InfoData = Record<string, Pick<CorpusTransformed, 'info' | 'private_struct_attributes'>>
+type InfoData = Record<string, Pick<Corpus, 'info' | 'private_struct_attributes'>>
 
-export async function loadConfig(settings: AppSettings) {
-  const config = await getConfig(settings)
-  const infos = await getInfoData(Object.keys(config.corpora))
+export async function loadCorpusConfig(settings: InstanceConfig) {
+  const config = await loadRawCorpusConfig(settings)
+  const infos = await loadCorpusInfo(Object.keys(config.corpora))
   return transformConfig(config, infos)
 }
 
-async function getConfig(settings: AppSettings): Promise<Config> {
+/** Fetches corpus config from the backend. */
+async function loadRawCorpusConfig(settings: InstanceConfig): Promise<CorpusConfigRaw> {
   // The corpora to include are normally given by the mode config, but allow defining it elsewhere (used by Mink)
   const corpusIds = settings.get_corpus_ids ? await settings.get_corpus_ids() : undefined
 
@@ -27,7 +33,8 @@ async function getConfig(settings: AppSettings): Promise<Config> {
   return config
 }
 
-async function getInfoData(corpusIds: string[]): Promise<InfoData> {
+/** Fetches corpus info (date range etc for each corpus). */
+async function loadCorpusInfo(corpusIds: string[]): Promise<InfoData> {
   if (!corpusIds.length) return {}
 
   const params = { corpus: corpusIds.map((id) => id.toUpperCase()).join(',') }
@@ -42,16 +49,16 @@ async function getInfoData(corpusIds: string[]): Promise<InfoData> {
 }
 
 /** Transform the raw config fetched form backend, to a structure that frontend code can handle. */
-export function transformConfig(config: Config, infos: InfoData): ConfigTransformed {
+export function transformConfig(config: CorpusConfigRaw, infos: InfoData): CorpusConfig {
   // take the backend configuration format for attributes and expand it
   // TODO the internal representation should be changed to a new, more compact one.
-  function transformCorpus(corpus: Corpus): CorpusTransformed {
+  function transformCorpus(corpus: CorpusRaw): Corpus {
     if (corpus.title == undefined) {
       corpus.title = corpus.id
     }
 
     function transformAttributes2<T extends Attribute | CustomAttribute>(
-      attrsKey: keyof Config['attributes'],
+      attrsKey: keyof CorpusConfigRaw['attributes'],
     ): [Record<string, T>, string[]] {
       const names = corpus[attrsKey]
       const attrs = config.attributes[attrsKey] as Record<string, T>

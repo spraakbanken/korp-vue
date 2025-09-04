@@ -1,13 +1,13 @@
 import type { Labeled, LangString, LocLangMap, LocMap } from '@/core/model/locale'
 
 /** Typings for config as fetched from backend. */
-export type Config = {
+export type CorpusConfigRaw = {
   attributes: {
     pos_attributes: Record<string, Attribute>
     struct_attributes: Record<string, Attribute>
     custom_attributes?: Record<string, CustomAttribute>
   }
-  corpora: Record<string, Corpus>
+  corpora: Record<string, CorpusRaw>
   /** Writing direction of corpus text. */
   dir?: 'rtl'
   folders?: Record<string, Folder>
@@ -25,7 +25,7 @@ export type Config = {
   start_lang?: string
 }
 
-export type Corpus = {
+export type CorpusRaw = {
   /** Attributes to use in global filters */
   attribute_filters: string[]
   context: Labeled[]
@@ -45,7 +45,7 @@ export type Corpus = {
   within: Labeled[]
 }
 
-export type CorpusParallel = Corpus & Required<Pick<Corpus, 'lang' | 'linked_to'>>
+export type CorpusParallel = CorpusRaw & Required<Pick<CorpusRaw, 'lang' | 'linked_to'>>
 
 export type ReadingModeConfig = {
   component: string

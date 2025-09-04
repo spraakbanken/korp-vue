@@ -15,9 +15,9 @@ import {
 } from 'lodash'
 import moment, { type Moment } from 'moment'
 import settings, { normalizeDataset } from '@/core/config'
-import type { Attribute } from '@/core/config/config.types'
+import type { Attribute } from '@/core/config/corpusConfigRaw.types'
 import { objectIntersection, objectUnion } from '@/core/util'
-import type { CorpusTransformed } from '../config/config-transformed.types'
+import type { Corpus } from '../config/corpusConfig.types'
 import type { LangString } from '../model/locale'
 
 export type AttributeOption = Attribute & {
@@ -34,9 +34,9 @@ export function setCorpusListing(cl: CorpusListing): void {
 }
 
 export class CorpusListing {
-  corpora: CorpusTransformed[]
-  selected: CorpusTransformed[]
-  struct: Record<string, CorpusTransformed>
+  corpora: Corpus[]
+  selected: Corpus[]
+  struct: Record<string, Corpus>
   structAttributes: Record<string, Attribute> = {}
   commonAttributes: Record<string, Attribute> = {}
   _wordGroup: AttributeOption = {
@@ -45,7 +45,7 @@ export class CorpusListing {
     label: settings['word_label'],
   }
 
-  constructor(corpora: Record<string, CorpusTransformed>) {
+  constructor(corpora: Record<string, Corpus>) {
     this.struct = corpora
     this.corpora = Object.values(corpora)
     this.selected = []
@@ -59,7 +59,7 @@ export class CorpusListing {
     return this.corpora
   }
 
-  map<T>(func: (corpus: CorpusTransformed) => T): T[] {
+  map<T>(func: (corpus: Corpus) => T): T[] {
     return this.corpora.map(func)
   }
 
@@ -86,7 +86,7 @@ export class CorpusListing {
     this.updateAttributes()
   }
 
-  mapSelectedCorpora<T>(f: (corpus: CorpusTransformed) => T): T[] {
+  mapSelectedCorpora<T>(f: (corpus: Corpus) => T): T[] {
     return this.selected.map(f)
   }
 

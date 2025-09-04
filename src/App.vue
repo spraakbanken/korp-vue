@@ -14,8 +14,10 @@ const initDone = ref(false)
 </script>
 
 <template>
-  <div v-if="!initDone">Loading...</div>
-  <HeaderSection v-if="initDone" />
-  <SearchSection v-if="initDone" />
-  <MainSection v-if="initDone" />
+  <template v-if="initDone">
+    <HeaderSection />
+    <SearchSection />
+    <MainSection />
+  </template>
+  <div v-else>Loading...</div>
 </template>

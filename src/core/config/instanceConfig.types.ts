@@ -1,8 +1,8 @@
 import type { Labeled, LangString } from '@/core/model/locale'
-import type { Attribute } from './config.types'
+import type { Attribute } from './corpusConfigRaw.types'
 
 /** Frontend settings as can be loaded from configuration directory. */
-export type AppSettings = {
+export type InstanceConfig = {
   auth_module?: string | { module: string; options: object }
   autocomplete?: boolean
   backendURLMaxLength: number

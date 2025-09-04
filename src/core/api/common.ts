@@ -1,4 +1,3 @@
-import { selectHttpMethod } from '@/core/util'
 import settings from '@/core/config'
 import type {
   API,
@@ -9,6 +8,7 @@ import type {
   Response as KResponse,
 } from './types'
 import { omitBy, pickBy } from 'lodash'
+import { buildUrl, toFormData } from '../util'
 
 type RequestOptions<K extends keyof API> = {
   /** Abort signal to cancel the request */
@@ -47,6 +47,19 @@ export async function korpRequest<K extends keyof API>(
   }
 
   return data
+}
+
+/**
+ * Select GET or POST depending on url length.
+ */
+function selectHttpMethod(
+  url: string,
+  params: Record<string, unknown>,
+): { url: string; request: RequestInit } {
+  const urlFull = buildUrl(url, params)
+  return urlFull.length > settings.backendURLMaxLength
+    ? { url, request: { method: 'POST', body: toFormData(params) } }
+    : { url: urlFull, request: {} }
 }
 
 /** Read and handle a HTTP response body as it comes in */

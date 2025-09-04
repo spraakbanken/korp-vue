@@ -1,10 +1,10 @@
 import appSettings from '@instance/settings'
-import type { AppSettings } from './app-config.types'
+import type { InstanceConfig } from './instanceConfig.types'
 
 /**
  * Sets defaults, validates and normalizes some settings.
  */
-export function getAppSettings(): AppSettings {
+export function getInstanceConfig(): InstanceConfig {
   const settings = { ...appSettings }
   settings['hits_per_page_values'] ??= [25, 50, 75, 100]
   settings['group_statistics'] ??= []

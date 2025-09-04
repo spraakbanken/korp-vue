@@ -2,7 +2,7 @@ import { korpRequest } from '../common'
 import { groupBy, pick, range, sumBy, uniq, zip } from 'lodash'
 import { ExampleTask } from './ExampleTask'
 import { TaskBase } from './TaskBase'
-import type { Attribute } from '@/core/config/config.types'
+import type { Attribute } from '@/core/config/corpusConfigRaw.types'
 import { CorpusListing, corpusListing } from '@/core/corpora/corpusListing'
 import { prefixAttr } from '@/core/config'
 
