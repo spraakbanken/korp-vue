@@ -2,7 +2,10 @@ import { createI18n } from 'vue-i18n'
 import eng from '@/locale/eng.yaml'
 import swe from '@/locale/swe.yaml'
 import settings from '@instance/settings'
-import type { LocalesByLang } from './types/app.types'
+
+export type Locale = Record<string, string>
+
+export type LocalesByLang = Record<string, Locale>
 
 const messages: LocalesByLang = { eng, swe }
 

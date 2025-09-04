@@ -1,11 +1,10 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import createInstancePlugin from '@instance/plugin'
 import settings from '@instance/settings'
-import setupI18n from '@/i18n'
-import App from './App.vue'
+import setupI18n from '@/app/i18n'
+import App from '@/App.vue'
+import '@/assets/main.css'
 
 // Get URL parameters
 const params = new URLSearchParams(location.search)
