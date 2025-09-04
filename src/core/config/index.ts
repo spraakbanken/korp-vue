@@ -1,10 +1,15 @@
 /** @format */
+import currentMode from '@/core/corpora/mode'
 import type { AppSettings } from './app-config.types'
-import type { Config } from './config.types'
+import type { Attribute, Config } from './config.types'
+import { transformConfig, type InfoData } from './transform'
+import { korpRequest } from '../api/common'
+import type { ConfigTransformed } from './config-transformed.types'
+import { fromKeys } from '../util'
 
 /** A combination of frontend app settings and corpus config from backend. */
 // TODO ConfigTransformed
-export type Settings = AppSettings & Config
+export type Settings = AppSettings & ConfigTransformed
 
 /**
  * Settings read from app instance and later merged with corpus config from backend.
@@ -34,21 +39,37 @@ export async function loadSettings() {
     throw new Error('Setting "korp_backend_url" must start with http(s)')
   }
 
+  // TODO: Remove hack: Add to global settings temporarily to make korpRequest work
+  settings.korp_backend_url = appSettings.korp_backend_url
+
   // 3. Fetch config
-  const url = new URL(`${appSettings.korp_backend_url}/corpus_config`)
-  const mode = new URLSearchParams(location.search).get('mode') || 'default'
-  url.searchParams.append('mode', mode)
-  const config: Config = await (await fetch(url)).json()
+  const config = await korpRequest('corpus_config', { mode: currentMode })
 
   // 4. Fetch info
+  const infos = await getInfoData(Object.keys(config.corpora))
 
   // 6. Transform config+info
+  const transformed = transformConfig(config, infos)
 
   // 7. Merge config
-  const merged = { ...appSettings, ...config } as Settings
+  const merged = { ...appSettings, ...transformed } as Settings
 
   // 8. Set global
   Object.assign(settings, merged)
+}
+
+async function getInfoData(corpusIds: string[]): Promise<InfoData> {
+  if (!corpusIds.length) return {}
+
+  const params = { corpus: corpusIds.map((id) => id.toUpperCase()).join(',') }
+  const data = await korpRequest('corpus_info', params)
+
+  return fromKeys(corpusIds, (corpusId) => ({
+    info: data.corpora[corpusId.toUpperCase()].info,
+    private_struct_attributes: data.corpora[corpusId.toUpperCase()].attrs.s.filter(
+      (name) => name.indexOf('__') !== -1,
+    ),
+  }))
 }
 
 /**
@@ -82,3 +103,9 @@ export function setDefaultConfigValues(settings: AppSettings) {
 export function getDefaultWithin() {
   return Object.keys(settings['default_within'] || {})[0]
 }
+
+/** An attribute's dataset options as an object */
+export const normalizeDataset = (
+  dataset: NonNullable<Attribute['dataset']>,
+): Record<string, string> =>
+  Array.isArray(dataset) ? Object.fromEntries(dataset.map((k) => [k, k])) : dataset
