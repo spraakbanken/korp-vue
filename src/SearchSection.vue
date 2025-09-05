@@ -1,17 +1,9 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-import settings from './core/config'
-import { locObj } from './i18n'
-
-const { locale } = useI18n()
+import CorpusSelector from './corpora/CorpusSelector.vue'
 </script>
 
 <template>
   <section>
-    Corpora:
-    <span v-for="corpus of settings.corpora" :key="corpus.id">
-      {{ locObj(corpus.title, locale) }}
-      &nbsp;
-    </span>
+    <CorpusSelector />
   </section>
 </template>

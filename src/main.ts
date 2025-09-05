@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import createInstancePlugin from '@instance/plugin'
 import settings from '@instance/settings'
-import setupI18n from '@/app/i18n'
+import setupI18n from '@/plugin'
 import App from '@/App.vue'
 import '@/assets/main.css'
 

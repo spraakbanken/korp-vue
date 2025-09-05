@@ -100,8 +100,6 @@ export const getUrlParam = <K extends keyof UrlParams>(key: K) =>
 
 /**
  * Get a parameter from the `#?<key>=<value>` part of the URL.
- * It is preferred to use the Angular `$location` service to read and modify this.
- * Use this only when outside Angular context.
  */
 export const getUrlHash = <K extends keyof HashParams>(key: K) =>
   new URLSearchParams(window.location.hash.slice(2)).get(key) as HashParams[K]
