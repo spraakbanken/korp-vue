@@ -3,10 +3,13 @@ import eng from '@/locale/eng.yaml'
 import swe from '@/locale/swe.yaml'
 import settings from '@instance/settings'
 
-export type Locale = Record<string, string>
+/** Message sets by language code */
+type LocalesByLang = Record<string, Locale>
 
-export type LocalesByLang = Record<string, Locale>
+/** Localized messages by key */
+type Locale = Record<string, string>
 
+/** Standard locales */
 const messages: LocalesByLang = { eng, swe }
 
 export default async function setupI18n(locale: string) {
@@ -23,7 +26,6 @@ export default async function setupI18n(locale: string) {
 /** Load named locales */
 async function loadInstanceLocales(): Promise<LocalesByLang> {
   const langs = settings.languages.map((item) => item.value).filter((lang) => !(lang in messages))
-  // const locales = await Promise.all(langs.map(loadInstanceLocale))
   const locales = await Promise.all(
     langs.map(async (lang) => (await import(`@instance/locale/${lang}.yaml`)).default),
   )

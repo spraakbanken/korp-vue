@@ -12,7 +12,7 @@ function toggleCorpus(corpusId: string) {
 </script>
 
 <template>
-  Corpora:
+  {{ $t('corpora') }}:
   <CorpusOption
     v-for="corpus of settings.corpora"
     :key="corpus.id"
