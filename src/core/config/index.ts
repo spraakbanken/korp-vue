@@ -1,8 +1,6 @@
 import type { InstanceConfig } from './instanceConfig.types'
 import type { Attribute, MaybeConfigurable, MaybeWithOptions } from './corpusConfigRaw.types'
 import type { CorpusConfig } from './corpusConfig.types'
-import { getInstanceConfig } from './instanceConfig'
-import { loadCorpusConfig } from './corpusConfig'
 import { isFunction } from 'lodash'
 
 /** A combination of frontend app settings and corpus config from backend. */
@@ -14,27 +12,10 @@ export type Config = InstanceConfig & CorpusConfig
  * Initially empty, must only be used after populating by awaiting `loadSettings()`.
  */
 const settings: Config = {} as Config
-export default settings as Readonly<Config>
+export default settings
 
-declare global {
-  interface Window {
-    settings: Config
-  }
-}
+// Expose to browser console when developing
 if (import.meta.env.DEV) window.settings = settings
-
-export async function loadSettings() {
-  // Load instance settings (typically config.yml)
-  const instanceConfig = getInstanceConfig()
-
-  // Fetch config and info
-  // TODO Remove hack: Add url to global settings to make korpRequest work
-  settings.korp_backend_url = instanceConfig.korp_backend_url
-  const corpusConfig = await loadCorpusConfig(instanceConfig)
-
-  // Merge into global
-  Object.assign(settings, instanceConfig, corpusConfig)
-}
 
 /**
  * Get an object from a registry with optional options.
@@ -55,9 +36,7 @@ export function getConfigurable<T>(
   return widget
 }
 
-export function getDefaultWithin() {
-  return Object.keys(settings['default_within'] || {})[0]
-}
+export const getDefaultWithin = () => Object.keys(settings['default_within'] || {})[0]
 
 /** An attribute's dataset options as an object */
 export const normalizeDataset = (

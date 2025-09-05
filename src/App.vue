@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import HeaderSection from '@/HeaderSection.vue'
 import MainSection from '@/MainSection.vue'
 import SearchSection from '@/SearchSection.vue'
-import { loadSettings } from '@/core/config'
+import { loadSettings } from '@/core/config/init'
 
 const initDone = ref(false)
 
