@@ -1,23 +1,18 @@
 <script setup lang="ts">
 import settings from '@/core/config'
 import { useAppStore } from '@/store/useAppStore'
-import CorpusOption from './CorpusOption.vue'
+import { locObj } from '@/i18n'
+import { useI18n } from 'vue-i18n'
 
 const store = useAppStore()
-
-function toggleCorpus(corpusId: string) {
-  if (store.corpus.includes(corpusId)) store.corpus = store.corpus.filter((id) => id != corpusId)
-  else store.corpus = [...store.corpus, corpusId]
-}
+const { locale } = useI18n()
 </script>
 
 <template>
   {{ $t('corpora') }}:
-  <CorpusOption
-    v-for="corpus of settings.corpora"
-    :key="corpus.id"
-    :corpus
-    :selected="store.corpus.includes(corpus.id)"
-    @change="toggleCorpus(corpus.id)"
-  />
+  <select multiple v-model="store.corpus" size="8">
+    <option v-for="corpus of settings.corpora" :key="corpus.id" :value="corpus.id">
+      {{ locObj(corpus.title, locale) }}
+    </option>
+  </select>
 </template>
