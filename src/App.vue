@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import HeaderSection from '@/HeaderSection.vue'
 import MainSection from '@/MainSection.vue'
 import SearchSection from '@/SearchSection.vue'
-import { loadSettings } from '@/core/config/init'
 import { useExpose } from '@/useExpose'
+import { computedAsync } from '@vueuse/core'
+import { loadSettings } from './core/config/init'
+import { setCorpusListing } from './core/corpora/corpusListing'
+import { CorpusSet } from './core/corpora/CorpusSet'
+import settings from './core/config'
 
 useExpose()
 
-const initDone = ref(false)
-
-;(async () => {
+const initDone = computedAsync(async () => {
+  // Fetch remote mode/corpus config and merge with local app settings
   await loadSettings()
 
-  initDone.value = true
-})()
+  // Create global corpusListing and corpusSelection
+  const corpora = Object.values(settings.corpora)
+  setCorpusListing(new CorpusSet(corpora))
+
+  // Initialization done
+  return true
+})
 </script>
 
 <template>
