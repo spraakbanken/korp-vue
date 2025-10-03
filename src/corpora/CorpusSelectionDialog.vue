@@ -4,7 +4,7 @@ import { corpusListing } from '@/core/corpora/corpusListing'
 import { useAppStore } from '@/store/useAppStore'
 import { onMounted, ref } from 'vue'
 import { partition } from 'lodash'
-import settings from '@/core/config'
+import settings, { getDefaultCorpusSelection } from '@/core/config'
 import type { Corpus } from '@/core/config/corpusConfig.types'
 
 const emit = defineEmits<{
@@ -37,7 +37,8 @@ async function validateCorpusSelection(ids: string[]): Promise<string[]> {
 
   // If no id is given, use default
   if (!ids.length) {
-    if (settings.preselected_corpora) ids = settings.preselected_corpora
+    const defaultCorpusSelection = getDefaultCorpusSelection()
+    if (defaultCorpusSelection.length) ids = defaultCorpusSelection
     else {
       // If the default setting is not given, fallback to selecting all non-protected corpora. If all are protected, select all.
       const nonhidden = corpusListing.corpora.filter((corpus) => !corpus.hide)
