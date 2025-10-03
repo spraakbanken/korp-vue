@@ -14,7 +14,7 @@ export const useAppStore = defineStore('app', () => {
   const { locale } = useI18n()
 
   const corpus = computed({
-    get: () => url.corpus?.split(',').sort() || [],
+    get: () => (url.corpus ? url.corpus.split(',').sort() : []),
     set: (ids) => (url.corpus = ids.sort().join(',')),
   })
   const lang = computed({
