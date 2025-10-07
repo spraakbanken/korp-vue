@@ -17,6 +17,9 @@ type RequestOptions<K extends keyof API> = {
   onProgress?: ProgressHandler<K>
 }
 
+/** Let header be modified by authentication code etc. */
+export const baseHeaders: Record<string, string> = {}
+
 export async function korpRequest<K extends keyof API>(
   endpoint: K,
   params: API[K]['params'],
@@ -26,7 +29,7 @@ export async function korpRequest<K extends keyof API>(
   params = omitBy(params, (value) => value == null) as API[K]['params']
   // Switch to POST if the URL would be to long
   const { url, request } = selectHttpMethod(settings.korp_backend_url + '/' + endpoint, params)
-  request.headers = { ...request.headers /*...auth.getAuthorizationHeader()*/ }
+  request.headers = { ...request.headers, ...baseHeaders }
   if (options.abortSignal) request.signal = options.abortSignal
 
   // Send request

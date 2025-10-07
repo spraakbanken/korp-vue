@@ -3,25 +3,42 @@ import HeaderSection from '@/HeaderSection.vue'
 import MainSection from '@/MainSection.vue'
 import SearchSection from '@/SearchSection.vue'
 import { useExpose } from '@/useExpose'
-import { computedAsync } from '@vueuse/core'
-import { loadSettings } from './core/config/init'
 import { setCorpusListing } from './core/corpora/corpusListing'
 import { CorpusSet } from './core/corpora/CorpusSet'
 import settings from './core/config'
+import { useAuth } from './auth/useAuth'
+import { ref } from 'vue'
+import { getInstanceConfig } from './core/config/instanceConfig'
+import { loadCorpusConfig } from './core/config/corpusConfig'
 
+const auth = useAuth()
 useExpose()
 
-const initDone = computedAsync(async () => {
-  // Fetch remote mode/corpus config and merge with local app settings
-  await loadSettings()
+const initDone = ref(false)
+
+async function init() {
+  // Load instance settings (typically config.yml)
+  const instanceConfig = getInstanceConfig()
+
+  // Initialize authentication
+  await auth.init(instanceConfig)
+
+  // Fetch config and info
+  // TODO Remove hack: Add url to global settings to make korpRequest work
+  settings.korp_backend_url = instanceConfig.korp_backend_url
+  const corpusConfig = await loadCorpusConfig(instanceConfig)
+
+  // Merge into global settings
+  Object.assign(settings, instanceConfig, corpusConfig)
 
   // Create global corpusListing and corpusSelection
   const corpora = Object.values(settings.corpora)
   setCorpusListing(new CorpusSet(corpora))
 
-  // Initialization done
-  return true
-})
+  initDone.value = true
+}
+
+init()
 </script>
 
 <template>

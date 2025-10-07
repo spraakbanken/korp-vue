@@ -4,9 +4,12 @@ import settings from '@/core/config'
 import { locObj } from '@/i18n'
 import { useAppStore } from './store/useAppStore'
 import { storeToRefs } from 'pinia'
+import { useAuth } from './auth/useAuth'
 
 const { locale } = useI18n()
 const store = useAppStore()
+const auth = useAuth()
+
 const { lang } = storeToRefs(store)
 </script>
 
@@ -26,6 +29,10 @@ const { lang } = storeToRefs(store)
         <input type="radio" v-model="lang" :value="l.value" />
         {{ locObj(l.label, lang) }}
       </label>
+    </div>
+
+    <div>
+      <component :is="auth?.statusComponent" />
     </div>
   </header>
 </template>
