@@ -24,6 +24,7 @@ export const storage = useLocalStorage<Creds | undefined>('korp.auth.basic', und
 
 export async function login(...args: unknown[]): Promise<void> {
   const [name, pass, saveLogin] = args as [string, string, boolean]
+  if (name == null || pass == null) throw new Error('Missing name and password')
   const token = toBase64(name + ':' + pass)
   const url = `${settings.korp_backend_url}/authenticate`
   const headers = { Authorization: `Basic ${token}` }

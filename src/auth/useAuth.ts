@@ -25,7 +25,7 @@ export function useAuth() {
     }
 
     // Decorate login to enable auth in requests
-    auth.login = async (...args) => loginOld(args).finally(updateHeader)
+    auth.login = async (...args) => loginOld(...args).finally(updateHeader)
 
     // Decorate logout to disable auth in requests
     auth.logout = () => {

@@ -6,6 +6,7 @@ import { onMounted, ref } from 'vue'
 import { partition } from 'lodash'
 import { getDefaultCorpusSelection } from '@/core/config'
 import type { Corpus } from '@/core/config/corpusConfig.types'
+import { useAuth } from '@/auth/useAuth'
 
 const emit = defineEmits<{
   (e: 'resolve', ids: string[]): void
@@ -13,6 +14,7 @@ const emit = defineEmits<{
 
 const store = useAppStore()
 const dialog = useConfirmDialog<string>()
+const auth = useAuth()
 
 const element = ref<HTMLDialogElement>()
 const content = ref('')
@@ -32,8 +34,8 @@ onMounted(async () => {
 
 /** Interactively check that the corpus selection in the store is valid. */
 async function validateCorpusSelection(ids: string[]): Promise<string[]> {
-  // TODO Check if authorized:  && !auth.hasCredential(corpus.id.toUpperCase())
-  const isDenied = (corpus?: Corpus) => corpus?.limited_access
+  const isDenied = (corpus?: Corpus) =>
+    corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())
 
   // If no id is given, use default
   if (!ids.length) {
