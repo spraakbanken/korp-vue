@@ -8,11 +8,14 @@ export type AuthModule = {
   /** A small Vue component providing login/logout controls and showing current authentication status. */
   statusComponent: Component
 
-  /** Trigger interactive authentication workflow */
+  /** Submit credentials */
   login: (...args: unknown[]) => Promise<void>
 
   /** Trigger logout */
   logout: () => void
+
+  /** Trigger interactive authentication workflow */
+  attemptLogin: () => Promise<void>
 
   /** Get headers to include in API requests */
   getAuthorizationHeader: () => Record<string, string>

@@ -48,6 +48,23 @@ export abstract class Observable {
   }
 }
 
+/** Provides a slot for an async function. */
+export class PromiseStarter<T = void> {
+  protected starter?: () => Promise<T>
+
+  onStart(starter: () => Promise<T>) {
+    if (this.starter) throw new Error('Only one starter allowed')
+    this.starter = starter
+  }
+
+  start() {
+    if (!this.starter) {
+      throw new Error('Missing starter')
+    }
+    return this.starter()
+  }
+}
+
 /** Create a Moment that uses the date from one Date object and the time from another. */
 export function combineDateTime(date: Date, time: Date): Moment {
   const m = moment(moment(date).format('YYYY-MM-DD'))

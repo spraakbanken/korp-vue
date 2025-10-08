@@ -33,7 +33,7 @@ onMounted(async () => {
 })
 
 /** Interactively check that the corpus selection in the store is valid. */
-async function validateCorpusSelection(ids: string[]): Promise<string[]> {
+async function validateCorpusSelection(ids: string[], skipLogin = false): Promise<string[]> {
   const isDenied = (corpus?: Corpus) =>
     corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())
 
@@ -60,20 +60,28 @@ async function validateCorpusSelection(ids: string[]): Promise<string[]> {
   const corpora = ids.map((id) => corpusListing.get(id))
   const [deniedCorpora, allowedCorpora] = partition(corpora, isDenied)
   if (deniedCorpora.length) {
-    // TODO If not authenticated: show login
-    if (allowedCorpora.length) {
-      // Access denied for some of the corpora
-      await dialog.reveal(
-        `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. They will be deselected.`,
-      )
-      return validateCorpusSelection(allowedCorpora.map((c) => c.id))
+    if (auth.isLoggedIn() || skipLogin) {
+      if (allowedCorpora.length) {
+        // Access denied for some of the corpora
+        await dialog.reveal(
+          `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. They will be deselected.`,
+        )
+        return validateCorpusSelection(allowedCorpora.map((c) => c.id))
+      } else {
+        // Access denied for all corpora
+        // TODO What if all corpora are protected.
+        await dialog.reveal(
+          `You do not have access to any of the selected corpora. Default corpus selection will be used.`,
+        )
+        return validateCorpusSelection([])
+      }
     } else {
-      // Access denied for all corpora
-      // TODO What if all corpora are protected.
       await dialog.reveal(
-        `You do not have access to any of the selected corpora. Default corpus selection will be used.`,
+        `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. Log in to continue.`,
       )
-      return validateCorpusSelection([])
+      await auth.attemptLogin()
+      // Check again but don't ask for login again if user dismissed it.
+      return validateCorpusSelection(ids, true)
     }
   }
 
@@ -84,7 +92,7 @@ async function validateCorpusSelection(ids: string[]): Promise<string[]> {
 
 <template>
   <teleport to="body">
-    <dialog ref="element">
+    <dialog ref="element" closedby="any" @close="dialog.confirm">
       {{ content }}
       <button @click="dialog.confirm">OK</button>
     </dialog>

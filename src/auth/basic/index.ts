@@ -1,6 +1,6 @@
 import type { AuthModule } from '@/auth/auth.types'
 import AuthStatusBasic from './AuthBasicStatus.vue'
-import { toBase64 } from '@/core/util'
+import { PromiseStarter, toBase64 } from '@/core/util'
 import settings from '@/core/config'
 import { ref } from 'vue'
 import { StorageSerializers, useLocalStorage } from '@vueuse/core'
@@ -21,6 +21,8 @@ export const creds = ref<Creds>()
 export const storage = useLocalStorage<Creds | undefined>('korp.auth.basic', undefined, {
   serializer: StorageSerializers.object,
 })
+
+export const attemptLogin = new PromiseStarter()
 
 export async function login(...args: unknown[]): Promise<void> {
   const [name, pass, saveLogin] = args as [string, string, boolean]
@@ -48,6 +50,7 @@ const authBasic: AuthModule = {
     creds.value = undefined
     storage.value = undefined
   },
+  attemptLogin: () => attemptLogin.start(),
   getAuthorizationHeader: (): Record<string, string> =>
     creds.value ? { Authorization: `Basic ${creds.value.auth}` } : {},
   hasCredential: (corpusId) => creds.value?.credentials?.includes(corpusId.toUpperCase()) || false,

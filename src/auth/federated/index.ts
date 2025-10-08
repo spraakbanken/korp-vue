@@ -32,6 +32,14 @@ let options: Options
 
 let state: State | undefined = undefined
 
+const login = async () => {
+  // TODO try to implement this again
+  // if we already tried to login, don't redirect again, to avoid infinite loops
+  // if (document.referrer == "") {
+  // }
+  window.location.href = `${options.login_service}?redirect=${window.location.href}`
+}
+
 const authFederated: AuthModule = {
   init: async (settings) => {
     if (typeof settings.auth_module != 'object')
@@ -67,14 +75,9 @@ const authFederated: AuthModule = {
     return true
   },
   statusComponent: AuthFedStatus,
-  login: async () => {
-    // TODO try to implement this again
-    // if we already tried to login, don't redirect again, to avoid infinite loops
-    // if (document.referrer == "") {
-    // }
-    window.location.href = `${options.login_service}?redirect=${window.location.href}`
-  },
+  login,
   logout: () => (window.location.href = options.logout_service),
+  attemptLogin: login,
   getAuthorizationHeader: (): Record<string, string> =>
     state ? { Authorization: `Bearer ${state.jwt}` } : {},
   hasCredential: (corpusId) => (state?.credentials || []).includes(corpusId),
