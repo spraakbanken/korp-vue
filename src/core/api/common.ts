@@ -8,7 +8,8 @@ import type {
   Response as KResponse,
 } from './types'
 import { omitBy, pickBy } from 'lodash'
-import { buildUrl, toFormData } from '../util'
+import { buildUrl, toFormData } from '@/core/util'
+import { auth } from '@/core/auth'
 
 type RequestOptions<K extends keyof API> = {
   /** Abort signal to cancel the request */
@@ -16,9 +17,6 @@ type RequestOptions<K extends keyof API> = {
   /** Callback to visualize progress and paged data */
   onProgress?: ProgressHandler<K>
 }
-
-/** Let header be modified by authentication code etc. */
-export const baseHeaders: Record<string, string> = {}
 
 export async function korpRequest<K extends keyof API>(
   endpoint: K,
@@ -29,7 +27,7 @@ export async function korpRequest<K extends keyof API>(
   params = omitBy(params, (value) => value == null) as API[K]['params']
   // Switch to POST if the URL would be to long
   const { url, request } = selectHttpMethod(settings.korp_backend_url + '/' + endpoint, params)
-  request.headers = { ...request.headers, ...baseHeaders }
+  request.headers = { ...request.headers, ...auth.getAuthorizationHeader() }
   if (options.abortSignal) request.signal = options.abortSignal
 
   // Send request
