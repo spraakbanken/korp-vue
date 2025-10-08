@@ -31,5 +31,6 @@ function resolveValidation(ids: string[]) {
     </option>
   </select>
 
+  <!-- TODO corpusSelection is not reactive -->
   <div>corpusSelection: {{ corpusSelection.corpora.map((c) => locObj(c.title)) }}</div>
 </template>
