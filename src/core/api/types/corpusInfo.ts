@@ -32,10 +32,10 @@ export type CorpusInfoInfo = {
   Charset?: string
   Sentences?: `${number}`
   Saldo?: `${number}`
-  FirstDate?: `${number}-${number}-${number} ${number}:${number}:${number}` | ''
+  FirstDate?: `${number}-${number}-${number} ${number}:${number}:${number}` | ""
   LastDate?: string
   Updated?: `${number}-${number}-${number}`
-  Protected?: 'true' | 'false' | ''
+  Protected?: "true" | "false" | ""
   DateResolution?: string
   KorpModes?: string
 }

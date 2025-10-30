@@ -1,4 +1,4 @@
-import type { AuthModule } from './auth.types'
+import type { AuthModule } from "./auth.types"
 
 export const dummyAuth: AuthModule = {
   init: () => false,
@@ -8,6 +8,6 @@ export const dummyAuth: AuthModule = {
   getAuthorizationHeader: () => ({}),
   hasCredential: () => false,
   getCredentials: () => [],
-  getUsername: () => '',
+  getUsername: () => "",
   isLoggedIn: () => false,
 }

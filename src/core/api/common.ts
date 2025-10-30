@@ -1,4 +1,4 @@
-import settings from '@/core/config'
+import settings from "@/core/config"
 import type {
   API,
   ErrorMessage,
@@ -6,10 +6,10 @@ import type {
   ProgressReport,
   ProgressResponse,
   Response as KResponse,
-} from './types'
-import { omitBy, pickBy } from 'lodash'
-import { buildUrl, toFormData } from '@/core/util'
-import { auth } from '@/core/auth'
+} from "./types"
+import { omitBy, pickBy } from "lodash"
+import { buildUrl, toFormData } from "@/core/util"
+import { auth } from "@/core/auth"
 
 type RequestOptions<K extends keyof API> = {
   /** Abort signal to cancel the request */
@@ -20,13 +20,13 @@ type RequestOptions<K extends keyof API> = {
 
 export async function korpRequest<K extends keyof API>(
   endpoint: K,
-  params: API[K]['params'],
+  params: API[K]["params"],
   options: RequestOptions<K> = {},
-): Promise<API[K]['response']> {
+): Promise<API[K]["response"]> {
   // Skip params with `null` or `undefined`
-  params = omitBy(params, (value) => value == null) as API[K]['params']
+  params = omitBy(params, (value) => value == null) as API[K]["params"]
   // Switch to POST if the URL would be to long
-  const { url, request } = selectHttpMethod(settings.korp_backend_url + '/' + endpoint, params)
+  const { url, request } = selectHttpMethod(settings.korp_backend_url + "/" + endpoint, params)
   request.headers = { ...request.headers, ...auth.getAuthorizationHeader() }
   if (options.abortSignal) request.signal = options.abortSignal
 
@@ -40,9 +40,9 @@ export async function korpRequest<K extends keyof API>(
       if (progress) options.onProgress(progress)
     }
   })
-  const data: KResponse<API[K]['response']> = JSON.parse(json)
+  const data: KResponse<API[K]["response"]> = JSON.parse(json)
 
-  if ('ERROR' in data) {
+  if ("ERROR" in data) {
     const { type, value } = data.ERROR as ErrorMessage
     throw new KorpBackendError(type, value)
   }
@@ -59,7 +59,7 @@ function selectHttpMethod(
 ): { url: string; request: RequestInit } {
   const urlFull = buildUrl(url, params)
   return urlFull.length > settings.backendURLMaxLength
-    ? { url, request: { method: 'POST', body: toFormData(params) } }
+    ? { url, request: { method: "POST", body: toFormData(params) } }
     : { url: urlFull, request: {} }
 }
 
@@ -69,10 +69,10 @@ async function readIncrementally(
   handle: (content: string) => void,
 ): Promise<string> {
   const reader = response.body!.getReader()
-  let content = ''
+  let content = ""
   while (true) {
     const { done, value } = await reader.read()
-    content += new TextDecoder('utf-8').decode(value)
+    content += new TextDecoder("utf-8").decode(value)
     handle(content)
     if (done) break
   }
@@ -85,14 +85,14 @@ export class KorpBackendError extends Error {
     public readonly value: string,
   ) {
     super(`${type}: ${value}`)
-    this.name = 'KorpBackendError'
+    this.name = "KorpBackendError"
   }
 }
 
 export function calcProgress<K extends keyof API>(
   partialJson: string,
 ): ProgressReport<K> | undefined {
-  const data = parsePartialJson<ProgressResponse & KResponse<API[K]['response']>>(partialJson)
+  const data = parsePartialJson<ProgressResponse & KResponse<API[K]["response"]>>(partialJson)
   if (!data) return
 
   /** Look up sizes of corpora and sum them */
@@ -112,15 +112,15 @@ export function calcProgress<K extends keyof API>(
   ) as ProgressItem[]
 
   for (const val of progressItems) {
-    const corpus = typeof val == 'string' ? val : val.corpus
-    progress += getCorpusSize(corpus.split('|'))
-    if (typeof val != 'string' && 'hits' in val) {
+    const corpus = typeof val == "string" ? val : val.corpus
+    progress += getCorpusSize(corpus.split("|"))
+    if (typeof val != "string" && "hits" in val) {
       hits = (hits || 0) + Number(val.hits)
     }
   }
 
   /** Number of tokens in the corpora in the current result page */
-  const allCorpora = data.progress_corpora?.flatMap((corpus) => corpus.split('|'))
+  const allCorpora = data.progress_corpora?.flatMap((corpus) => corpus.split("|"))
   const total = allCorpora ? getCorpusSize(allCorpora) : 0
 
   const percent = total ? (progress / total) * 100 : 0
@@ -132,7 +132,7 @@ export function calcProgress<K extends keyof API>(
 export function parsePartialJson<T = unknown>(json: string): Partial<T> | undefined {
   try {
     // If it ends with comma + space, replace that with a closing curly.
-    return JSON.parse(json.replace(/,\s*$/, '}'))
+    return JSON.parse(json.replace(/,\s*$/, "}"))
   } catch {}
 }
 

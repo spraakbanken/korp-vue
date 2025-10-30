@@ -1,5 +1,5 @@
-import type { InstanceConfig } from '@/core/config/instanceConfig.types'
-import type { Component } from 'vue'
+import type { InstanceConfig } from "@/core/config/instanceConfig.types"
+import type { Component } from "vue"
 
 export type AuthModule = {
   /** Check if logged in before app is initialized */

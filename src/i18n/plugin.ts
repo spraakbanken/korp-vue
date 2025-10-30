@@ -1,7 +1,7 @@
-import { createI18n } from 'vue-i18n'
-import eng from '@/locale/eng.yaml'
-import swe from '@/locale/swe.yaml'
-import settings from '@instance/settings'
+import { createI18n } from "vue-i18n"
+import eng from "@/locale/eng.yaml"
+import swe from "@/locale/swe.yaml"
+import settings from "@instance/settings"
 
 /** Message sets by language code */
 type LocalesByLang = Record<string, Locale>
@@ -18,7 +18,7 @@ export default async function setupI18n(locale: string) {
 
   return createI18n({
     locale,
-    fallbackLocale: 'eng',
+    fallbackLocale: "eng",
     messages: { eng, swe, ...instanceLocales },
   })
 }

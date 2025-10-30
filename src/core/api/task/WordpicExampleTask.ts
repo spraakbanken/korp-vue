@@ -1,6 +1,6 @@
-import { RelationsSentencesProxy } from '../proxy/RelationsSentencesProxy'
-import type { RelationsSentencesResponse } from '../types/relations-sentences'
-import { TaskBase } from './TaskBase'
+import { RelationsSentencesProxy } from "../proxy/RelationsSentencesProxy"
+import type { RelationsSentencesResponse } from "../types/relations-sentences"
+import { TaskBase } from "./TaskBase"
 
 export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
   readonly isReadingInit = false // Context param is not supported by /relations_sentences

@@ -4,8 +4,8 @@
  *   the user back to Korp. After that the JWT call is expected to return a JWT.
  */
 
-import type { AuthModule } from '../auth.types'
-import AuthFedStatus from './AuthFedStatus.vue'
+import type { AuthModule } from "../auth.types"
+import AuthFedStatus from "./AuthFedStatus.vue"
 
 type Options = {
   jwt_url: string
@@ -25,7 +25,7 @@ type JwtPayload = {
   scope: {
     corpora?: Record<string, number>
   }
-  levels: Record<'READ' | 'WRITE' | 'ADMIN', number>
+  levels: Record<"READ" | "WRITE" | "ADMIN", number>
 }
 
 let options: Options
@@ -42,18 +42,18 @@ const login = async () => {
 
 const authFederated: AuthModule = {
   init: async (settings) => {
-    if (typeof settings.auth_module != 'object')
-      throw new Error('federated_auth requires options (jwt_url, login_service, logout_service)')
+    if (typeof settings.auth_module != "object")
+      throw new Error("federated_auth requires options (jwt_url, login_service, logout_service)")
     options = settings.auth_module.options as Options
 
     const response = await fetch(options.jwt_url, {
-      headers: { accept: 'text/plain' },
-      credentials: 'include',
+      headers: { accept: "text/plain" },
+      credentials: "include",
     })
 
     if (!response.ok) {
       if (response.status == 401) {
-        console.log('User not logged in')
+        console.log("User not logged in")
       } else {
         console.warn(`An error has occured: ${response.status}`)
       }
@@ -62,12 +62,12 @@ const authFederated: AuthModule = {
 
     const jwt = await response.text()
 
-    const jwtPayload: JwtPayload = JSON.parse(atob(jwt.split('.')[1]))
+    const jwtPayload: JwtPayload = JSON.parse(atob(jwt.split(".")[1]))
     const { name, email, scope, levels } = jwtPayload
     const username = name || email
 
     const credentials = Object.keys(scope.corpora || {})
-      .filter((id) => (scope.corpora?.[id] || 0) >= levels['READ'])
+      .filter((id) => (scope.corpora?.[id] || 0) >= levels["READ"])
       .map((id) => id.toUpperCase())
 
     state = { jwt, username, credentials }

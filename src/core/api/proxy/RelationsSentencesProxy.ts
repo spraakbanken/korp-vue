@@ -1,10 +1,10 @@
-import { pageToRange } from '../common'
-import ProxyBase from './ProxyBase'
-import { RelationsSentencesResponse } from '../types/relations-sentences'
-import { corpusListing } from '@/corpora/corpus_listing'
+import { pageToRange } from "../common"
+import ProxyBase from "./ProxyBase"
+import { RelationsSentencesResponse } from "../types/relations-sentences"
+import { corpusListing } from "@/corpora/corpus_listing"
 
-export class RelationsSentencesProxy extends ProxyBase<'relations_sentences'> {
-  protected readonly endpoint = 'relations_sentences'
+export class RelationsSentencesProxy extends ProxyBase<"relations_sentences"> {
+  protected readonly endpoint = "relations_sentences"
 
   makeRequest(source: string, page: number, hpp: number): Promise<RelationsSentencesResponse> {
     const { start, end } = pageToRange(page || 0, hpp)

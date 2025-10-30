@@ -1,9 +1,9 @@
-import { korpRequest } from '../common'
-import type { ApiKwic, Token } from '../types'
-import { omit } from 'lodash'
-import { TaskBase } from './TaskBase'
-import { corpusListing } from '@/core/corpora/corpusListing'
-import type { Corpus } from '@/core/config/corpusConfig.types'
+import { korpRequest } from "../common"
+import type { ApiKwic, Token } from "../types"
+import { omit } from "lodash"
+import { TaskBase } from "./TaskBase"
+import { corpusListing } from "@/core/corpora/corpusListing"
+import type { Corpus } from "@/core/config/corpusConfig.types"
 
 export type TextReaderDataContainer = {
   corpus: string
@@ -21,7 +21,7 @@ export type ReaderToken = {
   currentSentence: Record<string, string>[]
 }
 
-export type TextReaderData = Omit<ApiKwic, 'tokens'> & ReaderTokenContainer
+export type TextReaderData = Omit<ApiKwic, "tokens"> & ReaderTokenContainer
 
 export class TextTask extends TaskBase<TextReaderData> {
   corpus: Corpus
@@ -32,8 +32,8 @@ export class TextTask extends TaskBase<TextReaderData> {
   ) {
     super()
     this.corpus = corpusListing.get(this.corpusId)
-    this.textId = this.sentenceData['text__id']
-    if (!this.textId) throw new RangeError('Sentence has no text__id')
+    this.textId = this.sentenceData["text__id"]
+    if (!this.textId) throw new RangeError("Sentence has no text__id")
   }
 
   async send(): Promise<TextReaderData> {
@@ -41,32 +41,32 @@ export class TextTask extends TaskBase<TextReaderData> {
 
     // TODO: is this good enough?
     const show = Object.keys(this.corpus.attributes)
-    const showStruct = Object.keys(this.corpus['struct_attributes'])
+    const showStruct = Object.keys(this.corpus["struct_attributes"])
 
     // _head and _tail are needed for all corpora, so that Korp will know what whitespace to use
     // For sentence_id, we should find a more general solution, but there is one Språkbanken
     // corpus who needs sentence_id in order to map the selected sentence in the KWIC to
     // a sentence in the reading mode text.
-    show.push('sentence_id', '_head', '_tail')
+    show.push("sentence_id", "_head", "_tail")
 
     const params = {
       corpus: corpusId,
       cqp: `[_.text__id = "${this.textId}" & lbound(text)]`,
-      context: corpusId + ':1 text',
+      context: corpusId + ":1 text",
       show: show.join(),
       show_struct: showStruct.join(),
-      within: corpusId + ':text',
+      within: corpusId + ":text",
       start: 0,
       end: 0,
     }
 
-    const data = await korpRequest('query', params)
+    const data = await korpRequest("query", params)
 
     // The data is just one long KWIC row.
     const kwic = data.kwic[0]
 
     const groupElement =
-      typeof this.corpus.reading_mode == 'object'
+      typeof this.corpus.reading_mode == "object"
         ? this.corpus.reading_mode.group_element
         : undefined
 
@@ -113,7 +113,7 @@ function convertTokens(tokens: Token[]): ReaderToken[] {
     for (const openStruct of token.structs?.open || []) {
       const name = Object.keys(openStruct)[0]
       open[name] = openStruct[name]
-      if (name === 'sentence') currentSentence = []
+      if (name === "sentence") currentSentence = []
     }
 
     // Convert and push token
@@ -138,15 +138,15 @@ function convertToken(
   const structAttrs: Record<string, string> = {}
   for (const name in open) {
     for (const attr in open[name]) {
-      if (open[name][attr]) structAttrs[name + '_' + attr] = open[name][attr]
+      if (open[name][attr]) structAttrs[name + "_" + attr] = open[name][attr]
     }
   }
 
   const parseWhitespace = (str?: string): string =>
-    str?.replace(/\\s/g, ' ').replace(/\\n/g, '\n').replace(/\\t/g, '\t') || ''
+    str?.replace(/\\s/g, " ").replace(/\\n/g, "\n").replace(/\\t/g, "\t") || ""
 
   return {
-    ...omit(token, 'structs'),
+    ...omit(token, "structs"),
     ...structAttrs,
     head: parseWhitespace(token._head),
     tail: parseWhitespace(token._tail),

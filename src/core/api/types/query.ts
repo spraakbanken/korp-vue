@@ -1,4 +1,4 @@
-import type { ApiKwic } from './common'
+import type { ApiKwic } from "./common"
 
 /** @see https://ws.spraakbanken.gu.se/docs/korp#tag/Concordance/paths/~1query/get */
 export type QueryParams = {
@@ -38,4 +38,4 @@ export type QueryResponse = {
   query_data: string
 }
 
-export type QueryParamSort = '' | 'keyword' | 'left' | 'right' | 'random'
+export type QueryParamSort = "" | "keyword" | "left" | "right" | "random"

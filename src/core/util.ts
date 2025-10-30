@@ -1,5 +1,5 @@
-import { intersection, mapValues, merge, pick } from 'lodash'
-import moment, { type Moment } from 'moment'
+import { intersection, mapValues, merge, pick } from "lodash"
+import moment, { type Moment } from "moment"
 
 /** Use html`<div>html here</div>` to enable formatting template strings with Prettier. */
 export const html = String.raw
@@ -53,13 +53,13 @@ export class PromiseStarter<T = void> {
   protected starter?: () => Promise<T>
 
   onStart(starter: () => Promise<T>) {
-    if (this.starter) throw new Error('Only one starter allowed')
+    if (this.starter) throw new Error("Only one starter allowed")
     this.starter = starter
   }
 
   start() {
     if (!this.starter) {
-      throw new Error('Missing starter')
+      throw new Error("Missing starter")
     }
     return this.starter()
   }
@@ -67,20 +67,20 @@ export class PromiseStarter<T = void> {
 
 /** Create a Moment that uses the date from one Date object and the time from another. */
 export function combineDateTime(date: Date, time: Date): Moment {
-  const m = moment(moment(date).format('YYYY-MM-DD'))
+  const m = moment(moment(date).format("YYYY-MM-DD"))
   const m_time = moment(time)
-  m.add(m_time.hour(), 'hour')
-  m.add(m_time.minute(), 'minute')
+  m.add(m_time.hour(), "hour")
+  m.add(m_time.minute(), "minute")
   return m
 }
 
 /** FooBar -> foo-bar */
 export const kebabize = (str: string): string =>
-  [...str].map((x, i) => (x == x.toUpperCase() ? (i ? '-' : '') + x.toLowerCase() : x)).join('')
+  [...str].map((x, i) => (x == x.toUpperCase() ? (i ? "-" : "") + x.toLowerCase() : x)).join("")
 
 /** Replace HTML special chars */
 export const escapeHtml = (str: string): string =>
-  str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
 /** Unicode-tolerant Base64 encoding, copied from https://stackoverflow.com/a/43271130 */
 export function toBase64(str: string) {
@@ -89,7 +89,7 @@ export function toBase64(str: string) {
   for (let i = 0; i < bytes.byteLength; i++) {
     binary.push(String.fromCharCode(bytes[i]))
   }
-  return window.btoa(binary.join(''))
+  return window.btoa(binary.join(""))
 }
 
 /**
@@ -98,40 +98,40 @@ export function toBase64(str: string) {
  * @returns A string of superscript numbers.
  */
 export function numberToSuperscript(number: string | number): string {
-  return [...String(number)].map((n) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[Number(n)]).join('')
+  return [...String(number)].map((n) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(n)]).join("")
 }
 
 /** Format time as hh:mm:ss if hours > 0, else mm:ss */
 export function transformSeconds(seconds: number) {
   const hhmmss = new Date(seconds * 1000).toISOString().substring(11, 19)
-  return hhmmss.replace(/^00:/, '')
+  return hhmmss.replace(/^00:/, "")
 }
 
 /** Show a basic modal with vanilla JS */
 export function simpleModal(html: string) {
-  const dialog = document.createElement('dialog')
-  dialog.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-lg', 'border')
+  const dialog = document.createElement("dialog")
+  dialog.classList.add("bg-white", "p-4", "rounded-lg", "shadow-lg", "border")
   const button = '<button class="block mx-auto btn btn-primary mt-4">OK</button>'
   dialog.innerHTML = html + button
   document.body.appendChild(dialog)
   dialog.showModal()
-  dialog.querySelector('button')!.addEventListener('click', () => dialog.close())
+  dialog.querySelector("button")!.addEventListener("click", () => dialog.close())
 }
 
 /** Split a string by the first occurence of a given separator */
 export const splitFirst = (sep: string, s: string): [string, string] => {
   const pos = s.indexOf(sep)
-  if (pos == -1) return [s, '']
+  if (pos == -1) return [s, ""]
   return [s.slice(0, pos), s.slice(pos + sep.length)]
 }
 
 /** Escape special characters in a string so it can be safely inserted in a regular expression. */
 export const regescape = (s: string): string =>
-  s.replace(/[.|?|+|*||'|()^$\\]/g, '\\$&').replace(/"/g, '""')
+  s.replace(/[.|?|+|*||'|()^$\\]/g, "\\$&").replace(/"/g, '""')
 
 /** Unescape special characters in a regular expression – remove single backslashes and replace double with single. */
 export const unregescape = (s: string): string =>
-  s.replace(/\\\\|\\/g, (match) => (match === '\\\\' ? '\\' : ''))
+  s.replace(/\\\\|\\/g, (match) => (match === "\\\\" ? "\\" : ""))
 
 /** Convert object to FormData */
 export function toFormData(obj: Record<string, unknown>): FormData {
@@ -155,7 +155,7 @@ export const paramsString = (params: URLSearchParams | Record<string, unknown>) 
 export function downloadFile(data: string, filename: string, type: string) {
   const blob = new Blob([data], { type })
   const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
+  const a = document.createElement("a")
   a.href = url
   a.download = filename
   a.click()

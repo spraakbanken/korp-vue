@@ -1,4 +1,4 @@
-import type { Granularity, Histogram, NumericString } from './common'
+import type { Granularity, Histogram, NumericString } from "./common"
 
 /** @see https://ws.spraakbanken.gu.se/docs/korp#tag/Statistics/paths/~1timespan/get */
 export type TimespanParams = {

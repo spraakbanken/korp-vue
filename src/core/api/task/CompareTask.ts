@@ -1,10 +1,10 @@
-import { korpRequest } from '../common'
-import { groupBy, pick, range, sumBy, uniq, zip } from 'lodash'
-import { ExampleTask } from './ExampleTask'
-import { TaskBase } from './TaskBase'
-import type { Attribute } from '@/core/config/corpusConfigRaw.types'
-import { CorpusListing, corpusListing } from '@/core/corpora/corpusListing'
-import { prefixAttr } from '@/core/config'
+import { korpRequest } from "../common"
+import { groupBy, pick, range, sumBy, uniq, zip } from "lodash"
+import { ExampleTask } from "./ExampleTask"
+import { TaskBase } from "./TaskBase"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import { CorpusListing, corpusListing } from "@/core/corpora/corpusListing"
+import { prefixAttr } from "@/core/config"
 
 export type CompareResult = {
   tables: CompareTables
@@ -45,7 +45,7 @@ export class CompareTask extends TaskBase<CompareResult> {
   ) {
     super()
     this.cl = corpusListing.subsetFactory([...cmp1.corpora, ...cmp2.corpora])
-    this.reduce = reduce.map((item) => item.replace(/^_\./, ''))
+    this.reduce = reduce.map((item) => item.replace(/^_\./, ""))
     this.attributes = pick(this.cl.getReduceAttrs(), this.reduce)
   }
 
@@ -60,26 +60,26 @@ export class CompareTask extends TaskBase<CompareResult> {
 
     const [reduceStruct, reducePos] = this.cl.partitionAttrs(this.reduce)
 
-    const split = this.reduce.filter((r) => this.attributes[r]?.type === 'set').join(',')
+    const split = this.reduce.filter((r) => this.attributes[r]?.type === "set").join(",")
 
     const rankedReduce = this.reduce.filter(
       (item) => this.cl.getCurrentAttributes(this.cl.getReduceLang())[item]?.ranked,
     )
-    const top = rankedReduce.map((item) => item + ':1').join(',')
+    const top = rankedReduce.map((item) => item + ":1").join(",")
 
     const params = {
       group_by: reducePos.join(),
       group_by_struct: reduceStruct.join(),
-      set1_corpus: corpora1.join(',').toUpperCase(),
+      set1_corpus: corpora1.join(",").toUpperCase(),
       set1_cqp: this.cmp1.cqp,
-      set2_corpus: corpora2.join(',').toUpperCase(),
+      set2_corpus: corpora2.join(",").toUpperCase(),
       set2_cqp: this.cmp2.cqp,
       max: 50,
       split,
       top,
     }
 
-    const data = await korpRequest('loglike', params)
+    const data = await korpRequest("loglike", params)
 
     const objs: CompareItemRaw[] = Object.entries(data.loglike).map(([key, value]) => ({
       value: key,
@@ -87,17 +87,17 @@ export class CompareTask extends TaskBase<CompareResult> {
       abs: value > 0 ? data.set2[key] : data.set1[key],
     }))
 
-    const tables = groupBy(objs, (obj) => (obj.loglike > 0 ? 'positive' : 'negative'))
+    const tables = groupBy(objs, (obj) => (obj.loglike > 0 ? "positive" : "negative"))
 
     let max = 0
     const groupAndSum = function (table: CompareItemRaw[]) {
       // Merge items that are different only by probability suffix ":<number>"
-      const groups = groupBy(table, (obj) => obj.value.replace(/(:.+?)(\/|$| )/g, '$2'))
+      const groups = groupBy(table, (obj) => obj.value.replace(/(:.+?)(\/|$| )/g, "$2"))
       const res = Object.entries(groups).map(([key, items]): CompareItem => {
         // Add up similar items.
-        const tokenLists = key.split('/').map((tokens) => tokens.split(' '))
-        const loglike = sumBy(items, 'loglike')
-        const abs = sumBy(items, 'abs')
+        const tokenLists = key.split("/").map((tokens) => tokens.split(" "))
+        const loglike = sumBy(items, "loglike")
+        const abs = sumBy(items, "abs")
         const elems = items.map((item) => item.value)
         max = Math.max(max, Math.abs(loglike))
         return { key, loglike, abs, elems, tokenLists }
@@ -124,9 +124,9 @@ export class CompareTask extends TaskBase<CompareResult> {
   buildItemCqp(row: CompareItem) {
     // If the grouping attribute is positional, the value is a space-separated list, otherwise it's a single value.
     const parseToken = (value: string, i: number) =>
-      CorpusListing.isStruct(this.attributes[this.reduce[i]]) ? [value] : value.split(' ')
+      CorpusListing.isStruct(this.attributes[this.reduce[i]]) ? [value] : value.split(" ")
 
-    const splitTokens = row.elems.map((elem) => elem.split('/').map(parseToken))
+    const splitTokens = row.elems.map((elem) => elem.split("/").map(parseToken))
 
     // number of tokens in search
     const tokenLength = splitTokens[0][0].length
@@ -145,8 +145,8 @@ export class CompareTask extends TaskBase<CompareResult> {
         let attrKey = this.reduce[attrI]
         const attrVal = token[attrI]
 
-        if (attrKey.includes('_.')) {
-          console.log('error, attribute key contains _.')
+        if (attrKey.includes("_.")) {
+          console.log("error, attribute key contains _.")
         }
 
         const attribute = this.attributes[attrKey]
@@ -155,27 +155,27 @@ export class CompareTask extends TaskBase<CompareResult> {
           attrKey = prefixAttr(attribute)
         }
 
-        const op = type === 'set' ? 'contains' : '='
+        const op = type === "set" ? "contains" : "="
 
-        if (type === 'set' && attrVal.length > 1) {
+        if (type === "set" && attrVal.length > 1) {
           // Assemble variants for each position in the token
           const transpose = <T>(matrix: T[][]) => zip(...matrix) as T[][]
-          const variantsByValue = attrVal.map((val) => val.split(':').slice(1))
+          const variantsByValue = attrVal.map((val) => val.split(":").slice(1))
           const variantsByPosition = transpose(variantsByValue).map(uniq)
-          const variantsStrs = variantsByPosition.map((variants) => `:(${variants.join('|')})`)
-          const key = attrVal[0].split(':')[0]
-          val = key + variantsStrs.join('')
+          const variantsStrs = variantsByPosition.map((variants) => `:(${variants.join("|")})`)
+          const key = attrVal[0].split(":")[0]
+          val = key + variantsStrs.join("")
         } else {
           val = attrVal[0]
         }
 
-        const isEmptySet = type === 'set' && (val === '|' || val === '')
+        const isEmptySet = type === "set" && (val === "|" || val === "")
         return isEmptySet ? `ambiguity(${attrKey}) = 0` : `${attrKey} ${op} "${val}"`
       })
 
-      return `[${cqpAnd.join(' & ')}]`
+      return `[${cqpAnd.join(" & ")}]`
     })
 
-    return `<match> ${cqps.join(' ')} []{0,} </match>`
+    return `<match> ${cqps.join(" ")} []{0,} </match>`
   }
 }

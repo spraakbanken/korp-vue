@@ -1,5 +1,5 @@
-import type { Labeled, LangString } from '@/core/model/locale'
-import type { Attribute } from './corpusConfigRaw.types'
+import type { Labeled, LangString } from "@/core/model/locale"
+import type { Attribute } from "./corpusConfigRaw.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
 export type InstanceConfig = {
@@ -57,8 +57,8 @@ export type InstanceConfig = {
     production?: { url?: string; site?: number }
   }
   news_url?: string
-  reduce_word_attribute_selector: 'union' | 'intersection'
-  reduce_struct_attribute_selector: 'union' | 'intersection'
+  reduce_word_attribute_selector: "union" | "intersection"
+  reduce_struct_attribute_selector: "union" | "intersection"
   statistics?: boolean
   statistics_case_insensitive_default?: boolean
   statistics_limit?: number
@@ -79,7 +79,7 @@ export type SearchExample = {
   params: object
 }
 
-export type WordPictureDef = (WordPictureDefItem | '_')[]
+export type WordPictureDef = (WordPictureDefItem | "_")[]
 export type WordPictureDefItem = {
   rel: string
   alt_label?: string

@@ -1,8 +1,8 @@
-import { assignWith, memoize, omit, pickBy, range } from 'lodash'
-import type { Histogram } from './types'
-import { korpRequest } from './common'
-import settings from '@/core/config'
-import { corpusListing } from '../corpora/corpusListing'
+import { assignWith, memoize, omit, pickBy, range } from "lodash"
+import type { Histogram } from "./types"
+import { korpRequest } from "./common"
+import settings from "@/core/config"
+import { corpusListing } from "../corpora/corpusListing"
 
 /**
  * Time data, if available.
@@ -19,10 +19,10 @@ export const getTimeData: () => Promise<[[number, number][], number] | undefined
     const corpus = corpusListing.stringifyAll()
     if (!corpus) return undefined
 
-    const data = await korpRequest('timespan', { granularity: 'y', corpus })
+    const data = await korpRequest("timespan", { granularity: "y", corpus })
 
-    const rest = data.combined[''] || 0
-    delete data.combined['']
+    const rest = data.combined[""] || 0
+    delete data.combined[""]
 
     expandTimeStruct(data.combined)
 
@@ -44,7 +44,7 @@ export const getTimeData: () => Promise<[[number, number][], number] | undefined
 /** Add each missing year with the previous year's value */
 function expandTimeStruct(struct: Histogram): void {
   const years = Object.keys(struct)
-    .filter((key) => key !== '')
+    .filter((key) => key !== "")
     .map(Number)
   if (!years.length) return
 
@@ -52,7 +52,7 @@ function expandTimeStruct(struct: Histogram): void {
   const maxYear = Math.max(...years)
 
   if (Number.isNaN(maxYear) || Number.isNaN(minYear)) {
-    console.log('expandTimestruct broken, years:', years)
+    console.log("expandTimestruct broken, years:", years)
     return
   }
 
@@ -68,8 +68,8 @@ function addToCorpora(dataByCorpus: Record<string, Histogram>) {
   for (const [id, struct] of Object.entries(dataByCorpus)) {
     const corpus = settings.corpora[id.toLowerCase()]
     expandTimeStruct(struct)
-    corpus.non_time = struct['']
-    corpus.time = omit(struct, '')
+    corpus.non_time = struct[""]
+    corpus.time = omit(struct, "")
     // Enable the special date interval search attribute for corpora that have some timestamped data
     if (Object.keys(corpus.time).length > 1) {
       corpus.common_attributes ??= {}
@@ -94,7 +94,7 @@ export const getSeries = () => Object.fromEntries(getTimeDataPairs()) as YearSer
 export function getSeriesSelected() {
   // `pickBy` removes zeroes.
   const series = corpusListing.selected.map((corpus) =>
-    'time' in corpus ? pickBy(corpus.time) : {},
+    "time" in corpus ? pickBy(corpus.time) : {},
   )
   // Sum the counts by year for each corpora
   return assignWith<YearSeries>(

@@ -1,4 +1,4 @@
-import type { LangString } from '@/core/model/locale'
+import type { LangString } from "@/core/model/locale"
 
 /** Current UI language. */
 export let _lang: string
@@ -13,8 +13,8 @@ export const setLang = (langNew: string) => (_lang = langNew)
  */
 export function locObj(map?: LangString, lang?: string): string {
   lang ||= _lang
-  if (!map) return ''
-  if (typeof map == 'string') return map
+  if (!map) return ""
+  if (typeof map == "string") return map
   // fall back to the first value if neither the selected or default language are available
   return map[lang] ?? Object.values(map)[0]
 }

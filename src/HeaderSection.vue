@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import settings from '@/core/config'
-import { useAppStore } from './store/useAppStore'
-import { storeToRefs } from 'pinia'
-import { useAuth } from './auth/useAuth'
-import { useLocale } from './i18n/useLocale'
+import settings from "@/core/config"
+import { useAppStore } from "./store/useAppStore"
+import { storeToRefs } from "pinia"
+import { useAuth } from "./auth/useAuth"
+import { useLocale } from "./i18n/useLocale"
 
 const { locObj } = useLocale()
 const store = useAppStore()
@@ -15,7 +15,7 @@ const { lang } = storeToRefs(store)
 <template>
   <header>
     <div>
-      {{ $t('modes') }}:
+      {{ $t("modes") }}:
       <span v-for="{ label, mode } of settings.modes" :key="mode">
         <a :href="`?mode=${mode}`">{{ locObj(label) }}</a>
         &nbsp;
@@ -23,7 +23,7 @@ const { lang } = storeToRefs(store)
     </div>
 
     <div>
-      {{ $t('language') }}:
+      {{ $t("language") }}:
       <label v-for="l in settings.languages" :key="l.value">
         <input type="radio" v-model="lang" :value="l.value" />
         {{ locObj(l.label) }}

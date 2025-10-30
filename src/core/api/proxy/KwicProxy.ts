@@ -1,8 +1,8 @@
-import { corpusListing } from '@/corpora/corpus_listing'
-import { Factory } from '@/util'
-import { QueryParams, QueryResponse } from '../types/query'
-import { StoreService } from '@/services/store'
-import { QueryProxyBase } from './QueryProxyBase'
+import { corpusListing } from "@/corpora/corpus_listing"
+import { Factory } from "@/util"
+import { QueryParams, QueryResponse } from "../types/query"
+import { StoreService } from "@/services/store"
+import { QueryProxyBase } from "./QueryProxyBase"
 
 export class KwicProxy extends QueryProxyBase {
   constructor(protected readonly store: StoreService) {

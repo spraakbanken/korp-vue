@@ -1,10 +1,10 @@
-import { locObj } from '@/core/i18n'
-import { sum } from 'lodash'
-import type { Corpus } from '@/core/config/corpusConfig.types'
-import type { LangString } from '@/core/model/locale'
-import type { Folder } from '@/core/config/corpusConfigRaw.types'
-import settings from '@/core/config'
-import { splitFirst } from '@/core/util'
+import { locObj } from "@/core/i18n"
+import { sum } from "lodash"
+import type { Corpus } from "@/core/config/corpusConfig.types"
+import type { LangString } from "@/core/model/locale"
+import type { Folder } from "@/core/config/corpusConfigRaw.types"
+import settings from "@/core/config"
+import { splitFirst } from "@/core/util"
 
 export type ChooserFolder = {
   corpora: Corpus[]
@@ -19,7 +19,7 @@ export type ChooserFolderSub = ChooserFolder & {
   id: string
   title: LangString
   description?: LangString
-  selected: 'none' | 'some' | 'all'
+  selected: "none" | "some" | "all"
   extended?: boolean
 }
 
@@ -27,16 +27,16 @@ export type ChooserFolderRoot = ChooserFolder & {
   isRoot: true
 }
 
-const isRoot = (folder: ChooserFolder): folder is ChooserFolderRoot => 'isRoot' in folder
+const isRoot = (folder: ChooserFolder): folder is ChooserFolderRoot => "isRoot" in folder
 const isSub = (folder: ChooserFolder): folder is ChooserFolderSub => !isRoot(folder)
 export const isFolder = (object: ChooserFolder | Corpus): object is ChooserFolderSub =>
-  'numberOfChildren' in object
+  "numberOfChildren" in object
 
 export const initCorpusStructure = (collection: Record<string, Corpus>): ChooserFolderRoot => {
   for (const corpus of Object.values(collection)) {
-    const tokens = parseInt(corpus.info.Size || '0')
+    const tokens = parseInt(corpus.info.Size || "0")
     corpus.tokens = tokens
-    corpus.sentences = parseInt(corpus.info.Sentences || '0')
+    corpus.sentences = parseInt(corpus.info.Sentences || "0")
   }
 
   /* recursive function to set the structure and compute
@@ -91,7 +91,7 @@ export const initCorpusStructure = (collection: Record<string, Corpus>): Chooser
     }
   }
 
-  const { folders, ids, tokens, sentences } = initFolders(settings['folders'])
+  const { folders, ids, tokens, sentences } = initFolders(settings["folders"])
   const topLevelCorpora = Object.values(collection).filter((corpus) => !ids.includes(corpus.id))
   const topLevelTokens = sum(topLevelCorpora.map((corpus) => corpus.tokens || 0))
   const topLevelSentences = sum(topLevelCorpora.map((corpus) => corpus.sentences || 0))
@@ -139,10 +139,10 @@ export const getAllCorporaInFolders = (
   let outCorpora: string[] = []
 
   // Go down the alley to the last subfolder
-  while (folderOrCorpus.includes('.')) {
-    const [leftPart, rightPart] = splitFirst('.', folderOrCorpus)
+  while (folderOrCorpus.includes(".")) {
+    const [leftPart, rightPart] = splitFirst(".", folderOrCorpus)
     if (lastLevel[leftPart]) {
-      lastLevel = lastLevel[leftPart]['subfolders']!
+      lastLevel = lastLevel[leftPart]["subfolders"]!
       folderOrCorpus = rightPart
     } else {
       break
@@ -151,15 +151,15 @@ export const getAllCorporaInFolders = (
   if (lastLevel[folderOrCorpus]) {
     // Folder
     // Continue to go through any subfolders
-    for (const subfolder in lastLevel[folderOrCorpus]['subfolders']) {
+    for (const subfolder in lastLevel[folderOrCorpus]["subfolders"]) {
       outCorpora = outCorpora.concat(
-        getAllCorporaInFolders(lastLevel[folderOrCorpus]['subfolders']!, subfolder),
+        getAllCorporaInFolders(lastLevel[folderOrCorpus]["subfolders"]!, subfolder),
       )
     }
 
     // And add the corpora in this folder level
     if (lastLevel[folderOrCorpus].corpora) {
-      outCorpora = outCorpora.concat(lastLevel[folderOrCorpus]['corpora']!)
+      outCorpora = outCorpora.concat(lastLevel[folderOrCorpus]["corpora"]!)
     }
   } else {
     // Corpus
@@ -187,7 +187,7 @@ export const updateLimitedAccess = (node: ChooserFolder, credentials: string[] =
   }
   for (const corpus of node.corpora) {
     corpus.userHasAccess =
-      !corpus['limited_access'] || credentials.includes(corpus.id.toUpperCase())
+      !corpus["limited_access"] || credentials.includes(corpus.id.toUpperCase())
     if (corpus.userHasAccess) {
       limitedAccess = false
     }
@@ -208,7 +208,7 @@ export const filterCorporaOnCredentials = (
   for (const corpus of Object.values(settings.corpora)) {
     const shouldSelect =
       corporaIds.includes(corpus.id) &&
-      (!corpus['limited_access'] || credentials.includes(corpus.id.toUpperCase()))
+      (!corpus["limited_access"] || credentials.includes(corpus.id.toUpperCase()))
     corpus.selected = shouldSelect
     if (shouldSelect) selection.push(corpus.id)
   }
@@ -221,25 +221,25 @@ export const recalcFolderStatus = (folder: ChooserFolder): void => {
 }
 
 function getFolderSelectStatus(
-  folder: Pick<ChooserFolderSub, 'subFolders' | 'corpora'>,
-): 'none' | 'some' | 'all' {
-  let selected: 'none' | 'some' | 'all' = 'none'
+  folder: Pick<ChooserFolderSub, "subFolders" | "corpora">,
+): "none" | "some" | "all" {
+  let selected: "none" | "some" | "all" = "none"
   let nothingFound = false
   for (const subFolder of folder.subFolders) {
-    if (subFolder.selected == 'some') {
-      selected = 'some'
+    if (subFolder.selected == "some") {
+      selected = "some"
       nothingFound = true
       break
-    } else if (subFolder.selected == 'none') {
+    } else if (subFolder.selected == "none") {
       nothingFound = true
     } else {
-      selected = 'some'
+      selected = "some"
     }
   }
 
   for (const corpus of folder.corpora) {
     if (corpus.selected) {
-      selected = 'some'
+      selected = "some"
     } else {
       nothingFound = true
     }
@@ -247,7 +247,7 @@ function getFolderSelectStatus(
 
   // if all folders or corpora were selected, upgrade to "all"
   if (!nothingFound) {
-    selected = selected == 'some' ? 'all' : selected
+    selected = selected == "some" ? "all" : selected
   }
 
   return selected
@@ -259,8 +259,8 @@ export function getSizeInfo(corpus: Corpus): CorpusSizeInfo[] {
     { lang: corpus.lang, tokens: corpus.tokens!, sentences: corpus.sentences! },
   ]
   // For parallel corpora, include linked language
-  if (corpus['linked_to']) {
-    for (const linkedCorpusId of corpus['linked_to']) {
+  if (corpus["linked_to"]) {
+    for (const linkedCorpusId of corpus["linked_to"]) {
       const linkedCorpus = settings.corpora[linkedCorpusId]
       infos.push({
         lang: linkedCorpus.lang!,
@@ -280,16 +280,16 @@ export type CorpusSizeInfo = {
 
 /** Create data for corpus link. */
 export function makeLink(corpusId: string): CorpusLinkInfo | undefined {
-  if (!settings['corpus_info_link']) return
-  const urlTemplate = locObj(settings['corpus_info_link']['url_template'])
-  const label = locObj(settings['corpus_info_link']['label'])
+  if (!settings["corpus_info_link"]) return
+  const urlTemplate = locObj(settings["corpus_info_link"]["url_template"])
+  const label = locObj(settings["corpus_info_link"]["label"])
   if (!urlTemplate || !label) {
-    console.error(`Invalid setting "corpus_info_link"`, settings['corpus_info_link'])
+    console.error(`Invalid setting "corpus_info_link"`, settings["corpus_info_link"])
     return
   }
   // Parallel corpora have an id like "<main_id>-<lang>"
-  const id = settings['parallel'] ? corpusId.split('-')[0] : corpusId
-  const url = urlTemplate.replace('%s', id)
+  const id = settings["parallel"] ? corpusId.split("-")[0] : corpusId
+  const url = urlTemplate.replace("%s", id)
   return { url, label }
 }
 

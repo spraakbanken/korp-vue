@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import HeaderSection from '@/HeaderSection.vue'
-import MainSection from '@/MainSection.vue'
-import SearchSection from '@/SearchSection.vue'
-import { useExpose } from '@/useExpose'
-import { setCorpusListing } from './core/corpora/corpusListing'
-import { CorpusSet } from './core/corpora/CorpusSet'
-import settings from './core/config'
-import { useAuth } from './auth/useAuth'
-import { ref } from 'vue'
-import { getInstanceConfig } from './core/config/instanceConfig'
-import { loadCorpusConfig } from './core/config/corpusConfig'
-import { setLang } from './core/i18n'
+import HeaderSection from "@/HeaderSection.vue"
+import MainSection from "@/MainSection.vue"
+import SearchSection from "@/SearchSection.vue"
+import { useExpose } from "@/useExpose"
+import { setCorpusListing } from "./core/corpora/corpusListing"
+import { CorpusSet } from "./core/corpora/CorpusSet"
+import settings from "./core/config"
+import { useAuth } from "./auth/useAuth"
+import { ref } from "vue"
+import { getInstanceConfig } from "./core/config/instanceConfig"
+import { loadCorpusConfig } from "./core/config/corpusConfig"
+import { setLang } from "./core/i18n"
 
 const auth = useAuth()
 useExpose()

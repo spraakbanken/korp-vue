@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { watchImmediate } from '@vueuse/core'
-import { corpusListing, corpusSelection } from '@/core/corpora/corpusListing'
-import { useAppStore } from '@/store/useAppStore'
-import CorpusSelectionDialog from './CorpusSelectionDialog.vue'
-import { useLocale } from '@/i18n/useLocale'
+import { watchImmediate } from "@vueuse/core"
+import { corpusListing, corpusSelection } from "@/core/corpora/corpusListing"
+import { useAppStore } from "@/store/useAppStore"
+import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
+import { useLocale } from "@/i18n/useLocale"
 
 const store = useAppStore()
 const { locObj } = useLocale()
@@ -23,7 +23,7 @@ function resolveValidation(ids: string[]) {
 <template>
   <CorpusSelectionDialog @resolve="resolveValidation" />
 
-  {{ $t('corpora') }}:
+  {{ $t("corpora") }}:
   <select multiple v-model="store.corpus" size="8">
     <option v-for="corpus of corpusListing.corpora" :key="corpus.id" :value="corpus.id">
       {{ locObj(corpus.title) }}

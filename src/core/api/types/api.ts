@@ -1,14 +1,14 @@
-import type { AttrValuesParams, AttrValuesResponseDeep, AttrValuesResponseFlat } from './attrValues'
-import type { CorpusConfigParams, CorpusConfigResponse } from './corpusConfig'
-import type { CorpusInfoParams, CorpusInfoResponse } from './corpusInfo'
-import type { CountParams, CountResponse } from './count'
-import type { CountTimeParams, CountTimeResponse } from './countTime'
-import type { LemgramCountParams, LemgramCountResponse } from './lemgramCount'
-import type { LoglikeParams, LoglikeResponse } from './loglike'
-import type { QueryParams, QueryResponse } from './query'
-import type { RelationsParams, RelationsResponse } from './relations'
-import type { RelationsSentencesParams, RelationsSentencesResponse } from './relations-sentences'
-import type { TimespanParams, TimespanResponse } from './timespan'
+import type { AttrValuesParams, AttrValuesResponseDeep, AttrValuesResponseFlat } from "./attrValues"
+import type { CorpusConfigParams, CorpusConfigResponse } from "./corpusConfig"
+import type { CorpusInfoParams, CorpusInfoResponse } from "./corpusInfo"
+import type { CountParams, CountResponse } from "./count"
+import type { CountTimeParams, CountTimeResponse } from "./countTime"
+import type { LemgramCountParams, LemgramCountResponse } from "./lemgramCount"
+import type { LoglikeParams, LoglikeResponse } from "./loglike"
+import type { QueryParams, QueryResponse } from "./query"
+import type { RelationsParams, RelationsResponse } from "./relations"
+import type { RelationsSentencesParams, RelationsSentencesResponse } from "./relations-sentences"
+import type { TimespanParams, TimespanResponse } from "./timespan"
 
 /** Maps a Korp backend endpoint name to the expected parameters and response */
 export type API = {

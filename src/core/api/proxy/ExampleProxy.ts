@@ -1,5 +1,5 @@
-import type { QueryParams, QueryResponse } from '../types/query'
-import { QueryProxyBase } from './QueryProxyBase'
+import type { QueryParams, QueryResponse } from "../types/query"
+import { QueryProxyBase } from "./QueryProxyBase"
 
 export class ExampleProxy extends QueryProxyBase {
   constructor(

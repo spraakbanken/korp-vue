@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useAuth } from '../useAuth'
-import { attemptLogin } from '.'
-import ModalDialog, { type Dialog } from '@/components/ModalDialog.vue'
+import { ref } from "vue"
+import { useAuth } from "../useAuth"
+import { attemptLogin } from "."
+import ModalDialog, { type Dialog } from "@/components/ModalDialog.vue"
 
 const auth = useAuth()
 
 const dialog = ref<Dialog>()
-const name = ref('')
-const password = ref('')
+const name = ref("")
+const password = ref("")
 const saveLogin = ref(false)
 const loading = ref(false)
-const errorMessage = ref('')
+const errorMessage = ref("")
 
 async function send() {
   loading.value = true
@@ -26,7 +26,7 @@ async function send() {
 }
 
 function onClose() {
-  errorMessage.value = ''
+  errorMessage.value = ""
 }
 
 attemptLogin.onStart(async () => void (await dialog.value?.reveal()))

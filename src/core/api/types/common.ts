@@ -38,14 +38,14 @@ export type AbsRelTuple = { absolute: number; relative: number }
 export type NumericString = `${number}`
 
 /** Specifies how precise dates should be handled. */
-export type Granularity = 'y' | 'm' | 'd' | 'h' | 'n' | 's'
+export type Granularity = "y" | "m" | "d" | "h" | "n" | "s"
 
 /** Frequencies by time period (of some granularity). */
 export type Histogram = {
   /** Frequency by time period. The date string matches something like `YYYY` or `YYYYMMDDhhmmss`, usually depending on a `granularity` parameter. */
   [date: NumericString]: number
   /** Frequency of items at unknown time */
-  ''?: number
+  ""?: number
 }
 
 /** Search hit */

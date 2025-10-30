@@ -1,9 +1,9 @@
-import type { AuthModule } from '@/auth/auth.types'
-import AuthStatusBasic from './AuthBasicStatus.vue'
-import { PromiseStarter, toBase64 } from '@/core/util'
-import settings from '@/core/config'
-import { ref } from 'vue'
-import { StorageSerializers, useLocalStorage } from '@vueuse/core'
+import type { AuthModule } from "@/auth/auth.types"
+import AuthStatusBasic from "./AuthBasicStatus.vue"
+import { PromiseStarter, toBase64 } from "@/core/util"
+import settings from "@/core/config"
+import { ref } from "vue"
+import { StorageSerializers, useLocalStorage } from "@vueuse/core"
 
 export type Creds = {
   /** Username */
@@ -18,7 +18,7 @@ export type Creds = {
 export const creds = ref<Creds>()
 
 /** Persistent storage of user data, enabled by user */
-export const storage = useLocalStorage<Creds | undefined>('korp.auth.basic', undefined, {
+export const storage = useLocalStorage<Creds | undefined>("korp.auth.basic", undefined, {
   serializer: StorageSerializers.object,
 })
 
@@ -26,14 +26,14 @@ export const attemptLogin = new PromiseStarter()
 
 export async function login(...args: unknown[]): Promise<void> {
   const [name, pass, saveLogin] = args as [string, string, boolean]
-  if (name == null || pass == null) throw new Error('Missing name and password')
-  const token = toBase64(name + ':' + pass)
+  if (name == null || pass == null) throw new Error("Missing name and password")
+  const token = toBase64(name + ":" + pass)
   const url = `${settings.korp_backend_url}/authenticate`
   const headers = { Authorization: `Basic ${token}` }
   const response = await fetch(url, { headers })
   const data = await response.json()
 
-  if (!data.corpora) throw new Error('No corpora in auth response')
+  if (!data.corpora) throw new Error("No corpora in auth response")
 
   creds.value = { name, credentials: data.corpora, auth: token }
   if (saveLogin) storage.value = creds.value
