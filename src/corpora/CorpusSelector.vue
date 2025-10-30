@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
 import { watchImmediate } from '@vueuse/core'
 import { corpusListing, corpusSelection } from '@/core/corpora/corpusListing'
 import { useAppStore } from '@/store/useAppStore'
-import { locObj } from '@/i18n'
 import CorpusSelectionDialog from './CorpusSelectionDialog.vue'
+import { useLocale } from '@/i18n/useLocale'
 
 const store = useAppStore()
-const { locale } = useI18n()
+const { locObj } = useLocale()
 
 /** Runs after corpus selection has been checked for access etc. */
 function resolveValidation(ids: string[]) {
@@ -27,7 +26,7 @@ function resolveValidation(ids: string[]) {
   {{ $t('corpora') }}:
   <select multiple v-model="store.corpus" size="8">
     <option v-for="corpus of corpusListing.corpora" :key="corpus.id" :value="corpus.id">
-      {{ locObj(corpus.title, locale) }}
+      {{ locObj(corpus.title) }}
     </option>
   </select>
 

@@ -15,7 +15,7 @@ import {
 } from 'lodash'
 import moment, { type Moment } from 'moment'
 import settings, { normalizeDataset } from '@/core/config'
-import { locObj } from '@/i18n'
+import { locObj } from '@/core/i18n'
 import type { Attribute } from '@/core/config/corpusConfigRaw.types'
 import type { Corpus } from '@/core/config/corpusConfig.types'
 import { objectIntersection, objectUnion } from '@/core/util'

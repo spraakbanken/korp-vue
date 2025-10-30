@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n'
 import settings from '@/core/config'
-import { locObj } from '@/i18n'
 import { useAppStore } from './store/useAppStore'
 import { storeToRefs } from 'pinia'
 import { useAuth } from './auth/useAuth'
+import { useLocale } from './i18n/useLocale'
 
-const { locale } = useI18n()
+const { locObj } = useLocale()
 const store = useAppStore()
 const auth = useAuth()
 
@@ -18,7 +17,7 @@ const { lang } = storeToRefs(store)
     <div>
       {{ $t('modes') }}:
       <span v-for="{ label, mode } of settings.modes" :key="mode">
-        <a :href="`?mode=${mode}`">{{ locObj(label, locale) }}</a>
+        <a :href="`?mode=${mode}`">{{ locObj(label) }}</a>
         &nbsp;
       </span>
     </div>
@@ -27,7 +26,7 @@ const { lang } = storeToRefs(store)
       {{ $t('language') }}:
       <label v-for="l in settings.languages" :key="l.value">
         <input type="radio" v-model="lang" :value="l.value" />
-        {{ locObj(l.label, lang) }}
+        {{ locObj(l.label) }}
       </label>
     </div>
 

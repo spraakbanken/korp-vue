@@ -10,6 +10,7 @@ import { useAuth } from './auth/useAuth'
 import { ref } from 'vue'
 import { getInstanceConfig } from './core/config/instanceConfig'
 import { loadCorpusConfig } from './core/config/corpusConfig'
+import { setLang } from './core/i18n'
 
 const auth = useAuth()
 useExpose()
@@ -19,6 +20,7 @@ const initDone = ref(false)
 async function init() {
   // Load instance settings (typically config.yml)
   const instanceConfig = getInstanceConfig()
+  setLang(settings.default_language)
 
   // Initialize authentication
   await auth.init(instanceConfig)
