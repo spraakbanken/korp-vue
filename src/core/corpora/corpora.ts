@@ -1,4 +1,4 @@
-import { locObj } from '@/i18n'
+import { locObj } from '@/core/i18n'
 import { sum } from 'lodash'
 import type { Corpus } from '@/core/config/corpusConfig.types'
 import type { LangString } from '@/core/model/locale'
@@ -279,10 +279,10 @@ export type CorpusSizeInfo = {
 }
 
 /** Create data for corpus link. */
-export function makeLink(corpusId: string, lang?: string): CorpusLinkInfo | undefined {
+export function makeLink(corpusId: string): CorpusLinkInfo | undefined {
   if (!settings['corpus_info_link']) return
-  const urlTemplate = locObj(settings['corpus_info_link']['url_template'], lang)
-  const label = locObj(settings['corpus_info_link']['label'], lang)
+  const urlTemplate = locObj(settings['corpus_info_link']['url_template'])
+  const label = locObj(settings['corpus_info_link']['label'])
   if (!urlTemplate || !label) {
     console.error(`Invalid setting "corpus_info_link"`, settings['corpus_info_link'])
     return

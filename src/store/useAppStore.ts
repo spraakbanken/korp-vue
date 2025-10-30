@@ -1,9 +1,10 @@
 import { syncRef, useUrlSearchParams } from '@vueuse/core'
 import type { HashParams } from '@/core/url'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 import settings from '@/core/config'
 import { useI18n } from 'vue-i18n'
+import { setLang } from '@/core/i18n'
 
 export const useAppStore = defineStore('app', () => {
   const url = useUrlSearchParams<HashParams>('hash-params', {
@@ -24,6 +25,9 @@ export const useAppStore = defineStore('app', () => {
 
   // Keep the lang param in sync with the i18n lib
   syncRef(locale, lang)
+
+  // Sync to the non-reactive lang global
+  watch(lang, (langNew) => setLang(langNew))
 
   return {
     corpus,
