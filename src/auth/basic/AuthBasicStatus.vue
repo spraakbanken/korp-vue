@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useAuth } from "../useAuth"
-import { attemptLogin } from "."
+import { attemptLogin } from "./common"
 import ModalDialog, { type Dialog } from "@/components/ModalDialog.vue"
 
 const auth = useAuth()

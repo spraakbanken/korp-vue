@@ -4,7 +4,7 @@
  *   the user back to Korp. After that the JWT call is expected to return a JWT.
  */
 
-import type { AuthModule } from "../auth.types"
+import type { VueAuthModule } from "../auth.types"
 import AuthFedStatus from "./AuthFedStatus.vue"
 
 type Options = {
@@ -40,7 +40,7 @@ const login = async () => {
   window.location.href = `${options.login_service}?redirect=${window.location.href}`
 }
 
-const authFederated: AuthModule = {
+const authFederated: VueAuthModule = {
   init: async (settings) => {
     if (typeof settings.auth_module != "object")
       throw new Error("federated_auth requires options (jwt_url, login_service, logout_service)")

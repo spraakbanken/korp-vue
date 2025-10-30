@@ -1,7 +1,8 @@
+import type { AuthModule } from "@/core/auth"
 import type { InstanceConfig } from "@/core/config/instanceConfig.types"
 import type { Component } from "vue"
 
-export type AuthModule = {
+export type VueAuthModule = AuthModule & {
   /** Check if logged in before app is initialized */
   init: (settings: InstanceConfig) => boolean | Promise<boolean>
 
@@ -16,17 +17,4 @@ export type AuthModule = {
 
   /** Trigger interactive authentication workflow */
   attemptLogin: () => Promise<void>
-
-  /** Get headers to include in API requests */
-  getAuthorizationHeader: () => Record<string, string>
-
-  /** Check if user has access to a given corpus */
-  hasCredential: (corpusId: string) => boolean
-
-  /** Get corpus ids the user has access to */
-  getCredentials: () => string[]
-
-  getUsername: () => string
-
-  isLoggedIn: () => boolean
 }

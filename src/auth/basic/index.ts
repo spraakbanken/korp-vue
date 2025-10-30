@@ -1,9 +1,10 @@
-import type { AuthModule } from "@/auth/auth.types"
+import type { VueAuthModule } from "@/auth/auth.types"
 import AuthStatusBasic from "./AuthBasicStatus.vue"
-import { PromiseStarter, toBase64 } from "@/core/util"
+import { toBase64 } from "@/core/util"
 import settings from "@/core/config"
 import { ref } from "vue"
 import { StorageSerializers, useLocalStorage } from "@vueuse/core"
+import { attemptLogin } from "./common"
 
 export type Creds = {
   /** Username */
@@ -22,8 +23,6 @@ export const storage = useLocalStorage<Creds | undefined>("korp.auth.basic", und
   serializer: StorageSerializers.object,
 })
 
-export const attemptLogin = new PromiseStarter()
-
 export async function login(...args: unknown[]): Promise<void> {
   const [name, pass, saveLogin] = args as [string, string, boolean]
   if (name == null || pass == null) throw new Error("Missing name and password")
@@ -39,7 +38,7 @@ export async function login(...args: unknown[]): Promise<void> {
   if (saveLogin) storage.value = creds.value
 }
 
-const authBasic: AuthModule = {
+const authBasic: VueAuthModule = {
   init: () => {
     creds.value = storage.value
     return !!creds.value
