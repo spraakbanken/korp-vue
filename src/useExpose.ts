@@ -1,7 +1,7 @@
-import { watchEffect } from 'vue'
-import { useAppStore } from '@/store/useAppStore'
+import { watchEffect } from "vue"
+import { useAppStore } from "@/store/useAppStore"
 
-export let locale: string = ''
+export let locale: string = ""
 
 /**
  * Expose some state as global variables for use outside Vue.

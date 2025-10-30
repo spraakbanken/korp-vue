@@ -1,18 +1,18 @@
-import settings from '@/settings'
-import ProxyBase from './ProxyBase'
-import { unregescape } from '@/util'
-import { ApiRelation, RelationsParams, RelationsSort } from '../types/relations'
-import { WordPictureDefItem } from '@/settings/app-settings.types'
-import { invert, isEqual } from 'lodash'
-import { Lemgram } from '@/lemgram'
-import { parse } from '@/cqp_parser/cqp'
-import { CqpQuery } from '@/cqp_parser/cqp.types'
-import { corpusListing } from '@/corpora/corpus_listing'
+import settings from "@/settings"
+import ProxyBase from "./ProxyBase"
+import { unregescape } from "@/util"
+import { ApiRelation, RelationsParams, RelationsSort } from "../types/relations"
+import { WordPictureDefItem } from "@/settings/app-settings.types"
+import { invert, isEqual } from "lodash"
+import { Lemgram } from "@/lemgram"
+import { parse } from "@/cqp_parser/cqp"
+import { CqpQuery } from "@/cqp_parser/cqp.types"
+import { corpusListing } from "@/corpora/corpus_listing"
 
 /** A relation item modified for showing. */
 export type ShowableApiRelation = ApiRelation & {
   /** Direction of relation */
-  show_rel: 'head' | 'dep'
+  show_rel: "head" | "dep"
 }
 
 export type TableData = {
@@ -33,32 +33,32 @@ export type RelationsQuery = {
   word: string
 }
 
-type WordType = 'word' | 'lemgram'
+type WordType = "word" | "lemgram"
 
-export class RelationsProxy extends ProxyBase<'relations'> {
-  protected readonly endpoint = 'relations'
-  readonly config = settings['word_picture_conf'] || {}
+export class RelationsProxy extends ProxyBase<"relations"> {
+  protected readonly endpoint = "relations"
+  readonly config = settings["word_picture_conf"] || {}
   /** Mapping from pos tag to identifiers used in word_picture_conf */
-  readonly tagset = invert(settings['word_picture_tagset'] || {})
+  readonly tagset = invert(settings["word_picture_tagset"] || {})
 
   /** Parse a Check if a query can be used for word picture. */
   static parseCqp(cqp: string): RelationsQuery {
     const tokens = parse<CqpQuery>(cqp)
 
-    if (tokens.length != 1) throw new RelationsParseError('Must be single token')
+    if (tokens.length != 1) throw new RelationsParseError("Must be single token")
     const conditions = tokens[0].and_block
     if (conditions?.length != 1 || conditions[0].length != 1)
-      throw new RelationsParseError('Must have a single condition')
+      throw new RelationsParseError("Must have a single condition")
     const condition = conditions[0][0]
 
-    const isWord = condition.type == 'word' && condition.op == '='
-    const isLemgram = condition.type == 'lex' && condition.op == 'contains'
+    const isWord = condition.type == "word" && condition.op == "="
+    const isLemgram = condition.type == "lex" && condition.op == "contains"
     if (!isWord && !isLemgram) throw new RelationsParseError(`Attribute/operator not allowed`)
 
-    if (!condition.val) throw new RelationsParseError('Condition value must not be empty')
+    if (!condition.val) throw new RelationsParseError("Condition value must not be empty")
 
     return {
-      type: isWord ? 'word' : 'lemgram',
+      type: isWord ? "word" : "lemgram",
       word: condition.val as string,
     }
   }
@@ -75,29 +75,29 @@ export class RelationsProxy extends ProxyBase<'relations'> {
   }
 
   async makeRequest(type: WordType, word: string, sort: RelationsSort): Promise<TableDrawData[]> {
-    if (type == 'lemgram') word = unregescape(word)
+    if (type == "lemgram") word = unregescape(word)
     const params = this.buildParams(type, word, sort)
     const data = await this.send(params)
-    if (!data.relations) throw new RelationsEmptyError('No relation data in response')
+    if (!data.relations) throw new RelationsEmptyError("No relation data in response")
     return this.drawTables(type, word, data.relations)
   }
 
   protected drawTables(type: WordType, query: string, data: ApiRelation[]): TableDrawData[] {
     const headings =
-      type == 'lemgram' ? this.getLemgramHeadings(query, data) : this.getWordHeadings(query, data)
+      type == "lemgram" ? this.getLemgramHeadings(query, data) : this.getWordHeadings(query, data)
 
     /** Find a given relation in the wordpic config structure. */
     const inArray = function (
       rel: WordPictureDefItem,
-      orderList: (WordPictureDefItem | '_')[],
-    ): { i: number; type: 'head' | 'dep' } {
+      orderList: (WordPictureDefItem | "_")[],
+    ): { i: number; type: "head" | "dep" } {
       const i = orderList.findIndex(
         (item) =>
-          item != '_' &&
+          item != "_" &&
           (item.field_reverse || false) === (rel.field_reverse || false) &&
           item.rel === rel.rel,
       )
-      const type = rel.field_reverse ? 'head' : 'dep'
+      const type = rel.field_reverse ? "head" : "dep"
       return { i, type }
     }
 
@@ -144,7 +144,7 @@ export class RelationsProxy extends ProxyBase<'relations'> {
         sectionsWithSearchWord[i] = section
 
         if (this.config[wordClass][i] && section.length) {
-          const toIndex = this.config[wordClass][i].indexOf('_')
+          const toIndex = this.config[wordClass][i].indexOf("_")
           sectionsWithSearchWord[i][toIndex] = {
             word: Lemgram.parse(token)?.toString() || token,
           }
@@ -188,8 +188,8 @@ export class RelationsProxy extends ProxyBase<'relations'> {
     }
 
     for (const item of data) {
-      if (item.head.split('_')[0] === query) add(item.head, item.headpos.toLowerCase())
-      else if (item.dep.split('_')[0] === query) add(item.dep, item.deppos.toLowerCase())
+      if (item.head.split("_")[0] === query) add(item.head, item.headpos.toLowerCase())
+      else if (item.dep.split("_")[0] === query) add(item.dep, item.deppos.toLowerCase())
     }
 
     return pairs

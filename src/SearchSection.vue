@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CorpusSelector from './corpora/CorpusSelector.vue'
+import CorpusSelector from "./corpora/CorpusSelector.vue"
 </script>
 
 <template>

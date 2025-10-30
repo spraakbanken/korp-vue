@@ -1,8 +1,8 @@
-import type { CountParams, StatsRow } from '../types/count'
-import { korpRequest } from '../common'
-import { compact } from 'lodash'
-import { TaskBase } from './TaskBase'
-import { corpusListing } from '@/core/corpora/corpusListing'
+import type { CountParams, StatsRow } from "../types/count"
+import { korpRequest } from "../common"
+import { compact } from "lodash"
+import { TaskBase } from "./TaskBase"
+import { corpusListing } from "@/core/corpora/corpusListing"
 
 export type MapAttribute = { label: string; corpora: string[] }
 
@@ -33,7 +33,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     const params: CountParams = {
       group_by_struct: this.label,
       cqp: this.cqp,
-      corpus: this.corpora.join(','),
+      corpus: this.corpora.join(","),
       incremental: true,
       split: this.label,
       relative_to_struct: this.relative ? this.label : undefined,
@@ -43,7 +43,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
 
     Object.keys(this.cqpExprs).forEach((cqp, i) => (params[`subcqp${i}`] = cqp))
 
-    const data = await korpRequest('count', params)
+    const data = await korpRequest("count", params)
 
     // Normalize data to the split format.
     const combined = Array.isArray(data.combined) ? data.combined : [data.combined]
@@ -52,7 +52,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
 
     this.data = combined.map((res) => ({
       // The totals row has no `cqp` property.
-      label: res.cqp ? this.cqpExprs[res.cqp] : 'Σ',
+      label: res.cqp ? this.cqpExprs[res.cqp] : "Σ",
       cqp: res.cqp || this.cqp,
       points: compact(res.rows.map(this.getPoint)),
     }))
@@ -63,7 +63,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
   getPoint(row: StatsRow): Point | undefined {
     const value = Object.values(row.value)[0][0]
     if (!value) return
-    const [name, countryCode, lat, lng] = value.split(';')
+    const [name, countryCode, lat, lng] = value.split(";")
     return {
       name,
       countryCode,
@@ -75,7 +75,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
   }
 
   getMarkerGroups(newColor: () => string): Record<string, MarkerGroup> {
-    if (!this.data) throw new Error('No map data yet')
+    if (!this.data) throw new Error("No map data yet")
     const groups = Object.fromEntries(
       this.data.map((series, idx) => {
         const markers = Object.fromEntries(
@@ -83,7 +83,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
             // Include point index in the key, so that multiple
             // places with the same name but different coordinates
             // each get their own markers
-            const id = [point.name.replace(/-/g, ''), pointIdx.toString(), idx].join(':')
+            const id = [point.name.replace(/-/g, ""), pointIdx.toString(), idx].join(":")
             const marker = {
               lat: point.lat,
               lng: point.lng,

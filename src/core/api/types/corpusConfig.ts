@@ -1,4 +1,4 @@
-import type { CorpusConfigRaw } from '@/core/config/corpusConfigRaw.types'
+import type { CorpusConfigRaw } from "@/core/config/corpusConfigRaw.types"
 
 /** @see https://ws.spraakbanken.gu.se/docs/korp#tag/Information/paths/~1corpus_config/get */
 export type CorpusConfigParams = {

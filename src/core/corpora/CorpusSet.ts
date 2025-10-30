@@ -12,29 +12,29 @@ import {
   sum,
   union,
   uniq,
-} from 'lodash'
-import moment, { type Moment } from 'moment'
-import settings, { normalizeDataset } from '@/core/config'
-import { locObj } from '@/core/i18n'
-import type { Attribute } from '@/core/config/corpusConfigRaw.types'
-import type { Corpus } from '@/core/config/corpusConfig.types'
-import { objectIntersection, objectUnion } from '@/core/util'
+} from "lodash"
+import moment, { type Moment } from "moment"
+import settings, { normalizeDataset } from "@/core/config"
+import { locObj } from "@/core/i18n"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import type { Corpus } from "@/core/config/corpusConfig.types"
+import { objectIntersection, objectUnion } from "@/core/util"
 
 export type AttributeOption = Attribute & {
-  group: 'word' | 'word_attr' | 'sentence_attr'
+  group: "word" | "word_attr" | "sentence_attr"
 }
 
 /** How to join attribute lists of different corpora */
-export type SetOperator = 'union' | 'intersection'
+export type SetOperator = "union" | "intersection"
 
 export class CorpusSet {
   corpora: Corpus[]
   structAttributes: Record<string, Attribute> = {}
   commonAttributes: Record<string, Attribute> = {}
   _wordGroup: AttributeOption = {
-    group: 'word',
-    name: 'word',
-    label: settings['word_label'],
+    group: "word",
+    name: "word",
+    label: settings["word_label"],
   }
 
   constructor(corpora: Corpus[] = []) {
@@ -57,7 +57,7 @@ export class CorpusSet {
 
   // only applicable for parallel corpora
   getReduceLang(): string {
-    return ''
+    return ""
   }
 
   /** Corpus ids in uppercase */
@@ -89,12 +89,12 @@ export class CorpusSet {
 
   getStructAttrsIntersection(lang?: string): Record<string, Attribute> {
     const attrs = this.map(function (corpus) {
-      for (const key in corpus['struct_attributes']) {
-        const value = corpus['struct_attributes'][key]
-        value['is_struct_attr'] = true
+      for (const key in corpus["struct_attributes"]) {
+        const value = corpus["struct_attributes"][key]
+        value["is_struct_attr"] = true
       }
 
-      return corpus['struct_attributes']
+      return corpus["struct_attributes"]
     })
     return objectIntersection(attrs)
   }
@@ -106,10 +106,10 @@ export class CorpusSet {
   _getStructAttrs(): Record<string, Attribute> {
     const attrs = this.map(function (corpus) {
       // Set the is_struct_attr flag for all struct attributes
-      Object.values(corpus['struct_attributes']).forEach((attr) => (attr['is_struct_attr'] = true))
+      Object.values(corpus["struct_attributes"]).forEach((attr) => (attr["is_struct_attr"] = true))
       // if a position attribute is declared as structural, include here
-      const posAttrs = pickBy(corpus.attributes, (val, key) => val['is_struct_attr'])
-      return { ...posAttrs, ...corpus['struct_attributes'] }
+      const posAttrs = pickBy(corpus.attributes, (val, key) => val["is_struct_attr"])
+      return { ...posAttrs, ...corpus["struct_attributes"] }
     })
     const rest = this._invalidateAttrs(attrs)
 
@@ -135,7 +135,7 @@ export class CorpusSet {
       ...this.getAttributes(this.getReduceLang()),
       ...this.getStructAttrs(this.getReduceLang()),
     }
-    return pickBy(allAttrs, (attribute) => attribute['display_type'] !== 'hidden')
+    return pickBy(allAttrs, (attribute) => attribute["display_type"] !== "hidden")
   }
 
   /** Partition attributes by whether they should be used as structural for grouping or not. */
@@ -146,12 +146,12 @@ export class CorpusSet {
   }
 
   static isStruct = (attr?: Attribute): boolean =>
-    !!attr?.['is_struct_attr'] && attr?.['group_by'] != 'group_by'
+    !!attr?.["is_struct_attr"] && attr?.["group_by"] != "group_by"
 
   /** Compile list of filters applicable to all corpora. */
   getDefaultFilters(): Record<string, Attribute> {
     // Collect filters common to all corpora
-    const attrs = intersection(...this.map((corpus) => corpus['attribute_filters'] || []))
+    const attrs = intersection(...this.map((corpus) => corpus["attribute_filters"] || []))
     return pick(this.structAttributes, ...attrs)
   }
 
@@ -161,8 +161,8 @@ export class CorpusSet {
 
     // Mark attributes as disabled if not common to all attribute sets.
     Object.entries(union).forEach(([key, value]) => {
-      if (!intersection[key]) value['disabled'] = true
-      else delete value['disabled']
+      if (!intersection[key]) value["disabled"] = true
+      else delete value["disabled"]
     })
 
     return union
@@ -172,7 +172,7 @@ export class CorpusSet {
   corpusHasAttrs(corpusId: string, attrs: string[]): boolean {
     const corpus = this.get(corpusId)
     return attrs.every(
-      (attr) => attr == 'word' || attr in corpus.attributes || attr in corpus['struct_attributes'],
+      (attr) => attr == "word" || attr in corpus.attributes || attr in corpus["struct_attributes"],
     )
   }
 
@@ -187,11 +187,11 @@ export class CorpusSet {
 
   getContextParams(isReading: boolean) {
     const prefer = isReading
-      ? settings['default_reading_context']
-      : settings['default_overview_context']
+      ? settings["default_reading_context"]
+      : settings["default_overview_context"]
     const avoid = isReading
-      ? settings['default_overview_context']
-      : settings['default_reading_context']
+      ? settings["default_overview_context"]
+      : settings["default_reading_context"]
     const output: string[] = []
     for (const corpus of this.corpora) {
       const contexts = Object.keys(corpus.context)
@@ -199,7 +199,7 @@ export class CorpusSet {
         if (contexts.length > 1 && contexts.includes(avoid)) {
           contexts.splice(contexts.indexOf(avoid), 1)
         }
-        output.push(corpus.id.toUpperCase() + ':' + contexts[0])
+        output.push(corpus.id.toUpperCase() + ":" + contexts[0])
       }
     }
     return {
@@ -217,7 +217,7 @@ export class CorpusSet {
     for (const corpus of this.corpora) {
       const withins = Object.keys(corpus.within)
       if (!defaultWithin || !withins.includes(defaultWithin)) {
-        output.push(corpus.id.toUpperCase() + ':' + withins[0])
+        output.push(corpus.id.toUpperCase() + ":" + withins[0])
       }
     }
     return output.join() || undefined
@@ -241,21 +241,21 @@ export class CorpusSet {
       }),
     )
     if (isEmpty(withins)) {
-      return { sentence: 'sentence' }
+      return { sentence: "sentence" }
     }
     return withins
   }
 
   buildShowParams() {
-    const show: string[] = ['sentence']
+    const show: string[] = ["sentence"]
     const show_struct: string[] = []
 
     for (const corpus of this.corpora) {
-      show.push(...Object.keys(corpus.within).map((key) => key.split(' ').pop()!))
+      show.push(...Object.keys(corpus.within).map((key) => key.split(" ").pop()!))
       show.push(...Object.keys(corpus.attributes))
 
-      show_struct.push(...Object.keys(corpus['struct_attributes']))
-      if (corpus['reading_mode']) show_struct.push('text__id')
+      show_struct.push(...Object.keys(corpus["struct_attributes"]))
+      if (corpus["reading_mode"]) show_struct.push("text__id")
     }
 
     return {
@@ -279,12 +279,12 @@ export class CorpusSet {
   }
 
   getMomentInterval(): [Moment, Moment] | undefined {
-    const infoGetter = (prop: 'FirstDate' | 'LastDate') => {
+    const infoGetter = (prop: "FirstDate" | "LastDate") => {
       return compact(this.map((corpus) => corpus.info[prop])).map((item) => moment(item))
     }
 
-    const froms = infoGetter('FirstDate')
-    const tos = infoGetter('LastDate')
+    const froms = infoGetter("FirstDate")
+    const tos = infoGetter("LastDate")
 
     const from = minBy(froms, (item) => item.unix())
     const to = maxBy(tos, (item) => item.unix())
@@ -300,13 +300,13 @@ export class CorpusSet {
 
   getWordAttributeGroups(setOperator: SetOperator, lang?: string): AttributeOption[] {
     const allAttrs =
-      setOperator === 'union' ? this.getAttributes(lang) : this.getAttributesIntersection()
+      setOperator === "union" ? this.getAttributes(lang) : this.getAttributesIntersection()
 
     const attrs: AttributeOption[] = []
     for (const key in allAttrs) {
       const obj = allAttrs[key]
-      if (obj['display_type'] !== 'hidden') {
-        attrs.push({ group: 'word_attr', ...obj })
+      if (obj["display_type"] !== "hidden") {
+        attrs.push({ group: "word_attr", ...obj })
       }
     }
 
@@ -320,7 +320,7 @@ export class CorpusSet {
 
   getStructAttributeGroups(setOperator: SetOperator, lang?: string): AttributeOption[] {
     const allAttrs =
-      setOperator === 'union' ? this.getStructAttrs(lang) : this.getStructAttrsIntersection(lang)
+      setOperator === "union" ? this.getStructAttrs(lang) : this.getStructAttrsIntersection(lang)
 
     const common = this.commonAttributes
 
@@ -328,8 +328,8 @@ export class CorpusSet {
     const object = { ...common, ...allAttrs }
     for (const key in object) {
       const obj = object[key]
-      if (obj['display_type'] !== 'hidden') {
-        sentAttrs.push({ group: 'sentence_attr', ...obj })
+      if (obj["display_type"] !== "hidden") {
+        sentAttrs.push({ group: "sentence_attr", ...obj })
       }
     }
 
@@ -345,28 +345,28 @@ export class CorpusSet {
   }
 
   getAttributeGroupsExtended(lang?: string): AttributeOption[] {
-    return this.getAttributeGroups('union', 'union', lang).filter(
-      (attr) => !get(attr, 'hide_extended'),
+    return this.getAttributeGroups("union", "union", lang).filter(
+      (attr) => !get(attr, "hide_extended"),
     )
   }
 
   getAttributeGroupsCompare(lang?: string): AttributeOption[] {
-    return this.getAttributeGroups('intersection', 'intersection', lang).filter(
-      (attr) => !get(attr, 'hide_compare'),
+    return this.getAttributeGroups("intersection", "intersection", lang).filter(
+      (attr) => !get(attr, "hide_compare"),
     )
   }
 
   getAttributeGroupsStatistics(lang?: string): AttributeOption[] {
-    const wordOp = settings['reduce_word_attribute_selector'] || 'union'
-    const structOp = settings['reduce_struct_attribute_selector'] || 'union'
+    const wordOp = settings["reduce_word_attribute_selector"] || "union"
+    const structOp = settings["reduce_struct_attribute_selector"] || "union"
     return this.getAttributeGroups(wordOp, structOp, lang).filter(
-      (attr) => !get(attr, 'hide_statistics'),
+      (attr) => !get(attr, "hide_statistics"),
     )
   }
 
   /** Get list of morphology ids used by the corpora. */
   getMorphologies(): string[] {
-    const morphologies = this.map((corpus) => (corpus.morphology || '').split('|')).flat()
+    const morphologies = this.map((corpus) => (corpus.morphology || "").split("|")).flat()
     return uniq(compact(morphologies))
   }
 
@@ -377,7 +377,7 @@ export class CorpusSet {
     const common_keys = compact(
       this.corpora.flatMap((corp) => Object.keys(corp.common_attributes || {})),
     )
-    this.commonAttributes = pick(settings['common_struct_types'], ...common_keys) as Record<
+    this.commonAttributes = pick(settings["common_struct_types"], ...common_keys) as Record<
       string,
       Attribute
     >
@@ -389,10 +389,10 @@ export class CorpusSet {
     if (!type) {
       return false
     }
-    const attribute = type.split('_.').slice(-1)[0]
+    const attribute = type.split("_.").slice(-1)[0]
     return (
-      this.commonAttributes[attribute]?.['extended_component'] == 'dateInterval' ||
-      this.structAttributes[attribute]?.['extended_component'] == 'dateInterval'
+      this.commonAttributes[attribute]?.["extended_component"] == "dateInterval" ||
+      this.structAttributes[attribute]?.["extended_component"] == "dateInterval"
     )
   }
 }

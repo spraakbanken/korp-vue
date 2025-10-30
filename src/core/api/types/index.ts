@@ -1,12 +1,12 @@
-import type { API } from './api'
-import type { Response } from './common'
+import type { API } from "./api"
+import type { Response } from "./common"
 
-export * from './common'
-export * from './api'
+export * from "./common"
+export * from "./api"
 
 export type ProgressReport<K extends keyof API> = {
   /** Response data */
-  data: Partial<Response<API[K]['response']>>
+  data: Partial<Response<API[K]["response"]>>
   /** How many percent of the material has been searched. */
   percent: number
   /** How many search hits so far. */

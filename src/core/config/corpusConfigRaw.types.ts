@@ -1,4 +1,4 @@
-import type { Labeled, LangString, LocLangMap, LocMap } from '@/core/model/locale'
+import type { Labeled, LangString, LocLangMap, LocMap } from "@/core/model/locale"
 
 /** Typings for config as fetched from backend. */
 export type CorpusConfigRaw = {
@@ -9,7 +9,7 @@ export type CorpusConfigRaw = {
   }
   corpora: Record<string, CorpusRaw>
   /** Writing direction of corpus text. */
-  dir?: 'rtl'
+  dir?: "rtl"
   folders?: Record<string, Folder>
   label: LangString
   map_enabled?: boolean
@@ -45,7 +45,7 @@ export type CorpusRaw = {
   within: Labeled[]
 }
 
-export type CorpusParallel = CorpusRaw & Required<Pick<CorpusRaw, 'lang' | 'linked_to'>>
+export type CorpusParallel = CorpusRaw & Required<Pick<CorpusRaw, "lang" | "linked_to">>
 
 export type ReadingModeConfig = {
   component: string
@@ -63,12 +63,12 @@ export type Attribute = {
   dataset?: Record<string, string> | string[]
   /** Handled by CorpusListing */
   disabled?: true
-  display_type?: 'hidden'
+  display_type?: "hidden"
   escape?: boolean
   extended_component?: MaybeWithOptions
   extended_template?: string
   external_search?: string
-  group_by?: 'group_by' | 'group_by_struct'
+  group_by?: "group_by" | "group_by_struct"
   hide_compare?: boolean
   hide_extended?: boolean
   hide_sidebar?: boolean
@@ -91,7 +91,7 @@ export type Attribute = {
   stats_stringify?: string
   stringify?: string
   translation?: LocLangMap | LocMap
-  type?: 'set' | 'url'
+  type?: "set" | "url"
 }
 
 export type CustomAttribute = {

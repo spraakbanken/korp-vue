@@ -18,7 +18,7 @@ export let auth: AuthModule
 
 /** Set the authentication service. Must be used exactly once, before using the service. */
 export function setAuth(service: AuthModule) {
-  if (auth) throw new Error('Cannot reset global auth')
+  if (auth) throw new Error("Cannot reset global auth")
   auth = service
 
   if (import.meta.env.DEV) {

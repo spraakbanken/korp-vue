@@ -1,4 +1,4 @@
-import type { QueryParamSort } from '@/core/api/types/query'
+import type { QueryParamSort } from "@/core/api/types/query"
 
 /** Supported parameters for the `?<key>=<value>` part of the URL. */
 export type UrlParams = {
@@ -15,13 +15,13 @@ export type HashParams = {
   /** CQP query for Extended search in parallel mode */
   [cqpN: `cqp_${string}`]: string
   /** Modal to show */
-  display?: 'about'
+  display?: "about"
   /** Conditions entered for search filters, as Base64-encoded JSON */
   global_filter?: string
   /** Hits per page */
   hpp?: number
   /** Whether tokens in current query should match in order; default is true */
-  in_order?: 'false'
+  in_order?: "false"
   /** In simple search, match case-insensitive */
   isCaseInsensitive?: true
   /** UI language as three-letter code */
@@ -45,7 +45,7 @@ export type HashParams = {
    *   - "lemgram", when using autocomplete in Simple
    *   - "cqp", for advanced mode (`query` is a CQP expression)
    */
-  search?: `${string}|${string}` | 'cqp'
+  search?: `${string}|${string}` | "cqp"
   /** Current search mode */
   search_tab?: number
   /** Search result order */
@@ -64,34 +64,34 @@ export type SearchParams = Pick<HashParams, SearchParamNames>
 
 export type SearchParamNames = Extract<
   keyof HashParams,
-  | 'corpus'
-  | 'cqp'
-  | 'global_filter'
-  | 'in_order'
-  | 'parallel_corpora'
-  | 'search'
-  | 'search_tab'
-  | 'within'
-  | 'prefix'
-  | 'mid_comp'
-  | 'suffix'
-  | 'isCaseInsensitive'
+  | "corpus"
+  | "cqp"
+  | "global_filter"
+  | "in_order"
+  | "parallel_corpora"
+  | "search"
+  | "search_tab"
+  | "within"
+  | "prefix"
+  | "mid_comp"
+  | "suffix"
+  | "isCaseInsensitive"
 >
 
 /** Parameters that define a search result set */
 export const getSearchParamNames = (): SearchParamNames[] => [
-  'corpus',
-  'cqp',
-  'global_filter',
-  'in_order',
-  'parallel_corpora',
-  'search',
-  'search_tab',
-  'within',
-  'prefix',
-  'mid_comp',
-  'suffix',
-  'isCaseInsensitive',
+  "corpus",
+  "cqp",
+  "global_filter",
+  "in_order",
+  "parallel_corpora",
+  "search",
+  "search_tab",
+  "within",
+  "prefix",
+  "mid_comp",
+  "suffix",
+  "isCaseInsensitive",
 ]
 
 /** Get a parameter from the `?<key>=<value>` part of the URL. */

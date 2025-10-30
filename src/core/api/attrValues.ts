@@ -1,10 +1,10 @@
-import memoize from 'lodash/memoize'
+import memoize from "lodash/memoize"
 import type {
   AttrValuesResponseDeep,
   AttrValuesResponseFlat,
   RecursiveRecord,
-} from './types/attrValues'
-import { korpRequest } from './common'
+} from "./types/attrValues"
+import { korpRequest } from "./common"
 
 /** Find which unique values occur and count them. */
 export const countAttrValues: (
@@ -15,13 +15,13 @@ export const countAttrValues: (
 ) => Promise<RecursiveRecord<number>> = memoize(
   async (corpora, attrs, split = []) => {
     // Join attributes as a hierarchical path that shapes the response
-    const attributePath = attrs.join('>')
-    const data = (await korpRequest('attr_values', {
-      corpus: corpora.join(','),
+    const attributePath = attrs.join(">")
+    const data = (await korpRequest("attr_values", {
+      corpus: corpora.join(","),
       attr: attributePath,
       count: true,
       per_corpus: false,
-      split: split.join(',') || undefined,
+      split: split.join(",") || undefined,
     })) as AttrValuesResponseDeep
     return data.combined[attributePath]
   },
@@ -37,8 +37,8 @@ export const getAttrValues: (
   split?: boolean,
 ) => Promise<string[]> = memoize(
   async (corpora, attr, split) => {
-    const data = (await korpRequest('attr_values', {
-      corpus: corpora.join(','),
+    const data = (await korpRequest("attr_values", {
+      corpus: corpora.join(","),
       attr: attr,
       per_corpus: false,
       split: split ? attr : undefined,

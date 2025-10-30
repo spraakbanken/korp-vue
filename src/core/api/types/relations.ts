@@ -4,7 +4,7 @@ export type RelationsParams = {
   corpus: string
   word: string
   /** Search type. Defaults to "word". */
-  type?: 'word' | 'lemgram'
+  type?: "word" | "lemgram"
   min?: number
   max?: number
   incremental?: boolean
@@ -17,7 +17,7 @@ export type RelationsResponse = {
   time: number
 }
 
-export type RelationsSort = 'freq' | 'mi'
+export type RelationsSort = "freq" | "mi"
 
 export type ApiRelation = {
   dep: string

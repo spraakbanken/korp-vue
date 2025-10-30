@@ -1,9 +1,9 @@
-import { getDefaultWithin } from '@/settings'
-import { corpusListing } from '@/corpora/corpus_listing'
-import { QueryParams, QueryResponse } from '../types/query'
-import ProxyBase from './ProxyBase'
-import { expandCqp } from '@/cqp_parser/cqp'
-import { pageToRange } from '../common'
+import { getDefaultWithin } from "@/settings"
+import { corpusListing } from "@/corpora/corpus_listing"
+import { QueryParams, QueryResponse } from "../types/query"
+import ProxyBase from "./ProxyBase"
+import { expandCqp } from "@/cqp_parser/cqp"
+import { pageToRange } from "../common"
 
 export type QueryParamOptions = {
   isPaging?: boolean
@@ -12,8 +12,8 @@ export type QueryParamOptions = {
   defaultWithin?: string
 }
 
-export abstract class QueryProxyBase extends ProxyBase<'query'> {
-  protected readonly endpoint = 'query'
+export abstract class QueryProxyBase extends ProxyBase<"query"> {
+  protected readonly endpoint = "query"
   /** Cache token for quicker paging requests. */
   protected queryData?: string
 

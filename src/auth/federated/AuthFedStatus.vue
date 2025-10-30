@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth } from '../useAuth'
+import { useAuth } from "../useAuth"
 
 const auth = useAuth()
 </script>

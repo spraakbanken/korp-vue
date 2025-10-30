@@ -1,15 +1,15 @@
-import type { LangString } from '../model/locale'
+import type { LangString } from "../model/locale"
 import type {
   Attribute,
   CorpusConfigRaw,
   CorpusRaw,
   CustomAttribute,
   Folder,
-} from './corpusConfigRaw.types'
-import type { CorpusInfoInfo } from '@/core/api/types/corpusInfo'
+} from "./corpusConfigRaw.types"
+import type { CorpusInfoInfo } from "@/core/api/types/corpusInfo"
 
 /** Config as transformed after being fetched from backend */
-export type CorpusConfig = Omit<CorpusConfigRaw, 'attributes' | 'corpora' | 'label'> & {
+export type CorpusConfig = Omit<CorpusConfigRaw, "attributes" | "corpora" | "label"> & {
   corpora: Record<string, Corpus>
   folders: Record<string, Folder>
   mode: {
@@ -20,7 +20,7 @@ export type CorpusConfig = Omit<CorpusConfigRaw, 'attributes' | 'corpora' | 'lab
 /** Corpus config as transformed after being fetched from backend */
 export type Corpus<T extends CorpusRaw = CorpusRaw> = Omit<
   T,
-  'pos_attributes' | 'struct_attributes' | 'custom_attributes' | 'within' | 'context'
+  "pos_attributes" | "struct_attributes" | "custom_attributes" | "within" | "context"
 > & {
   attributes: Record<string, Attribute>
   struct_attributes: Record<string, Attribute>

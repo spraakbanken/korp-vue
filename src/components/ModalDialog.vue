@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useConfirmDialog, type UseConfirmDialogReturn } from '@vueuse/core'
-import { onMounted, ref } from 'vue'
+import { useConfirmDialog, type UseConfirmDialogReturn } from "@vueuse/core"
+import { onMounted, ref } from "vue"
 
 export type Dialog = UseConfirmDialogReturn<string | undefined, void, void>
 
 const emit = defineEmits<{
   /** Provide trigger to parent */
-  (e: 'setup', dialog: Dialog): void
-  (e: 'close', confirmed: boolean): void
+  (e: "setup", dialog: Dialog): void
+  (e: "close", confirmed: boolean): void
 }>()
 
 const dialog = useConfirmDialog<string | undefined, void, void>()
@@ -22,17 +22,17 @@ dialog.onReveal((text?: string) => {
 
 dialog.onCancel(() => {
   element.value?.close()
-  emit('close', false)
+  emit("close", false)
 })
 
 dialog.onConfirm(() => {
   element.value?.close()
-  emit('close', true)
+  emit("close", true)
 })
 
 onMounted(() => {
   // Provide trigger to parent
-  emit('setup', dialog)
+  emit("setup", dialog)
 })
 </script>
 

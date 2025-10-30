@@ -2,7 +2,7 @@
 
 export type LemgramCountParams = {
   lemgram: string
-  count: 'lemgram'
+  count: "lemgram"
   corpus: string
 }
 

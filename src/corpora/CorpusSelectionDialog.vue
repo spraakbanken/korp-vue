@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { corpusListing } from '@/core/corpora/corpusListing'
-import { useAppStore } from '@/store/useAppStore'
-import { onMounted, ref } from 'vue'
-import { partition } from 'lodash'
-import { getDefaultCorpusSelection } from '@/core/config'
-import type { Corpus } from '@/core/config/corpusConfig.types'
-import { useAuth } from '@/auth/useAuth'
-import ModalDialog, { type Dialog } from '@/components/ModalDialog.vue'
+import { corpusListing } from "@/core/corpora/corpusListing"
+import { useAppStore } from "@/store/useAppStore"
+import { onMounted, ref } from "vue"
+import { partition } from "lodash"
+import { getDefaultCorpusSelection } from "@/core/config"
+import type { Corpus } from "@/core/config/corpusConfig.types"
+import { useAuth } from "@/auth/useAuth"
+import ModalDialog, { type Dialog } from "@/components/ModalDialog.vue"
 
 const emit = defineEmits<{
-  (e: 'resolve', ids: string[]): void
+  (e: "resolve", ids: string[]): void
 }>()
 
 const store = useAppStore()
@@ -19,7 +19,7 @@ const dialog = ref<Dialog>()
 
 onMounted(async () => {
   const ids = await validateCorpusSelection(store.corpus)
-  emit('resolve', ids)
+  emit("resolve", ids)
 })
 
 /** Interactively check that the corpus selection in the store is valid. */

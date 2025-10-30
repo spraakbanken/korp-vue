@@ -1,6 +1,6 @@
-import { ExampleProxy } from '../proxy/ExampleProxy'
-import type { QueryResponse } from '../types/query'
-import { TaskBase } from './TaskBase'
+import { ExampleProxy } from "../proxy/ExampleProxy"
+import type { QueryResponse } from "../types/query"
+import { TaskBase } from "./TaskBase"
 
 export class ExampleTask extends TaskBase<QueryResponse> {
   readonly proxy: ExampleProxy
