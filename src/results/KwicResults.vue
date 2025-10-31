@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { KwicProxy } from "@/core/api/proxy/KwicProxy"
 import type { ApiKwic } from "@/core/api/types"
+import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
@@ -20,8 +21,11 @@ watchImmediate(activeSearch, () => {
 })
 
 function updateSearch() {
-  doSearch()
+  // Initial corpus selection may not have settled yet.
+  if (corpusSelection.corpora.length) doSearch()
+  else setTimeout(() => doSearch())
 }
+
 async function doSearch() {
   const response = await proxy.makeRequest(cqp.value)
   kwic.value = response.kwic
@@ -29,5 +33,5 @@ async function doSearch() {
 </script>
 
 <template>
-  {{ kwic[0] }}
+  {{ kwic?.[0] }}
 </template>

@@ -29,7 +29,4 @@ function resolveValidation(ids: string[]) {
       {{ locObj(corpus.title) }}
     </option>
   </select>
-
-  <!-- TODO corpusSelection is not reactive -->
-  <div>corpusSelection: {{ corpusSelection.corpora.map((c) => locObj(c.title)) }}</div>
 </template>
