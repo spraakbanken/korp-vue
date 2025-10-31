@@ -1,16 +1,15 @@
-import { corpusListing } from "@/corpora/corpus_listing"
-import { Factory } from "@/util"
-import { QueryParams, QueryResponse } from "../types/query"
-import { StoreService } from "@/services/store"
+import type { Store } from "@/core/model/store"
 import { QueryProxyBase } from "./QueryProxyBase"
+import type { QueryParams, QueryResponse } from "../types/query"
+import { corpusSelection } from "@/core/corpora/corpusListing"
 
 export class KwicProxy extends QueryProxyBase {
-  constructor(protected readonly store: StoreService) {
+  constructor(protected readonly store: Store) {
     super()
   }
 
   protected buildParams(cqp: string, isPaging = false): QueryParams {
-    const corpusIds = corpusListing.getSelectedCorpora()
+    const corpusIds = corpusSelection.getIds()
     const options = {
       isPaging,
       isReading: this.store.reading_mode,
@@ -33,6 +32,3 @@ export class KwicProxy extends QueryProxyBase {
     return this.send(params)
   }
 }
-
-const kwicProxyFactory = new Factory(KwicProxy)
-export default kwicProxyFactory

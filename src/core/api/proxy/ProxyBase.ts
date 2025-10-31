@@ -1,5 +1,5 @@
 import { korpRequest } from "../common"
-import { API, ProgressHandler } from "../types"
+import type { API, ProgressHandler } from "../types"
 
 /** Handles the request and processes input and outputs for a given Korp backend API endpoint. */
 export default abstract class ProxyBase<K extends keyof API = keyof API> {

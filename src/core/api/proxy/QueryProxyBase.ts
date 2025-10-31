@@ -1,9 +1,9 @@
-import { getDefaultWithin } from "@/settings"
-import { corpusListing } from "@/corpora/corpus_listing"
-import { QueryParams, QueryResponse } from "../types/query"
-import ProxyBase from "./ProxyBase"
-import { expandCqp } from "@/cqp_parser/cqp"
+import { corpusListing } from "@/core/corpora/corpusListing"
 import { pageToRange } from "../common"
+import type { QueryParams, QueryResponse } from "../types/query"
+import ProxyBase from "./ProxyBase"
+import { getDefaultWithin } from "@/core/config"
+import { expandCqp } from "@/core/cqp/cqp"
 
 export type QueryParamOptions = {
   isPaging?: boolean
@@ -24,11 +24,11 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     options: QueryParamOptions,
   ): QueryParams {
     if (!options.isPaging) this.queryData = undefined
-    const cl = corpusListing.subsetFactory(corpusIds)
+    const cl = corpusListing.pick(corpusIds)
     const defaultWithin = options.defaultWithin || getDefaultWithin()
 
     return {
-      corpus: cl.stringifySelected(),
+      corpus: cl.stringify(),
       cqp: expandCqp(cqp),
       default_within: defaultWithin,
       within: cl.getWithinParam(defaultWithin),

@@ -9,7 +9,7 @@ export const setLang = (langNew: string) => (_lang = langNew)
 /**
  * Get translated string from a given object.
  * @param map An object of strings keyed by language codes. Alternatively, just a string.
- * @returns The translated string, or undefined if no translation is found.
+ * @returns The translated string, or empty string if no translation is found.
  */
 export function locObj(map?: LangString, lang?: string): string {
   lang ||= _lang
