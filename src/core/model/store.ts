@@ -42,6 +42,8 @@ export type Store = {
   random_seed?: number
   /** Whether to KWIC with more context */
   reading_mode: boolean
+  /** Active result tab */
+  resultTab: number
   /**
    * Search query for Simple or Advanced search: `<mode>|<query>`
    * where `mode` can be:

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import KwicResults from "./results/KwicResults.vue"
+import ResultsPanel from "./results/ResultsPanel.vue"
 import { useAppStore } from "./store/useAppStore"
 
 const store = useAppStore()
@@ -8,7 +8,7 @@ const store = useAppStore()
 <template>
   <main>
     <section v-if="store.activeSearch">
-      <KwicResults />
+      <ResultsPanel />
     </section>
     <section v-else>TODO Frontpage</section>
   </main>
