@@ -10,7 +10,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write --list-different src/"
+    "format": "prettier --write --list-different src/ *.{html,ts,json}"
   },
   "dependencies": {
     "@types/lodash": "^4.17.20",
