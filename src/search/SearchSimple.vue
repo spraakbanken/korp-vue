@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
-import type { CqpQuery } from "@/core/cqp/cqp.types"
-import { stringify } from "@/core/cqp/cqp"
-import { watchEffect } from "vue"
+import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
+import { buildSimpleWordCqp } from "@/core/search/simple"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -57,7 +56,8 @@ function doSearch() {
 }
 
 function createCqp() {
-  const query: CqpQuery = [{ and_block: [[{ type: "word", op: "=", val: input.value }]] }]
+  const query = buildSimpleWordCqp(input.value, prefix.value, suffix.value, ignoreCase.value)
+  if (store.globalFilter) mergeCqpExprs(query, store.globalFilter)
   return stringify(query)
 }
 </script>
