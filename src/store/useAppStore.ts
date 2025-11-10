@@ -25,6 +25,10 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     set: (ids) => (url.corpus = ids.sort().join(",")),
   })
   const hpp = paramHandler(url, "hpp", () => settings["hits_per_page_default"])
+  const in_order = computed({
+    get: () => url.in_order != "false",
+    set: (value) => (url.in_order = value ? undefined : "false"),
+  })
   const lang = paramHandler(url, "lang", () => settings["default_language"])
   const page = paramHandler(url, "page", () => "0")
   const resultTab = paramHandler(url, "result_tab", () => 1)
@@ -40,6 +44,7 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     activeSearch,
     corpus,
     hpp,
+    in_order,
     lang,
     page,
     search,

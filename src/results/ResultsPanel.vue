@@ -10,11 +10,13 @@ const { resultTab } = storeToRefs(store)
 
 <template>
   <div>
-    <button @click="resultTab = 1">KWIC</button>
-    <button @click="resultTab = 2">Statistics</button>
-  </div>
-  <div>
-    <KwicResults v-if="resultTab == 1" />
-    <StatisticsResult v-if="resultTab == 2" />
+    <nav>
+      <button @click="resultTab = 1">KWIC</button>
+      <button @click="resultTab = 2">Statistics</button>
+    </nav>
+    <section>
+      <KwicResults v-show="resultTab == 1" />
+      <StatisticsResult v-show="resultTab == 2" />
+    </section>
   </div>
 </template>

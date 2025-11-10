@@ -1,3 +1,5 @@
 <script setup lang="ts"></script>
 
-<template>TODO Statistics</template>
+<template>
+  <div>TODO Statistics</div>
+</template>
