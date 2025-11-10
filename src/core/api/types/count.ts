@@ -1,4 +1,4 @@
-import { AbsRelTuple } from "./common"
+import type { AbsRelTuple } from "./common"
 
 /** @see https://ws.spraakbanken.gu.se/docs/korp#tag/Statistics/paths/~1count/get */
 export type CountParams = {

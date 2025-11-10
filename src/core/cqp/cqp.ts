@@ -100,7 +100,9 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
     const outer_and_array: string[][] = []
     for (const and_array of token.and_block || []) {
       const or_array: string[] = []
-      for (let { type, op, val, flags } of and_array) {
+      for (const condition of and_array) {
+        const { type, flags } = condition
+        let { op, val } = condition
         let out
         if (expanded_format) {
           ;[val, op] = operatorMap[op](val)
@@ -134,7 +136,7 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
 
     if (token.bound) {
       or_out = compact(or_out)
-      for (let bound of Object.keys(token.bound)) {
+      for (const bound of Object.keys(token.bound)) {
         or_out.push(`${bound}(sentence)`)
       }
     }

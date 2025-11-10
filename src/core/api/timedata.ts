@@ -2,7 +2,7 @@ import { assignWith, memoize, omit, pickBy, range } from "lodash"
 import type { Histogram } from "./types"
 import { korpRequest } from "./common"
 import settings from "@/core/config"
-import { corpusListing } from "../corpora/corpusListing"
+import { corpusListing, corpusSelection } from "../corpora/corpusListing"
 
 /**
  * Time data, if available.
@@ -16,7 +16,7 @@ export const getTimeData: () => Promise<[[number, number][], number] | undefined
   async () => {
     if (!settings.has_timespan) return undefined
 
-    const corpus = corpusListing.stringifyAll()
+    const corpus = corpusListing.stringify()
     if (!corpus) return undefined
 
     const data = await korpRequest("timespan", { granularity: "y", corpus })
@@ -93,7 +93,7 @@ export const getSeries = () => Object.fromEntries(getTimeDataPairs()) as YearSer
 /** Get data size per year of selected corpora. */
 export function getSeriesSelected() {
   // `pickBy` removes zeroes.
-  const series = corpusListing.selected.map((corpus) =>
+  const series = corpusSelection.corpora.map((corpus) =>
     "time" in corpus ? pickBy(corpus.time) : {},
   )
   // Sum the counts by year for each corpora

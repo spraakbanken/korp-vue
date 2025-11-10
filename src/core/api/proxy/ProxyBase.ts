@@ -29,7 +29,7 @@ export default abstract class ProxyBase<K extends keyof API = keyof API> {
     return this.response
   }
 
-  abstract makeRequest(...args: any[]): Promise<any>
+  abstract makeRequest(...args: unknown[]): Promise<unknown>
 
   protected async send(params: API[K]["params"]): Promise<API[K]["response"]> {
     this.params = params
