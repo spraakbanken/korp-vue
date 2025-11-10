@@ -1,13 +1,10 @@
 import { cloneDeep, compact, sortBy } from "lodash"
+import { parse } from "./CQPParser.peggy"
 import type { Condition, CqpQuery, DateRange, Operator, OperatorKorp, Value } from "./cqp.types"
 import { corpusSelection } from "../corpora/corpusListing"
 import settings from "../config"
 
 /** Parse CQP string to syntax tree. */
-// TODO Load Peggy
-const parse = (query: string): CqpQuery => [
-  { and_block: [[{ type: "word", op: "=", val: "exempel" }]] },
-]
 export { parse }
 
 /**

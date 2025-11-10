@@ -9,3 +9,7 @@ interface Window {
   auth: import("@/core/auth").AuthModule
 }
 declare const window: Window
+
+declare module "*.peggy" {
+  export const parse: <T = unknown>(input: string) => T
+}

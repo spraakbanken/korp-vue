@@ -1,10 +1,11 @@
 import { fileURLToPath, URL } from "node:url"
-import { defineConfig, loadEnv } from "vite"
+import { defineConfig, loadEnv, PluginOption } from "vite"
 import vue from "@vitejs/plugin-vue"
 import vueDevTools from "vite-plugin-vue-devtools"
 import yaml from "@modyfi/vite-plugin-yaml"
 import { ServerOptions } from "node:https"
 import { readFileSync } from "node:fs"
+import peggy from "peggy"
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -24,7 +25,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [vue(), vueDevTools(), yaml()],
+    plugins: [vue(), vueDevTools(), yaml(), peggyLoader()],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -42,3 +43,15 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
+
+// Simple custom loader for Peggy files. Currently available libraries are not great.
+function peggyLoader(): PluginOption {
+  return {
+    name: "vite-plugin-peggy",
+    async transform(grammar, id) {
+      if (!/\.(pegjs|peggy)$/.test(id)) return
+      const code = peggy.generate(grammar, { output: "source", format: "es" })
+      return { code }
+    },
+  }
+}
