@@ -53,7 +53,8 @@ export class PromiseStarter<T = void> {
   protected starter?: () => Promise<T>
 
   onStart(starter: () => Promise<T>) {
-    if (this.starter) throw new Error("Only one starter allowed")
+    // TODO Handle hot module reloading
+    if (this.starter) return
     this.starter = starter
   }
 

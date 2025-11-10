@@ -8,7 +8,8 @@ export let corpusSelection: CorpusSet
 
 /** Initialize global corpus sets `corpusListing` and `corpusSelection`. */
 export function setCorpusListing(cl: CorpusSet): void {
-  if (corpusListing) throw new Error("Cannot reset global corpusListing")
+  // TODO Handle hot module reloading
+  if (corpusListing) return
   corpusListing = cl
   corpusSelection = cl.pick([])
 

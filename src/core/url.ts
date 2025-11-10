@@ -23,7 +23,7 @@ export type HashParams = {
   /** Whether tokens in current query should match in order; default is true */
   in_order?: "false"
   /** In simple search, match case-insensitive */
-  isCaseInsensitive?: true
+  isCaseInsensitive?: string
   /** UI language as three-letter code */
   lang?: string
   /** In simple search, match anywhere in a word */
@@ -32,7 +32,7 @@ export type HashParams = {
   page?: string
   parallel_corpora?: string
   /** In simple search, match beginning of word */
-  prefix?: true
+  prefix?: string
   random_seed?: `${number}`
   /** Whether to KWIC with more context */
   reading_mode?: boolean
@@ -55,7 +55,7 @@ export type HashParams = {
   /** Attributes on which to aggregate counts, case-insensitively, in statistics query */
   stats_reduce_insensitive?: string
   /** In simple search, match end of word */
-  suffix?: true
+  suffix?: string
   /** Chunk size to evaluate search query within, e.g. "sentence" or "paragraph" */
   within?: string
 }

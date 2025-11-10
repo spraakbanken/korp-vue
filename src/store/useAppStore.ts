@@ -36,7 +36,10 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     get: () => url.in_order != "false",
     set: (value) => (url.in_order = value ? undefined : "false"),
   })
-  const isCaseInsensitive = paramHandler(url, "isCaseInsensitive") // TODO Default/handling needed?
+  const isCaseInsensitive = computed({
+    get: () => url.isCaseInsensitive != undefined,
+    set: (value) => (url.isCaseInsensitive = value ? "" : undefined),
+  })
   const lang = paramHandler(url, "lang", () => settings["default_language"])
   const page = paramHandler(url, "page", () => "0")
   const parallel_corpora = computed({
@@ -44,8 +47,8 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     set: (ids) => ids.join() || null,
   })
   const prefix = computed({
-    get: () => url.prefix,
-    set: (value) => (url.prefix = !!value || undefined),
+    get: () => url.prefix != undefined || url.mid_comp != undefined,
+    set: (value) => (url.prefix = value ? "" : undefined),
   })
   const random_seed = paramHandler(url, "random_seed")
   const reading_mode = computed({
@@ -60,8 +63,8 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const stats_reduce = paramHandler(url, "stats_reduce", () => "word")
   const stats_reduce_insensitive = paramHandler(url, "stats_reduce_insensitive")
   const suffix = computed({
-    get: () => url.suffix,
-    set: (value) => (url.suffix = !!value || undefined),
+    get: () => url.suffix != undefined || url.mid_comp != undefined,
+    set: (value) => (url.suffix = value ? "" : undefined),
   })
   const within = paramHandler(url, "within", () => getDefaultWithin())
 
@@ -94,16 +97,8 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   // Sync to the non-reactive lang global
   watch(lang, (langNew) => setLang(langNew))
 
-  // Translate deprecated params.
-  watch(
-    () => url.mid_comp,
-    () => {
-      if (!url.mid_comp) return
-      prefix.value = true
-      suffix.value = true
-      url.mid_comp = undefined
-    },
-  )
+  // Strip `mid_comp`, it's read by `prefix` and `suffix` instead.
+  url.mid_comp = undefined
 
   return {
     activeSearch,
