@@ -4,10 +4,7 @@ import type { CqpQuery } from "@/core/cqp/cqp.types"
 /** Stored state. */
 export type Store = {
   /** Last executed search query. */
-  activeSearch?: {
-    type?: "word" | "lemgram"
-    cqp: string
-  }
+  activeSearch?: ActiveSearch
   /** Selected corpus ids in lowercase */
   corpus: string[]
   /** CQP query for Extended search, possibly with frontend-specific operators */
@@ -30,8 +27,6 @@ export type Store = {
   in_order: boolean
   /** UI language */
   lang: string
-  /** In simple search, match anywhere in a word */
-  mid_comp: boolean
   /** Page number of KWIC result */
   page?: number
   /** In parallel mode, what languages to build a query for */
@@ -66,4 +61,9 @@ export type Store = {
   suffix: boolean
   /** Chunk size to evaluate search query within, e.g. "sentence" or "paragraph" */
   within?: string
+}
+
+export type ActiveSearch = {
+  type?: "word" | "lemgram"
+  cqp: string
 }
