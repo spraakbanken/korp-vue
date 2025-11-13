@@ -6,7 +6,7 @@ const store = useAppStore()
 </script>
 
 <template>
-  <main>
+  <main class="container">
     <section v-if="store.activeSearch">
       <ResultsPanel />
     </section>
