@@ -13,7 +13,7 @@ const { lang } = storeToRefs(store)
 </script>
 
 <template>
-  <header>
+  <header class="container">
     <div>
       {{ $t("modes") }}:
       <span v-for="{ label, mode } of settings.modes" :key="mode">

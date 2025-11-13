@@ -4,7 +4,7 @@ import SearchPanel from "./search/SearchPanel.vue"
 </script>
 
 <template>
-  <section>
+  <section class="container">
     <CorpusSelector />
     <SearchPanel />
   </section>
