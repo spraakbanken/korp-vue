@@ -6,6 +6,7 @@ import yaml from "@modyfi/vite-plugin-yaml"
 import { ServerOptions } from "node:https"
 import { readFileSync } from "node:fs"
 import peggy from "peggy"
+import { visualizer } from "rollup-plugin-visualizer"
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -25,7 +26,13 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [vue(), vueDevTools(), yaml(), peggyLoader()],
+    plugins: [
+      vue(),
+      vueDevTools(),
+      yaml(),
+      peggyLoader(),
+      visualizer(), // Keep visualizer last
+    ],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
