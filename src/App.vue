@@ -11,7 +11,9 @@ import { ref } from "vue"
 import { getInstanceConfig } from "./core/config/instanceConfig"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { setLang } from "./core/i18n"
+import { useDark } from "@vueuse/core"
 
+useDark({ attribute: "data-bs-theme" })
 const auth = useAuth()
 useExpose()
 
