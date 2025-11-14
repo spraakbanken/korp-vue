@@ -6,7 +6,7 @@ import { partition } from "lodash"
 import { getDefaultCorpusSelection } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { useAuth } from "@/auth/useAuth"
-import ModalDialog, { type Dialog } from "@/components/ModalDialog.vue"
+import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
 
 const emit = defineEmits<{
   (e: "resolve", ids: string[]): void
@@ -15,7 +15,8 @@ const emit = defineEmits<{
 const store = useAppStore()
 const auth = useAuth()
 
-const dialog = ref<Dialog>()
+const message = ref("")
+let dialog: ConfirmDialog | undefined
 
 onMounted(async () => {
   const ids = await validateCorpusSelection(store.corpus)
@@ -43,7 +44,7 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
     (id) => !corpusListing.corpora.find((corpus) => corpus.id == id),
   )
   if (unrecognizedIds.length) {
-    await dialog.value?.reveal(`Missing: ${unrecognizedIds}, removed.`)
+    await showDialog(`Missing: ${unrecognizedIds}, removed.`)
     return validateCorpusSelection(ids.filter((id) => !unrecognizedIds.includes(id)))
   }
 
@@ -53,20 +54,20 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
     if (auth.isLoggedIn() || skipLogin) {
       if (allowedCorpora.length) {
         // Access denied for some of the corpora
-        await dialog.value?.reveal(
+        await showDialog(
           `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. They will be deselected.`,
         )
         return validateCorpusSelection(allowedCorpora.map((c) => c.id))
       } else {
         // Access denied for all corpora
         // TODO What if all corpora are protected.
-        await dialog.value?.reveal(
+        await showDialog(
           `You do not have access to any of the selected corpora. Default corpus selection will be used.`,
         )
         return validateCorpusSelection([])
       }
     } else {
-      await dialog.value?.reveal(
+      await showDialog(
         `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. Log in to continue.`,
       )
       await auth.attemptLogin()
@@ -78,12 +79,15 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
   // OK
   return ids
 }
+
+async function showDialog(messageNew: string) {
+  message.value = messageNew
+  return await dialog?.reveal()
+}
 </script>
 
 <template>
-  <ModalDialog @setup="dialog = $event">
-    <template #footer>
-      <button @click="dialog?.confirm()">OK</button>
-    </template>
+  <ModalDialog :title="$t('corpus.selection.validation.dialog.title')" @setup="dialog = $event">
+    {{ message }}
   </ModalDialog>
 </template>

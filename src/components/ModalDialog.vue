@@ -1,55 +1,97 @@
 <script setup lang="ts">
 import { useConfirmDialog, type UseConfirmDialogReturn } from "@vueuse/core"
+import { Modal } from "bootstrap"
 import { onMounted, ref } from "vue"
 
-export type Dialog = UseConfirmDialogReturn<string | undefined, void, void>
+/** Type of the `dialog` passed to the `@setup` event handler. */
+export type ConfirmDialog = UseConfirmDialogReturn<void, void, void>
 
-const emit = defineEmits<{
-  /** Provide trigger to parent */
-  (e: "setup", dialog: Dialog): void
-  (e: "close", confirmed: boolean): void
+defineProps<{
+  /** Modal element id attribute, for use with `data-bs-target` on modal toggle. */
+  id?: string
+  /** Modal title. */
+  title?: string
 }>()
 
-const dialog = useConfirmDialog<string | undefined, void, void>()
+const emit = defineEmits<{
+  /** Provide dialog handler to parent component. */
+  (e: "setup", confirmDialog: UseConfirmDialogReturn<void, void, void>): void
+  /** Emitted when the modal is closed, be it via the Bootstrap modal handler or the VueUse confirm dialog handler. */
+  (e: "close", confirmed: boolean): void
+  /** To use form, add a submit button in the footer and listen to this event. */
+  (e: "submit"): void
+}>()
 
-const element = ref<HTMLDialogElement>()
-const message = ref<string>()
+const dialog = useConfirmDialog()
+const modalRef = ref<HTMLElement>()
+let modal: Modal
 
-dialog.onReveal((text?: string) => {
-  message.value = text
-  element.value?.showModal()
-})
-
-dialog.onCancel(() => {
-  element.value?.close()
-  emit("close", false)
-})
-
-dialog.onConfirm(() => {
-  element.value?.close()
-  emit("close", true)
-})
-
+// Setup handling after mounting, when the modal element ref is available.
 onMounted(() => {
-  // Provide trigger to parent
+  const modalEl = modalRef.value
+  if (!modalEl) throw new Error("Login modal element missing")
+
+  // Attach Bootstrap modal handler to the element.
+  modal = new Modal(modalEl)
+
+  // Let confirm dialog handler pick up on modal events.
+  modalEl.addEventListener("hidden.bs.modal", () => dialog.isRevealed.value && dialog.cancel())
+  modalEl.addEventListener("shown.bs.modal", () => dialog.isRevealed.value || dialog.reveal())
+
+  // Let modal pick up on confirm dialog events.
+  dialog.onReveal(() => modal.show())
+  dialog.onCancel(() => close(false))
+  dialog.onConfirm(() => close(true))
+
+  // Provide dialog handler to parent component.
   emit("setup", dialog)
 })
+
+/** Close modal and emit confirmed state. */
+function close(confirmed: boolean) {
+  modal.hide()
+  emit("close", confirmed)
+}
 </script>
 
 <template>
   <teleport to="body">
-    <dialog ref="element" closedby="any" @close="dialog.cancel()">
-      <div v-if="$slots.header">
-        <slot name="header" />
-      </div>
+    <div
+      class="modal modal-lg"
+      :id
+      ref="modalRef"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="login-modal-title"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 v-if="title" class="modal-title" id="login-modal-title">
+              {{ title }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
 
-      <slot>
-        {{ message }}
-      </slot>
+          <form @submit.prevent="$emit('submit')">
+            <div class="modal-body">
+              <slot />
+            </div>
 
-      <div v-if="$slots.footer">
-        <slot name="footer" />
+            <div class="modal-footer">
+              <slot name="footer">
+                <button class="btn btn-primary" @click="dialog.confirm()">{{ $t("ok") }}</button>
+              </slot>
+            </div>
+          </form>
+        </div>
       </div>
-    </dialog>
+    </div>
   </teleport>
 </template>

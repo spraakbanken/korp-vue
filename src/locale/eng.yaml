@@ -4,6 +4,7 @@ language: Language
 modes: Modes
 more: More
 search: Search
+ok: OK
 
 auth.login: Log in
 auth.logout: Log out {name}
@@ -12,3 +13,5 @@ auth.email: Email
 auth.password: Password
 auth.password.forgotten: Forgot password?
 auth.remember: Remember me
+
+corpus.selection.validation.dialog.title: Corpus selection
