@@ -3,5 +3,7 @@ import SearchSimple from "./SearchSimple.vue"
 </script>
 
 <template>
-  <SearchSimple />
+  <div class="p-4">
+    <SearchSimple />
+  </div>
 </template>
