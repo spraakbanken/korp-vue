@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import HeaderSection from "@/header/HeaderSection.vue"
 import MainSection from "@/MainSection.vue"
-import SearchSection from "@/SearchSection.vue"
 import { useExpose } from "@/useExpose"
 import { setCorpusListing } from "./core/corpora/corpusListing"
 import { CorpusSet } from "./core/corpora/CorpusSet"
@@ -47,10 +46,7 @@ init()
 
 <template>
   <template v-if="initDone">
-    <header>
-      <HeaderSection />
-      <SearchSection />
-    </header>
+    <HeaderSection />
     <MainSection />
   </template>
   <div v-else>Loading...</div>
