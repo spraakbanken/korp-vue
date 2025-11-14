@@ -15,3 +15,13 @@ auth.password.forgotten: Glömt lösenordet?
 auth.remember: Kom ihåg mig
 
 corpus.selection.validation.dialog.title: Korpusurval
+
+search.simple.prefix: förled
+search.simple.prefix.help: Tillåt ord som börjar med sökorden.
+search.simple.midfix: mellanled
+search.simple.midfix.help: Tillåt ord som innehåller sökorden.
+search.simple.suffix: efterled
+search.simple.suffix.help: Tillåt ord som slutar med sökorden.
+search.simple.free_order: fri följd
+search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
+search.simple.ignore_case: skiftlägesokänsligt

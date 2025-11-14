@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
 import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
 import { buildSimpleWordCqp } from "@/core/search/simple"
+import { vPopover } from "@/bootstrap"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -63,13 +64,115 @@ function createCqp() {
 </script>
 
 <template>
-  <form @submit.prevent="submit">
-    <input v-model="input" />
-    <label><input type="checkbox" v-model="prefixLocal" />Prefix</label>
-    <label><input type="checkbox" v-model="midfixLocal" @change="onMidfixChange()" />Midfix</label>
-    <label><input type="checkbox" v-model="suffixLocal" />Suffix</label>
-    <label><input type="checkbox" v-model="freeOrder" />Free order</label>
-    <label><input type="checkbox" v-model="ignoreCase" />Case-insensitive</label>
-    <input type="submit" :value="$t('search')" />
+  <form @submit.prevent="submit" class="d-flex gap-4">
+    <div class="d-flex align-self-center gap-2">
+      <input v-model="input" class="form-control" />
+      <input type="submit" :value="$t('search')" class="btn btn-primary" />
+    </div>
+
+    <div class="d-flex gap-4">
+      <!-- Left column -->
+      <div>
+        <div class="form-check">
+          <input
+            id="search-simple-prefix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="prefixLocal"
+          />
+          <label class="form-check-label" for="search-simple-prefix">
+            {{ $t("search.simple.prefix") }}
+          </label>
+          <button
+            class="btn btn-sm ms-1"
+            v-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus hover"
+            :data-bs-content="$t('search.simple.prefix.help')"
+          >
+            ?
+          </button>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="search-simple-midfix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="midfixLocal"
+            @change="onMidfixChange()"
+          />
+          <label class="form-check-label" for="search-simple-midfix">
+            {{ $t("search.simple.midfix") }}
+          </label>
+          <button
+            class="btn btn-sm ms-1"
+            v-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus hover"
+            :data-bs-content="$t('search.simple.midfix.help')"
+          >
+            ?
+          </button>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="search-simple-suffix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="suffixLocal"
+          />
+          <label class="form-check-label" for="search-simple-suffix">
+            {{ $t("search.simple.suffix") }}
+          </label>
+          <button
+            class="btn btn-sm ms-1"
+            v-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus hover"
+            :data-bs-content="$t('search.simple.suffix.help')"
+          >
+            ?
+          </button>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div>
+        <div class="form-check">
+          <input
+            id="search-simple-free-order"
+            class="form-check-input"
+            type="checkbox"
+            v-model="freeOrder"
+          />
+          <label class="form-check-label" for="search-simple-free-order">
+            {{ $t("search.simple.free_order") }}
+          </label>
+          <button
+            class="btn btn-sm ms-1"
+            v-popover
+            data-bs-toggle="popover"
+            data-bs-trigger="focus hover"
+            :data-bs-content="$t('search.simple.free_order.help')"
+          >
+            ?
+          </button>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="search-simple-ignore-case"
+            class="form-check-input"
+            type="checkbox"
+            v-model="ignoreCase"
+          />
+          <label class="form-check-label" for="search-simple-ignore-case">
+            {{ $t("search.simple.ignore_case") }}
+          </label>
+        </div>
+      </div>
+    </div>
   </form>
 </template>
