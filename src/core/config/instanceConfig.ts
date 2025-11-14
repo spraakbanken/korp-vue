@@ -27,7 +27,7 @@ export function getInstanceConfig(): InstanceConfig {
   settings["has_timespan"] ??= true
 
   // Set default values depending on other settings last
-  settings["hits_per_page_default"] ??= settings.hits_per_page_values[0]
+  settings["hits_per_page_default"] ??= settings.hits_per_page_values[0]!
 
   settings.korp_backend_url = settings.korp_backend_url.trim().replace(/\/$/, "")
   if (!settings.korp_backend_url.startsWith("http")) {

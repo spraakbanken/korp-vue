@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeaderSection from "@/HeaderSection.vue"
+import HeaderSection from "@/header/HeaderSection.vue"
 import MainSection from "@/MainSection.vue"
 import SearchSection from "@/SearchSection.vue"
 import { useExpose } from "@/useExpose"
