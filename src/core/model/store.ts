@@ -47,6 +47,8 @@ export type Store = {
    *   - "cqp", for advanced mode (`query` is a CQP expression)
    */
   search?: `${string}|${string}` | "cqp"
+  /** Active search tab */
+  searchTab: number
   /** The current Simple search query as CQP */
   simpleCqp?: string
   /** Search result order */
