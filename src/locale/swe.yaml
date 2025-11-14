@@ -4,3 +4,11 @@ language: Språk
 modes: Lägen
 more: Fler
 search: Sök
+
+auth.login: Logga in
+auth.logout: Logga ut {name}
+auth.description: Ett konto behövs bara om du vill få tillgång till skyddade korpusar. För att ansöka om tillgång, kontakta sb-info{'@'}svenska.gu.se och meddela vilka korpusar du är intresserad av.
+auth.email: Epostadress
+auth.password: Lösenord
+auth.password.forgotten: Glömt lösenordet?
+auth.remember: Kom ihåg mig

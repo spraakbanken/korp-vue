@@ -4,3 +4,11 @@ language: Language
 modes: Modes
 more: More
 search: Search
+
+auth.login: Log in
+auth.logout: Log out {name}
+auth.description: An account is only necessary if you need to access protected corpora. To apply for access, email sb-info{'@'}svenska.gu.se and let us know what corpora you are interested in.
+auth.email: Email
+auth.password: Password
+auth.password.forgotten: Forgot password?
+auth.remember: Remember me
