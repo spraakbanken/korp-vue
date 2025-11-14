@@ -29,8 +29,6 @@ const languages = settings.languages.map((item) => ({ ...item, label: locObj(ite
       class="d-inline-block align-baseline"
     />
 
-    <div>
-      <component :is="auth?.statusComponent" />
-    </div>
+    <component :is="auth?.statusComponent" class="d-inline-block align-baseline" />
   </header>
 </template>
