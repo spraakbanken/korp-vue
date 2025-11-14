@@ -21,34 +21,32 @@ if (currentModeInSecondary.length) primary.push(...currentModeInSecondary)
 <template>
   <div>
     <span class="visually-hidden">{{ $t("modes") }}:</span>
-    <ul class="list-inline d-inline-block">
-      <li v-for="{ label, mode } of primary" :key="mode" class="list-inline-item">
-        <a :href="`?mode=${mode}`">{{ locObj(label) }}</a>
-        &nbsp;
-      </li>
-    </ul>
-    <div class="dropdown d-inline-block">
-      <button
-        class="btn btn-link dropdown-toggle align-baseline"
-        role="menu"
-        type="button"
-        id="modes-secondary"
-        data-bs-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        {{ $t("more") }}
-      </button>
-      <div class="dropdown-menu" aria-labelledby="modes-secondary">
-        <a
-          v-for="{ label, mode } of secondary"
-          :key="mode"
-          class="dropdown-item"
-          :href="`?mode=${mode}`"
-        >
+    <ul class="navbar-nav">
+      <li v-for="{ label, mode } of primary" :key="mode" class="nav-item">
+        <a :href="`?mode=${mode}`" class="nav-link" :class="{ active: mode == currentMode }">
           {{ locObj(label) }}
         </a>
-      </div>
-    </div>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a
+          id="modes-secondary"
+          class="nav-link dropdown-toggle"
+          href="#"
+          data-bs-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          {{ $t("more") }}
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="modes-secondary">
+          <li v-for="{ label, mode } of secondary" :key="mode">
+            <a :href="`?mode=${mode}`" class="dropdown-item">
+              {{ locObj(label) }}
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>

@@ -43,13 +43,13 @@ async function send() {
 <template>
   <button
     v-if="!auth?.isLoggedIn()"
-    class="btn btn-link align-baseline"
+    class="nav-link"
     data-bs-toggle="modal"
     data-bs-target="#login-modal"
   >
     {{ $t("auth.login") }}
   </button>
-  <button v-else class="btn btn-link align-baseline" @click="auth.logout()">
+  <button v-else class="nav-link" @click="auth.logout()">
     {{ $t("auth.logout", { name: auth.getUsername() }) }}
   </button>
 
