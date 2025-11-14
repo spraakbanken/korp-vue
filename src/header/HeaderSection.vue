@@ -5,25 +5,29 @@ import { storeToRefs } from "pinia"
 import { useAuth } from "../auth/useAuth"
 import { useLocale } from "../i18n/useLocale"
 import ModeSelector from "@/header/ModeSelector.vue"
+import InlineMenu from "@/components/InlineMenu.vue"
 
 const { locObj } = useLocale()
 const store = useAppStore()
 const auth = useAuth()
 
 const { lang } = storeToRefs(store)
+
+const languages = settings.languages.map((item) => ({ ...item, label: locObj(item.label) }))
 </script>
 
 <template>
   <header class="container">
-    <ModeSelector />
+    <ModeSelector class="d-inline-block" />
 
-    <div>
-      {{ $t("language") }}:
-      <label v-for="l in settings.languages" :key="l.value">
-        <input type="radio" v-model="lang" :value="l.value" />
-        {{ locObj(l.label) }}
-      </label>
-    </div>
+    <InlineMenu
+      id="language-selector"
+      :label="$t('language')"
+      name="lang"
+      :options="languages"
+      v-model="lang"
+      class="d-inline-block align-baseline"
+    />
 
     <div>
       <component :is="auth?.statusComponent" />
