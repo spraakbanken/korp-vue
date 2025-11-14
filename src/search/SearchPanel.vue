@@ -2,10 +2,17 @@
 import { useAppStore } from "@/store/useAppStore"
 import SearchSimple from "./SearchSimple.vue"
 import { storeToRefs } from "pinia"
+import { vTab } from "@/bootstrap"
 
 const store = useAppStore()
 
 const { searchTab } = storeToRefs(store)
+
+const tabOptions = [
+  { key: 1, name: "simple" },
+  { key: 2, name: "extended" },
+  { key: 3, name: "advanced" },
+]
 </script>
 
 <template>
@@ -13,43 +20,17 @@ const { searchTab } = storeToRefs(store)
     <!-- Tab bar -->
     <nav class="nav nav-tabs" id="search-tabs-list">
       <button
+        v-for="{ key, name } in tabOptions"
+        :key
         class="nav-link"
-        :class="{ active: searchTab == 1 }"
-        id="search-tabs-tab-simple"
-        data-bs-toggle="tab"
-        data-bs-target="#search-tabs-pane-simple"
-        type="button"
-        role="tab"
-        aria-controls="search-tabs-pane-simple"
-        :aria-selected="searchTab == 1"
+        :class="{ active: searchTab == key }"
+        :id="`search-tabs-tab-${name}`"
+        v-tab
+        :aria-controls="`search-tabs-pane-${name}`"
+        :aria-selected="searchTab == key"
+        @click="searchTab = key"
       >
-        {{ $t("search.simple") }}
-      </button>
-      <button
-        class="nav-link"
-        :class="{ active: searchTab == 2 }"
-        id="search-tabs-tab-extended"
-        data-bs-toggle="tab"
-        data-bs-target="#search-tabs-pane-extended"
-        type="button"
-        role="tab"
-        aria-controls="search-tabs-pane-extended"
-        :aria-selected="searchTab == 2"
-      >
-        {{ $t("search.extended") }}
-      </button>
-      <button
-        class="nav-link"
-        :class="{ active: searchTab == 3 }"
-        id="search-tabs-tab-advanced"
-        data-bs-toggle="tab"
-        data-bs-target="#search-tabs-pane-advanced"
-        type="button"
-        role="tab"
-        aria-controls="search-tabs-pane-advanced"
-        :aria-selected="searchTab == 3"
-      >
-        {{ $t("search.advanced") }}
+        {{ $t(`search.${name}`) }}
       </button>
     </nav>
 
