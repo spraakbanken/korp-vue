@@ -16,6 +16,7 @@ auth.remember: Kom ihåg mig
 
 corpus.selection.validation.dialog.title: Korpusurval
 
+search.simple: Enkel
 search.simple.prefix: förled
 search.simple.prefix.help: Tillåt ord som börjar med sökorden.
 search.simple.midfix: mellanled
@@ -25,3 +26,5 @@ search.simple.suffix.help: Tillåt ord som slutar med sökorden.
 search.simple.free_order: fri följd
 search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
 search.simple.ignore_case: skiftlägesokänsligt
+search.extended: Utökad
+search.advanced: Avancerad

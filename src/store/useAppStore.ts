@@ -57,6 +57,7 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   })
   const resultTab = paramHandler(url, "result_tab", () => 1)
   const search = paramHandler(url, "search")
+  const searchTab = paramHandler(url, "search_tab", () => 1)
   const simpleCqp = ref<string>()
   const sort = paramHandler(url, "sort")
   const statsRelative = ref(false)
@@ -120,6 +121,7 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     reading_mode,
     resultTab,
     search,
+    searchTab,
     simpleCqp,
     sort,
     stats_reduce,

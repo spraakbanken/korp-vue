@@ -16,6 +16,7 @@ auth.remember: Remember me
 
 corpus.selection.validation.dialog.title: Corpus selection
 
+search.simple: Simple
 search.simple.prefix: initial part
 search.simple.prefix.help: Allow words that begin with the search words.
 search.simple.midfix: medial part
@@ -25,3 +26,5 @@ search.simple.suffix.help: Allow words that end with the search words.
 search.simple.free_order: free order
 search.simple.free_order.help: The search words can occur in any order, and not necessarily in sequence.
 search.simple.ignore_case: case-insensitive
+search.extended: Extended
+search.advanced: Advanced
