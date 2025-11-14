@@ -29,24 +29,30 @@ watchEffect(() => (selection.value = store.corpus))
 </script>
 
 <template>
-  <CorpusSelectionDialog @resolve="resolveValidation" />
+  <div>
+    <CorpusSelectionDialog @resolve="resolveValidation" />
 
-  <div class="d-grid">
-    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#corpus-selector">
-      {{ store.corpus.length }} {{ $t("corpora") }}
-    </button>
-  </div>
-
-  <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="store.corpus = selection">
-    <select multiple v-model="selection" size="8">
-      <option
-        v-for="corpus of corpusListing.corpora"
-        :key="corpus.id"
-        :value="corpus.id"
-        :disabled="corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())"
+    <div class="d-grid">
+      <button
+        class="btn btn-outline-secondary"
+        data-bs-toggle="modal"
+        data-bs-target="#corpus-selector"
       >
-        {{ locObj(corpus.title) }}
-      </option>
-    </select>
-  </ModalDialog>
+        {{ store.corpus.length }} {{ $t("corpora") }}
+      </button>
+    </div>
+
+    <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="store.corpus = selection">
+      <select multiple v-model="selection" size="8">
+        <option
+          v-for="corpus of corpusListing.corpora"
+          :key="corpus.id"
+          :value="corpus.id"
+          :disabled="corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())"
+        >
+          {{ locObj(corpus.title) }}
+        </option>
+      </select>
+    </ModalDialog>
+  </div>
 </template>
