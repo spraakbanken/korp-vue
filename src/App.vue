@@ -47,8 +47,10 @@ init()
 
 <template>
   <template v-if="initDone">
-    <HeaderSection />
-    <SearchSection />
+    <header>
+      <HeaderSection />
+      <SearchSection />
+    </header>
     <MainSection />
   </template>
   <div v-else>Loading...</div>
