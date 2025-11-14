@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import settings from "@/core/config"
-import { useAppStore } from "./store/useAppStore"
+import { useAppStore } from "../store/useAppStore"
 import { storeToRefs } from "pinia"
-import { useAuth } from "./auth/useAuth"
-import { useLocale } from "./i18n/useLocale"
+import { useAuth } from "../auth/useAuth"
+import { useLocale } from "../i18n/useLocale"
+import ModeSelector from "@/header/ModeSelector.vue"
 
 const { locObj } = useLocale()
 const store = useAppStore()
@@ -14,13 +15,7 @@ const { lang } = storeToRefs(store)
 
 <template>
   <header class="container">
-    <div>
-      {{ $t("modes") }}:
-      <span v-for="{ label, mode } of settings.modes" :key="mode">
-        <a :href="`?mode=${mode}`">{{ locObj(label) }}</a>
-        &nbsp;
-      </span>
-    </div>
+    <ModeSelector />
 
     <div>
       {{ $t("language") }}:
