@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
     server: {
       // Remap hostname and enable HTTPS, in order for authentication to work.
       // Map this hostname to 127.0.0.1 in /etc/hosts.
-      host: "korpdev.spraakbanken.gu.se",
+      host: env.KORP_HOST,
       https: getHttpsOptions(),
     },
   }
