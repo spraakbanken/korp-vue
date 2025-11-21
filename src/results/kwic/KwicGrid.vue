@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ApiKwic } from "@/core/api/types"
 import KwicRow from "./KwicRow.vue"
+import type { Row } from "@/core/kwic/kwic"
 
-defineProps<{ data: ApiKwic[] }>()
+defineProps<{ data: Row[] }>()
 </script>
 
 <template>

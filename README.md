@@ -36,7 +36,7 @@ To activate SSL (e.g. for `?mode=mink` which uses SB-Auth):
 1. Point the hostname `korpdev.spraakbanken.gu.se` to localhost. On a UNIX system, you can do this by editing `/etc/hosts`.
 2. Create certificate files with mkcert:
    ```sh
-   mkcert "\*.spraakbanken.gu.se"
+   mkcert "*.spraakbanken.gu.se"
    ```
 3. Set these environment variables in `.env` or otherwise:
    ```ini

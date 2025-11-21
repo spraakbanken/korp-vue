@@ -7,6 +7,7 @@ import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { ref } from "vue"
 import KwicGrid from "./kwic/KwicGrid.vue"
+import { massageData } from "@/core/kwic/kwic"
 
 const store = useAppStore()
 
@@ -35,6 +36,6 @@ async function doSearch() {
 
 <template>
   <div>
-    <KwicGrid v-if="kwic" :data="kwic" />
+    <KwicGrid v-if="kwic" :data="massageData(kwic)" />
   </div>
 </template>
