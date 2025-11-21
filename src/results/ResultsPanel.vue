@@ -3,6 +3,7 @@ import { useAppStore } from "@/store/useAppStore"
 import KwicResults from "./KwicResults.vue"
 import { storeToRefs } from "pinia"
 import StatisticsResult from "./StatisticsResult.vue"
+import { vTab } from "@/bootstrap"
 
 const store = useAppStore()
 const { resultTab } = storeToRefs(store)
