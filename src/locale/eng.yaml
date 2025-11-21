@@ -28,3 +28,7 @@ search.simple.free_order.help: The search words can occur in any order, and not 
 search.simple.ignore_case: case-insensitive
 search.extended: Extended
 search.advanced: Advanced
+
+result.kwic: KWIC
+result.statistics: Statistics
+result.wordpicture: Word picture

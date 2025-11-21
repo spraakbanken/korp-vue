@@ -28,3 +28,7 @@ search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, oc
 search.simple.ignore_case: skiftlägesokänsligt
 search.extended: Utökad
 search.advanced: Avancerad
+
+result.kwic: KWIC
+result.statistics: Statistik
+result.wordpicture: Ordbild
