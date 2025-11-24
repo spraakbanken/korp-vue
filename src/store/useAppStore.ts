@@ -76,7 +76,7 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
       for (const key of Object.keys(url)) {
         if (key.startsWith("cqp_")) {
           const lang = key.slice(4)
-          const cqp = url[key as `cqp_${string}`]
+          const cqp = url[key as `cqp_${string}`]!
           out[lang] = cqp
         }
       }

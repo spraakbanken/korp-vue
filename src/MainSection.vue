@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FrontPage from "./frontpage/FrontPage.vue"
 import ResultsPanel from "./results/ResultsPanel.vue"
 import { useAppStore } from "./store/useAppStore"
 
@@ -10,6 +11,7 @@ const store = useAppStore()
     <section v-if="store.activeSearch">
       <ResultsPanel />
     </section>
-    <section v-else>TODO Frontpage</section>
+
+    <FrontPage v-else />
   </main>
 </template>

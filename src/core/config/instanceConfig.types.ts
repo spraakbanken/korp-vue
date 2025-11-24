@@ -1,5 +1,6 @@
 import type { Labeled, LangString } from "@/core/model/locale"
 import type { Attribute } from "./corpusConfigRaw.types"
+import type { Store } from "../model/store"
 
 /** Frontend settings as can be loaded from configuration directory. */
 export type InstanceConfig = {
@@ -75,8 +76,7 @@ export type InstanceConfig = {
 export type SearchExample = {
   label: LangString
   hint?: LangString
-  // TODO Type params
-  params: object
+  params: Partial<Store>
 }
 
 export type WordPictureDef = (WordPictureDefItem | "_")[]

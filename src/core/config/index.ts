@@ -37,7 +37,7 @@ export function getConfigurable<T>(
   return widget
 }
 
-export const getDefaultWithin = () => Object.keys(settings["default_within"] || {})[0]
+export const getDefaultWithin = () => Object.keys(settings["default_within"] || {})[0] || "sentence"
 
 export const getDefaultCorpusSelection = (): string[] =>
   (settings["preselected_corpora"] || []).flatMap((name) =>

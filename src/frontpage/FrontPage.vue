@@ -1,0 +1,29 @@
+<script lang="ts" setup>
+import settings from "@/core/config"
+import { locObj } from "@/core/i18n"
+import SearchExamples from "./SearchExamples.vue"
+
+const examples = settings.frontpage?.examples
+</script>
+
+<template>
+  <div>
+    <div class="row">
+      <div v-if="settings.description || settings.mode_description" class="col-md mb-4">
+        <div v-if="settings.description" v-html="locObj(settings.description)"></div>
+
+        <div v-if="settings.mode_description">
+          <h3>{{ locObj(settings.mode.label) }}</h3>
+          <div v-html="locObj(settings.mode_description)"></div>
+        </div>
+      </div>
+
+      <SearchExamples class="col-md mb-4" v-if="examples" :items="examples" />
+    </div>
+
+    <div class="row">
+      <div class="col-md mb-4">TODO Corpus updates</div>
+      <div class="col-md mb-4">TODO News</div>
+    </div>
+  </div>
+</template>

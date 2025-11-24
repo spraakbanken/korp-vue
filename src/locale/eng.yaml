@@ -16,6 +16,8 @@ auth.remember: Remember me
 
 corpus.selection.validation.dialog.title: Corpus selection
 
+frontpage.examples: Search examples
+
 search.simple: Simple
 search.simple.prefix: initial part
 search.simple.prefix.help: Allow words that begin with the search words.

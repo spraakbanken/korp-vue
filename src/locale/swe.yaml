@@ -16,6 +16,8 @@ auth.remember: Kom ihåg mig
 
 corpus.selection.validation.dialog.title: Korpusurval
 
+frontpage.examples: Exempelsökningar
+
 search.simple: Enkel
 search.simple.prefix: förled
 search.simple.prefix.help: Tillåt ord som börjar med sökorden.
