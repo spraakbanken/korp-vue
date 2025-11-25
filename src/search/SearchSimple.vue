@@ -37,10 +37,8 @@ watchImmediate(search, () => {
 })
 
 function onMidfixChange() {
-  if (midfixLocal.value) {
-    prefixLocal.value = true
-    suffixLocal.value = true
-  }
+  prefixLocal.value = midfixLocal.value
+  suffixLocal.value = midfixLocal.value
 }
 
 function submit() {
@@ -93,15 +91,15 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-prefix">
             {{ $t("search.simple.prefix") }}
           </label>
-          <button
-            class="btn btn-sm ms-1"
+          <span
+            class="btn badge text-secondary ms-1"
             v-popover
             data-bs-toggle="popover"
             data-bs-trigger="focus hover"
             :data-bs-content="$t('search.simple.prefix.help')"
           >
             ?
-          </button>
+          </span>
         </div>
 
         <div class="form-check">
@@ -115,15 +113,15 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-midfix">
             {{ $t("search.simple.midfix") }}
           </label>
-          <button
-            class="btn btn-sm ms-1"
+          <span
+            class="btn badge text-secondary ms-1"
             v-popover
             data-bs-toggle="popover"
             data-bs-trigger="focus hover"
             :data-bs-content="$t('search.simple.midfix.help')"
           >
             ?
-          </button>
+          </span>
         </div>
 
         <div class="form-check">
@@ -136,15 +134,15 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-suffix">
             {{ $t("search.simple.suffix") }}
           </label>
-          <button
-            class="btn btn-sm ms-1"
+          <span
+            class="btn badge text-secondary ms-1"
             v-popover
             data-bs-toggle="popover"
             data-bs-trigger="focus hover"
             :data-bs-content="$t('search.simple.suffix.help')"
           >
             ?
-          </button>
+          </span>
         </div>
       </div>
 
@@ -160,15 +158,15 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-free-order">
             {{ $t("search.simple.free_order") }}
           </label>
-          <button
-            class="btn btn-sm ms-1"
+          <span
+            class="btn badge text-secondary"
             v-popover
             data-bs-toggle="popover"
             data-bs-trigger="focus hover"
             :data-bs-content="$t('search.simple.free_order.help')"
           >
             ?
-          </button>
+          </span>
         </div>
 
         <div class="form-check">
