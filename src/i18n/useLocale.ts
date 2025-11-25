@@ -5,6 +5,10 @@ import { useI18n } from "vue-i18n"
 export function useLocale() {
   const { locale } = useI18n()
 
+  /**
+   * Get translated string from a given object.
+   * Like `locObj()` in `@/core/i18n` but reactive to current language.
+   */
   const locObj_ = (map?: LangString) => locObj(map, locale.value)
 
   return {

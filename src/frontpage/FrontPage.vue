@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import settings from "@/core/config"
-import { locObj } from "@/core/i18n"
 import SearchExamples from "./SearchExamples.vue"
+import { useLocale } from "@/i18n/useLocale"
+
+const { locObj } = useLocale()
 
 const examples = settings.frontpage?.examples
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SearchExample } from "@/core/config/instanceConfig.types"
-import { locObj } from "@/core/i18n"
 import type { Store } from "@/core/model/store"
+import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { shuffle } from "lodash"
 
@@ -10,6 +10,7 @@ const props = defineProps<{
 }>()
 
 const store = useAppStore()
+const { locObj } = useLocale()
 
 // Pick 3 random examples
 const examples = shuffle(props.items).slice(0, 3)

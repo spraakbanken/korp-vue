@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import settings from "@/core/config"
-import { locObj } from "@/core/i18n"
+import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
 
 const store = useAppStore()
+const { locObj } = useLocale()
 
 const { lang } = storeToRefs(store)
 </script>

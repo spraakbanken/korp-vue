@@ -16,5 +16,5 @@ export function locObj(map?: LangString, lang?: string): string {
   if (!map) return ""
   if (typeof map == "string") return map
   // fall back to the first value if neither the selected or default language are available
-  return map[lang] ?? Object.values(map)[0]
+  return map[lang] ?? Object.values(map)[0] ?? ""
 }
