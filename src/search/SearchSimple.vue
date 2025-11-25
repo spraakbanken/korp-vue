@@ -5,8 +5,9 @@ import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
 import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
-import { buildSimpleWordCqp } from "@/core/search/simple"
+import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import { vPopover } from "@/bootstrap"
+import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -16,7 +17,7 @@ const midfixLocal = ref(false)
 const suffixLocal = ref(suffix.value)
 const freeOrder = ref(!in_order.value)
 const ignoreCase = ref(isCaseInsensitive.value)
-const input = ref("")
+const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
@@ -26,9 +27,10 @@ watchEffect(() => (freeOrder.value = !in_order.value))
 watchEffect(() => (ignoreCase.value = isCaseInsensitive.value))
 watchImmediate(search, () => {
   // For simple, `search` has the format `{word,lemgram}|<value>`
-  const [type, val] = splitFirst("|", store.search || "")
+  const [type, value] = splitFirst("|", store.search || "")
   if (type != "word" && type != "lemgram") return
-  input.value = val
+
+  lemgram.value = { type, value }
 
   // Trigger search
   doSearch()
@@ -47,17 +49,25 @@ function submit() {
   store.suffix = suffixLocal.value
   store.in_order = !freeOrder.value
   store.isCaseInsensitive = ignoreCase.value
-  store.search = `word|${input.value}`
+
+  const { type, value } = lemgram.value
+  store.search = `${type}|${value}`
   doSearch()
 }
 
 function doSearch() {
-  if (!input.value) return
-  store.activeSearch = { type: "word", cqp: createCqp() }
+  const { type, value } = lemgram.value
+  if (!value) return
+  store.activeSearch = { type, cqp: createCqp() }
 }
 
 function createCqp() {
-  const query = buildSimpleWordCqp(input.value, prefix.value, suffix.value, ignoreCase.value)
+  const { type, value } = lemgram.value
+  const query =
+    type == "lemgram"
+      ? buildSimpleLemgramCqp(value, prefix.value, suffix.value)
+      : buildSimpleWordCqp(value, prefix.value, suffix.value, ignoreCase.value)
+
   if (store.globalFilter) mergeCqpExprs(query, store.globalFilter)
   return stringify(query)
 }
@@ -66,7 +76,7 @@ function createCqp() {
 <template>
   <form @submit.prevent="submit" class="d-flex gap-4">
     <div class="d-flex align-self-center gap-2">
-      <input v-model="input" class="form-control" />
+      <LemgramAutocomplete v-model="lemgram" />
       <input type="submit" :value="$t('search')" class="btn btn-primary" />
     </div>
 

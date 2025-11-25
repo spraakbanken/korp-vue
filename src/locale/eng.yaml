@@ -30,7 +30,27 @@ search.simple.free_order.help: The search words can occur in any order, and not 
 search.simple.ignore_case: case-insensitive
 search.extended: Extended
 search.advanced: Advanced
+search.word_or_lemgram: Word or lemgram
+search.show_suggestions: Show suggestions
 
 result.kwic: KWIC
 result.statistics: Statistics
 result.wordpicture: Word picture
+
+pos.nn: noun
+pos.av: adjective
+pos.jj: adjective
+pos.vb: verb
+pos.pm: proper noun
+pos.ab: adverb
+pos.in: interjection
+pos.pp: preposition
+pos.nl: numeral
+pos.pn: pronoun
+pos.sn: subjunction
+pos.kn: conjunction
+pos.al: article
+pos.ie: infinitive particle
+pos.e: e
+pos.mx: flerordsprefix
+pos.sx: prefix

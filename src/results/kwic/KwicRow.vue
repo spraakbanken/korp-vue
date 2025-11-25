@@ -27,4 +27,7 @@ defineProps<{ data: Row }>()
 .kwic-before {
   text-align: end;
 }
+.kwic-match {
+  text-align: center;
+}
 </style>

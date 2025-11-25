@@ -30,7 +30,27 @@ search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, oc
 search.simple.ignore_case: skiftlägesokänsligt
 search.extended: Utökad
 search.advanced: Avancerad
+search.word_or_lemgram: Ord eller lemgram
+search.show_suggestions: Visa förslag
 
 result.kwic: KWIC
 result.statistics: Statistik
 result.wordpicture: Ordbild
+
+pos.nn: substantiv
+pos.av: adjektiv
+pos.jj: adjektiv
+pos.vb: verb
+pos.pm: egennamn
+pos.ab: adverb
+pos.in: interjektion
+pos.pp: preposition
+pos.nl: numeral
+pos.pn: pronomen
+pos.sn: subjunktion
+pos.kn: konjunktion
+pos.al: artikel
+pos.ie: infinitivmärke
+pos.e: e
+pos.mx: flerordsprefix
+pos.sx: prefix
