@@ -1,4 +1,4 @@
-import type { QueryParamSort } from "@/core/api/types/query"
+import type { QueryParamSort } from "@/core/backend/types/query"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
 
 /** Stored state. */

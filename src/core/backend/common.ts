@@ -98,7 +98,7 @@ export function calcProgress<K extends keyof API>(
   /** Look up sizes of corpora and sum them */
   const getCorpusSize = (corpora: string[]) =>
     corpora
-      .map((corpus) => Number(settings.corpora[corpus.toLowerCase()].info.Size))
+      .map((corpus) => Number(settings.corpora[corpus.toLowerCase()]?.info.Size || 0))
       .reduce((a, b) => a + b, 0)
 
   /** Number of hits (`null` if this API endpoint doesn't report search hits) */

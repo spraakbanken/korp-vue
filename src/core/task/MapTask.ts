@@ -1,4 +1,4 @@
-import type { CountParams, StatsRow } from "../types/count"
+import type { CountParams, StatsRow } from "../../backend/types/count"
 import { korpRequest } from "../common"
 import { compact } from "lodash"
 import { TaskBase } from "./TaskBase"

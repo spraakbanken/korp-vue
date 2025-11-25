@@ -6,7 +6,7 @@ import type {
   CustomAttribute,
   Folder,
 } from "./corpusConfigRaw.types"
-import type { CorpusInfoInfo } from "@/core/api/types/corpusInfo"
+import type { CorpusInfoInfo } from "@/core/backend/types/corpusInfo"
 
 /** Config as transformed after being fetched from backend */
 export type CorpusConfig = Omit<CorpusConfigRaw, "attributes" | "corpora" | "label"> & {

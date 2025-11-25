@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Token } from "@/core/api/types"
+import type { Token } from "@/core/backend/types"
 
 defineProps<{
   token: Token

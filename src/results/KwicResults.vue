@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { KwicProxy } from "@/core/api/proxy/KwicProxy"
-import type { ApiKwic } from "@/core/api/types"
+import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
+import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"

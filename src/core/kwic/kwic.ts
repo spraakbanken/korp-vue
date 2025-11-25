@@ -1,5 +1,5 @@
 import sum from "lodash/sum"
-import type { ApiKwic } from "../api/types"
+import type { ApiKwic } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"

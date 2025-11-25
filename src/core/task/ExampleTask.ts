@@ -1,5 +1,5 @@
 import { ExampleProxy } from "../proxy/ExampleProxy"
-import type { QueryResponse } from "../types/query"
+import type { QueryResponse } from "../../backend/types/query"
 import { TaskBase } from "./TaskBase"
 
 export class ExampleTask extends TaskBase<QueryResponse> {

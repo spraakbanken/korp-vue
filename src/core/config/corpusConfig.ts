@@ -1,5 +1,5 @@
 import { keyBy, mapValues, omit, pick } from "lodash"
-import { korpRequest } from "../api/common"
+import { korpRequest } from "../backend/common"
 import currentMode from "../corpora/mode"
 import { fromKeys } from "../util"
 import type { InstanceConfig } from "./instanceConfig.types"

@@ -1,8 +1,8 @@
 import type { CorpusListing } from "@/core/corpora/corpusListing"
-import type { CountTimeParams, CountTimeResponse } from "../types/countTime"
+import type { CountTimeParams, CountTimeResponse } from "../../backend/types/countTime"
 import { TaskBase } from "./TaskBase"
 import type { Moment } from "moment"
-import type { NumericString, ProgressHandler } from "../types"
+import type { NumericString, ProgressHandler } from "../../backend/types"
 import { padStart } from "lodash"
 import { korpRequest } from "../common"
 

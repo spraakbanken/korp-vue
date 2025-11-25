@@ -1,4 +1,4 @@
-import type { QueryParamSort } from "@/core/api/types/query"
+import type { QueryParamSort } from "@/core/backend/types/query"
 
 /** Supported parameters for the `?<key>=<value>` part of the URL. */
 export type UrlParams = {
