@@ -2,6 +2,7 @@
 import { getLemgrams, type LemgramCount } from "@/core/backend/lexicons"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { Lemgram } from "@/core/lemgram"
+import { watchImmediate } from "@vueuse/core"
 import { Dropdown } from "bootstrap"
 import { throttle } from "lodash"
 import { ref } from "vue"
@@ -22,6 +23,11 @@ const toggleElement = ref<HTMLButtonElement>()
 const menuElement = ref<HTMLElement>()
 /** Loaded lemgram options */
 const options = ref<LemgramCount[]>([])
+
+/** Sync model value to input text */
+watchImmediate(modelValue, () => {
+  input.value = Lemgram.parse(modelValue.value.value)?.toString(t) || modelValue.value.value
+})
 
 function onInput() {
   // Report plaintext input
@@ -55,7 +61,6 @@ function openMenu(focus = false) {
 const openMenuInBackground = () => setTimeout(() => openMenu())
 
 function select(option: LemgramCount) {
-  input.value = Lemgram.parse(option.lemgram)?.toString(t) || option.lemgram
   modelValue.value = { type: "lemgram", value: option.lemgram }
   // options.value = []
   const dropdown = Dropdown.getOrCreateInstance(toggleElement.value!)
