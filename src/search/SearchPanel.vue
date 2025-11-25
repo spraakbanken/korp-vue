@@ -6,12 +6,12 @@ import { vTab } from "@/bootstrap"
 
 const store = useAppStore()
 
-const { searchTab } = storeToRefs(store)
+const { search_tab } = storeToRefs(store)
 
 const tabOptions = [
-  { key: 1, name: "simple" },
-  { key: 2, name: "extended" },
-  { key: 3, name: "advanced" },
+  { key: 0, name: "simple" },
+  { key: 1, name: "extended" },
+  { key: 2, name: "advanced" },
 ]
 </script>
 
@@ -23,12 +23,12 @@ const tabOptions = [
         v-for="{ key, name } in tabOptions"
         :key
         class="nav-link"
-        :class="{ active: searchTab == key }"
+        :class="{ active: search_tab == key }"
         :id="`search-tabs-tab-${name}`"
         v-tab
         :aria-controls="`search-tabs-pane-${name}`"
-        :aria-selected="searchTab == key"
-        @click="searchTab = key"
+        :aria-selected="search_tab == key"
+        @click="search_tab = key"
       >
         {{ $t(`search.${name}`) }}
       </button>
@@ -38,7 +38,7 @@ const tabOptions = [
     <div class="tab-content border border-top-0 p-2" id="search-tabs-content">
       <div
         class="tab-pane"
-        :class="{ 'show active': searchTab == 1 }"
+        :class="{ 'show active': search_tab == 0 }"
         id="search-tabs-pane-simple"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-simple"
@@ -49,7 +49,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': searchTab == 2 }"
+        :class="{ 'show active': search_tab == 1 }"
         id="search-tabs-pane-extended"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-extended"
@@ -60,7 +60,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': searchTab == 3 }"
+        :class="{ 'show active': search_tab == 2 }"
         id="search-tabs-pane-advanced"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-advanced"

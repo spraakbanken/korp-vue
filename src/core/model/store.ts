@@ -38,7 +38,7 @@ export type Store = {
   /** Whether to KWIC with more context */
   reading_mode: boolean
   /** Active result tab */
-  resultTab: number
+  result_tab: number
   /**
    * Search query for Simple or Advanced search: `<mode>|<query>`
    * where `mode` can be:
@@ -48,7 +48,7 @@ export type Store = {
    */
   search?: `${string}|${string}` | "cqp"
   /** Active search tab */
-  searchTab: number
+  search_tab: number
   /** The current Simple search query as CQP */
   simpleCqp?: string
   /** Search result order */

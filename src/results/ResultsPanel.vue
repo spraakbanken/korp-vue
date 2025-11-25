@@ -6,7 +6,7 @@ import StatisticsResult from "./StatisticsResult.vue"
 import { vTab } from "@/bootstrap"
 
 const store = useAppStore()
-const { resultTab } = storeToRefs(store)
+const { result_tab } = storeToRefs(store)
 
 const tabOptions = [
   { key: 1, name: "kwic" },
@@ -23,12 +23,12 @@ const tabOptions = [
         v-for="{ key, name } in tabOptions"
         :key
         class="nav-link"
-        :class="{ active: resultTab == key }"
+        :class="{ active: result_tab == key }"
         :id="`result-tabs-tab-${name}`"
         v-tab
         :aria-controls="`result-tabs-pane-${name}`"
-        :aria-selected="resultTab == key"
-        @click="resultTab = key"
+        :aria-selected="result_tab == key"
+        @click="result_tab = key"
       >
         {{ $t(`result.${name}`) }}
       </button>
@@ -38,7 +38,7 @@ const tabOptions = [
     <div class="tab-content border border-top-0 p-2" id="result-tabs-content">
       <div
         class="tab-pane"
-        :class="{ 'show active': resultTab == 1 }"
+        :class="{ 'show active': result_tab == 1 }"
         id="result-tabs-pane-kwic"
         role="tabpanel"
         aria-labelledby="result-tabs-tab-kwic"
@@ -49,7 +49,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': resultTab == 2 }"
+        :class="{ 'show active': result_tab == 2 }"
         id="result-tabs-pane-statistics"
         role="tabpanel"
         aria-labelledby="result-tabs-tab-statistics"
@@ -60,7 +60,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': resultTab == 3 }"
+        :class="{ 'show active': result_tab == 3 }"
         id="result-tabs-pane-wordpicture"
         role="tabpanel"
         aria-labelledby="result-tabs-tab-wordpicture"

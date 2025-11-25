@@ -19,7 +19,7 @@ export type HashParams = {
   /** Conditions entered for search filters, as Base64-encoded JSON */
   global_filter?: string
   /** Hits per page */
-  hpp?: number
+  hpp?: `${number}`
   /** Whether tokens in current query should match in order; default is true */
   in_order?: "false"
   /** In simple search, match case-insensitive */
@@ -27,17 +27,18 @@ export type HashParams = {
   /** UI language as three-letter code */
   lang?: string
   /** In simple search, match anywhere in a word */
-  mid_comp?: true
+  mid_comp?: ""
   /** Current page number of the search result */
-  page?: string
+  page?: `${number}`
+  /** Language codes of selected languages in parallel mode. */
   parallel_corpora?: string
   /** In simple search, match beginning of word */
   prefix?: string
   random_seed?: `${number}`
   /** Whether to KWIC with more context */
-  reading_mode?: boolean
+  reading_mode?: ""
   /** What result tab is active */
-  result_tab?: number
+  result_tab?: `${number}`
   /**
    * Search query for Simple or Advanced search: `<mode>|<query>`
    * where `mode` can be:
@@ -47,7 +48,7 @@ export type HashParams = {
    */
   search?: `${string}|${string}` | "cqp"
   /** Current search mode */
-  search_tab?: number
+  search_tab?: `${number}`
   /** Search result order */
   sort?: QueryParamSort
   /** Attributes on which to aggregate counts in statistics query */

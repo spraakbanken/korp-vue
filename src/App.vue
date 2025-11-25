@@ -11,6 +11,7 @@ import { getInstanceConfig } from "./core/config/instanceConfig"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { setLang } from "./core/i18n"
 import { useDark } from "@vueuse/core"
+import { useUrlParams } from "./useUrlParams"
 
 useDark({ attribute: "data-bs-theme" })
 const auth = useAuth()
@@ -21,7 +22,7 @@ const initDone = ref(false)
 async function init() {
   // Load instance settings (typically config.yml)
   const instanceConfig = getInstanceConfig()
-  setLang(settings.default_language)
+  setLang(instanceConfig["default_language"])
 
   // Initialize authentication
   await auth.init(instanceConfig)
@@ -37,6 +38,9 @@ async function init() {
   // Create global corpusListing and corpusSelection
   const corpora = Object.values(settings.corpora)
   setCorpusListing(new CorpusSet(corpora))
+
+  // Connect URL params after settings are loaded
+  useUrlParams()
 
   initDone.value = true
 }
