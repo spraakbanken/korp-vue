@@ -7,7 +7,7 @@ const store = useAppStore()
 </script>
 
 <template>
-  <main class="container">
+  <main class="container-fluid my-4">
     <section v-if="store.activeSearch">
       <ResultsPanel />
     </section>

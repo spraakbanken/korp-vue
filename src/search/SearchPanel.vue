@@ -35,7 +35,7 @@ const tabOptions = [
     </nav>
 
     <!-- Tab content -->
-    <div class="tab-content border border-top-0 p-2" id="search-tabs-content">
+    <div id="search-tabs-content" class="tab-content border border-top-0 p-2 bg-body">
       <div
         class="tab-pane"
         :class="{ 'show active': search_tab == 0 }"

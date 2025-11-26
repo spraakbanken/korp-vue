@@ -13,9 +13,9 @@ const BrandSecondary = injectComponent("BrandSecondary")
 </script>
 
 <template>
-  <header>
+  <header class="bg-body-secondary pb-3 mb-2">
     <nav class="navbar navbar-expand">
-      <div class="container">
+      <div class="container-fluid">
         <ModeSelector />
 
         <LanguageSelector />
@@ -24,14 +24,14 @@ const BrandSecondary = injectComponent("BrandSecondary")
       </div>
     </nav>
 
-    <section class="container">
+    <section class="container-fluid">
       <div class="row my-2 align-items-center">
         <BrandPrimary class="col-6 col-xl-3" />
         <BrandSecondary class="col-6 col-xl-3 order-xl-1" />
         <CorpusSelector class="col-12 col-xl-6 mt-2" />
       </div>
 
-      <SearchPanel class="my-4" />
+      <SearchPanel />
     </section>
   </header>
 </template>
