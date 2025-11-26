@@ -40,6 +40,13 @@ search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 
 result.kwic: KWIC
+result.kwic.page_size.label: "Hits per page: {0}"
+result.kwic.sort.label: "Sort each corpus by: {0}"
+result.kwic.sort.default: not sorted
+result.kwic.sort.keyword: matched word(s)
+result.kwic.sort.left: context before
+result.kwic.sort.right: context after
+result.kwic.sort.random: random
 result.statistics: Statistics
 result.wordpicture: Word picture
 

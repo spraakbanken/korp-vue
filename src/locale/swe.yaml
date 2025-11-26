@@ -40,6 +40,13 @@ search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
 
 result.kwic: KWIC
+result.kwic.page_size.label: "Träffar per sida: {0}"
+result.kwic.sort.label: "Sortera varje korpus efter: {0}"
+result.kwic.sort.default: förekomst
+result.kwic.sort.keyword: träff
+result.kwic.sort.left: kontext före
+result.kwic.sort.right: kontext efter
+result.kwic.sort.random: slumpvis
 result.statistics: Statistik
 result.wordpicture: Ordbild
 
