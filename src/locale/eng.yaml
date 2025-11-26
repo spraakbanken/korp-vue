@@ -5,6 +5,8 @@ modes: Modes
 more: More
 search: Search
 ok: OK
+show_more: Show more
+show_less: Show less
 
 auth.login: Log in
 auth.logout: Log out {name}
@@ -17,6 +19,9 @@ auth.remember: Remember me
 corpus.selection.validation.dialog.title: Corpus selection
 
 frontpage.examples: Search examples
+frontpage.updates: Corpus updates
+frontpage.updates.item: "{title} was updated"
+frontpage.updates.select: Select
 
 search.simple: Simple
 search.simple.prefix: initial part

@@ -1,6 +1,9 @@
 import { intersection, mapValues, merge, pick } from "lodash"
 import moment, { type Moment } from "moment"
 
+/** Length of a day, in ms */
+export const DAY_MS = 24 * 60 * 60 * 1000
+
 /** Use html`<div>html here</div>` to enable formatting template strings with Prettier. */
 export const html = String.raw
 
@@ -74,6 +77,10 @@ export function combineDateTime(date: Date, time: Date): Moment {
   m.add(m_time.minute(), "minute")
   return m
 }
+
+/** Check if a date is within a time limit from (before or after) today */
+export const isRecent = (date: Date, days = 30): boolean =>
+  Math.abs(new Date().getTime() - date.getTime()) <= days * DAY_MS
 
 /** FooBar -> foo-bar */
 export const kebabize = (str: string): string =>

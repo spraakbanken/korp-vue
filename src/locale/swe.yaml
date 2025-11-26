@@ -5,6 +5,8 @@ modes: Lägen
 more: Fler
 search: Sök
 ok: OK
+show_more: Visa mer
+show_less: Visa mindre
 
 auth.login: Logga in
 auth.logout: Logga ut {name}
@@ -17,6 +19,9 @@ auth.remember: Kom ihåg mig
 corpus.selection.validation.dialog.title: Korpusurval
 
 frontpage.examples: Exempelsökningar
+frontpage.updates: Korpusuppdateringar
+frontpage.updates.item: "{title} har uppdaterats"
+frontpage.updates.select: Välj
 
 search.simple: Enkel
 search.simple.prefix: förled

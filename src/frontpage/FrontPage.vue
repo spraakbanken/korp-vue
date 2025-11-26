@@ -2,6 +2,7 @@
 import settings from "@/core/config"
 import SearchExamples from "./SearchExamples.vue"
 import { useLocale } from "@/i18n/useLocale"
+import CorpusUpdates from "./CorpusUpdates.vue"
 
 const { locObj } = useLocale()
 
@@ -24,7 +25,8 @@ const examples = settings.frontpage?.examples
     </div>
 
     <div class="row">
-      <div class="col-md mb-4">TODO Corpus updates</div>
+      <CorpusUpdates v-if="settings.frontpage?.corpus_updates" class="col-md mb-4" />
+
       <div class="col-md mb-4">TODO News</div>
     </div>
   </div>
