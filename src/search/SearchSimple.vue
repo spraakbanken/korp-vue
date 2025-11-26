@@ -8,6 +8,7 @@ import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import { vPopover } from "@/bootstrap"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
+import HelpBadge from "@/components/HelpBadge.vue"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -91,15 +92,7 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-prefix">
             {{ $t("search.simple.prefix") }}
           </label>
-          <span
-            class="btn badge text-secondary ms-1"
-            v-popover
-            data-bs-toggle="popover"
-            data-bs-trigger="focus hover"
-            :data-bs-content="$t('search.simple.prefix.help')"
-          >
-            ?
-          </span>
+          <HelpBadge :text="$t('search.simple.prefix.help')" />
         </div>
 
         <div class="form-check">
@@ -113,15 +106,7 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-midfix">
             {{ $t("search.simple.midfix") }}
           </label>
-          <span
-            class="btn badge text-secondary ms-1"
-            v-popover
-            data-bs-toggle="popover"
-            data-bs-trigger="focus hover"
-            :data-bs-content="$t('search.simple.midfix.help')"
-          >
-            ?
-          </span>
+          <HelpBadge :text="$t('search.simple.midfix.help')" />
         </div>
 
         <div class="form-check">
@@ -134,15 +119,7 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-suffix">
             {{ $t("search.simple.suffix") }}
           </label>
-          <span
-            class="btn badge text-secondary ms-1"
-            v-popover
-            data-bs-toggle="popover"
-            data-bs-trigger="focus hover"
-            :data-bs-content="$t('search.simple.suffix.help')"
-          >
-            ?
-          </span>
+          <HelpBadge :text="$t('search.simple.suffix.help')" />
         </div>
       </div>
 
@@ -158,15 +135,7 @@ function createCqp() {
           <label class="form-check-label" for="search-simple-free-order">
             {{ $t("search.simple.free_order") }}
           </label>
-          <span
-            class="btn badge text-secondary"
-            v-popover
-            data-bs-toggle="popover"
-            data-bs-trigger="focus hover"
-            :data-bs-content="$t('search.simple.free_order.help')"
-          >
-            ?
-          </span>
+          <HelpBadge :text="$t('search.simple.free_order.help')" />
         </div>
 
         <div class="form-check">
