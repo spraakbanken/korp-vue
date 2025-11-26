@@ -19,6 +19,7 @@ auth.remember: Remember me
 corpus.selection.validation.dialog.title: Corpus selection
 
 frontpage.examples: Search examples
+frontpage.news: News
 frontpage.updates: Corpus updates
 frontpage.updates.item: "{title} was updated"
 frontpage.updates.select: Select

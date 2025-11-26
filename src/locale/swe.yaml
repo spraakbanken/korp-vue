@@ -19,6 +19,7 @@ auth.remember: Kom ihåg mig
 corpus.selection.validation.dialog.title: Korpusurval
 
 frontpage.examples: Exempelsökningar
+frontpage.news: Nyheter
 frontpage.updates: Korpusuppdateringar
 frontpage.updates.item: "{title} har uppdaterats"
 frontpage.updates.select: Välj

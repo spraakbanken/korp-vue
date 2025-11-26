@@ -50,8 +50,15 @@ function select(corpusId: string) {
         </div>
       </li>
     </ul>
-    <button v-if="recentUpdates.length > COLLAPSED_MAX" class="btn btn-link p-0" @click="toggle()">
-      {{ isExpanded ? $t("show_less") : $t("show_more") }}
-    </button>
+
+    <div class="text-center">
+      <button
+        v-if="recentUpdates.length > COLLAPSED_MAX"
+        class="btn btn-outline-secondary"
+        @click="toggle()"
+      >
+        {{ isExpanded ? $t("show_less") : $t("show_more") }}
+      </button>
+    </div>
   </div>
 </template>
