@@ -27,7 +27,7 @@ export type Store = {
   in_order: boolean
   /** UI language */
   lang: string
-  /** Page number of KWIC result */
+  /** Page number of KWIC result (zero-indexed) */
   page?: number
   /** In parallel mode, what languages to build a query for */
   parallel_corpora: string[]

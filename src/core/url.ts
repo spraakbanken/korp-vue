@@ -28,7 +28,7 @@ export type HashParams = {
   lang?: string
   /** In simple search, match anywhere in a word */
   mid_comp?: ""
-  /** Current page number of the search result */
+  /** Current page number of the search result (zero-indexed) */
   page?: `${number}`
   /** Language codes of selected languages in parallel mode. */
   parallel_corpora?: string

@@ -33,7 +33,7 @@ export function useUrlParams() {
   watchUrl("in_order", (value) => value != "false")
   watchUrl("isCaseInsensitive", (value) => value != undefined)
   watchUrl("lang", (value) => value || settings["default_language"])
-  watchUrl("page", (value) => (value ? parseInt(value) : 1))
+  watchUrl("page", (value) => (value ? parseInt(value) : 0))
   watchUrl("parallel_corpora", (value) => (value ? value.split(",") : []))
   watchUrl("prefix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("random_seed", (value) => (value ? parseInt(value) : undefined))
