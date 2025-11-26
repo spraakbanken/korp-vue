@@ -5,6 +5,8 @@ modes: Lägen
 more: Fler
 search: Sök
 ok: OK
+previous: Föregående
+next: Nästa
 show_more: Visa mer
 show_less: Visa mindre
 
@@ -40,6 +42,9 @@ search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
 
 result.kwic: KWIC
+result.kwic.hits_count: "Antal träffar: {0}"
+result.kwic.hits_relative: "Relativ frekvens: {0}"
+result.kwic.hits_relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.kwic.page_size.label: "Träffar per sida: {0}"
 result.kwic.sort.label: "Sortera varje korpus efter: {0}"
 result.kwic.sort.default: förekomst
@@ -47,6 +52,8 @@ result.kwic.sort.keyword: träff
 result.kwic.sort.left: kontext före
 result.kwic.sort.right: kontext efter
 result.kwic.sort.random: slumpvis
+result.pagination.label: "Sida:"
+result.pagination.goto: Gå till {input} av {total}
 result.statistics: Statistik
 result.wordpicture: Ordbild
 

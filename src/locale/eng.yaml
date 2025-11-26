@@ -5,6 +5,8 @@ modes: Modes
 more: More
 search: Search
 ok: OK
+previous: Previous
+next: Next
 show_more: Show more
 show_less: Show less
 
@@ -40,6 +42,9 @@ search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 
 result.kwic: KWIC
+result.kwic.hits_count: "Number of hits: {0}"
+result.kwic.hits_relative: "Relative frequency: {0}"
+result.kwic.hits_relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
 result.kwic.page_size.label: "Hits per page: {0}"
 result.kwic.sort.label: "Sort each corpus by: {0}"
 result.kwic.sort.default: not sorted
@@ -47,6 +52,8 @@ result.kwic.sort.keyword: matched word(s)
 result.kwic.sort.left: context before
 result.kwic.sort.right: context after
 result.kwic.sort.random: random
+result.pagination.label: "Page:"
+result.pagination.goto: Go to {input} of {total}
 result.statistics: Statistics
 result.wordpicture: Word picture
 
