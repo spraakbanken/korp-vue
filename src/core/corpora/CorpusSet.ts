@@ -15,7 +15,7 @@ import {
 } from "lodash"
 import moment, { type Moment } from "moment"
 import settings, { normalizeDataset } from "@/core/config"
-import { locObj } from "@/core/i18n"
+import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { objectIntersection, objectUnion } from "@/core/util"
@@ -341,7 +341,9 @@ export class CorpusSet {
   getAttributeGroups(wordOp: SetOperator, structOp: SetOperator, lang?: string): AttributeOption[] {
     const attrs = this.getWordAttributeGroups(wordOp, lang)
     const sentAttrs = this.getStructAttributeGroups(structOp, lang)
-    return [this._wordGroup, ...attrs, ...sentAttrs]
+    const comparator = (a: Attribute, b: Attribute) =>
+      locObj(a.label).localeCompare(locObj(b.label), getLang())
+    return [this._wordGroup, ...attrs.sort(comparator), ...sentAttrs.sort(comparator)]
   }
 
   getAttributeGroupsExtended(lang?: string): AttributeOption[] {
