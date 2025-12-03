@@ -16,9 +16,9 @@ const tabOptions = [
 </script>
 
 <template>
-  <section>
+  <section class="d-flex flex-column align-items-center">
     <!-- Tab bar -->
-    <nav class="nav nav-tabs" id="search-tabs-list">
+    <nav class="nav nav-tabs justify-content-center" id="search-tabs-list">
       <button
         v-for="{ key, name } in tabOptions"
         :key
@@ -35,7 +35,7 @@ const tabOptions = [
     </nav>
 
     <!-- Tab content -->
-    <div id="search-tabs-content" class="tab-content border border-top-0 p-2 bg-body">
+    <div id="search-tabs-content" class="tab-content border border-top-0 p-4 bg-body">
       <div
         class="tab-pane"
         :class="{ 'show active': search_tab == 0 }"

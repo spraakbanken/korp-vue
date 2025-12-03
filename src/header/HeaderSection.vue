@@ -25,7 +25,7 @@ const BrandSecondary = injectComponent("BrandSecondary")
     </nav>
 
     <section class="container-fluid">
-      <div class="row my-2 align-items-center">
+      <div class="row my-2 px-2 align-items-center">
         <BrandPrimary class="col-6 col-xl-3" />
         <BrandSecondary class="col-6 col-xl-3 order-xl-1" />
         <CorpusSelector class="col-12 col-xl-6 mt-2" />

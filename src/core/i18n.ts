@@ -3,6 +3,9 @@ import type { LangString } from "@/core/model/locale"
 /** Current UI language. */
 export let _lang: string
 
+/** Current UI language. */
+export const getLang = (): string => _lang
+
 /** Update global UI language variable. */
 export const setLang = (langNew: string) => {
   if (langNew) _lang = langNew
