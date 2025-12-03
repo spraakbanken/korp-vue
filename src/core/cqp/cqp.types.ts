@@ -1,13 +1,30 @@
-export type CqpQuery = CqpToken[]
+export type CqpQuery = CqpItem[]
+
+export type CqpItem = CqpToken | CqpStruct | CqpBound
 
 export type CqpToken = {
-  and_block?: Condition[][]
-  bound?: Record<"lbound" | "rbound", true>
+  and_block: Condition[][]
   /** `[min]` or `[min, max]` */
   repeat?: [number] | [number, number]
-  struct?: string
-  start?: boolean
 }
+
+/** Represents a start/end boundary of a structural element, typically a sentence. */
+export type CqpStruct = {
+  struct: string
+  start: boolean
+}
+
+/** Alternative way to represent a start/end boundary of a sentence element. */
+export type CqpBound = {
+  bound: {
+    lbound?: true
+    rbound?: true
+  }
+}
+
+export const isCqpToken = (item: CqpItem): item is CqpToken => "and_block" in item
+export const isCqpStruct = (item: CqpItem): item is CqpStruct => "struct" in item
+export const isCqpBound = (item: CqpItem): item is CqpBound => "bound" in item
 
 export type Condition = {
   type: string

@@ -1,6 +1,16 @@
 import { cloneDeep, compact, sortBy } from "lodash"
 import { parse } from "./CQPParser.peggy"
-import type { Condition, CqpQuery, DateRange, Operator, OperatorKorp, Value } from "./cqp.types"
+import {
+  isCqpBound,
+  isCqpStruct,
+  isCqpToken,
+  type Condition,
+  type CqpQuery,
+  type DateRange,
+  type Operator,
+  type OperatorKorp,
+  type Value,
+} from "./cqp.types"
 import { corpusSelection } from "../corpora/corpusListing"
 import settings from "../config"
 
@@ -92,13 +102,14 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
       continue
     }
 
-    if (token.struct) {
+    if (isCqpStruct(token)) {
       output.push(`<${token.start ? "" : "/"}${token.struct}>`)
       continue
     }
 
     const outer_and_array: string[][] = []
-    for (const and_array of token.and_block || []) {
+    const andBlock = isCqpToken(token) ? token.and_block : []
+    for (const and_array of andBlock) {
       const or_array: string[] = []
       for (const condition of and_array) {
         const { type, flags } = condition
@@ -134,7 +145,7 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
       x.length > 1 ? `(${x.join(" | ")})` : x.join(" | "),
     )
 
-    if (token.bound) {
+    if (isCqpBound(token)) {
       or_out = compact(or_out)
       for (const bound of Object.keys(token.bound)) {
         or_out.push(`${bound}(sentence)`)
@@ -142,7 +153,7 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
     }
 
     let out_token = `[${or_out.join(" & ")}]`
-    if (token.repeat) {
+    if (isCqpToken(token) && token.repeat) {
       out_token += `{${token.repeat.length > 1 ? token.repeat.join(",") : token.repeat + ","}}`
     }
 
@@ -173,6 +184,7 @@ export function prioSort(cqpObjs: CqpQuery) {
   }
 
   for (const token of cqpObjs) {
+    if (!isCqpToken(token)) continue
     token.and_block = (sortBy(token.and_block, getPrio) as Condition[][]).reverse()
   }
 
@@ -180,21 +192,17 @@ export function prioSort(cqpObjs: CqpQuery) {
 }
 
 /**
- * Create intersection of two queries.
- *
- * The second query is assumed to contain fewer tokens than the first.
+ * Extend the first token of a base query with all conditions from a second query.
  */
-export function mergeCqpExprs(cqpObj1: CqpQuery, cqpObj2: CqpQuery) {
-  for (let i = 0; i < cqpObj2.length; i++) {
-    const token = cqpObj2[i]
-    for (let j = 0; j < cqpObj1.length; j++) {
-      if (cqpObj1[j].and_block) {
-        cqpObj1[j].and_block = cqpObj1[j].and_block!.concat(token.and_block || [])
-        break
-      }
-    }
-  }
-  return cqpObj1
+export function mergeCqpExprs(baseQuery: CqpQuery, secondQuery: CqpQuery) {
+  // Find the first token of the base query
+  const baseToken = baseQuery.find(isCqpToken)
+  if (!baseToken) throw new Error("Cannot merge to a query without token items")
+
+  // Add all conditions from the second query to the base token
+  for (const token of secondQuery.filter(isCqpToken)) baseToken.and_block.push(...token.and_block)
+
+  return baseQuery
 }
 
 /** Check if a query has any wildcards (`[]`) */
@@ -202,10 +210,12 @@ export const hasWildcard = (cqpObjs: CqpQuery) =>
   cqpObjs.some((token) => stringify([token]).indexOf("[]") === 0)
 
 /** Check if a query has any tokens with repetition */
-export const hasRepetition = (cqpObjs: CqpQuery) => cqpObjs.some((token) => token.repeat)
+export const hasRepetition = (cqpObjs: CqpQuery) =>
+  cqpObjs.some((token) => isCqpToken(token) && token.repeat)
 
 /** Check if a query has any structure boundaries, e.g. sentence start */
-export const hasStruct = (cqpObjs: CqpQuery) => cqpObjs.some((token) => token.struct)
+// TODO include if isCqpBound?
+export const hasStruct = (cqpObjs: CqpQuery) => cqpObjs.some(isCqpStruct)
 
 /** Determine whether a query will work with the in_order option */
 export const supportsInOrder = (cqpObjs: CqpQuery) =>
