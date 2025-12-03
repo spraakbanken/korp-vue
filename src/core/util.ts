@@ -100,6 +100,9 @@ export function toBase64(str: string) {
   return window.btoa(binary.join(""))
 }
 
+/** Create a random string of around 11 chars in the [0-9a-z] range. */
+export const randomString = () => Math.random().toString(36).slice(2)
+
 /**
  * Represent a number with superscript characters like "⁴²".
  * @param n A decimal number.

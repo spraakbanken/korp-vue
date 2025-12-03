@@ -3,6 +3,7 @@ import { useAppStore } from "@/store/useAppStore"
 import SearchSimple from "./SearchSimple.vue"
 import { storeToRefs } from "pinia"
 import { vTab } from "@/bootstrap"
+import SearchExtended from "./extended/SearchExtended.vue"
 
 const store = useAppStore()
 
@@ -55,7 +56,7 @@ const tabOptions = [
         aria-labelledby="search-tabs-tab-extended"
         tabindex="0"
       >
-        TODO Extended search
+        <SearchExtended />
       </div>
 
       <div
