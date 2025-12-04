@@ -50,6 +50,24 @@ search.extended.value: Värde
 
 search.advanced: Avancerad
 
+search.operator.is: är
+search.operator.equal: lika med
+search.operator.not_equal: inte lika med
+search.operator.is_not: är inte
+search.operator.starts_with: börjar med
+search.operator.ends_with: slutar med
+search.operator.subsumed_by: subsumerad av
+search.operator.not_subsumed_by: inte subsumerad av
+search.operator.contains: innehåller
+search.operator.contains_not: innehåller inte
+search.operator.interval: intervall
+search.operator.matches: regexp
+search.operator.matches_not: inte regexp
+search.operator.is_possible: är möjlig
+search.operator.is_not_possible: är inte möjlig
+search.operator.most_likely: mest trolig
+search.operator.not_most_likely: inte mest trolig
+
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
 search.and: och

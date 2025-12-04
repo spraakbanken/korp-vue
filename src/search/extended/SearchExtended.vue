@@ -91,7 +91,7 @@ function createCqp(): string {
                           :condition
                           @update="(name) => (condition.type = name)"
                         />
-                        <SearchExtendedOperator :condition />
+                        <SearchExtendedOperator :condition @update="(op) => (condition.op = op)" />
                       </div>
                       <SearchExtendedValue
                         :condition

@@ -50,6 +50,24 @@ search.extended.value: Value
 
 search.advanced: Advanced
 
+search.operator.is: is
+search.operator.equal: equal
+search.operator.not_equal: not equal
+search.operator.is_not: is not
+search.operator.starts_with: begins with
+search.operator.ends_with: ends with
+search.operator.subsumed_by: subsumed by
+search.operator.not_subsumed_by: not subsumed by
+search.operator.contains: contains
+search.operator.contains_not: does not contain
+search.operator.interval: interval
+search.operator.matches: regexp
+search.operator.matches_not: not regexp
+search.operator.is_possible: is possible
+search.operator.is_not_possible: is not possible
+search.operator.most_likely: most likely
+search.operator.not_most_likely: not most likely
+
 search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 search.and: and
