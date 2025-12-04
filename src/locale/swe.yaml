@@ -9,6 +9,7 @@ previous: Föregående
 next: Nästa
 show_more: Visa mer
 show_less: Visa mindre
+close: Stäng
 
 auth.login: Logga in
 auth.logout: Logga ut {name}
@@ -36,10 +37,23 @@ search.simple.suffix.help: Tillåt ord som slutar med sökorden.
 search.simple.free_order: fri följd
 search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
 search.simple.ignore_case: skiftlägesokänsligt
+
 search.extended: Utökad
+search.extended.token: Token
+search.extended.token_add: Lägg till token
+search.extended.token_remove: Ta bort token
+search.extended.condition_add: Lägg till villkor
+search.extended.condition_remove: Ta bort villkor
+search.extended.attribute: Attribut
+search.extended.operator: Operator
+search.extended.value: Värde
+
 search.advanced: Avancerad
+
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
+search.and: och
+search.or: eller
 
 result.kwic: KWIC
 result.kwic.hits_count: "Antal träffar: {0}"

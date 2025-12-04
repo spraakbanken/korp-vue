@@ -64,24 +64,24 @@ function createCqp(): string {
     <div class="d-flex gap-4 align-items-center">
       <div v-for="(token, i) in tokens" :key="i" class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          Token
+          {{ $t("search.extended.token") }}
           <button
             type="button"
             class="btn-close"
-            aria-label="Close"
+            :aria-label="$t('search.extended.token_remove')"
             @click="removeToken(i)"
           ></button>
         </div>
 
-        <!-- 2-dimentional repetition: an AND of OR's-->
+        <!-- 2-dimensional repetition: an AND of OR's-->
         <div class="card-body d-flex flex-column gap-2">
           <template v-for="(disjunction, j) in token.and_block" :key="j">
-            <div v-if="j > 0">and</div>
+            <div v-if="j > 0">{{ $t("search.and") }}</div>
 
             <div class="card bg-body-tertiary">
               <div class="card-body d-flex flex-column gap-2">
                 <template v-for="(condition, k) in disjunction" :key="k">
-                  <div v-if="k > 0">or</div>
+                  <div v-if="k > 0">{{ $t("search.or") }}</div>
 
                   <!-- Each condition (attribute-operator-value) -->
                   <div class="d-flex gap-2 align-items-center">
@@ -90,12 +90,13 @@ function createCqp(): string {
                         <SearchExtendedAttribute :condition />
                         <SearchExtendedOperator :condition />
                       </div>
-                      <SearchExtendedValue :condition />
+                      <SearchExtendedValue :condition @update="(val) => (condition.val = val)" />
                     </div>
 
                     <button
+                      type="button"
                       class="btn-close"
-                      aria-label="Remove condition"
+                      :aria-label="$t('search.extended.condition_remove')"
                       @click="removeCondition(i, j, k)"
                       :class="{
                         invisible: token.and_block.length == 1 && disjunction.length == 1,
@@ -111,7 +112,7 @@ function createCqp(): string {
                     class="btn btn-secondary btn-sm"
                     @click="addCondition(i, j)"
                   >
-                    + or…
+                    + {{ $t("search.or") }}…
                   </button>
                 </div>
               </div>
@@ -120,14 +121,16 @@ function createCqp(): string {
 
           <div>
             <button type="button" class="btn btn-secondary btn-sm" @click="addDisjunction(i)">
-              + and…
+              + {{ $t("search.and") }}…
             </button>
           </div>
         </div>
       </div>
 
       <div>
-        <button type="button" class="btn btn-secondary" @click="addToken()">+ Add token</button>
+        <button type="button" class="btn btn-secondary" @click="addToken()">
+          + {{ $t("search.extended.token_add") }}
+        </button>
       </div>
     </div>
 
