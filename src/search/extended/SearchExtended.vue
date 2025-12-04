@@ -84,7 +84,7 @@ function createCqp(): string {
                   <div v-if="k > 0">{{ $t("search.or") }}</div>
 
                   <!-- Each condition (attribute-operator-value) -->
-                  <div class="d-flex gap-2 align-items-center">
+                  <div class="d-flex gap-3 align-items-center">
                     <div class="d-flex flex-column gap-2">
                       <div class="d-flex gap-2 align-items-baseline">
                         <SearchExtendedAttribute
@@ -107,7 +107,7 @@ function createCqp(): string {
                       :class="{
                         invisible: token.and_block.length == 1 && disjunction.length == 1,
                       }"
-                      style="transform: scale(0.6)"
+                      style="width: 0.2rem; background-size: contain"
                     ></button>
                   </div>
                 </template>
