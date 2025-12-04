@@ -87,10 +87,16 @@ function createCqp(): string {
                   <div class="d-flex gap-2 align-items-center">
                     <div class="d-flex flex-column gap-2">
                       <div class="d-flex gap-2 align-items-baseline">
-                        <SearchExtendedAttribute :condition />
+                        <SearchExtendedAttribute
+                          :condition
+                          @update="(name) => (condition.type = name)"
+                        />
                         <SearchExtendedOperator :condition />
                       </div>
-                      <SearchExtendedValue :condition @update="(val) => (condition.val = val)" />
+                      <SearchExtendedValue
+                        :condition
+                        @update="(value) => (condition.val = value)"
+                      />
                     </div>
 
                     <button

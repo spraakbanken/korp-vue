@@ -18,16 +18,16 @@ import settings, { normalizeDataset } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
-import { objectIntersection, objectUnion } from "@/core/util"
+import { objectIntersection, objectUnion, Observable } from "@/core/util"
 
 export type AttributeOption = Attribute & {
-  group: "word" | "word_attr" | "sentence_attr"
+  group: "word" | "pos" | "struct"
 }
 
 /** How to join attribute lists of different corpora */
 export type SetOperator = "union" | "intersection"
 
-export class CorpusSet {
+export class CorpusSet extends Observable {
   corpora: Corpus[]
   structAttributes: Record<string, Attribute> = {}
   commonAttributes: Record<string, Attribute> = {}
@@ -38,6 +38,7 @@ export class CorpusSet {
   }
 
   constructor(corpora: Corpus[] = []) {
+    super()
     this.corpora = corpora
   }
 
@@ -306,7 +307,7 @@ export class CorpusSet {
     for (const key in allAttrs) {
       const obj = allAttrs[key]
       if (obj["display_type"] !== "hidden") {
-        attrs.push({ group: "word_attr", ...obj })
+        attrs.push({ group: "pos", ...obj })
       }
     }
 
@@ -329,7 +330,7 @@ export class CorpusSet {
     for (const key in object) {
       const obj = object[key]
       if (obj["display_type"] !== "hidden") {
-        sentAttrs.push({ group: "sentence_attr", ...obj })
+        sentAttrs.push({ group: "struct", ...obj })
       }
     }
 
@@ -385,6 +386,8 @@ export class CorpusSet {
     >
     Object.entries(this.commonAttributes).forEach(([name, attr]) => (attr.name = name))
     this.structAttributes = this._getStructAttrs()
+
+    this.notify()
   }
 
   isDateInterval(type: string): boolean {
