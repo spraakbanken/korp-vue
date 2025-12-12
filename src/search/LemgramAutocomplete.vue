@@ -70,7 +70,7 @@ function select(option: LemgramCount) {
 </script>
 
 <template>
-  <div>
+  <div class="text-start">
     <!-- Hidden label -->
     <label for="lemgram-autocomplete-input" class="visually-hidden" ref="inputElement">
       {{ $t("search.word_or_lemgram") }}

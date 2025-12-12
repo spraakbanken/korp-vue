@@ -50,6 +50,10 @@ search.extended.value: Värde
 
 search.advanced: Avancerad
 
+search.attribute_type.word: Ord
+search.attribute_type.pos: Ordattribut
+search.attribute_type.struct: Strukturella attribut
+
 search.operator.is: är
 search.operator.equal: lika med
 search.operator.not_equal: inte lika med
@@ -67,6 +71,12 @@ search.operator.is_possible: är möjlig
 search.operator.is_not_possible: är inte möjlig
 search.operator.most_likely: mest trolig
 search.operator.not_most_likely: inte mest trolig
+search.operator.compound_middle: mellanled
+search.operator.prefix: börjar med
+search.operator.suffix: slutar med
+search.operator.not_compound_middle: inte mellanled
+search.operator.not_prefix: börjar inte med
+search.operator.not_suffix: slutar inte med
 
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag

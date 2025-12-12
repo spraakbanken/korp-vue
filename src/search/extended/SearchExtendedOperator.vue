@@ -2,7 +2,7 @@
 import settings from "@/core/config"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { Condition, OperatorKorp } from "@/core/cqp/cqp.types"
-import { computed } from "vue"
+import { computed, useId } from "vue"
 
 const props = defineProps<{
   condition: Condition
@@ -11,6 +11,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update", value: OperatorKorp): void
 }>()
+
+const id = useId()
 
 const operators = computed(() => {
   const attributes = corpusSelection.getAttributeGroupsExtended()
@@ -27,7 +29,8 @@ function update(event: Event) {
 
 <template>
   <div>
-    <select class="form-select" @change="update">
+    <label :for="id" class="visually-hidden">{{ $t("search.extended.operator") }}</label>
+    <select :id="id" class="form-select" @change="update">
       <option v-for="(operator, name) in operators" :key="name" :value="operator">
         {{ $t(`search.operator.${name}`) }}
       </option>

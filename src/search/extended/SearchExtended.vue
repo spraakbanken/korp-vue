@@ -61,8 +61,8 @@ function createCqp(): string {
 
 <template>
   <form @submit.prevent="submit" class="d-flex flex-column gap-4 align-items-center">
-    <div class="d-flex gap-4 align-items-center">
-      <div v-for="(token, i) in tokens" :key="i" class="card">
+    <div class="d-flex gap-4 align-items-center overflow-x-auto">
+      <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0">
         <div class="card-header d-flex justify-content-between align-items-center">
           {{ $t("search.extended.token") }}
           <button
@@ -85,18 +85,19 @@ function createCqp(): string {
 
                   <!-- Each condition (attribute-operator-value) -->
                   <div class="d-flex gap-3 align-items-center">
-                    <div class="d-flex flex-column gap-2">
-                      <div class="d-flex gap-2 align-items-baseline">
-                        <SearchExtendedAttribute
-                          :condition
-                          @update="(name) => (condition.type = name)"
-                        />
-                        <SearchExtendedOperator :condition @update="(op) => (condition.op = op)" />
-                      </div>
-                      <SearchExtendedValue
+                    <div class="flex-grow-1 d-flex flex-column gap-2">
+                      <SearchExtendedAttribute
                         :condition
-                        @update="(value) => (condition.val = value)"
+                        @update="(name) => (condition.type = name)"
                       />
+                      <div class="d-flex gap-2 align-items-baseline">
+                        <SearchExtendedOperator :condition @update="(op) => (condition.op = op)" />
+                        <SearchExtendedValue
+                          :condition
+                          @update="(value) => (condition.val = value)"
+                          class="flex-grow-1"
+                        />
+                      </div>
                     </div>
 
                     <button
@@ -113,11 +114,7 @@ function createCqp(): string {
                 </template>
 
                 <div>
-                  <button
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    @click="addCondition(i, j)"
-                  >
+                  <button type="button" class="btn btn-text btn-sm" @click="addCondition(i, j)">
                     + {{ $t("search.or") }}…
                   </button>
                 </div>
@@ -126,7 +123,7 @@ function createCqp(): string {
           </template>
 
           <div>
-            <button type="button" class="btn btn-secondary btn-sm" @click="addDisjunction(i)">
+            <button type="button" class="btn btn-text btn-sm" @click="addDisjunction(i)">
               + {{ $t("search.and") }}…
             </button>
           </div>

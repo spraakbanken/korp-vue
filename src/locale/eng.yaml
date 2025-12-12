@@ -50,6 +50,10 @@ search.extended.value: Value
 
 search.advanced: Advanced
 
+search.attribute_type.word: Word
+search.attribute_type.pos: Positional attributes
+search.attribute_type.struct: Structural attributes
+
 search.operator.is: is
 search.operator.equal: equal
 search.operator.not_equal: not equal
@@ -67,6 +71,12 @@ search.operator.is_possible: is possible
 search.operator.is_not_possible: is not possible
 search.operator.most_likely: most likely
 search.operator.not_most_likely: not most likely
+search.operator.compound_middle: medial part
+search.operator.prefix: starts with
+search.operator.suffix: ends with
+search.operator.not_compound_middle: not medial part
+search.operator.not_prefix: does not start with
+search.operator.not_suffix: does not end with
 
 search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions

@@ -12,13 +12,15 @@ const emit = defineEmits<{
 
 const inputId = useId()
 
-function update(event: InputEvent) {
+function update(event: Event) {
   const target = event.target as HTMLInputElement
   emit("update", target.value)
 }
 </script>
 
 <template>
-  <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
-  <input :id="inputId" type="text" :value="condition.val" @change="update" class="form-control" />
+  <div>
+    <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
+    <input :id="inputId" type="text" :value="condition.val" @change="update" class="form-control" />
+  </div>
 </template>

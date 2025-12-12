@@ -5,7 +5,7 @@ import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import type { Condition } from "@/core/cqp/cqp.types"
 import { useLocale } from "@/i18n/useLocale"
 import { groupBy } from "lodash"
-import { computed, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 
 const props = defineProps<{
   condition: Condition
@@ -24,7 +24,7 @@ function findOption(name: string): AttributeOption | undefined {
   return optionsAll.value.find((option) => option.name === name)
 }
 
-corpusSelection.listen(() => {
+function refresh() {
   const items = corpusSelection.getAttributeGroupsExtended()
   optionsAll.value = items
 
@@ -33,7 +33,10 @@ corpusSelection.listen(() => {
     const wordOption = items[0]!
     emit("update", prefixAttr(wordOption))
   }
-})
+}
+
+onMounted(refresh)
+corpusSelection.listen(refresh)
 
 function update(event: Event) {
   const target = event.target as HTMLSelectElement
