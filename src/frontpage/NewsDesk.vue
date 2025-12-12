@@ -21,7 +21,7 @@ const itemsFiltered = computed(() =>
 
     <article v-for="(item, i) in itemsFiltered" :key="i" class="card mb-2">
       <div class="card-body">
-        <h5 class="card-title">{{ item.title }}</h5>
+        <h5 class="card-title">{{ locObj(item.title) }}</h5>
         <div class="card-subtitle mb-2 text-muted">
           <time :datetime="item.created">
             {{ item.created }}
