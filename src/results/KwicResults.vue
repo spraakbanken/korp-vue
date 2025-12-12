@@ -21,8 +21,7 @@ const store = useAppStore()
 const proxy = new KwicProxy(store)
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
-const { activeSearch } = storeToRefs(store)
-const cqp = ref("[]")
+const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const hitsCount = ref(0)
 const hitsRelative = computed(() => sum(corpusSelection.map((corpus) => corpus.tokens || 0)))
 const hpp = ref(settings["hits_per_page_default"])
@@ -31,9 +30,7 @@ const loading = ref(false)
 const page = ref(1)
 const sort = ref<QueryParamSort>("")
 
-watchImmediate(activeSearch, () => {
-  if (!store.activeSearch) return
-  cqp.value = store.activeSearch.cqp
+watchImmediate(cqp, () => {
   updateSearch()
 })
 

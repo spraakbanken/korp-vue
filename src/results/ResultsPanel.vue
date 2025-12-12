@@ -55,7 +55,7 @@ const tabOptions = [
         aria-labelledby="result-tabs-tab-statistics"
         tabindex="0"
       >
-        <StatisticsResult />
+        <StatisticsResult :active="result_tab == 2" />
       </div>
 
       <div

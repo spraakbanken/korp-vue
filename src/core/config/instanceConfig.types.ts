@@ -1,6 +1,7 @@
 import type { Labeled, LangString } from "@/core/model/locale"
 import type { Attribute } from "./corpusConfigRaw.types"
 import type { Store } from "../model/store"
+import type { StatisticsProcessed } from "../statistics/statistics.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
 export type InstanceConfig = {
@@ -63,8 +64,7 @@ export type InstanceConfig = {
   statistics?: boolean
   statistics_case_insensitive_default?: boolean
   statistics_limit?: number
-  // TODO Type arg
-  statistics_postprocess?: (processed: unknown) => unknown
+  statistics_postprocess?: (processed: StatisticsProcessed) => StatisticsProcessed
   urnResolver?: string
   visible_modes: number
   word_label: Record<string, string>
