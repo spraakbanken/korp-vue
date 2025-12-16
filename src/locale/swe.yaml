@@ -97,6 +97,7 @@ result.kwic.sort.random: slumpvis
 result.pagination.label: "Sida:"
 result.pagination.goto: Gå till {input} av {total}
 result.statistics: Statistik
+result.statistics.total: Total
 result.wordpicture: Ordbild
 
 pos.nn: substantiv

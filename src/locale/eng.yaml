@@ -97,6 +97,7 @@ result.kwic.sort.random: random
 result.pagination.label: "Page:"
 result.pagination.goto: Go to {input} of {total}
 result.statistics: Statistics
+result.statistics.total: Total
 result.wordpicture: Word picture
 
 pos.nn: noun

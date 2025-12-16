@@ -3,23 +3,24 @@ import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { processStatisticsResult } from "@/core/statistics/statistics"
-import { isTotalRow, type StatisticsProcessed } from "@/core/statistics/statistics.types"
-import { useLocale } from "@/i18n/useLocale"
+import { type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { useAppStore } from "@/store/useAppStore"
 import { whenever } from "@vueuse/core"
-import { computed, ref } from "vue"
+import { computed, ref, useTemplateRef, watch, type VNode } from "vue"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
   active: boolean
 }>()
 
 const store = useAppStore()
-const { locObj } = useLocale()
+const { t } = useI18n()
 
 const attrs = ref<string[]>(["word"])
 const corpora = ref<Corpus[]>(corpusSelection.corpora)
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+const gridEl = useTemplateRef("grid")
 
 const proxy = new StatsProxy()
 
@@ -42,42 +43,43 @@ async function doSearch() {
   const counts = await proxy.makeRequest(cqpValue, attrsValue)
   data.value = await processStatisticsResult(originalCorpora, counts, attrsValue, false, cqpValue)
 }
+
+watch(data, async () => {
+  if (!data.value) return
+  if (!gridEl.value) throw new Error("Grid element missing")
+
+  const statisticsGridModule = await import("@/core/statistics/statistics-grid")
+  const { StatisticsGrid } = statisticsGridModule
+  const grid = new StatisticsGrid(
+    gridEl.value,
+    data.value.rows,
+    corpora.value.map((c) => c.id.toUpperCase()),
+    attrs.value,
+    store,
+    t("result.statistics.total"),
+    () => {},
+    () => {},
+  )
+  grid.render()
+  grid.resizeCanvas()
+  grid.autosizeColumns()
+})
 </script>
 
 <template>
   <div>
-    <div v-if="data">
-      <table>
-        <thead>
-          <tr>
-            <th :colspan="attrs.length">Value</th>
-            <th>Total</th>
-            <th v-for="corpus in corpora" :key="corpus.id">{{ locObj(corpus.title) }}</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="row in data.rows" :key="row.rowId">
-            <!-- The totals row -->
-            <template v-if="isTotalRow(row)">
-              <td :colspan="attrs.length">Σ</td>
-              <td class="text-end">{{ row.total[0] }}</td>
-              <td v-for="corpus in corpora" :key="corpus.id" class="text-end">
-                {{ row.count[corpus.id.toUpperCase()]![0] }}
-              </td>
-            </template>
-
-            <!-- Each value row -->
-            <template v-else>
-              <td v-for="(value, i) in row.formattedValue" :key="i">{{ value }}</td>
-              <td class="text-end">{{ row.total[0] }}</td>
-              <td v-for="corpus in corpora" :key="corpus.id" class="text-end">
-                {{ row.count[corpus.id.toUpperCase()]![0] }}
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div ref="grid" role="grid"></div>
   </div>
 </template>
+
+<style scoped>
+div[role="grid"] {
+  height: 30em;
+}
+::v-deep div[role="columnheader"] {
+  background-color: rgb(var(--bs-tertiary-bg-rgb));
+}
+::v-deep .slick-cell input[type="checkbox"] {
+  margin-left: 2px;
+}
+</style>

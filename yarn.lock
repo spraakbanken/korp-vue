@@ -2235,6 +2235,18 @@ sirv@^3.0.1, sirv@^3.0.2:
     mrmime "^2.0.0"
     totalist "^3.0.0"
 
+slickgrid@^5.18.0:
+  version "5.18.0"
+  resolved "https://registry.yarnpkg.com/slickgrid/-/slickgrid-5.18.0.tgz#3e294672fa383bcade9373245e736c31700738c4"
+  integrity sha512-TehUhBRm6SvMtg0QI3V4nBQkV0J0pPuR8iCv+GoQ4fHqJYsQAIBEy/MUzKY01BYNuHnu3lEwzrtVTJYVqW+4UA==
+  dependencies:
+    sortablejs "^1.15.6"
+
+sortablejs@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.15.6.tgz#ff93699493f5b8ab8d828f933227b4988df1d393"
+  integrity sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==
+
 source-map-generator@2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/source-map-generator/-/source-map-generator-2.0.2.tgz#54a5dc54bc7a61bcce754030a9d686bed82a8c55"
