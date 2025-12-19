@@ -76,10 +76,10 @@ watch(data, async () => {
 div[role="grid"] {
   height: 30em;
 }
-::v-deep div[role="columnheader"] {
+:deep(div[role="columnheader"]) {
   background-color: rgb(var(--bs-tertiary-bg-rgb));
 }
-::v-deep .slick-cell input[type="checkbox"] {
+:deep(.slick-cell input[type="checkbox"]) {
   margin-left: 2px;
 }
 </style>
