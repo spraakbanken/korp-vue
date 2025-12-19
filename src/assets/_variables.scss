@@ -1,0 +1,14 @@
+// Detect dark/light mode automatically
+$color-mode-type: media-query;
+
+// Bootstrap's default values are set with `!default`, so we can replace them by assigning custom values before importing them.
+// This however means we cannot use other variables, like `$body-color`, because they are not defined yet.
+
+// Replace some default colors
+$orange: #f0581a;
+$teal: #1e989f;
+
+$primary: $orange;
+
+$link-color: #212529; // = $gray-900 = $body-color, default: $primary
+$link-hover-color: $orange;

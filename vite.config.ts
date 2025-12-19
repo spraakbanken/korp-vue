@@ -48,6 +48,14 @@ export default defineConfig(({ mode }) => {
       host: env.KORP_HOST,
       https: getHttpsOptions(),
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          // Silence warnings from Bootstrap, see https://getbootstrap.com/docs/5.3/getting-started/vite/
+          silenceDeprecations: ["import", "if-function", "color-functions", "global-builtin"],
+        },
+      },
+    },
   }
 })
 

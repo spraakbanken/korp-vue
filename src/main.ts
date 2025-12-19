@@ -3,10 +3,8 @@ import { createPinia } from "pinia"
 import createInstancePlugin from "@instance/plugin"
 import settings from "@instance/settings"
 import setupI18n from "@/i18n/plugin"
-import "bootstrap/dist/css/bootstrap.css"
-import "bootstrap"
 import App from "@/App.vue"
-import "@/assets/main.css"
+import "@/assets/styles.scss"
 
 // Get URL parameters
 const params = new URLSearchParams(location.search)
