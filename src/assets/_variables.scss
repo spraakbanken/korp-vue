@@ -4,6 +4,8 @@ $color-mode-type: media-query;
 // Bootstrap's default values are set with `!default`, so we can replace them by assigning custom values before importing them.
 // This however means we cannot use other variables, like `$body-color`, because they are not defined yet.
 
+$font-family-base: "Source Sans Pro", Helvetica, Arial, Verdana, sans-serif;
+
 // Replace some default colors
 $orange: #f0581a;
 $teal: #1e989f;

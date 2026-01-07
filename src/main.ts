@@ -5,6 +5,8 @@ import settings from "@instance/settings"
 import setupI18n from "@/i18n/plugin"
 import App from "@/App.vue"
 import "@/assets/styles.scss"
+import "@fontsource/source-sans-pro/400.css"
+import "@fontsource/source-sans-pro/600.css"
 
 // Get URL parameters
 const params = new URLSearchParams(location.search)
