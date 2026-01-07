@@ -83,6 +83,9 @@ search.show_suggestions: Show suggestions
 search.and: and
 search.or: or
 
+search.filters: Filters
+search.filters.add: Add {0}...
+
 result.kwic: KWIC
 result.kwic.hits_count: "Number of hits: {0}"
 result.kwic.hits_relative: "Relative frequency: {0}"

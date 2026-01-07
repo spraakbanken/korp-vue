@@ -150,10 +150,10 @@ export class CorpusSet extends Observable {
     !!attr?.["is_struct_attr"] && attr?.["group_by"] != "group_by"
 
   /** Compile list of filters applicable to all corpora. */
-  getDefaultFilters(): Record<string, Attribute> {
+  getDefaultFilters(): Attribute[] {
     // Collect filters common to all corpora
     const attrs = intersection(...this.map((corpus) => corpus["attribute_filters"] || []))
-    return pick(this.structAttributes, ...attrs)
+    return compact(attrs.map((name) => this.structAttributes[name]))
   }
 
   _invalidateAttrs(attrs: Record<string, Attribute>[]) {

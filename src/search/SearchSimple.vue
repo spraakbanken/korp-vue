@@ -8,6 +8,7 @@ import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
+import GlobalFilters from "./GlobalFilters.vue"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -73,6 +74,8 @@ function createCqp() {
 
 <template>
   <form @submit.prevent="submit" class="text-center">
+    <GlobalFilters class="my-2" />
+
     <div class="d-flex gap-2 justify-content-center my-2">
       <LemgramAutocomplete v-model="lemgram" />
       <input type="submit" :value="$t('search')" class="btn btn-primary" />

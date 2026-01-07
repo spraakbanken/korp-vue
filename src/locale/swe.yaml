@@ -83,6 +83,9 @@ search.show_suggestions: Visa förslag
 search.and: och
 search.or: eller
 
+search.filters: Filter
+search.filters.add: Lägg till {0}...
+
 result.kwic: KWIC
 result.kwic.hits_count: "Antal träffar: {0}"
 result.kwic.hits_relative: "Relativ frekvens: {0}"
