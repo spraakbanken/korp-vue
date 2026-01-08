@@ -5,17 +5,26 @@ import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { sortBy } from "lodash"
+import { storeToRefs } from "pinia"
 import { computed, reactive, ref, watch } from "vue"
 
 const store = useAppStore()
 const { locObj } = useLocale()
 
+const { globalFilter, global_filter } = storeToRefs(store)
 const isEnabled = computed(() => attrs.value.length > 0)
-const manager = reactive(new GlobalFilterManager(store))
+const manager = reactive(new GlobalFilterManager())
 const attrs = ref<Attribute[]>(corpusSelection.getDefaultFilters())
 
 corpusSelection.listen(() => (attrs.value = corpusSelection.getDefaultFilters()))
 watch(attrs, (attrs) => manager.update(attrs))
+
+manager.listen(() => {
+  // Update the CQP fragment used when searching
+  globalFilter.value = manager.getCqp()
+  // Update URL
+  global_filter.value = manager.getSelection()
+})
 </script>
 
 <template>

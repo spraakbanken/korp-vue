@@ -2,10 +2,10 @@ import { isEqual, mapValues, pickBy } from "lodash"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { Observable, regescape } from "@/core/util"
 import type { RecursiveRecord } from "@/core/backend/types/attrValues"
-import type { Store } from "@/core/model/store"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
 import type { Condition } from "@/core/cqp/cqp.types"
+import { getLang } from "../i18n"
 
 export type FilterData = {
   attribute: Attribute
@@ -20,7 +20,7 @@ export class GlobalFilterManager extends Observable {
   data: RecursiveRecord<number> = {}
   filters: Record<string, FilterData> = {}
 
-  constructor(private store: Store) {
+  constructor() {
     super()
   }
 
@@ -101,9 +101,7 @@ export class GlobalFilterManager extends Observable {
         options[value] += count
       }
       // Cast back to list and sort alphabetically
-      filter.options = Object.entries(options).sort((a, b) =>
-        a[0].localeCompare(b[0], this.store.lang),
-      )
+      filter.options = Object.entries(options).sort((a, b) => a[0].localeCompare(b[0], getLang()))
     }
 
     this.notify()

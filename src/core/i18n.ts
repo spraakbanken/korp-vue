@@ -2,7 +2,7 @@ import type { LangString } from "@/core/model/locale"
 import type { AbsRelSeq } from "@/core/statistics/statistics.types"
 
 /** Current UI language. */
-export let _lang: string
+let _lang: string
 
 /** Current UI language. */
 export const getLang = (): string => _lang
