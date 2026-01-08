@@ -3,12 +3,13 @@ import { ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
-import { watchImmediate } from "@vueuse/core"
+import { until, watchImmediate } from "@vueuse/core"
 import { mergeCqpExprs, stringify } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import GlobalFilters from "./GlobalFilters.vue"
+import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -19,6 +20,10 @@ const suffixLocal = ref(suffix.value)
 const freeOrder = ref(!in_order.value)
 const ignoreCase = ref(isCaseInsensitive.value)
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
+const isFilterReady = ref(false)
+
+// Flag when the filter manager is ready, so that the initial search can include the filter selection.
+GlobalFilterManager.getInstance().listen(() => (isFilterReady.value = true))
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
@@ -54,9 +59,13 @@ function submit() {
   doSearch()
 }
 
-function doSearch() {
+async function doSearch() {
   const { type, value } = lemgram.value
   if (!value) return
+
+  // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
+  await until(isFilterReady).toBe(true, { timeout: 1000 })
+
   store.activeSearch = { type, cqp: createCqp() }
 }
 

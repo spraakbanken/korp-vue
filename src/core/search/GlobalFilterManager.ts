@@ -19,9 +19,15 @@ export class GlobalFilterManager extends Observable {
   attrs: Attribute[] = []
   data: RecursiveRecord<number> = {}
   filters: Record<string, FilterData> = {}
+  private static instance: GlobalFilterManager
 
-  constructor() {
+  private constructor() {
     super()
+  }
+
+  static getInstance(): GlobalFilterManager {
+    if (!this.instance) this.instance = new GlobalFilterManager()
+    return this.instance
   }
 
   /** Update filter data to match selected attributes. */

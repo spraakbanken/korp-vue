@@ -12,7 +12,7 @@ const store = useAppStore()
 const { locObj } = useLocale()
 
 const { globalFilter, global_filter } = storeToRefs(store)
-const manager = reactive(new GlobalFilterManager())
+const manager = reactive(GlobalFilterManager.getInstance())
 const isEnabled = computed(() => Object.keys(manager.filters).length > 0)
 
 // Whenever corpus selection is changed, update available filters.
