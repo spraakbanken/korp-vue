@@ -38,9 +38,9 @@ manager.listen(() => {
     <div v-for="filter in manager.filters" :key="filter.attribute.name">
       <GlobalFilterSelector
         v-model="filter.value"
-        :attribute="filter.attribute"
+        :label="filter.attribute.label"
         :options="filter.options"
-        @change="manager.updateOptions()"
+        @update:model-value="manager.updateOptions()"
       />
     </div>
   </div>
