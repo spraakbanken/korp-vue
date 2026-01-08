@@ -1,29 +1,35 @@
 <script setup lang="ts">
-import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
-import { sortBy } from "lodash"
+import { watchImmediate } from "@vueuse/core"
+import { isEqual, once, sortBy } from "lodash"
 import { storeToRefs } from "pinia"
-import { computed, reactive, ref, watch } from "vue"
+import { computed, reactive } from "vue"
 
 const store = useAppStore()
 const { locObj } = useLocale()
 
 const { globalFilter, global_filter } = storeToRefs(store)
-const isEnabled = computed(() => attrs.value.length > 0)
 const manager = reactive(new GlobalFilterManager())
-const attrs = ref<Attribute[]>(corpusSelection.getDefaultFilters())
+const isEnabled = computed(() => Object.keys(manager.filters).length > 0)
 
-corpusSelection.listen(() => (attrs.value = corpusSelection.getDefaultFilters()))
-watch(attrs, (attrs) => manager.update(attrs))
+// Whenever corpus selection is changed, update available filters.
+corpusSelection.listen(() => manager.update(corpusSelection.getDefaultFilters()))
 
+// When initial corpus selection has settled, start syncing filter values from URL.
+corpusSelection.listen(
+  once(() => watchImmediate(global_filter, () => manager.setSelection(global_filter.value))),
+)
+
+// Whenever filter values are changed
 manager.listen(() => {
   // Update the CQP fragment used when searching
   globalFilter.value = manager.getCqp()
   // Update URL
-  global_filter.value = manager.getSelection()
+  const selectedValues = manager.getSelection()
+  if (!isEqual(global_filter.value, selectedValues)) global_filter.value = selectedValues
 })
 </script>
 
@@ -36,7 +42,7 @@ manager.listen(() => {
         class="form-select"
         multiple
         size="1"
-        v-model.lazy="filter.value"
+        v-model="filter.value"
         @change="manager.updateOptions()"
       >
         <option value="" disabled selected>
