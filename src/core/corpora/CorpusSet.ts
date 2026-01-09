@@ -76,6 +76,10 @@ export class CorpusSet extends Observable {
     return this.corpora.map(f)
   }
 
+  getTokenCount(): number {
+    return sum(this.map((corpus) => parseInt(corpus.info.Size || "0")))
+  }
+
   getAttributes(lang?: string) {
     // lang not used here, only in parallel mode
     const attrs = this.map((corpus) => corpus.attributes)

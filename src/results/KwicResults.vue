@@ -5,14 +5,11 @@ import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
-import { computed, ref, watch } from "vue"
-import KwicGrid from "./kwic/KwicGrid.vue"
-import { massageData } from "@/core/kwic/kwic"
+import { ref, watch } from "vue"
 import settings from "@/core/config"
-import { debounce, sum } from "lodash"
+import { debounce } from "lodash"
 import type { QueryParamSort } from "@/core/backend/types/query"
-import HelpBadge from "@/components/HelpBadge.vue"
-import PaginationBar from "./PaginationBar.vue"
+import KwicResultsContent from "./KwicResultsContent.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -23,7 +20,6 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
 const { activeSearch } = storeToRefs(store)
 const hitsCount = ref(0)
-const hitsRelative = computed(() => sum(corpusSelection.map((corpus) => corpus.tokens || 0)))
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<ApiKwic[]>()
 const loading = ref(false)
@@ -42,7 +38,7 @@ function updateSearch() {
 
 async function doSearch(isPaging = false) {
   if (!activeSearch.value) throw new Error("No active search")
-  loading.value = true
+  loading.value = !isPaging
   proxy.setProgressHandler((report) => {
     hitsCount.value = report.hits || 0
   })
@@ -97,20 +93,12 @@ watch(page, () => {
       </label>
     </div>
 
-    <div class="my-2 d-flex flex-wrap justify-content-between align-items-baseline">
-      <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
-        <div>
-          {{ $t("result.kwic.hits_count", [$n(hitsCount)]) }}
-        </div>
-        <div>
-          {{ $t("result.kwic.hits_relative", [$n(hitsRelative)]) }}
-          <HelpBadge :text="$t('result.kwic.hits_relative.help')" />
-        </div>
-      </div>
-
-      <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
-    </div>
-
-    <KwicGrid v-if="kwic" :data="massageData(kwic)" />
+    <KwicResultsContent
+      :hitsCount="hitsCount"
+      :hpp="hpp"
+      :kwic="kwic"
+      :loading="loading"
+      v-model="page"
+    />
   </div>
 </template>
