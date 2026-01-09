@@ -33,7 +33,7 @@ manager.listen(() => {
 </script>
 
 <template>
-  <div v-if="isEnabled" class="mb-4 d-flex gap-2 align-items-baseline">
+  <div v-if="isEnabled" class="d-flex gap-2 align-items-baseline">
     <span class="fw-bold">{{ $t("search.filters") }}:</span>
     <div v-for="filter in manager.filters" :key="filter.attribute.name">
       <GlobalFilterSelector

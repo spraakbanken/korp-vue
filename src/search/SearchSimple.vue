@@ -83,7 +83,7 @@ function createCqp() {
 
 <template>
   <form @submit.prevent="submit" class="text-center">
-    <GlobalFilters class="my-2" />
+    <GlobalFilters class="mb-4" />
 
     <div class="d-flex gap-2 justify-content-center my-2">
       <LemgramAutocomplete v-model="lemgram" />

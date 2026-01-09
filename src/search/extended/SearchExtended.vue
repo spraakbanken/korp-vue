@@ -4,8 +4,10 @@ import SearchExtendedAttribute from "./SearchExtendedAttribute.vue"
 import SearchExtendedOperator from "./SearchExtendedOperator.vue"
 import SearchExtendedValue from "./SearchExtendedValue.vue"
 import { useAppStore } from "@/store/useAppStore"
-import { createCondition, stringify } from "@/core/cqp/cqp"
+import { createCondition, mergeCqpExprs, stringify } from "@/core/cqp/cqp"
 import type { CqpToken } from "@/core/cqp/cqp.types"
+import GlobalFilters from "../GlobalFilters.vue"
+import { cloneDeep } from "lodash"
 
 const store = useAppStore()
 
@@ -49,18 +51,21 @@ function submit() {
 
 function search() {
   store.activeSearch = {
-    type: undefined,
     cqp: createCqp(),
   }
 }
 
 function createCqp(): string {
-  return stringify(tokens)
+  const query = cloneDeep(tokens)
+  if (store.globalFilter) mergeCqpExprs(query, store.globalFilter)
+  return stringify(query)
 }
 </script>
 
 <template>
   <form @submit.prevent="submit" class="d-flex flex-column gap-4 align-items-center">
+    <GlobalFilters />
+
     <div class="d-flex gap-4 align-items-center overflow-x-auto">
       <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0">
         <div class="card-header d-flex justify-content-between align-items-center">
