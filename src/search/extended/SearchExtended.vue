@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 import SearchExtendedAttribute from "./SearchExtendedAttribute.vue"
 import SearchExtendedOperator from "./SearchExtendedOperator.vue"
 import SearchExtendedValue from "./SearchExtendedValue.vue"
@@ -7,7 +7,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify } from "@/core/cqp/cqp"
 import { isCqpToken, type CqpQuery, type CqpToken } from "@/core/cqp/cqp.types"
 import GlobalFilters from "../GlobalFilters.vue"
-import { watchImmediate } from "@vueuse/core"
+import { until, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { splitFirst } from "@/core/util"
 import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
@@ -20,7 +20,11 @@ const createToken = (): CqpToken => ({
 
 const tokens = reactive<CqpQuery>([createToken()])
 const { search } = storeToRefs(store)
+const isFilterReady = ref(false)
 const globalFilterManager = GlobalFilterManager.getInstance()
+
+// Flag when the filter manager is ready, so that the initial search can include the filter selection.
+globalFilterManager.listen(() => (isFilterReady.value = true))
 
 watchImmediate(search, () => {
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
@@ -71,7 +75,10 @@ function submit() {
 }
 
 /** Declare query as the active search */
-function commitSearch() {
+async function commitSearch() {
+  // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
+  await until(isFilterReady).toBe(true, { timeout: 1000 })
+
   const cqp = stringify(globalFilterManager.mergeToCqp(tokens))
   store.activeSearch = { cqp }
 }
