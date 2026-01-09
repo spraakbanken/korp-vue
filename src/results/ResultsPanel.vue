@@ -11,7 +11,7 @@ import ExampleResults from "./ExampleResults.vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 
 const store = useAppStore()
-const { dynamicTabs } = useDynamicTabs()
+const { dynamicTabs, closeTab } = useDynamicTabs()
 const { locObj } = useLocale()
 
 const { result_tab } = storeToRefs(store)
@@ -23,9 +23,30 @@ const tabOptions = [
   { key: 3, name: "wordpicture" },
 ]
 
+// Sync active tab to the store.
 watch(currentTab, () => {
+  // Only sync main tab selection. At initial load from URL, dynamic tabs are not yet created.
   if (typeof currentTab.value == "number") result_tab.value = currentTab.value
 })
+
+/** Close a dynamic tab and ensure the current tab is valid */
+function closeTabLocal(id: string) {
+  const tabIndex = dynamicTabs.findIndex((tab) => tab.id == id)
+  closeTab(id)
+
+  // If the closed tab was active, find another tab to select
+  // TODO If the closed tab is _not_ active, the active tab styling is lost somehow.
+  if (currentTab.value == id) {
+    if (dynamicTabs.length) {
+      // Select next dynamic tab, or previous if the closed tab was the last one
+      const newTabIndex = tabIndex >= dynamicTabs.length ? tabIndex - 1 : tabIndex
+      currentTab.value = dynamicTabs[newTabIndex]!.id
+    } else {
+      // No dynamic tabs left, go to last selected main tab
+      currentTab.value = result_tab.value
+    }
+  }
+}
 </script>
 
 <template>
@@ -58,6 +79,11 @@ watch(currentTab, () => {
         @click="currentTab = tab.id"
       >
         {{ locObj(tab.label) }}
+        <span
+          class="btn-close ms-2"
+          style="width: 0.1rem; background-size: contain"
+          @click.prevent.stop="closeTabLocal(tab.id)"
+        ></span>
       </button>
     </nav>
 

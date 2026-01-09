@@ -18,8 +18,16 @@ export function useDynamicTabs() {
     dynamicTabs.push(tab)
   }
 
+  function closeTab(id: string) {
+    const index = dynamicTabs.findIndex((tab) => tab.id === id)
+    if (index !== -1) {
+      dynamicTabs.splice(index, 1)
+    }
+  }
+
   return {
     createTab,
+    closeTab,
     dynamicTabs,
   }
 }
