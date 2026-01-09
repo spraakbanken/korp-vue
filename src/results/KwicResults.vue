@@ -23,6 +23,7 @@ const hitsCount = ref(0)
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<ApiKwic[]>()
 const loading = ref(false)
+// TODO Read page from URL
 const page = ref(1)
 const sort = ref<QueryParamSort>("")
 
@@ -64,6 +65,7 @@ watch(page, () => {
 <template>
   <div>
     <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
+      TODO Context checkbox
       <label>
         <i18n-t scope="global" keypath="result.kwic.page_size.label">
           <select
@@ -93,12 +95,6 @@ watch(page, () => {
       </label>
     </div>
 
-    <KwicResultsContent
-      :hitsCount="hitsCount"
-      :hpp="hpp"
-      :kwic="kwic"
-      :loading="loading"
-      v-model="page"
-    />
+    <KwicResultsContent :hitsCount :hpp :kwic :loading v-model="page" />
   </div>
 </template>
