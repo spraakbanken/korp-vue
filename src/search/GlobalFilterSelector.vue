@@ -53,9 +53,9 @@ onMounted(() => {
       aria-expanded="false"
       :class="model.length ? 'btn-secondary' : 'btn-outline-secondary'"
     >
-      <template v-if="model.length">
+      <template v-if="selectionLocal.length">
         {{ capitalize(locObj(label)) }}:
-        {{ model.join(", ") }}
+        {{ selectionLocal.join(", ") }}
       </template>
       <template v-else>
         {{ $t("search.filters.add", [locObj(label)]) }}
