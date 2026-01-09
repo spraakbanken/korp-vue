@@ -4,18 +4,35 @@ import SearchExtendedAttribute from "./SearchExtendedAttribute.vue"
 import SearchExtendedOperator from "./SearchExtendedOperator.vue"
 import SearchExtendedValue from "./SearchExtendedValue.vue"
 import { useAppStore } from "@/store/useAppStore"
-import { createCondition, mergeCqpExprs, stringify } from "@/core/cqp/cqp"
-import type { CqpToken } from "@/core/cqp/cqp.types"
+import { createCondition, parse, stringify } from "@/core/cqp/cqp"
+import { isCqpToken, type CqpQuery, type CqpToken } from "@/core/cqp/cqp.types"
 import GlobalFilters from "../GlobalFilters.vue"
-import { cloneDeep } from "lodash"
+import { watchImmediate } from "@vueuse/core"
+import { storeToRefs } from "pinia"
+import { splitFirst } from "@/core/util"
+import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 
 const store = useAppStore()
 
 const createToken = (): CqpToken => ({
-  and_block: [[createCondition("bra")]],
+  and_block: [[createCondition("")]],
 })
 
-const tokens = reactive<CqpToken[]>([createToken()])
+const tokens = reactive<CqpQuery>([createToken()])
+const { search } = storeToRefs(store)
+const globalFilterManager = GlobalFilterManager.getInstance()
+
+watchImmediate(search, () => {
+  // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
+  const [type, value] = splitFirst("|", store.search || "")
+  if (type != "cqp" || value) return
+
+  // Replace query under construction
+  tokens.splice(0, tokens.length, ...parse<CqpQuery>(store.cqp))
+
+  // Trigger search
+  commitSearch()
+})
 
 function addToken() {
   tokens.push(createToken())
@@ -26,14 +43,17 @@ function removeToken(index: number) {
 }
 
 function addDisjunction(tokenIndex: number) {
-  tokens[tokenIndex]!.and_block.push([createCondition()])
+  if (!isCqpToken(tokens[tokenIndex])) throw new Error("Cannot modify non-existing or struct token")
+  tokens[tokenIndex].and_block.push([createCondition()])
 }
 
 function addCondition(tokenIndex: number, disjunctionIndex: number) {
+  if (!isCqpToken(tokens[tokenIndex])) throw new Error("Cannot modify non-existing or struct token")
   tokens[tokenIndex]!.and_block[disjunctionIndex]!.push(createCondition())
 }
 
 function removeCondition(tokenIndex: number, disjunctionIndex: number, conditionIndex: number) {
+  if (!isCqpToken(tokens[tokenIndex])) throw new Error("Cannot modify non-existing or struct token")
   tokens[tokenIndex]!.and_block[disjunctionIndex]!.splice(conditionIndex, 1)
 
   // If the disjunction is empty, remove it
@@ -42,23 +62,18 @@ function removeCondition(tokenIndex: number, disjunctionIndex: number, condition
   }
 }
 
+/** Handle clicking the Search button */
 function submit() {
-  store.extendedCqp = createCqp()
-  store.cqp = createCqp()
+  store.extendedCqp = stringify(globalFilterManager.mergeToCqp(tokens), true)
+  store.cqp = stringify(tokens)
   store.search = "cqp"
-  search()
+  commitSearch()
 }
 
-function search() {
-  store.activeSearch = {
-    cqp: createCqp(),
-  }
-}
-
-function createCqp(): string {
-  const query = cloneDeep(tokens)
-  if (store.globalFilter) mergeCqpExprs(query, store.globalFilter)
-  return stringify(query)
+/** Declare query as the active search */
+function commitSearch() {
+  const cqp = stringify(globalFilterManager.mergeToCqp(tokens))
+  store.activeSearch = { cqp }
 }
 </script>
 
@@ -79,7 +94,7 @@ function createCqp(): string {
         </div>
 
         <!-- 2-dimensional repetition: an AND of OR's-->
-        <div class="card-body d-flex flex-column gap-2">
+        <div v-if="isCqpToken(token)" class="card-body d-flex flex-column gap-2">
           <template v-for="(disjunction, j) in token.and_block" :key="j">
             <div v-if="j > 0">{{ $t("search.and") }}</div>
 
@@ -133,6 +148,8 @@ function createCqp(): string {
             </button>
           </div>
         </div>
+
+        <div v-else>TODO struct token</div>
       </div>
 
       <div>

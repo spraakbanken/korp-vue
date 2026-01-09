@@ -1,5 +1,4 @@
 import type { QueryParamSort } from "@/core/backend/types/query"
-import type { CqpQuery } from "@/core/cqp/cqp.types"
 
 /** Stored state. */
 export type Store = {
@@ -15,8 +14,6 @@ export type Store = {
   display?: "about"
   /** The current Extended search query as CQP */
   extendedCqp?: string
-  /** CQP fragment built from selected filter values. */
-  globalFilter?: CqpQuery
   /** A simple attribute–values structure of selected filters. */
   global_filter: Record<string, string[]>
   /** Hits per page */

@@ -10,7 +10,7 @@ import GlobalFilterSelector from "./GlobalFilterSelector.vue"
 
 const store = useAppStore()
 
-const { globalFilter, global_filter } = storeToRefs(store)
+const { global_filter } = storeToRefs(store)
 const manager = reactive(GlobalFilterManager.getInstance())
 const isEnabled = computed(() => Object.keys(manager.filters).length > 0)
 
@@ -24,8 +24,6 @@ corpusSelection.listen(
 
 // Whenever filter values are changed
 manager.listen(() => {
-  // Update the CQP fragment used when searching
-  globalFilter.value = manager.getCqp()
   // Update URL
   const selectedValues = manager.getSelection()
   if (!isEqual(global_filter.value, selectedValues)) global_filter.value = selectedValues

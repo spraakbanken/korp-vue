@@ -1,11 +1,12 @@
-import { isEqual, mapValues, pickBy } from "lodash"
+import { cloneDeep, isEqual, mapValues, pickBy } from "lodash"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { Observable, regescape } from "@/core/util"
 import type { RecursiveRecord } from "@/core/backend/types/attrValues"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
-import type { Condition } from "@/core/cqp/cqp.types"
+import type { Condition, CqpQuery } from "@/core/cqp/cqp.types"
 import { getLang } from "../i18n"
+import { mergeCqpExprs } from "../cqp/cqp"
 
 export type FilterData = {
   attribute: Attribute
@@ -148,7 +149,7 @@ export class GlobalFilterManager extends Observable {
     return [sum, include]
   }
 
-  /** Build globally available CQP fragment. */
+  /** Build CQP fragment: a token with struct attribute conditions. */
   getCqp() {
     // Create a token with an AND of each attribute, and an OR of the selected values of each attribute.
     const and_block = Object.entries(this.filters)
@@ -157,6 +158,14 @@ export class GlobalFilterManager extends Observable {
       )
       .filter((conds) => conds.length > 0)
     return and_block.length ? [{ and_block }] : undefined
+  }
+
+  /** Add selected filters (if any) as conditions in the first token of a query. */
+  mergeToCqp(query: CqpQuery): CqpQuery {
+    const out = cloneDeep(query)
+    const filterCqp = this.getCqp()
+    if (filterCqp) mergeCqpExprs(out, filterCqp)
+    return out
   }
 
   private createCondition(attr: Attribute, value: string): Condition {

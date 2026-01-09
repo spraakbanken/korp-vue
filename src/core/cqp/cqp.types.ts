@@ -22,9 +22,9 @@ export type CqpBound = {
   }
 }
 
-export const isCqpToken = (item: CqpItem): item is CqpToken => "and_block" in item
-export const isCqpStruct = (item: CqpItem): item is CqpStruct => "struct" in item
-export const isCqpBound = (item: CqpItem): item is CqpBound => "bound" in item
+export const isCqpToken = (item?: CqpItem): item is CqpToken => !!item && "and_block" in item
+export const isCqpStruct = (item?: CqpItem): item is CqpStruct => !!item && "struct" in item
+export const isCqpBound = (item?: CqpItem): item is CqpBound => !!item && "bound" in item
 
 export type Condition = {
   type: string

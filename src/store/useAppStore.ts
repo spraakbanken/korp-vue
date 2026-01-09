@@ -6,7 +6,6 @@ import { useI18n } from "vue-i18n"
 import { setLang } from "@/core/i18n"
 import type { ActiveSearch, Store } from "@/core/model/store"
 import { type NormalizeOptional } from "./util"
-import type { CqpQuery } from "@/core/cqp/cqp.types"
 
 export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", () => {
   const { locale } = useI18n()
@@ -18,7 +17,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const cqpParallel = ref({})
   const display = ref("")
   const extendedCqp = ref<string>()
-  const globalFilter = ref<CqpQuery>()
   const global_filter = ref("")
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
@@ -53,7 +51,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     cqpParallel,
     display,
     extendedCqp,
-    globalFilter,
     global_filter,
     hpp,
     isCaseInsensitive,
