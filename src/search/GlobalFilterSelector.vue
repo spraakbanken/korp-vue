@@ -46,20 +46,25 @@ onMounted(() => {
 <template>
   <div class="dropdown" ref="dropdown">
     <button
-      class="btn dropdown-toggle"
+      class="btn dropdown-toggle align-baseline"
       type="button"
       data-bs-toggle="dropdown"
       data-bs-auto-close="outside"
       aria-expanded="false"
       :class="model.length ? 'btn-secondary' : 'btn-outline-secondary'"
     >
-      <template v-if="selectionLocal.length">
-        {{ capitalize(locObj(label)) }}:
-        {{ selectionLocal.join(", ") }}
-      </template>
-      <template v-else>
-        {{ $t("search.filters.add", [locObj(label)]) }}
-      </template>
+      <span
+        class="d-inline-block align-bottom overflow-hidden text-truncate"
+        style="max-width: 15em"
+      >
+        <template v-if="selectionLocal.length">
+          {{ capitalize(locObj(label)) }}:
+          {{ selectionLocal.join(", ") }}
+        </template>
+        <template v-else>
+          {{ $t("search.filters.add", [locObj(label)]) }}
+        </template>
+      </span>
     </button>
 
     <ul class="dropdown-menu">
