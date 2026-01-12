@@ -4,24 +4,25 @@ import SearchSimple from "./SearchSimple.vue"
 import { storeToRefs } from "pinia"
 import { vTab } from "@/bootstrap"
 import SearchExtended from "./extended/SearchExtended.vue"
+import settings from "@/core/config"
 
 const store = useAppStore()
 
 const { search_tab } = storeToRefs(store)
 
-const tabOptions = [
-  { key: 0, name: "simple" },
-  { key: 1, name: "extended" },
-  { key: 2, name: "advanced" },
-]
+const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced"]
 </script>
 
 <template>
   <section class="d-flex flex-column align-items-center">
     <!-- Tab bar -->
-    <nav class="nav nav-tabs justify-content-center" id="search-tabs-list">
+    <nav
+      v-show="tabOptions.length > 1"
+      class="nav nav-tabs justify-content-center"
+      id="search-tabs-list"
+    >
       <button
-        v-for="{ key, name } in tabOptions"
+        v-for="(name, key) in tabOptions"
         :key
         class="nav-link"
         :class="{ active: search_tab == key }"
@@ -36,10 +37,14 @@ const tabOptions = [
     </nav>
 
     <!-- Tab content -->
-    <div id="search-tabs-content" class="tab-content border border-top-0 p-4 bg-body">
+    <div
+      id="search-tabs-content"
+      class="tab-content border p-4 bg-body"
+      :class="{ 'border-top-0': tabOptions.length > 1 }"
+    >
       <div
         class="tab-pane"
-        :class="{ 'show active': search_tab == 0 }"
+        :class="{ 'show active': search_tab == tabOptions.indexOf('simple') }"
         id="search-tabs-pane-simple"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-simple"
@@ -50,7 +55,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': search_tab == 1 }"
+        :class="{ 'show active': search_tab == tabOptions.indexOf('extended') }"
         id="search-tabs-pane-extended"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-extended"
@@ -61,7 +66,7 @@ const tabOptions = [
 
       <div
         class="tab-pane"
-        :class="{ 'show active': search_tab == 2 }"
+        :class="{ 'show active': search_tab == tabOptions.indexOf('advanced') }"
         id="search-tabs-pane-advanced"
         role="tabpanel"
         aria-labelledby="search-tabs-tab-advanced"
