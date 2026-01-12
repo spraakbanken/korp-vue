@@ -8,8 +8,8 @@ defineProps<{
 
 <template>
   <span
-    class="kwic-token"
-    :class="{ 'kwic-token-match': token._match, 'kwic-token-punct': token._punct }"
+    class="kwic-token text-nowrap"
+    :class="{ 'fw-bold': token._match, 'kwic-token-punct': token._punct }"
   >
     {{ token.word }}
   </span>
@@ -21,8 +21,5 @@ defineProps<{
 }
 .kwic-token-punct {
   margin-inline-start: -0.15em;
-}
-.kwic-token-match {
-  font-weight: bold;
 }
 </style>
