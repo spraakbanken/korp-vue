@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import KwicRow from "./KwicRow.vue"
-import type { Row } from "@/core/kwic/kwic"
+import type { Row, SelectedToken } from "@/core/kwic/kwic"
 import { watchImmediate } from "@vueuse/core"
 
 const props = defineProps<{ data: Row[] }>()
+
+defineEmits<{
+  (e: "selectToken", payload: SelectedToken): void
+}>()
 
 const scrollArea = ref<HTMLElement>()
 
@@ -42,7 +46,12 @@ function scrollAreaHorizontally(area: HTMLElement, target: HTMLElement) {
   <div class="w-100 overflow-x-auto" ref="scrollArea">
     <table class="table table-sm">
       <tbody>
-        <KwicRow v-for="(row, i) in data" :key="i" :data="row" />
+        <KwicRow
+          v-for="(row, i) in data"
+          :key="i"
+          :data="row"
+          @select-token="(token) => $emit('selectToken', { token, row })"
+        />
       </tbody>
     </table>
   </div>

@@ -1,4 +1,5 @@
 tagline: Språkbankens ordforskningsplattform
+corpus: Korpus
 corpora: Korpusar
 language: Språk
 modes: Lägen
@@ -10,6 +11,10 @@ next: Nästa
 show_more: Visa mer
 show_less: Visa mindre
 close: Stäng
+
+attribute_type.word: Ord
+attribute_type.pos: Ordattribut
+attribute_type.struct: Strukturella attribut
 
 auth.login: Logga in
 auth.logout: Logga ut {name}
@@ -57,10 +62,6 @@ search.extended.boundary.start: börjar
 search.extended.boundary.end: slutar
 
 search.advanced: Avancerad
-
-search.attribute_type.word: Ord
-search.attribute_type.pos: Ordattribut
-search.attribute_type.struct: Strukturella attribut
 
 search.operator.is: är
 search.operator.equal: lika med

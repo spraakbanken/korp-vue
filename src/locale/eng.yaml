@@ -1,4 +1,5 @@
 tagline: Språkbanken's word research platform
+corpus: Corpus
 corpora: Corpora
 language: Language
 modes: Modes
@@ -10,6 +11,10 @@ next: Next
 show_more: Show more
 show_less: Show less
 close: Close
+
+attribute_type.word: Word
+attribute_type.pos: Positional attributes
+attribute_type.struct: Structural attributes
 
 auth.login: Log in
 auth.logout: Log out {name}
@@ -56,10 +61,6 @@ search.extended.boundary.start: starts
 search.extended.boundary.end: ends
 
 search.advanced: Advanced
-
-search.attribute_type.word: Word
-search.attribute_type.pos: Positional attributes
-search.attribute_type.struct: Structural attributes
 
 search.operator.is: is
 search.operator.equal: equal

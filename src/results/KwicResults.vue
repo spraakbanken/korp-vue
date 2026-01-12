@@ -9,7 +9,7 @@ import { ref, watch } from "vue"
 import settings from "@/core/config"
 import { debounce } from "lodash"
 import type { QueryParamSort } from "@/core/backend/types/query"
-import KwicResultsContent from "./KwicResultsContent.vue"
+import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 
 const UPDATE_DELAY_MS = 500
 

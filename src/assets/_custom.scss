@@ -1,3 +1,12 @@
 .btn-primary {
+  // White works better on orange
   @include button-variant($primary, $primary, white);
+}
+
+.-m-1 {
+  margin: -0.25rem;
+}
+
+.-m-2 {
+  margin: -0.5rem;
 }

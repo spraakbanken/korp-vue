@@ -4,7 +4,7 @@ import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
 import { onMounted, ref, watch } from "vue"
-import KwicResultsContent from "./KwicResultsContent.vue"
+import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 
 const props = defineProps<{ task: ExampleTask }>()
 

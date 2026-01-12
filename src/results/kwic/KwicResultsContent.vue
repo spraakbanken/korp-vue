@@ -2,10 +2,11 @@
 import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { computed, ref } from "vue"
-import KwicGrid from "./kwic/KwicGrid.vue"
-import { massageData } from "@/core/kwic/kwic"
+import KwicGrid from "./KwicGrid.vue"
+import { massageData, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
-import PaginationBar from "./PaginationBar.vue"
+import PaginationBar from "../PaginationBar.vue"
+import KwicSidebar from "./KwicSidebar.vue"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -18,10 +19,15 @@ const props = defineProps<{
 
 const tokensTotal = ref(corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
+const selectedToken = ref<SelectedToken>()
 
 corpusSelection.listen(() => {
   tokensTotal.value = corpusSelection.getTokenCount()
 })
+
+function selectToken(newSelectedToken: SelectedToken) {
+  selectedToken.value = newSelectedToken
+}
 </script>
 
 <template>
@@ -40,6 +46,10 @@ corpusSelection.listen(() => {
       <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
     </div>
 
-    <KwicGrid v-if="kwic" :data="massageData(kwic)" />
+    <div class="d-flex gap-2">
+      <KwicGrid v-if="kwic" :data="massageData(kwic)" @select-token="selectToken" />
+
+      <KwicSidebar v-if="selectedToken" :selectedToken />
+    </div>
   </div>
 </template>
