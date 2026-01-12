@@ -39,6 +39,7 @@ search.simple.free_order.help: The search words can occur in any order, and not 
 search.simple.ignore_case: case-insensitive
 
 search.extended: Extended
+search.extended.instructions: Build your own search query by adding boxes for tokens (words) and their match conditions.
 search.extended.token: Token
 search.extended.token_add: Add token
 search.extended.token_remove: Remove token

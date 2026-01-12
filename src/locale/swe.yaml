@@ -39,6 +39,7 @@ search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, oc
 search.simple.ignore_case: skiftlägesokänsligt
 
 search.extended: Utökad
+search.extended.instructions: Bygg en egen sökfråga genom att lägga till lådor för token (ord) och deras matchningsvillkor.
 search.extended.token: Token
 search.extended.token_add: Lägg till token
 search.extended.token_remove: Ta bort token
