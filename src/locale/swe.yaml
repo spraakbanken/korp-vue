@@ -42,12 +42,19 @@ search.extended: Utökad
 search.extended.instructions: Bygg en egen sökfråga genom att lägga till lådor för token (ord) och deras matchningsvillkor.
 search.extended.token: Token
 search.extended.token_add: Lägg till token
-search.extended.token_remove: Ta bort token
+search.extended.boundary_add: Lägg till gräns
+search.extended.boundary_add.start: början
+search.extended.boundary_add.end: slut
+search.extended.boundary_remove: Ta bort gräns
 search.extended.condition_add: Lägg till villkor
 search.extended.condition_remove: Ta bort villkor
 search.extended.attribute: Attribut
 search.extended.operator: Operator
 search.extended.value: Värde
+search.extended.boundary: Gräns
+search.extended.boundary.type: Gränsenhet
+search.extended.boundary.start: börjar
+search.extended.boundary.end: slutar
 
 search.advanced: Avancerad
 
@@ -121,3 +128,9 @@ pos.ie: infinitivmärke
 pos.e: e
 pos.mx: flerordsprefix
 pos.sx: prefix
+
+tag.sentence: mening
+tag.paragraph: stycke
+tag.np: np
+tag.e: e
+tag.text: kontext

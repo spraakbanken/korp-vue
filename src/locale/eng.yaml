@@ -42,12 +42,18 @@ search.extended: Extended
 search.extended.instructions: Build your own search query by adding boxes for tokens (words) and their match conditions.
 search.extended.token: Token
 search.extended.token_add: Add token
-search.extended.token_remove: Remove token
+search.extended.boundary_add: Add boundary
+search.extended.boundary_add.start: start
+search.extended.boundary_add.end: end
 search.extended.condition_add: Add condition
 search.extended.condition_remove: Remove condition
 search.extended.attribute: Attribute
 search.extended.operator: Operator
 search.extended.value: Value
+search.extended.boundary: Boundary
+search.extended.boundary.type: Boundary unit
+search.extended.boundary.start: starts
+search.extended.boundary.end: ends
 
 search.advanced: Advanced
 
@@ -121,3 +127,9 @@ pos.ie: infinitive particle
 pos.e: e
 pos.mx: flerordsprefix
 pos.sx: prefix
+
+tag.sentence: sentence
+tag.paragraph: paragraph
+tag.np: np
+tag.e: e
+tag.text: context

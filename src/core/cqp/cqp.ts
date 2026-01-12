@@ -205,6 +205,13 @@ export function mergeCqpExprs(baseQuery: CqpQuery, secondQuery: CqpQuery) {
   return baseQuery
 }
 
+/** Whether there are more than one token conditions in the query, boundaries excluded */
+export const hasMultipleTokenConditions = (query: CqpQuery) =>
+  query
+    .filter(isCqpToken)
+    .flatMap((token) => token.and_block)
+    .flat(2).length > 1
+
 /** Check if a query has any wildcards (`[]`) */
 export const hasWildcard = (cqpObjs: CqpQuery) =>
   cqpObjs.some((token) => stringify([token]).indexOf("[]") === 0)
