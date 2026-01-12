@@ -118,7 +118,11 @@ function addBoundary(start: boolean) {
               </template>
 
               <div>
-                <button type="button" class="btn btn-text btn-sm" @click="addCondition(i, j)">
+                <button
+                  type="button"
+                  class="btn btn-link text-decoration-none btn-sm"
+                  @click="addCondition(i, j)"
+                >
                   + {{ $t("search.or") }}…
                 </button>
               </div>
@@ -127,7 +131,11 @@ function addBoundary(start: boolean) {
         </template>
 
         <div>
-          <button type="button" class="btn btn-text btn-sm" @click="addDisjunction(i)">
+          <button
+            type="button"
+            class="btn btn-link text-decoration-none btn-sm"
+            @click="addDisjunction(i)"
+          >
             + {{ $t("search.and") }}…
           </button>
         </div>
