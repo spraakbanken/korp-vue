@@ -7,22 +7,21 @@ import { injectionKeys } from "@/injection"
 
 const { locObj } = useLocale()
 
-const tokenSelection = inject(injectionKeys.kwicTokenSelection)
-const selection = computed(() => tokenSelection?.getTokenRow())
+const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
-  selection.value ? corpusSelection.get(selection.value.row.corpus) : undefined,
+  selectedToken?.value ? corpusSelection.get(selectedToken.value.row.corpus) : undefined,
 )
 </script>
 
 <template>
-  <div v-if="selection && corpus" class="card" style="width: 30rem">
+  <div v-if="selectedToken && corpus" class="card" style="width: 30rem">
     <div class="card-body d-flex flex-column gap-3">
       <div>
         <div class="text-muted small text-uppercase">{{ $t("corpus") }}</div>
         <div>{{ locObj(corpus.title) }}</div>
       </div>
 
-      <details v-if="'structs' in selection.row" open class="border p-2">
+      <details v-if="'structs' in selectedToken.row" open class="border p-2">
         <summary class="bg-body-secondary p-1 -m-2 mb-1">{{ $t("attribute_type.struct") }}</summary>
 
         <KwicSidebarAttribute
@@ -30,7 +29,7 @@ const corpus = computed(() =>
           :key="name"
           :corpus
           :attribute
-          :value="selection.row.structs[name]"
+          :value="selectedToken.row.structs[name]"
         />
       </details>
 
@@ -42,7 +41,7 @@ const corpus = computed(() =>
           :key="name"
           :corpus
           :attribute
-          :value="selection.token[name]"
+          :value="selectedToken.token[name]"
         />
       </details>
     </div>

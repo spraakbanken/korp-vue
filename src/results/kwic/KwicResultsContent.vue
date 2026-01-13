@@ -3,7 +3,7 @@ import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { computed, provide, reactive, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
-import { massageData } from "@/core/kwic/kwic"
+import { massageData, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
 import KwicSidebar from "./KwicSidebar.vue"
@@ -21,10 +21,9 @@ const props = defineProps<{
 
 const tokensTotal = ref(corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
-const tokenSelectionBare = new TokenSelection()
-const tokenSelection = reactive(tokenSelectionBare)
+const selectedToken = ref<SelectedToken>()
 
-provide(injectionKeys.kwicTokenSelection, tokenSelection)
+provide(injectionKeys.selectedToken, selectedToken)
 
 corpusSelection.listen(() => {
   tokensTotal.value = corpusSelection.getTokenCount()

@@ -1,7 +1,7 @@
-import { defineAsyncComponent, inject, type Component, type InjectionKey } from "vue"
+import { defineAsyncComponent, inject, type Component, type InjectionKey, type Ref } from "vue"
 import { mapValues } from "lodash"
 import type { AuthModule } from "./core/auth"
-import type { TokenSelection } from "./results/kwic/tokenSelection"
+import type { SelectedToken } from "./core/kwic/kwic"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -26,5 +26,5 @@ export const injectionKeys = {
   attribute: {
     stringifiers: Symbol() as InjectionKey<Record<string, (a: string) => string>>,
   },
-  kwicTokenSelection: Symbol() as InjectionKey<TokenSelection>,
+  selectedToken: Symbol() as InjectionKey<Ref<SelectedToken | undefined>>,
 }

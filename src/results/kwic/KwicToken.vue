@@ -11,8 +11,8 @@ defineProps<{
 /** Unique identifier for this component instance. Used for tracking selected token. */
 const id = useId()
 
-const tokenSelection = inject(injectionKeys.kwicTokenSelection)
-const isSelected = computed(() => tokenSelection?.getId() == id)
+const selectedToken = inject(injectionKeys.selectedToken)
+const isSelected = computed(() => selectedToken?.value?.id == id)
 </script>
 
 <template>
@@ -23,7 +23,7 @@ const isSelected = computed(() => tokenSelection?.getId() == id)
       'kwic-token-punct': token._punct,
       'kwic-token-selected': isSelected,
     }"
-    @click.stop="tokenSelection?.select(id, token, row)"
+    @click.stop="selectedToken = { id, token, row }"
   >
     {{ token.word }}
   </span>
