@@ -1,24 +1,19 @@
 <script setup lang="ts">
-import type { Token } from "@/core/backend/types"
 import KwicToken from "./KwicToken.vue"
 import { isKwic, type Row } from "@/core/kwic/kwic"
 
-defineProps<{ data: Row }>()
-
-defineEmits<{
-  (e: "selectToken", token: Token): void
-}>()
+defineProps<{ row: Row }>()
 </script>
 
 <template>
-  <tr v-if="isKwic(data) && !Array.isArray(data.match)">
+  <tr v-if="isKwic(row) && !Array.isArray(row.match)">
     <td class="pe-0">
       <div class="d-flex justify-content-end">
         <KwicToken
-          v-for="(token, i) in data.tokens.slice(0, data.match.start)"
+          v-for="(token, i) in row.tokens.slice(0, row.match.start)"
           :key="i"
+          :row
           :token
-          @click="$emit('selectToken', token)"
         />
       </div>
     </td>
@@ -26,10 +21,10 @@ defineEmits<{
     <td class="kwic-match px-0">
       <div class="d-flex justify-content-center">
         <KwicToken
-          v-for="(token, i) in data.tokens.slice(data.match.start, data.match.end)"
+          v-for="(token, i) in row.tokens.slice(row.match.start, row.match.end)"
           :key="i"
+          :row
           :token
-          @click="$emit('selectToken', token)"
         />
       </div>
     </td>
@@ -37,10 +32,10 @@ defineEmits<{
     <td class="ps-0">
       <div class="d-flex justify-content-start">
         <KwicToken
-          v-for="(token, i) in data.tokens.slice(data.match.end)"
+          v-for="(token, i) in row.tokens.slice(row.match.end)"
           :key="i"
+          :row
           :token
-          @click="$emit('selectToken', token)"
         />
       </div>
     </td>

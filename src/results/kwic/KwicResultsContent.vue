@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { computed, ref } from "vue"
+import { computed, provide, reactive, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
-import { massageData, type SelectedToken } from "@/core/kwic/kwic"
+import { massageData } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
 import KwicSidebar from "./KwicSidebar.vue"
+import { TokenSelection } from "./tokenSelection"
+import { injectionKeys } from "@/injection"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -19,15 +21,14 @@ const props = defineProps<{
 
 const tokensTotal = ref(corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
-const selectedToken = ref<SelectedToken>()
+const tokenSelectionBare = new TokenSelection()
+const tokenSelection = reactive(tokenSelectionBare)
+
+provide(injectionKeys.kwicTokenSelection, tokenSelection)
 
 corpusSelection.listen(() => {
   tokensTotal.value = corpusSelection.getTokenCount()
 })
-
-function selectToken(newSelectedToken: SelectedToken) {
-  selectedToken.value = newSelectedToken
-}
 </script>
 
 <template>
@@ -47,9 +48,9 @@ function selectToken(newSelectedToken: SelectedToken) {
     </div>
 
     <div class="d-flex gap-2">
-      <KwicGrid v-if="kwic" :data="massageData(kwic)" @select-token="selectToken" />
+      <KwicGrid v-if="kwic" :data="massageData(kwic)" />
 
-      <KwicSidebar v-if="selectedToken" :selectedToken />
+      <KwicSidebar />
     </div>
   </div>
 </template>
