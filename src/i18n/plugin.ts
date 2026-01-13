@@ -17,6 +17,7 @@ export default async function setupI18n(locale: string) {
   const instanceLocales = await loadInstanceLocales()
 
   return createI18n({
+    legacy: false,
     locale,
     fallbackLocale: "eng",
     messages: { eng, swe, ...instanceLocales },

@@ -51,7 +51,7 @@ function update(event: Event) {
       <optgroup
         v-for="(options, type) in optionsGrouped"
         :key="type"
-        :label="$t(`search.attribute_type.${type}`)"
+        :label="$t(`attribute_type.${type}`)"
       >
         <option
           v-for="option in options"
