@@ -8,7 +8,7 @@ import { injectionKeys } from "@/injection"
 const { locObj } = useLocale()
 
 const tokenSelection = inject(injectionKeys.kwicTokenSelection)
-const selection = computed(() => tokenSelection?.get())
+const selection = computed(() => tokenSelection?.getTokenRow())
 const corpus = computed(() =>
   selection.value ? corpusSelection.get(selection.value.row.corpus) : undefined,
 )

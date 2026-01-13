@@ -1,16 +1,11 @@
 import sum from "lodash/sum"
-import type { ApiKwic, Token } from "../backend/types"
+import type { ApiKwic } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"
 import { corpusListing } from "../corpora/corpusListing"
 
 export type Row = ApiKwic | LinkedKwic | CorpusHeading
-
-export type SelectedToken = {
-  token: Token
-  row: ApiKwic | LinkedKwic
-}
 
 /** Row from a secondary language in parallel mode. */
 export type LinkedKwic = {

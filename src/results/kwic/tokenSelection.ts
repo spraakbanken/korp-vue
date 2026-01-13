@@ -1,44 +1,35 @@
-import type { Token } from "@/core/backend/types/common"
-import type { Row } from "@/core/kwic/kwic"
-
-export type TokenSelectionData = {
-  id: string
-  token: Token
-  row: Row
-}
+import type { ApiKwic, Token } from "@/core/backend/types/common"
 
 /** Tracks a selected token in the KWIC grid. */
 export class TokenSelection {
-  private _selectedId: string | null = null
-  private selectedToken: Token | null = null
-  private selectedRow: Row | null = null
-
-  get selectedId() {
-    return this._selectedId
-  }
+  protected id?: string
+  protected token?: Token
+  protected row?: ApiKwic
 
   /** Selects a token. */
-  select(id: string, token: Token, row: Row) {
-    this._selectedId = id
-    this.selectedToken = token
-    this.selectedRow = row
+  select(id: string, token: Token, row: ApiKwic) {
+    this.id = id
+    this.token = token
+    this.row = row
   }
 
   /** Deselects any selected token. */
   clear() {
-    this._selectedId = null
-    this.selectedToken = null
-    this.selectedRow = null
+    this.id = undefined
+    this.token = undefined
+    this.row = undefined
   }
 
-  /** Returns the ID of the currently selected token, or null if none is selected. */
-  get(): TokenSelectionData | null {
-    if (!this.selectedId || !this.selectedToken || !this.selectedRow) return null
+  getId() {
+    return this.id
+  }
 
-    return {
-      id: this.selectedId,
-      token: this.selectedToken,
-      row: this.selectedRow,
-    }
+  getTokenRow() {
+    return this.token && this.row
+      ? {
+          token: this.token,
+          row: this.row,
+        }
+      : undefined
   }
 }

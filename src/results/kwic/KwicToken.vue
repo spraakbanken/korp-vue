@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { Token } from "@/core/backend/types"
-import type { Row } from "@/core/kwic/kwic"
+import type { ApiKwic, Token } from "@/core/backend/types"
 import { injectionKeys } from "@/injection"
 import { computed, inject, useId } from "vue"
 
 defineProps<{
-  row: Row
+  row: ApiKwic
   token: Token
 }>()
 
@@ -13,7 +12,7 @@ defineProps<{
 const id = useId()
 
 const tokenSelection = inject(injectionKeys.kwicTokenSelection)
-const isSelected = computed(() => tokenSelection?.get()?.id == id)
+const isSelected = computed(() => tokenSelection?.getId() == id)
 </script>
 
 <template>
