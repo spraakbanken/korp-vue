@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Stringifier } from "@/attributes/attributes.types"
 import { useStringifier } from "@/attributes/useStringifier"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { compact } from "lodash"
@@ -9,7 +8,7 @@ const props = defineProps<{
   value: string | undefined
 }>()
 
-const { stringify } = useStringifier(props.attribute.name)
+const { stringify } = useStringifier(props.attribute)
 
 const isEmpty =
   props.value == undefined ||
