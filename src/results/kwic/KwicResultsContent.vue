@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { computed, provide, reactive, ref } from "vue"
+import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
 import { massageData, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
-import KwicSidebar from "./KwicSidebar.vue"
-import { TokenSelection } from "./tokenSelection"
+import KwicSidebar from "../sidebar/KwicSidebar.vue"
 import { injectionKeys } from "@/injection"
 
 const page = defineModel<number>({ default: 1 })
