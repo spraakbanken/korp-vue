@@ -2,6 +2,7 @@ import { defineAsyncComponent, inject, type Component, type InjectionKey, type R
 import { mapValues } from "lodash"
 import type { AuthModule } from "./core/auth"
 import type { SelectedToken } from "./core/kwic/kwic"
+import type { Stringifier } from "./attributes/attributes.types"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -24,7 +25,7 @@ export const injectionKeys = {
     widgets: Symbol() as InjectionKey<Record<string, Component>>,
   },
   attribute: {
-    stringifiers: Symbol() as InjectionKey<Record<string, (a: string) => string>>,
+    stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
   selectedToken: Symbol() as InjectionKey<Ref<SelectedToken | undefined>>,
 }

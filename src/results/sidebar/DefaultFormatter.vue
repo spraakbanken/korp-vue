@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Stringifier } from "@/attributes/attributes.types"
+import { useStringifier } from "@/attributes/useStringifier"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { compact } from "lodash"
 
@@ -6,6 +8,8 @@ const props = defineProps<{
   attribute: Attribute
   value: string | undefined
 }>()
+
+const { stringify } = useStringifier(props.attribute.name)
 
 const isEmpty =
   props.value == undefined ||
@@ -15,24 +19,25 @@ const isEmpty =
 
 <template>
   <!-- No value -->
-  <template v-if="isEmpty">∅</template>
+  <span v-if="isEmpty" class="text-muted">∅</span>
 
   <!-- Multi-value attribute -->
-  <ul v-else-if="attribute.type == 'set' && value" class="ps-1 my-0">
+  <ul v-else-if="attribute.type == 'set' && value" class="list-unstyled my-0">
     <li v-for="(item, i) in compact(value.split('|'))" :key="i">
-      <template v-if="attribute.ranked">
-        <!-- Split a ranked value as "<value>:<score>" -->
-        {{ item.split(":")[0] }}
-        <span class="badge rounded-pill text-bg-secondary small px-1 ms-1">
-          {{ Number(item.split(":")[1]).toFixed(2) }}
+      <!-- Split a ranked value as "<value>:<score>" -->
+      <div v-if="attribute.ranked">
+        <span v-html="stringify(item.split(':')[0])" />
+        {{ " " }}
+        <span class="text-muted small ms-2 text-nowrap">
+          {{ Number(item.split(":")[1]).toPrecision(3) }}
         </span>
-      </template>
-      <template v-else>
-        {{ item }}
-      </template>
+      </div>
+
+      <!-- Print normal value -->
+      <span v-else v-html="stringify(item)" />
     </li>
   </ul>
 
   <!-- Single-value attribute -->
-  <template v-else>{{ value }} </template>
+  <span v-else v-html="stringify(value)" />
 </template>

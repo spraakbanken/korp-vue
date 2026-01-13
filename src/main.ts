@@ -19,8 +19,14 @@ app.use(createPinia())
 
 // These plugins depend on dynamic loading, and must be in async.
 async function setup() {
-  app.use(await setupI18n(lang))
-  await app.use(await createInstancePlugin({ mode }))
+  // Set up i18n plugin and use the t() function (look up a given key in the current language)
+  const i18n = await setupI18n(lang)
+  const t = (key: string) => i18n.global.t(key)
+  app.use(i18n)
+
+  // Set up instance plugin for the current mode
+  await app.use(await createInstancePlugin({ mode, t }))
+
   app.mount("#app")
 }
 
