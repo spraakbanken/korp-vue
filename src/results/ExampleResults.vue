@@ -5,11 +5,16 @@ import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
 import { onMounted, ref, watch } from "vue"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
+import { debounce } from "lodash"
+import HelpBadge from "@/components/HelpBadge.vue"
+
+const UPDATE_DELAY_MS = 500
 
 const props = defineProps<{ task: ExampleTask }>()
 
 const store = useAppStore()
-const { hpp, reading_mode } = storeToRefs(store)
+const { hpp } = storeToRefs(store)
+const context = ref(store.reading_mode)
 const hitsCount = ref(0)
 const kwic = ref<ApiKwic[]>()
 const loading = ref(false)
@@ -21,17 +26,28 @@ onMounted(async () => {
 
 async function doSearch(isPaging = false) {
   loading.value = !isPaging
-  const response = await props.task.send(page.value, hpp.value, isPaging, reading_mode.value)
+  const response = await props.task.send(page.value, hpp.value, isPaging, context.value)
   loading.value = false
   hitsCount.value = response.hits
   kwic.value = response.kwic
 }
 
+/** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
+const onOptionsChange = debounce(() => {
+  doSearch()
+}, UPDATE_DELAY_MS)
+
 watch(page, () => doSearch(true))
 </script>
 
 <template>
-  <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">TODO Context checkbox</div>
+  <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
+    <label class="form-check-label">
+      <input type="checkbox" v-model="context" class="form-check-input" @change="onOptionsChange" />
+      {{ $t("result.kwic.show_context") }}
+      <HelpBadge :text="$t('result.kwic.show_context.help')" />
+    </label>
+  </div>
 
   <KwicResultsContent :hitsCount :hpp :kwic v-model="page" />
 </template>

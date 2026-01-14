@@ -10,6 +10,7 @@ import settings from "@/core/config"
 import { debounce } from "lodash"
 import type { QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
+import HelpBadge from "@/components/HelpBadge.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -19,6 +20,7 @@ const proxy = new KwicProxy(store)
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
 const { activeSearch } = storeToRefs(store)
+const context = ref(store.reading_mode)
 const hitsCount = ref(0)
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<ApiKwic[]>()
@@ -53,6 +55,7 @@ async function doSearch(isPaging = false) {
 const onOptionsChange = debounce(() => {
   store.hpp = hpp.value
   store.sort = sort.value
+  store.reading_mode = context.value
   doSearch()
 }, UPDATE_DELAY_MS)
 
@@ -65,7 +68,17 @@ watch(page, () => {
 <template>
   <div>
     <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
-      TODO Context checkbox
+      <label class="form-check-label">
+        <input
+          type="checkbox"
+          v-model="context"
+          class="form-check-input"
+          @change="onOptionsChange"
+        />
+        {{ $t("result.kwic.show_context") }}
+        <HelpBadge :text="$t('result.kwic.show_context.help')" />
+      </label>
+
       <label>
         <i18n-t scope="global" keypath="result.kwic.page_size.label">
           <select
