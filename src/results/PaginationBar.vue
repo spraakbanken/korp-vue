@@ -29,7 +29,7 @@ function setPage(page: number) {
   <nav :aria-label="$t('result.pagination.label')" class="d-flex align-items-baseline gap-3">
     <div>
       {{ $t("result.pagination.label") }}
-      <ul class="pagination d-inline-flex ms-1">
+      <ul class="pagination pagination-sm d-inline-flex ms-1">
         <li class="page-item" :class="{ disabled: model === 1 }">
           <button
             :aria-label="$t('previous')"
@@ -66,7 +66,7 @@ function setPage(page: number) {
           :max="max"
           :value="model"
           @change="model = ($event.target as HTMLInputElement).valueAsNumber"
-          class="form-control d-inline-block w-auto"
+          class="form-control form-control-sm d-inline-block w-auto"
         />
       </template>
       <template #total>{{ max }}</template>
