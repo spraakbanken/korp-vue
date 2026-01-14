@@ -45,10 +45,10 @@ corpusSelection.listen(() => {
       <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
       <KwicGrid v-if="kwic" :data="massageData(kwic)" />
 
-      <KwicSidebar />
+      <KwicSidebar @click.stop />
     </div>
   </div>
 </template>

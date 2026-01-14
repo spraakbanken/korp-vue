@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { inject, ref } from "vue"
+import { ref } from "vue"
 import KwicRow from "./KwicRow.vue"
 import type { Row } from "@/core/kwic/kwic"
 import { watchImmediate } from "@vueuse/core"
-import { injectionKeys } from "@/injection"
 
 const props = defineProps<{ data: Row[] }>()
 
-const selectedToken = inject(injectionKeys.selectedToken)
 const scrollArea = ref<HTMLElement>()
 
 watchImmediate(
@@ -42,7 +40,7 @@ function scrollAreaHorizontally(area: HTMLElement, target: HTMLElement) {
 
 <template>
   <div class="w-100 overflow-x-auto" ref="scrollArea">
-    <table class="table table-sm" @click="selectedToken = undefined">
+    <table class="table table-sm">
       <tbody>
         <KwicRow v-for="(row, i) in data" :key="i" :row />
       </tbody>
