@@ -20,7 +20,10 @@ const proxy = new KwicProxy(store)
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
 const { activeSearch } = storeToRefs(store)
+/** Model for the "Show context" option */
 const context = ref(store.reading_mode)
+/** Controls result display style */
+const hasContext = ref(store.reading_mode)
 const hitsCount = ref(0)
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<ApiKwic[]>()
@@ -42,10 +45,14 @@ function updateSearch() {
 async function doSearch(isPaging = false) {
   if (!activeSearch.value) throw new Error("No active search")
   loading.value = !isPaging
+  // Store the context option state in case it is changed while the request is ongoing
+  const currentContext = context.value
   proxy.setProgressHandler((report) => {
     hitsCount.value = report.hits || 0
   })
   const response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
+  // Use the context option state to control the result display
+  hasContext.value = currentContext
   loading.value = false
   kwic.value = response.kwic
   hitsCount.value = response.hits
@@ -108,6 +115,6 @@ watch(page, () => {
       </label>
     </div>
 
-    <KwicResultsContent :hitsCount :hpp :kwic :loading v-model="page" />
+    <KwicResultsContent :hasContext :hitsCount :hpp :kwic :loading v-model="page" />
   </div>
 </template>

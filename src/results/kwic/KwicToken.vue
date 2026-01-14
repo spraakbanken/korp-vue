@@ -17,7 +17,7 @@ const isSelected = computed(() => selectedToken?.value?.id == id)
 
 <template>
   <span
-    class="kwic-token text-nowrap rounded-3"
+    class="d-inline-block kwic-token rounded-3"
     :class="{
       'fw-bold': token._match,
       'kwic-token-punct': token._punct,

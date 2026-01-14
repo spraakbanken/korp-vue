@@ -40,7 +40,7 @@ function scrollAreaHorizontally(area: HTMLElement, target: HTMLElement) {
 
 <template>
   <div class="w-100 overflow-x-auto" ref="scrollArea">
-    <table class="table table-sm">
+    <table class="table table-sm text-nowrap">
       <tbody>
         <KwicRow v-for="(row, i) in data" :key="i" :row />
       </tbody>
