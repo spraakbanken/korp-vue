@@ -12,7 +12,7 @@ import GlobalFilters from "./GlobalFilters.vue"
 import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 
 const store = useAppStore()
-const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
+const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
 
 const prefixLocal = ref(prefix.value)
 const midfixLocal = ref(false)
@@ -75,11 +75,15 @@ function createCqp() {
   const { type, value } = lemgram.value
   const query =
     type == "lemgram"
-      ? buildSimpleLemgramCqp(value, prefix.value, suffix.value)
-      : buildSimpleWordCqp(value, prefix.value, suffix.value, ignoreCase.value)
+      ? buildSimpleLemgramCqp(value, prefixLocal.value, suffixLocal.value)
+      : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
 
   return stringify(globalFilterManager.mergeToCqp(query))
 }
+
+watchEffect(() => {
+  simpleCqp.value = createCqp()
+})
 </script>
 
 <template>

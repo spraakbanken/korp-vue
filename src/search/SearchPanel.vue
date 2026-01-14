@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia"
 import { vTab } from "@/bootstrap"
 import SearchExtended from "./extended/SearchExtended.vue"
 import settings from "@/core/config"
+import SearchAdvanced from "./SearchAdvanced.vue"
 
 const store = useAppStore()
 
@@ -72,7 +73,7 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
         aria-labelledby="search-tabs-tab-advanced"
         tabindex="0"
       >
-        TODO Advanced search
+        <SearchAdvanced />
       </div>
     </div>
   </section>

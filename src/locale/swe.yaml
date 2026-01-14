@@ -62,6 +62,14 @@ search.extended.boundary.start: börjar
 search.extended.boundary.end: slutar
 
 search.advanced: Avancerad
+search.advanced.current_query: "Aktuell sökfråga i {0}:"
+search.advanced.label: CQP-sökfråga
+search.advanced.help.heading: Om CQP-frågespråket
+search.advanced.help.summary: Korp bygger på programvaran IMS Open Corpus Workbench, som bland annat innehåller komponenten CQP ("corpus query processor"). I Korp-sammanhang används "CQP" mest för att beteckna det frågespråk som används för sökning. I en typisk sökfråga finns sökvillkor inom hakparenteser som representerar token (ord) i följd.
+search.advanced.help.example: "Exempel:"
+search.advanced.help.read_more: "Läs mer:"
+search.advanced.help.guide: Att söka i Korp med CQP och Regexp
+search.advanced.help.manual: CQP Interface and Query Language Manual
 
 search.operator.is: är
 search.operator.equal: lika med

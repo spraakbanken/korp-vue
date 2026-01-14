@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { reactive, ref, watch } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify } from "@/core/cqp/cqp"
 import { type CqpQuery } from "@/core/cqp/cqp.types"
@@ -34,7 +34,6 @@ watchImmediate(search, () => {
 
 /** Handle clicking the Search button */
 function submit() {
-  store.extendedCqp = stringify(globalFilterManager.mergeToCqp(tokens), true)
   store.cqp = stringify(tokens)
   store.search = "cqp"
   commitSearch()
@@ -48,6 +47,14 @@ async function commitSearch() {
   const cqp = stringify(globalFilterManager.mergeToCqp(tokens))
   store.activeSearch = { cqp }
 }
+
+watchImmediate(
+  tokens,
+  () => {
+    store.extendedCqp = stringify(globalFilterManager.mergeToCqp(tokens), true)
+  },
+  { deep: true },
+)
 </script>
 
 <template>
