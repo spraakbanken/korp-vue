@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import KwicRow from "./KwicRow.vue"
-import type { Row } from "@/core/kwic/kwic"
+import { isCorpusHeading, isKwic, type Row } from "@/core/kwic/kwic"
 import { watchImmediate } from "@vueuse/core"
+import { useLocale } from "@/i18n/useLocale"
 
 const props = defineProps<{ data: Row[] }>()
+
+const { locObj } = useLocale()
 
 const scrollArea = ref<HTMLElement>()
 
@@ -42,7 +45,16 @@ function scrollAreaHorizontally(area: HTMLElement, target: HTMLElement) {
   <div class="w-100 overflow-x-auto" ref="scrollArea">
     <table class="table table-sm text-nowrap">
       <tbody>
-        <KwicRow v-for="(row, i) in data" :key="i" :row />
+        <template v-for="(row, i) in data" :key="i">
+          <tr v-if="isCorpusHeading(row)">
+            <td class="bg-body-tertiary" />
+            <td colspan="2" class="bg-body-tertiary">
+              <h3 class="fs-5 my-1">{{ locObj(row.newCorpus) }}</h3>
+            </td>
+          </tr>
+
+          <KwicRow v-if="isKwic(row)" :row />
+        </template>
       </tbody>
     </table>
   </div>

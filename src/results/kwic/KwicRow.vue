@@ -1,19 +1,22 @@
 <script setup lang="ts">
+import type { ApiKwic } from "@/core/backend/types"
 import KwicToken from "./KwicToken.vue"
-import { isKwic, type Row } from "@/core/kwic/kwic"
 
-defineProps<{ row: Row }>()
+const props = defineProps<{ row: ApiKwic }>()
+
+if (Array.isArray(props.row.match)) throw new Error("Cannot handle multi-match KWIC rows")
+const match = props.row.match
 </script>
 
 <template>
-  <tr v-if="isKwic(row) && !Array.isArray(row.match)">
+  <tr>
     <td class="pe-0 text-end">
-      <KwicToken v-for="(token, i) in row.tokens.slice(0, row.match.start)" :key="i" :row :token />
+      <KwicToken v-for="(token, i) in row.tokens.slice(0, match.start)" :key="i" :row :token />
     </td>
 
     <td class="kwic-match px-1 text-center">
       <KwicToken
-        v-for="(token, i) in row.tokens.slice(row.match.start, row.match.end)"
+        v-for="(token, i) in row.tokens.slice(match.start, match.end)"
         :key="i"
         :row
         :token
@@ -21,11 +24,7 @@ defineProps<{ row: Row }>()
     </td>
 
     <td class="ps-0 text-start">
-      <KwicToken v-for="(token, i) in row.tokens.slice(row.match.end)" :key="i" :row :token />
+      <KwicToken v-for="(token, i) in row.tokens.slice(match.end)" :key="i" :row :token />
     </td>
-  </tr>
-
-  <tr v-else>
-    (TODO non-KWIC row)
   </tr>
 </template>
