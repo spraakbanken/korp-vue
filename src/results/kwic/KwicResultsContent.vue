@@ -14,7 +14,7 @@ const page = defineModel<number>({ default: 1 })
 const props = defineProps<{
   hitsCount: number
   hpp: number
-  kwic: ApiKwic[] | undefined
+  kwic?: ApiKwic[]
   loading?: boolean
 }>()
 

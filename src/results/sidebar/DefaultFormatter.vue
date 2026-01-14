@@ -5,7 +5,7 @@ import { compact } from "lodash"
 
 const props = defineProps<{
   attribute: Attribute
-  value: string | undefined
+  value?: string
 }>()
 
 const { stringify } = useStringifier(props.attribute)

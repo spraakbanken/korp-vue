@@ -5,8 +5,6 @@ import { corpusSelection } from "@/core/corpora/corpusListing"
 import settings from "@/core/config"
 import { expandCqp } from "@/core/cqp/cqp"
 
-export type StatsProxyInput = [string, string[], string | undefined, boolean | undefined]
-
 export class StatsProxy extends ProxyBase<"count"> {
   protected readonly endpoint = "count"
 

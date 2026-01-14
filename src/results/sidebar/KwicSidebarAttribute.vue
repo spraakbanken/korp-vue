@@ -7,7 +7,7 @@ import DefaultFormatter from "./DefaultFormatter.vue"
 defineProps<{
   corpus: Corpus
   attribute: Attribute
-  value: string | undefined
+  value?: string
 }>()
 
 const { locObj } = useLocale()
