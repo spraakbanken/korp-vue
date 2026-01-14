@@ -8,7 +8,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
 import KwicSidebar from "../sidebar/KwicSidebar.vue"
 import { injectionKeys } from "@/injection"
-import KwicReader from "./KwicReader.vue"
+import KwicList from "./KwicList.vue"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -49,7 +49,7 @@ corpusSelection.listen(() => {
 
     <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
       <KwicGrid v-if="!hasContext && kwic" :data="massageData(kwic)" />
-      <KwicReader v-if="hasContext && kwic" :data="massageData(kwic)" />
+      <KwicList v-if="hasContext && kwic" :data="massageData(kwic)" />
 
       <KwicSidebar @click.stop />
     </div>
