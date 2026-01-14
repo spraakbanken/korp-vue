@@ -26,7 +26,7 @@ const isEmpty =
       <!-- Split a ranked value as "<value>:<score>" -->
       <div v-if="attribute.ranked">
         <span v-html="stringify(item.split(':')[0])" />
-        {{ " " }}
+        {{}}
         <span class="text-muted small ms-2 text-nowrap">
           {{ Number(item.split(":")[1]).toPrecision(3) }}
         </span>

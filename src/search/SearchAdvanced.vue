@@ -58,7 +58,7 @@ function commitSearch() {
 
         <p>
           <strong>{{ $t("search.advanced.help.example") }}</strong>
-          {{ " " }}
+          {{}}
           <code>[word = "sina" & pos != "VB"] [word = "b[øö]c?ker"]</code>
         </p>
 
