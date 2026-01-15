@@ -16,7 +16,8 @@ export default async function setupI18n(locale: string) {
   // Load instance locales.
   const instanceLocales = await loadInstanceLocales()
 
-  return createI18n({
+  // Passing `false` as type arg helps to infer the return type as a non-legacy I18n instance.
+  return createI18n<false>({
     legacy: false,
     locale,
     fallbackLocale: "eng",
