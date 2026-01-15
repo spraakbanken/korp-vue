@@ -14,7 +14,7 @@ const match = props.row.match
       <KwicToken v-for="(token, i) in row.tokens.slice(0, match.start)" :key="i" :row :token />
     </td>
 
-    <td class="kwic-match px-1 text-center">
+    <td class="kwic-match px-1 text-center w-0">
       <KwicToken
         v-for="(token, i) in row.tokens.slice(match.start, match.end)"
         :key="i"
