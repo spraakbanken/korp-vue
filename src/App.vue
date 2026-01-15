@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import HeaderSection from "@/header/HeaderSection.vue"
 import MainSection from "@/MainSection.vue"
-import { useExpose } from "@/useExpose"
 import { setCorpusListing } from "./core/corpora/corpusListing"
 import { CorpusSet } from "./core/corpora/CorpusSet"
 import settings from "./core/config"
@@ -11,7 +10,6 @@ import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useUrlParams } from "./useUrlParams"
 
 const auth = useAuth()
-useExpose()
 useUrlParams()
 
 const initDone = ref(false)
