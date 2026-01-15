@@ -5,16 +5,14 @@ import { setCorpusListing } from "./core/corpora/corpusListing"
 import { CorpusSet } from "./core/corpora/CorpusSet"
 import settings from "./core/config"
 import { useAuth } from "./auth/useAuth"
-import { ref } from "vue"
+import { useAsyncState } from "@vueuse/core"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useUrlParams } from "./useUrlParams"
 
 const auth = useAuth()
 useUrlParams()
 
-const initDone = ref(false)
-
-async function init() {
+const { isReady } = useAsyncState(async () => {
   // Initialize authentication
   await auth.init(settings)
 
@@ -27,15 +25,11 @@ async function init() {
   // Create global corpusListing and corpusSelection
   const corpora = Object.values(settings.corpora)
   setCorpusListing(new CorpusSet(corpora))
-
-  initDone.value = true
-}
-
-init()
+}, null)
 </script>
 
 <template>
-  <template v-if="initDone">
+  <template v-if="isReady">
     <HeaderSection />
     <MainSection />
   </template>
