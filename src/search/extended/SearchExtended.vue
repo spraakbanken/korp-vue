@@ -36,6 +36,7 @@ watchImmediate(search, () => {
 function submit() {
   store.cqp = stringify(tokens)
   store.search = "cqp"
+  store.page = 0
   commitSearch()
 }
 

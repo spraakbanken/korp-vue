@@ -76,6 +76,7 @@ function submit() {
 
   const { type, value } = input.value
   store.search = `${type}|${value}`
+  store.page = 0
   commitSearch()
 }
 

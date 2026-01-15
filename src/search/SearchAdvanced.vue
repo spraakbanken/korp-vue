@@ -25,6 +25,7 @@ watchImmediate(search, () => {
 function submit() {
   store.cqp = cqpLocal.value
   store.search = `cqp|${cqpLocal.value}`
+  store.page = 0
   commitSearch()
 }
 

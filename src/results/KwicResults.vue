@@ -3,7 +3,7 @@ import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
 import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
-import { watchImmediate } from "@vueuse/core"
+import { syncRef, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { ref, watch } from "vue"
 import settings from "@/core/config"
@@ -19,7 +19,7 @@ const store = useAppStore()
 const proxy = new KwicProxy(store)
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
-const { activeSearch } = storeToRefs(store)
+const { activeSearch, page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
 const hitsCount = ref(0)
@@ -28,19 +28,17 @@ const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<ApiKwic[]>()
 const loading = ref(false)
-// TODO Read page from URL
-const page = ref(1)
+const pageLocal = ref(1)
 const sort = ref<QueryParamSort>("")
 
-watchImmediate(activeSearch, () => {
-  updateSearch()
-})
+// Store uses 0-based page index, UI uses 1-based page index
+syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
 
-function updateSearch() {
+watchImmediate(activeSearch, () => {
   // Initial corpus selection may not have settled yet.
-  if (corpusSelection.corpora.length) doSearch(true)
+  if (corpusSelection.corpora.length) doSearch()
   else setTimeout(() => doSearch())
-}
+})
 
 async function doSearch(isPaging = false) {
   if (!activeSearch.value) throw new Error("No active search")
@@ -66,10 +64,7 @@ const onOptionsChange = debounce(() => {
   doSearch()
 }, UPDATE_DELAY_MS)
 
-watch(page, () => {
-  store.page = page.value - 1 // Store uses 0-based page index
-  doSearch(true)
-})
+watch(pageLocal, () => doSearch(true))
 </script>
 
 <template>
@@ -115,6 +110,6 @@ watch(page, () => {
       </label>
     </div>
 
-    <KwicResultsContent :hitsCount :hpp :isReading :kwic :loading v-model="page" />
+    <KwicResultsContent :hitsCount :hpp :isReading :kwic :loading v-model="pageLocal" />
   </div>
 </template>

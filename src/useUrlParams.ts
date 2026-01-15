@@ -66,7 +66,7 @@ export function useUrlParams() {
     url.in_order = store.in_order ? undefined : "false"
     url.isCaseInsensitive = store.isCaseInsensitive ? "" : undefined
     url.lang = store.lang != settings["default_language"] ? store.lang : undefined
-    url.page = store.page == 1 ? undefined : `${store.page}`
+    url.page = store.page == 0 ? undefined : `${store.page}`
     url.parallel_corpora = store.parallel_corpora.join() || undefined
     url.prefix = store.prefix ? "" : undefined
     url.random_seed = store.random_seed ? `${store.random_seed}` : undefined
