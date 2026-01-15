@@ -13,9 +13,9 @@ import KwicList from "./KwicList.vue"
 const page = defineModel<number>({ default: 1 })
 
 const props = defineProps<{
-  hasContext?: boolean
   hitsCount: number
   hpp: number
+  isReading?: boolean
   kwic?: ApiKwic[]
   loading?: boolean
 }>()
@@ -48,8 +48,10 @@ corpusSelection.listen(() => {
     </div>
 
     <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
-      <KwicGrid v-if="!hasContext && kwic" :data="massageData(kwic)" />
-      <KwicList v-if="hasContext && kwic" :data="massageData(kwic)" />
+      <template v-if="kwic">
+        <KwicGrid v-if="!isReading" :data="massageData(kwic)" />
+        <KwicList v-else :data="massageData(kwic)" />
+      </template>
 
       <KwicSidebar @click.stop />
     </div>

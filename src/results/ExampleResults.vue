@@ -16,6 +16,7 @@ const store = useAppStore()
 const { hpp } = storeToRefs(store)
 const context = ref(store.reading_mode)
 const hitsCount = ref(0)
+const isReading = ref(store.reading_mode)
 const kwic = ref<ApiKwic[]>()
 const loading = ref(false)
 const page = ref(1)
@@ -26,10 +27,12 @@ onMounted(async () => {
 
 async function doSearch(isPaging = false) {
   loading.value = !isPaging
+  const willBeReading = context.value
   const response = await props.task.send(page.value, hpp.value, isPaging, context.value)
   loading.value = false
   hitsCount.value = response.hits
   kwic.value = response.kwic
+  isReading.value = willBeReading
 }
 
 /** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
@@ -49,5 +52,5 @@ watch(page, () => doSearch(true))
     </label>
   </div>
 
-  <KwicResultsContent :hitsCount :hpp :kwic v-model="page" />
+  <KwicResultsContent :hitsCount :hpp :isReading :kwic v-model="page" />
 </template>
