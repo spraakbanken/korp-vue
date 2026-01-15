@@ -10,10 +10,14 @@ const props = defineProps<{ data: Row[] }>()
 const { locObj } = useLocale()
 
 const scrollArea = ref<HTMLElement>()
+/** Counter to trigger re-render when data changes */
+const dataCounter = ref(0)
 
 watchImmediate(
   () => props.data,
   () => {
+    dataCounter.value++
+    // TODO Select first match token
     // Wait for rendering
     setTimeout(scrollToMatchColumn)
   },
@@ -45,7 +49,7 @@ function scrollAreaHorizontally(area: HTMLElement, target: HTMLElement) {
   <div class="w-100 overflow-x-auto" ref="scrollArea">
     <table class="table table-sm text-nowrap">
       <tbody>
-        <template v-for="(row, i) in data" :key="i">
+        <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">
           <tr v-if="isCorpusHeading(row)">
             <td class="bg-body-tertiary" />
             <td colspan="2" class="bg-body-tertiary">
