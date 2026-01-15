@@ -12,7 +12,7 @@ export type LemgramAutocompleteModel = { type: "lemgram" | "word"; value: string
 
 const { t } = useI18n()
 
-const modelValue = defineModel<LemgramAutocompleteModel>({
+const model = defineModel<LemgramAutocompleteModel>({
   default: () => ({ type: "word", value: "" }),
 })
 
@@ -25,13 +25,13 @@ const menuElement = ref<HTMLElement>()
 const options = ref<LemgramCount[]>([])
 
 /** Sync model value to input text */
-watchImmediate(modelValue, () => {
-  input.value = Lemgram.parse(modelValue.value.value)?.toString(t) || modelValue.value.value
+watchImmediate(model, () => {
+  input.value = Lemgram.parse(model.value.value)?.toString(t) || model.value.value
 })
 
 function onInput() {
   // Report plaintext input
-  modelValue.value = { type: "word", value: input.value }
+  model.value = { type: "word", value: input.value }
   // Do autocomplete
   loadSuggestions()
 }
@@ -61,7 +61,7 @@ function openMenu(focus = false) {
 const openMenuInBackground = () => setTimeout(() => openMenu())
 
 function select(option: LemgramCount) {
-  modelValue.value = { type: "lemgram", value: option.lemgram }
+  model.value = { type: "lemgram", value: option.lemgram }
   // options.value = []
   const dropdown = Dropdown.getOrCreateInstance(toggleElement.value!)
   dropdown?.hide()
@@ -101,7 +101,7 @@ function select(option: LemgramCount) {
             href="#"
             @click.prevent="select(option)"
             :style="{ color: !option.count ? 'var(--bs-dropdown-link-disabled-color)' : undefined }"
-            :class="{ active: option.lemgram == modelValue.value }"
+            :class="{ active: option.lemgram == model.value }"
           >
             <span v-html="Lemgram.parse(option.lemgram)?.toHtml($t) || option.lemgram" />
             <span class="ms-2 badge text-secondary">

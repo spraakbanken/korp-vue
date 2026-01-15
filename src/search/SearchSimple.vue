@@ -23,9 +23,15 @@ const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 const isFilterReady = ref(false)
 const globalFilterManager = GlobalFilterManager.getInstance()
 
+/** Trimmed autocomplete input */
+const input = computed<LemgramAutocompleteModel>(() => ({
+  type: lemgram.value.type,
+  value: lemgram.value.value.trim(),
+}))
+
 /** Reactive query model built from input */
 const query = computed(() => {
-  const { type, value } = lemgram.value
+  const { type, value } = input.value
   return type == "lemgram"
     ? buildSimpleLemgramCqp(value, prefixLocal.value, suffixLocal.value)
     : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
@@ -68,14 +74,14 @@ function submit() {
   store.in_order = !freeOrder.value || !supportsInOrder(query.value)
   store.isCaseInsensitive = ignoreCase.value
 
-  const { type, value } = lemgram.value
+  const { type, value } = input.value
   store.search = `${type}|${value}`
   commitSearch()
 }
 
 /** Declare query as the active search */
 async function commitSearch() {
-  const { type, value } = lemgram.value
+  const { type, value } = input.value
   if (!value) return
 
   // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
