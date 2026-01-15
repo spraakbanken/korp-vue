@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
-import { until, watchImmediate } from "@vueuse/core"
-import { stringify } from "@/core/cqp/cqp"
+import { syncRefs, until, watchImmediate } from "@vueuse/core"
+import { stringify, supportsInOrder } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
@@ -22,6 +22,19 @@ const ignoreCase = ref(isCaseInsensitive.value)
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 const isFilterReady = ref(false)
 const globalFilterManager = GlobalFilterManager.getInstance()
+
+/** Reactive query model built from input */
+const query = computed(() => {
+  const { type, value } = lemgram.value
+  return type == "lemgram"
+    ? buildSimpleLemgramCqp(value, prefixLocal.value, suffixLocal.value)
+    : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
+})
+
+/** Reactive CQP representation of the query */
+const cqp = computed(() => stringify(globalFilterManager.mergeToCqp(query.value)))
+
+syncRefs(cqp, simpleCqp)
 
 // Flag when the filter manager is ready, so that the initial search can include the filter selection.
 globalFilterManager.listen(() => (isFilterReady.value = true))
@@ -52,7 +65,7 @@ function submit() {
   // Sync from form to store when submitting.
   store.prefix = prefixLocal.value
   store.suffix = suffixLocal.value
-  store.in_order = !freeOrder.value
+  store.in_order = !freeOrder.value || !supportsInOrder(query.value)
   store.isCaseInsensitive = ignoreCase.value
 
   const { type, value } = lemgram.value
@@ -68,22 +81,8 @@ async function commitSearch() {
   // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
   await until(isFilterReady).toBe(true, { timeout: 1000 })
 
-  store.activeSearch = { type, cqp: createCqp() }
+  store.activeSearch = { type, cqp: cqp.value }
 }
-
-function createCqp() {
-  const { type, value } = lemgram.value
-  const query =
-    type == "lemgram"
-      ? buildSimpleLemgramCqp(value, prefixLocal.value, suffixLocal.value)
-      : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
-
-  return stringify(globalFilterManager.mergeToCqp(query))
-}
-
-watchEffect(() => {
-  simpleCqp.value = createCqp()
-})
 </script>
 
 <template>
@@ -146,6 +145,7 @@ watchEffect(() => {
           class="form-check-input"
           type="checkbox"
           v-model="freeOrder"
+          :disabled="!supportsInOrder(query)"
         />
         <label class="form-check-label" for="search-simple-free-order">
           {{ $t("search.simple.free_order") }}
