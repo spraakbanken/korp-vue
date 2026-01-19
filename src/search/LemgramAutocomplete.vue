@@ -5,7 +5,7 @@ import { Lemgram } from "@/core/lemgram"
 import { watchImmediate } from "@vueuse/core"
 import { Dropdown } from "bootstrap"
 import { throttle } from "lodash"
-import { ref } from "vue"
+import { ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 
 export type LemgramAutocompleteModel = { type: "lemgram" | "word"; value: string }
@@ -18,9 +18,9 @@ const model = defineModel<LemgramAutocompleteModel>({
 
 /** Text in the form input */
 const input = ref("")
-const inputElement = ref<HTMLInputElement>()
-const toggleElement = ref<HTMLButtonElement>()
-const menuElement = ref<HTMLElement>()
+const inputElement = useTemplateRef("inputElement")
+const toggleElement = useTemplateRef("toggleElement")
+const menuElement = useTemplateRef("menuElement")
 /** Loaded lemgram options */
 const options = ref<LemgramCount[]>([])
 
@@ -37,6 +37,12 @@ function onInput() {
 }
 
 const loadSuggestions = throttle(async () => {
+  if (!input.value.trim()) {
+    options.value = []
+    openMenu()
+    return
+  }
+
   // Fetch lemgrams and counts
   const data = await getLemgrams(input.value, ["saldom"], corpusSelection.getIds())
   // Get top 100
@@ -47,14 +53,14 @@ const loadSuggestions = throttle(async () => {
 function openMenu(focus = false) {
   const dropdown = Dropdown.getOrCreateInstance(toggleElement.value!)
   if (options.value.length) {
-    dropdown?.show()
+    dropdown.show()
 
     if (focus) setTimeout(() => menuElement.value?.querySelector("a")?.focus())
     else
       // Reclaim focus from menu
       inputElement.value?.focus()
   } else {
-    dropdown?.hide()
+    dropdown.hide()
   }
 }
 
@@ -62,17 +68,23 @@ const openMenuInBackground = () => setTimeout(() => openMenu())
 
 function select(option: LemgramCount) {
   model.value = { type: "lemgram", value: option.lemgram }
-  // options.value = []
   const dropdown = Dropdown.getOrCreateInstance(toggleElement.value!)
-  dropdown?.hide()
+  dropdown.hide()
   inputElement.value?.focus()
+}
+
+/** Handle focus on the hidden dropdown toggle button. */
+function passToggleFocus($event: FocusEvent) {
+  const previousTarget = $event.relatedTarget as HTMLElement
+  if (previousTarget == inputElement.value) menuElement.value?.querySelector("a")?.focus()
+  else if (menuElement.value?.contains(previousTarget)) inputElement.value?.focus()
 }
 </script>
 
 <template>
   <div class="text-start">
     <!-- Hidden label -->
-    <label for="lemgram-autocomplete-input" class="visually-hidden" ref="inputElement">
+    <label for="lemgram-autocomplete-input" class="visually-hidden">
       {{ $t("search.word_or_lemgram") }}
     </label>
 
@@ -80,6 +92,7 @@ function select(option: LemgramCount) {
     <input
       id="lemgram-autocomplete-input"
       class="form-control"
+      ref="inputElement"
       autocomplete="off"
       v-model="input"
       @input="onInput"
@@ -89,7 +102,14 @@ function select(option: LemgramCount) {
 
     <div class="dropdown">
       <!-- Hidden dropdown toggle -->
-      <button class="visually-hidden dropdown-toggle" data-bs-toggle="dropdown" ref="toggleElement">
+      <button
+        type="button"
+        class="visually-hidden dropdown-toggle"
+        data-bs-toggle="dropdown"
+        ref="toggleElement"
+        tabindex="-1"
+        @focus="passToggleFocus"
+      >
         {{ $t("search.show_suggestions") }}
       </button>
 
@@ -97,15 +117,15 @@ function select(option: LemgramCount) {
       <ul class="dropdown-menu" ref="menuElement" style="min-width: 100%">
         <li v-for="option in options" :key="option.lemgram">
           <a
-            class="dropdown-item d-flex justify-content-between align-items-baseline"
+            class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"
             href="#"
             @click.prevent="select(option)"
             :style="{ color: !option.count ? 'var(--bs-dropdown-link-disabled-color)' : undefined }"
             :class="{ active: option.lemgram == model.value }"
           >
             <span v-html="Lemgram.parse(option.lemgram)?.toHtml($t) || option.lemgram" />
-            <span class="ms-2 badge text-secondary">
-              <template v-if="option.count">{{ option.count }}</template>
+            <span v-if="option.count" class="badge text-secondary">
+              {{ option.count }}
             </span>
           </a>
         </li>
