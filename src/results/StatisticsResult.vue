@@ -57,15 +57,3 @@ function onSubsearch(task: ExampleTask) {
     <StatisticsGrid v-if="data" :rows="data.rows" :params="data.params" @subsearch="onSubsearch" />
   </div>
 </template>
-
-<style scoped>
-div[role="grid"] {
-  height: 30em;
-}
-:deep(div[role="columnheader"]) {
-  background-color: rgb(var(--bs-tertiary-bg-rgb));
-}
-:deep(.slick-cell input[type="checkbox"]) {
-  margin-left: 2px;
-}
-</style>

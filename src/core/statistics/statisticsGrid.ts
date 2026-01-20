@@ -25,10 +25,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     showPieChart: (row: Row) => void,
     onValueClick: (row: Row, corpusId?: string) => void,
   ) {
-    const columns = createColumns(store, corpusIds, attrs, totalsLabel)
-
-    const checkboxSelector = new SlickCheckboxSelectColumn()
-    columns.splice(0, 0, checkboxSelector.getColumnDefinition() as SlickgridColumn)
+    const { columns, checkboxSelector } = createColumns(store, corpusIds, attrs, totalsLabel)
 
     super(el, data, columns as Column<Row>[], {
       enableCellNavigation: false,
@@ -100,7 +97,7 @@ function createColumns(
   corpora: string[],
   attrs: string[],
   totalsLabel: LangString,
-): SlickgridColumn[] {
+): { columns: SlickgridColumn[]; checkboxSelector: SlickCheckboxSelectColumn } {
   const cl = corpusListing.pick(corpora)
   const attributes = cl.getReduceAttrs()
   const labels = attrs.map((name) =>
@@ -112,9 +109,16 @@ function createColumns(
     locObj(settings.corpora[id.toLowerCase()]!.title, store.lang)
   corpora.sort((a, b) => getCorpusTitle(a).localeCompare(getCorpusTitle(b), store.lang))
 
+  const checkboxSelector = new SlickCheckboxSelectColumn({
+    cssClass: "parameter-column",
+  })
+
   const minWidth = 100
   const dir = settings["dir"] ? `dir="${settings["dir"]}"` : ""
   const columns: SlickgridColumn[] = []
+
+  columns.push(checkboxSelector.getColumnDefinition() as SlickgridColumn)
+
   for (const [reduceVal, reduceValLabel] of zip(attrs, labels)) {
     if (reduceVal == null || reduceValLabel == null) break
     columns.push({
@@ -125,10 +129,10 @@ function createColumns(
       formatter: (row, cell, value, columnDef, data: Row) => {
         if (isTotalRow(data)) return "Σ"
         const output = data.formattedValue[reduceVal!] || `<span class="opacity-50">&empty;</span>`
-        return `<div data-row="${data.rowId}" class="link" ${dir}>${output}</div>`
+        return `<div data-row="${data.rowId}" ${dir}>${output}</div>`
       },
       minWidth,
-      cssClass: "parameter-column",
+      cssClass: "parameter-column value-cell",
     })
   }
 
@@ -137,10 +141,10 @@ function createColumns(
     name: "",
     field: "hit_value",
     sortable: false,
-    formatter: () => `<i class="fa-solid fa-chart-pie block text-sm mx-1"></i>`,
+    formatter: () => `📊`,
     maxWidth: 25,
     minWidth: 25,
-    cssClass: "total-column cursor-pointer",
+    cssClass: "total-column distribution-cell",
   })
 
   columns.push({
@@ -150,12 +154,10 @@ function createColumns(
     sortable: true,
     defaultSortAsc: false,
     formatter: (row, cell, value) => {
-      const out = formatFrequency(value, store.statsRelative, store.lang)
-      return `<div class="link">${out}</div>`
+      return formatFrequency(value, store.statsRelative, store.lang)
     },
     minWidth,
-    headerCssClass: "localized-header",
-    cssClass: "total-column text-right",
+    cssClass: "total-column frequency-cell",
   })
 
   corpora.forEach((id) =>
@@ -166,15 +168,14 @@ function createColumns(
       sortable: true,
       defaultSortAsc: false,
       formatter: (row, cell, value) => {
-        const out = formatFrequency(value[id], store.statsRelative, store.lang)
-        return `<div class="link">${out}</div>`
+        return formatFrequency(value[id], store.statsRelative, store.lang)
       },
       minWidth,
-      cssClass: "text-right",
+      cssClass: "frequency frequency-cell",
     }),
   )
 
-  return columns
+  return { columns, checkboxSelector }
 }
 
 /* Slick column enhanced with custom stuff */

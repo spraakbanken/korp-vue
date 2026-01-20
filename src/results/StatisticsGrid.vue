@@ -36,7 +36,7 @@ const proxy = new StatsProxy()
 onMounted(async () => {
   if (!gridEl.value) throw new Error("Grid element missing")
 
-  const statisticsGridModule = await import("@/core/statistics/statistics-grid")
+  const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule
   const grid = new StatisticsGrid(
     gridEl.value,
@@ -85,19 +85,60 @@ function buildExampleCqp(row: SingleRow) {
 </script>
 
 <template>
-  <div>
-    <div ref="grid" role="grid"></div>
-  </div>
+  <div ref="grid" role="grid"></div>
 </template>
 
 <style scoped>
-div[role="grid"] {
+[role="grid"] {
   height: 30em;
 }
+
 :deep(div[role="columnheader"]) {
-  background-color: rgb(var(--bs-tertiary-bg-rgb));
+  background-color: var(--bs-secondary-bg);
+  font-weight: bold;
 }
+
+:deep(.slick-header-sortable) {
+  cursor: pointer;
+}
+
+:deep(.slick-row:hover) {
+  background-color: var(--bs-tertiary-bg);
+}
+
+:deep(.total-column) {
+  background-color: #fff8f0;
+}
+
+:deep(.slick-row:hover .total-column) {
+  background-color: #f6ede2;
+}
+
+:deep(.parameter-column) {
+  background-color: #f1f7ff;
+}
+
+:deep(.slick-row:hover .parameter-column) {
+  background-color: #e6ebff;
+}
+
 :deep(.slick-cell input[type="checkbox"]) {
   margin-left: 2px;
+}
+
+:deep(.distribution-cell),
+:deep(.frequency-cell),
+:deep(.value-cell) {
+  cursor: pointer;
+}
+
+:deep(.frequency-cell):hover,
+:deep(.value-cell):hover {
+  color: var(--bs-primary);
+  text-decoration: underline;
+}
+
+:deep(.frequency-cell) {
+  text-align: right;
 }
 </style>
