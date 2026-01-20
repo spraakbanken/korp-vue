@@ -47,13 +47,25 @@ async function doSearch() {
   data.value = await processStatisticsResult(originalCorpora, counts, attrsValue, false, cqpValue)
 }
 
-function onSubsearch(task: ExampleTask) {
+/** Open a dynamic subsearch tab when clicking a frequency value */
+function onClickValue(corpusIds: string[], subcqp?: string) {
+  // Reuse the main query and add a subquery for the selected row (unless it's the totals row)
+  const cqps = [cqp.value]
+  if (subcqp) cqps.push(subcqp)
+
+  const within = proxy.getParams().default_within
+  const task = new ExampleTask(corpusIds, cqps, within)
   createTab(t("result.kwic"), task)
 }
 </script>
 
 <template>
   <div>
-    <StatisticsGrid v-if="data" :rows="data.rows" :params="data.params" @subsearch="onSubsearch" />
+    <StatisticsGrid
+      v-if="data"
+      :rows="data.rows"
+      :params="data.params"
+      @click-value="onClickValue($event.corpusIds, $event.cqp)"
+    />
   </div>
 </template>

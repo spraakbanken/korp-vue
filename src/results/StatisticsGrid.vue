@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { getCqp } from "@/core/statistics/statistics"
@@ -9,9 +8,8 @@ import {
   type SearchParams,
   type SingleRow,
 } from "@/core/statistics/statistics.types"
-import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { computed, onMounted, ref, useTemplateRef } from "vue"
+import { onMounted, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -20,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const $emit = defineEmits<{
-  (e: "subsearch", task: ExampleTask): void
+  (e: "clickValue", payload: { corpusIds: string[]; cqp?: string }): void
 }>()
 
 const store = useAppStore()
@@ -28,10 +26,7 @@ const { t } = useI18n()
 
 const attrs = ref<string[]>(["word"])
 const corpora = ref<Corpus[]>(corpusSelection.corpora)
-const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const gridEl = useTemplateRef("grid")
-
-const proxy = new StatsProxy()
 
 onMounted(async () => {
   if (!gridEl.value) throw new Error("Grid element missing")
@@ -53,20 +48,17 @@ onMounted(async () => {
   grid.autosizeColumns()
 })
 
-/** Open an subsearch tab when clicking a frequency value */
+/** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {
-  const cqps = [cqp.value]
-
-  // Add a subquery CQP matching a value row
-  if (!isTotalRow(row)) cqps.push(buildExampleCqp(row))
-
-  // Unless corpus is given, find which corpora had any hits (uppercase ids)
-  const corpora = corpusId
+  // If no specific corpus, find which corpora had any hits (uppercase ids)
+  const corpusIds = corpusId
     ? [corpusId]
     : Object.keys(row.count).filter((id) => row.count[id]![0] > 0)
 
-  const task = new ExampleTask(corpora, cqps, proxy.getParams().default_within, store.reading_mode)
-  $emit("subsearch", task)
+  // Add a subquery CQP matching a value row
+  const cqp = !isTotalRow(row) ? buildExampleCqp(row) : undefined
+
+  $emit("clickValue", { corpusIds, cqp })
 }
 
 /** Create sub query for a given value row */

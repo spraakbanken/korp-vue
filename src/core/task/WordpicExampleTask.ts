@@ -3,7 +3,6 @@ import type { RelationsSentencesResponse } from "../../backend/types/relations-s
 import { TaskBase } from "./TaskBase"
 
 export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
-  readonly isReadingInit = false // Context param is not supported by /relations_sentences
   readonly proxy = new RelationsSentencesProxy()
 
   constructor(readonly source: string) {

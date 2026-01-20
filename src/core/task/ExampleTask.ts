@@ -9,7 +9,6 @@ export class ExampleTask extends TaskBase<QueryResponse> {
     readonly corpusIds: string[],
     readonly cqps: string[],
     defaultWithin?: string,
-    readonly isReadingInit = false,
   ) {
     super()
     this.proxy = new ExampleProxy(corpusIds, cqps, defaultWithin)
