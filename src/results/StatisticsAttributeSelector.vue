@@ -2,7 +2,8 @@
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
-import { compact, groupBy, isEqual, sortBy } from "lodash"
+import { watchImmediate } from "@vueuse/core"
+import { cloneDeep, compact, groupBy, isEqual, sortBy } from "lodash"
 import { computed, onMounted, ref, unref, useTemplateRef } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
@@ -28,20 +29,22 @@ const selectedAttributes = computed(() =>
   ),
 )
 
+// Update available attributes when corpus selection changes
 corpusSelection.listen(() => {
   attributes.value = corpusSelection.getAttributeGroupsStatistics()
+})
 
-  // Remove any selected attributes that are no longer available
-  const availableNames = attributes.value.map((attr) => attr.name)
-  const { selected } = model.value
-  const newSelected = selected.filter((name) => availableNames.includes(name))
-  if (newSelected.length !== selected.length) {
-    model.value = { ...model.value, selected: newSelected }
-  }
+// Validate and update selection against incoming changes
+watchImmediate([model, attributes], () => {
+  // Remove non-available attributes
+  const selected = model.value.selected.filter((name) =>
+    attributes.value.some((attr) => attr.name == name),
+  )
+  commit(selected, insensitiveLocal.value)
 })
 
 /** Add a selected attribute option to the selection model */
-function select(name: string) {
+function toggle(name: string) {
   const index = selectedLocal.value.indexOf(name)
   if (index >= 0) selectedLocal.value.splice(index, 1)
   else selectedLocal.value.push(name)
@@ -55,10 +58,21 @@ function select(name: string) {
 onMounted(() => {
   // When menu is closed, commit local selection to model
   dropdown.value!.addEventListener("hidden.bs.dropdown", () => {
-    const value = { selected: [...selectedLocal.value], insensitive: [...insensitiveLocal.value] }
-    if (!isEqual(value, unref(model))) model.value = value
+    commit(selectedLocal.value, insensitiveLocal.value)
   })
 })
+
+function commit(selected: string[], insensitive: string[]) {
+  // If none selected, default to word.
+  if (!selected.length) selected.push("word")
+  // Remove insensitive selections that are no longer selected
+  insensitive = insensitive.filter((name) => selected.includes(name))
+
+  selectedLocal.value = [...selected]
+  insensitiveLocal.value = [...insensitive]
+  const value = cloneDeep({ selected, insensitive })
+  if (!isEqual(value, unref(model))) model.value = value
+}
 </script>
 
 <template>
@@ -83,8 +97,8 @@ onMounted(() => {
     <ul class="dropdown-menu" aria-labelledby="statistics-attribute-selector-dropdown">
       <template v-for="(options, type) in optionsGrouped" :key="type">
         <template v-if="type !== 'word'">
-          <li><hr class="dropdown-divider" /></li>
-          <li>
+          <li @click.prevent><hr class="dropdown-divider" /></li>
+          <li @click.prevent>
             <h6 class="dropdown-header">{{ $t(`attribute_type.${type}`) }}</h6>
           </li>
         </template>
@@ -93,7 +107,7 @@ onMounted(() => {
             href="#"
             class="dropdown-item d-flex justify-content-between align-items-baseline"
             :class="{ active: selectedLocal.includes(option.name) }"
-            @click.prevent="select(option.name)"
+            @click.prevent="toggle(option.name)"
           >
             {{ locObj(option.label) }}
           </a>

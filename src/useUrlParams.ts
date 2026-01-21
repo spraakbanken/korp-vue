@@ -76,8 +76,7 @@ export function useUrlParams() {
     url.search_tab = store.search_tab != 0 ? `${store.search_tab}` : undefined
     url.sort = store.sort || undefined
     url.stats_reduce = store.stats_reduce == "word" ? undefined : store.stats_reduce
-    url.stats_reduce_insensitive =
-      store.stats_reduce_insensitive == "word" ? undefined : store.stats_reduce_insensitive
+    url.stats_reduce_insensitive = store.stats_reduce_insensitive || undefined
     url.suffix = store.suffix ? "" : undefined
     url.within = store.within == getDefaultWithin() ? undefined : store.within
   })
