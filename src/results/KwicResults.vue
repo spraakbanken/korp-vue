@@ -68,7 +68,7 @@ watch(pageLocal, () => doSearch(true))
 </script>
 
 <template>
-  <div>
+  <div class="vstack gap-2">
     <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
       <label class="form-check-label">
         <input

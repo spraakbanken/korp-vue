@@ -9,26 +9,33 @@ import {
   type SingleRow,
 } from "@/core/statistics/statistics.types"
 import { useAppStore } from "@/store/useAppStore"
+import { watchImmediate } from "@vueuse/core"
 import { onMounted, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
+  attributes: string[]
   params: SearchParams
   rows: Row[]
 }>()
 
-const $emit = defineEmits<{
+const emit = defineEmits<{
   (e: "clickValue", payload: { corpusIds: string[]; cqp?: string }): void
 }>()
 
 const store = useAppStore()
 const { t } = useI18n()
 
-const attrs = ref<string[]>(["word"])
 const corpora = ref<Corpus[]>(corpusSelection.corpora)
 const gridEl = useTemplateRef("grid")
 
-onMounted(async () => {
+// Wait for the grid element ref to be set
+onMounted(() => {
+  watchImmediate(() => props.rows, renderGrid)
+})
+
+/** (Re)create and show the grid */
+async function renderGrid() {
   if (!gridEl.value) throw new Error("Grid element missing")
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
@@ -37,7 +44,7 @@ onMounted(async () => {
     gridEl.value,
     props.rows,
     corpora.value.map((c) => c.id.toUpperCase()),
-    attrs.value,
+    props.attributes,
     store,
     t("result.statistics.total"),
     () => {}, // TODO Corpus distribution chart
@@ -46,7 +53,7 @@ onMounted(async () => {
   grid.render()
   grid.resizeCanvas()
   grid.autosizeColumns()
-})
+}
 
 /** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {
@@ -58,7 +65,7 @@ function onValueClick(row: Row, corpusId?: string) {
   // Add a subquery CQP matching a value row
   const cqp = !isTotalRow(row) ? buildExampleCqp(row) : undefined
 
-  $emit("clickValue", { corpusIds, cqp })
+  emit("clickValue", { corpusIds, cqp })
 }
 
 /** Create sub query for a given value row */

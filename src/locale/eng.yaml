@@ -115,10 +115,14 @@ result.kwic.sort.keyword: matched word(s)
 result.kwic.sort.left: context before
 result.kwic.sort.right: context after
 result.kwic.sort.random: random
+
 result.pagination.label: "Page:"
 result.pagination.goto: Go to {input} of {total}
+
 result.statistics: Statistics
+result.statistics.group_by: Group by
 result.statistics.total: Total
+
 result.wordpicture: Word picture
 
 pos.nn: noun

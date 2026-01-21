@@ -33,7 +33,7 @@ corpusSelection.listen(() => {
 
 <template>
   <div>
-    <div class="my-2 d-flex flex-wrap justify-content-between align-items-baseline">
+    <div class="d-flex flex-wrap justify-content-between align-items-baseline">
       <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
         <div>
           {{ $t("result.kwic.hits_count", [$n(hitsCount)]) }}

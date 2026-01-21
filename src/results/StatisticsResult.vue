@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
-import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { processStatisticsResult } from "@/core/statistics/statistics"
 import { type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { whenever } from "@vueuse/core"
+import { watchDeep, whenever } from "@vueuse/core"
 import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
+import { debounce } from "lodash"
+import StatisticsAttributeSelector, {
+  type StatisticsAttributeSelectorModel,
+} from "./StatisticsAttributeSelector.vue"
+
+const UPDATE_DELAY_MS = 500
 
 const props = defineProps<{
   active: boolean
@@ -20,8 +25,10 @@ const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
-const attrs = ref<string[]>(["word"])
-const corpora = ref<Corpus[]>(corpusSelection.corpora)
+const attributesSelected = ref<StatisticsAttributeSelectorModel>({
+  selected: ["word"],
+  insensitive: [],
+})
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 
@@ -39,13 +46,28 @@ whenever(
 )
 
 async function doSearch() {
-  const attrsValue = attrs.value
-  corpora.value = corpusSelection.corpora
+  const attrs = attributesSelected.value
   const cqpValue = cqp.value
   const originalCorpora = corpusSelection.stringify(false)
-  const counts = await proxy.makeRequest(cqpValue, attrsValue)
-  data.value = await processStatisticsResult(originalCorpora, counts, attrsValue, false, cqpValue)
+  const ignoreCase = !!attrs.insensitive.length
+  const counts = await proxy.makeRequest(cqpValue, attrs.selected, store.within, ignoreCase)
+  data.value = await processStatisticsResult(
+    originalCorpora,
+    counts,
+    attrs.selected,
+    ignoreCase,
+    cqpValue,
+  )
 }
+
+const onOptionsChange = debounce(() => {
+  const { selected, insensitive } = attributesSelected.value
+  store.stats_reduce = selected.join()
+  store.stats_reduce_insensitive = insensitive.join()
+  doSearch()
+}, UPDATE_DELAY_MS)
+
+watchDeep(attributesSelected, onOptionsChange)
 
 /** Open a dynamic subsearch tab when clicking a frequency value */
 function onClickValue(corpusIds: string[], subcqp?: string) {
@@ -60,9 +82,17 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 </script>
 
 <template>
-  <div>
+  <div class="vstack gap-2">
+    <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
+      <label class="d-flex align-items-baseline gap-1">
+        {{ $t("result.statistics.group_by") }}:
+        <StatisticsAttributeSelector v-model="attributesSelected" />
+      </label>
+    </div>
+
     <StatisticsGrid
       v-if="data"
+      :attributes="attributesSelected.selected"
       :rows="data.rows"
       :params="data.params"
       @click-value="onClickValue($event.corpusIds, $event.cqp)"

@@ -3,7 +3,7 @@ import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { capitalize, sortBy } from "lodash"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref, useTemplateRef } from "vue"
 
 const model = defineModel<string[]>({ default: [] })
 
@@ -17,7 +17,7 @@ const store = useAppStore()
 // Store WIP selection locally until menu is closed
 const selectionLocal = ref<string[]>(model.value)
 // Reference to the dropdown menu element, necessary for listening to events with "." in the name
-const dropdown = ref<HTMLElement>()
+const dropdown = useTemplateRef("dropdown")
 
 // Sort options by name, then by hits (any or none), then by selection
 const optionsSorted = computed(() =>
