@@ -127,8 +127,9 @@ function buildExampleCqp(row: SingleRow) {
   background-color: #e6ebff;
 }
 
-:deep(.slick-cell input[type="checkbox"]) {
-  margin-left: 2px;
+:deep(.slick-cell):has(input[type="checkbox"]),
+:deep([role="columnheader"]):has(input[type="checkbox"]) {
+  text-align: center;
 }
 
 :deep(.distribution-cell),
