@@ -2,7 +2,7 @@
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
-import { compact, groupBy, isEqual } from "lodash"
+import { compact, groupBy, isEqual, sortBy } from "lodash"
 import { computed, onMounted, ref, unref, useTemplateRef } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
@@ -45,12 +45,17 @@ function select(name: string) {
   const index = selectedLocal.value.indexOf(name)
   if (index >= 0) selectedLocal.value.splice(index, 1)
   else selectedLocal.value.push(name)
+
+  // Re-sort selected attributes to match options order
+  selectedLocal.value = sortBy(selectedLocal.value, (name) =>
+    attributes.value.findIndex((attr) => attr.name === name),
+  )
 }
 
 onMounted(() => {
   // When menu is closed, commit local selection to model
   dropdown.value!.addEventListener("hidden.bs.dropdown", () => {
-    const value = { selected: selectedLocal.value, insensitive: insensitiveLocal.value }
+    const value = { selected: [...selectedLocal.value], insensitive: [...insensitiveLocal.value] }
     if (!isEqual(value, unref(model))) model.value = value
   })
 })

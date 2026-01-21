@@ -36,7 +36,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     this.setSelectionModel(new SlickRowSelectionModel({ selectActiveRow: false }))
     this.registerPlugin(checkboxSelector)
     this.setSelectedRows([0])
-    this.autosizeColumns()
+    this.resize()
     this.refreshColumns()
 
     this.onSort.subscribe((e, sort) => {
@@ -75,6 +75,11 @@ export class StatisticsGrid extends SlickGrid<Row> {
       if (column.getName) column.name = column.getName(this.store.lang)
     })
     this.setColumns(columns as Column<Row>[])
+  }
+
+  resize() {
+    this.resizeCanvas()
+    this.autosizeColumns()
   }
 }
 

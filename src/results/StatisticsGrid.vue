@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { getCqp } from "@/core/statistics/statistics"
 import {
@@ -8,9 +7,11 @@ import {
   type SearchParams,
   type SingleRow,
 } from "@/core/statistics/statistics.types"
+import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
-import { watchImmediate } from "@vueuse/core"
-import { onMounted, ref, useTemplateRef } from "vue"
+import { useWindowSize, watchImmediate } from "@vueuse/core"
+import { throttle } from "lodash"
+import { onMounted, reactive, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -26,13 +27,20 @@ const emit = defineEmits<{
 const store = useAppStore()
 const { t } = useI18n()
 
-const corpora = ref<Corpus[]>(corpusSelection.corpora)
-const gridEl = useTemplateRef("grid")
+let grid: StatisticsGrid
+const gridEl = useTemplateRef("gridEl")
 
 // Wait for the grid element ref to be set
 onMounted(() => {
+  // (Re)create grid whenever data comes in
   watchImmediate(() => props.rows, renderGrid)
 })
+
+// Update grid size when window is resized
+watchImmediate(
+  reactive(useWindowSize()),
+  throttle(() => grid?.resize(), 100),
+)
 
 /** (Re)create and show the grid */
 async function renderGrid() {
@@ -40,10 +48,10 @@ async function renderGrid() {
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule
-  const grid = new StatisticsGrid(
+  grid = new StatisticsGrid(
     gridEl.value,
     props.rows,
-    corpora.value.map((c) => c.id.toUpperCase()),
+    corpusSelection.getIds(true),
     props.attributes,
     store,
     t("result.statistics.total"),
@@ -51,8 +59,6 @@ async function renderGrid() {
     onValueClick,
   )
   grid.render()
-  grid.resizeCanvas()
-  grid.autosizeColumns()
 }
 
 /** Open a subsearch tab when clicking a frequency value */
@@ -84,7 +90,7 @@ function buildExampleCqp(row: SingleRow) {
 </script>
 
 <template>
-  <div ref="grid" role="grid"></div>
+  <div ref="gridEl" role="grid"></div>
 </template>
 
 <style scoped>

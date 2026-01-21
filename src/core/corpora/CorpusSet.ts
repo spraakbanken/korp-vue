@@ -61,9 +61,9 @@ export class CorpusSet extends Observable {
     return ""
   }
 
-  /** Corpus ids in uppercase */
-  getIds() {
-    return this.map((corpus) => corpus.id)
+  /** Corpus ids, in lowercase by default */
+  getIds(uppercase = false): string[] {
+    return this.map((corpus) => (uppercase ? corpus.id.toUpperCase() : corpus.id))
   }
 
   /** Replace all our elements with selected ones from another set */
