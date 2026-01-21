@@ -26,8 +26,8 @@ const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
-  selected: ["word"],
-  insensitive: [],
+  selected: store.stats_reduce.split(","),
+  insensitive: store.stats_reduce_insensitive.split(","),
 })
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()

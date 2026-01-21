@@ -3,8 +3,8 @@ import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
 import { watchImmediate } from "@vueuse/core"
-import { cloneDeep, compact, groupBy, isEqual, sortBy } from "lodash"
-import { computed, onMounted, ref, unref, useTemplateRef } from "vue"
+import { compact, groupBy, isEqual, sortBy } from "lodash"
+import { computed, onMounted, reactive, ref, unref, useTemplateRef } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
   selected: string[]
@@ -20,8 +20,8 @@ const attributes = ref(corpusSelection.getAttributeGroupsStatistics())
 const optionsGrouped = computed(
   () => groupBy(attributes.value, "group") as Record<AttributeOption["group"], AttributeOption[]>,
 )
-const selectedLocal = ref<string[]>([...model.value.selected])
-const insensitiveLocal = ref<string[]>([...model.value.insensitive])
+const selectedLocal = reactive(new Set<string>(...model.value.selected))
+const insensitiveLocal = reactive(new Set<string>(...model.value.insensitive))
 
 const selectedAttributes = computed(() =>
   compact(
@@ -37,41 +37,52 @@ corpusSelection.listen(() => {
 // Validate and update selection against incoming changes
 watchImmediate([model, attributes], () => {
   // Remove non-available attributes
-  const selected = model.value.selected.filter((name) =>
-    attributes.value.some((attr) => attr.name == name),
+  const selected = new Set(
+    model.value.selected.filter((name) => attributes.value.some((attr) => attr.name == name)),
   )
-  commit(selected, insensitiveLocal.value)
+  commit(selected, insensitiveLocal)
 })
 
 /** Add a selected attribute option to the selection model */
 function toggle(name: string) {
-  const index = selectedLocal.value.indexOf(name)
-  if (index >= 0) selectedLocal.value.splice(index, 1)
-  else selectedLocal.value.push(name)
-
-  // Re-sort selected attributes to match options order
-  selectedLocal.value = sortBy(selectedLocal.value, (name) =>
-    attributes.value.findIndex((attr) => attr.name === name),
-  )
+  if (selectedLocal.has(name)) selectedLocal.delete(name)
+  else selectedLocal.add(name)
 }
 
 onMounted(() => {
   // When menu is closed, commit local selection to model
   dropdown.value!.addEventListener("hidden.bs.dropdown", () => {
-    commit(selectedLocal.value, insensitiveLocal.value)
+    commit(selectedLocal, insensitiveLocal)
   })
 })
 
-function commit(selected: string[], insensitive: string[]) {
-  // If none selected, default to word.
-  if (!selected.length) selected.push("word")
-  // Remove insensitive selections that are no longer selected
-  insensitive = insensitive.filter((name) => selected.includes(name))
+function commit(selected: Set<string>, insensitive: Set<string>) {
+  // Clone arguments to avoid mutating them
+  selected = new Set(selected)
+  insensitive = new Set(insensitive)
 
-  selectedLocal.value = [...selected]
-  insensitiveLocal.value = [...insensitive]
-  const value = cloneDeep({ selected, insensitive })
+  // If none selected, default to word.
+  if (!selected.size) selected.add("word")
+  // Remove insensitive selections that are no longer selected
+  insensitive = new Set([...insensitive].filter((name) => selected.has(name)))
+
+  // Update local reactive sets
+  selectedLocal.clear()
+  for (const name of selected) selectedLocal.add(name)
+  insensitiveLocal.clear()
+  for (const name of insensitive) insensitiveLocal.add(name)
+
+  const value = {
+    selected: sortNames([...selected]),
+    insensitive: sortNames([...insensitive]),
+  }
+  // Only update model value if changed
   if (!isEqual(value, unref(model))) model.value = value
+}
+
+// Sort attribute names to match options as shown
+function sortNames(names: string[]) {
+  return sortBy(names, (name) => attributes.value.findIndex((attr) => attr.name === name))
 }
 </script>
 
@@ -106,7 +117,7 @@ function commit(selected: string[], insensitive: string[]) {
           <a
             href="#"
             class="dropdown-item d-flex justify-content-between align-items-baseline"
-            :class="{ active: selectedLocal.includes(option.name) }"
+            :class="{ active: selectedLocal.has(option.name) }"
             @click.prevent="toggle(option.name)"
           >
             {{ locObj(option.label) }}

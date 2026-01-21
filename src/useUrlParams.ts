@@ -43,7 +43,7 @@ export function useUrlParams() {
   watchUrl("search_tab", (value) => (value && parseInt(value)) || 0)
   watchUrl("sort")
   watchUrl("stats_reduce", (value) => value || "word")
-  watchUrl("stats_reduce_insensitive")
+  watchUrl("stats_reduce_insensitive", (value) => value || "")
   watchUrl("suffix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("within", (value) => value || getDefaultWithin())
 
