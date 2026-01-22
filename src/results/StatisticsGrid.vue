@@ -11,7 +11,8 @@ import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
 import { useWindowSize, watchImmediate } from "@vueuse/core"
 import { throttle } from "lodash"
-import { onMounted, reactive, useTemplateRef } from "vue"
+import { storeToRefs } from "pinia"
+import { onMounted, reactive, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -27,8 +28,9 @@ const emit = defineEmits<{
 const store = useAppStore()
 const { t } = useI18n()
 
-let grid: StatisticsGrid
+let grid: StatisticsGrid | undefined
 const gridEl = useTemplateRef("gridEl")
+const { statsRelative } = storeToRefs(store)
 
 // Wait for the grid element ref to be set
 onMounted(() => {
@@ -61,6 +63,8 @@ async function renderGrid() {
   grid.render()
 }
 
+watch(statsRelative, () => grid?.refreshColumns())
+
 /** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {
   // If no specific corpus, find which corpora had any hits (uppercase ids)
@@ -90,7 +94,7 @@ function buildExampleCqp(row: SingleRow) {
 </script>
 
 <template>
-  <div ref="gridEl" role="grid"></div>
+  <div ref="gridEl" />
 </template>
 
 <style scoped>

@@ -44,13 +44,20 @@ watch(page, () => doSearch(true))
 </script>
 
 <template>
-  <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
-    <label class="form-check-label">
-      <input type="checkbox" v-model="context" class="form-check-input" @change="onOptionsChange" />
-      {{ $t("result.kwic.show_context") }}
-      <HelpBadge :text="$t('result.kwic.show_context.help')" />
-    </label>
-  </div>
+  <div class="vstack gap-2">
+    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+      <label class="form-check-label">
+        <input
+          type="checkbox"
+          v-model="context"
+          class="form-check-input"
+          @change="onOptionsChange"
+        />
+        {{ $t("result.kwic.show_context") }}
+        <HelpBadge :text="$t('result.kwic.show_context.help')" />
+      </label>
+    </div>
 
-  <KwicResultsContent :hitsCount :hpp :isReading :kwic v-model="page" />
+    <KwicResultsContent :hitsCount :hpp :isReading :kwic v-model="page" />
+  </div>
 </template>

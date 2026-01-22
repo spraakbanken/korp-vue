@@ -14,6 +14,8 @@ import { debounce } from "lodash"
 import StatisticsAttributeSelector, {
   type StatisticsAttributeSelectorModel,
 } from "./StatisticsAttributeSelector.vue"
+import { storeToRefs } from "pinia"
+import HelpBadge from "@/components/HelpBadge.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -31,6 +33,7 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
 })
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+const { statsRelative } = storeToRefs(store)
 
 const proxy = new StatsProxy()
 
@@ -83,10 +86,16 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 
 <template>
   <div class="vstack gap-2">
-    <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
+    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:
         <StatisticsAttributeSelector v-model="attributesSelected" />
+      </label>
+
+      <label class="form-check-label">
+        <input class="form-check-input" type="checkbox" v-model="statsRelative" />
+        {{ $t("result.statistics.relative") }}
+        <HelpBadge :text="$t('result.statistics.relative.help')" />
       </label>
     </div>
 

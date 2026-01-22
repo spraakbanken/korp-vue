@@ -69,7 +69,7 @@ watch(pageLocal, () => doSearch(true))
 
 <template>
   <div class="vstack gap-2">
-    <div class="bg-body-tertiary p-2 d-flex gap-2 align-items-baseline">
+    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
       <label class="form-check-label">
         <input
           type="checkbox"
