@@ -47,6 +47,16 @@ function closeTabLocal(id: string) {
     }
   }
 }
+
+watch(
+  () => dynamicTabs.length,
+  (newCount, oldCount) => {
+    // When adding a tab, switch to it
+    if (newCount > oldCount) {
+      currentTab.value = dynamicTabs[dynamicTabs.length - 1]!.id
+    }
+  },
+)
 </script>
 
 <template>
