@@ -13,6 +13,7 @@ defineProps<{
     data-bs-toggle="popover"
     data-bs-trigger="focus hover"
     :data-bs-content="text"
+    style="cursor: default"
   >
     🛈
   </span>

@@ -112,8 +112,8 @@ async function commitSearch() {
         />
         <label class="form-check-label" for="search-simple-prefix">
           {{ $t("search.simple.prefix") }}
+          <HelpBadge :text="$t('search.simple.prefix.help')" />
         </label>
-        <HelpBadge :text="$t('search.simple.prefix.help')" />
       </div>
 
       <div class="form-check">
@@ -126,8 +126,8 @@ async function commitSearch() {
         />
         <label class="form-check-label" for="search-simple-midfix">
           {{ $t("search.simple.midfix") }}
+          <HelpBadge :text="$t('search.simple.midfix.help')" />
         </label>
-        <HelpBadge :text="$t('search.simple.midfix.help')" />
       </div>
 
       <div class="form-check">
@@ -139,8 +139,8 @@ async function commitSearch() {
         />
         <label class="form-check-label" for="search-simple-suffix">
           {{ $t("search.simple.suffix") }}
+          <HelpBadge :text="$t('search.simple.suffix.help')" />
         </label>
-        <HelpBadge :text="$t('search.simple.suffix.help')" />
       </div>
     </div>
 
@@ -156,8 +156,8 @@ async function commitSearch() {
         />
         <label class="form-check-label" for="search-simple-free-order">
           {{ $t("search.simple.free_order") }}
+          <HelpBadge :text="$t('search.simple.free_order.help')" />
         </label>
-        <HelpBadge :text="$t('search.simple.free_order.help')" />
       </div>
 
       <div class="form-check">
