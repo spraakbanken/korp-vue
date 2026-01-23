@@ -2,7 +2,7 @@
 import { useAppStore } from "@/store/useAppStore"
 import KwicResults from "./KwicResults.vue"
 import { storeToRefs } from "pinia"
-import StatisticsResult from "./StatisticsResult.vue"
+import StatisticsResult from "./statistics/StatisticsResult.vue"
 import { vTab } from "@/bootstrap"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useLocale } from "@/i18n/useLocale"

@@ -8,7 +8,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { watchDeep, whenever } from "@vueuse/core"
 import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
-import { useDynamicTabs } from "./useDynamicTabs"
+import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
 import { debounce } from "lodash"
 import StatisticsAttributeSelector, {
