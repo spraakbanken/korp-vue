@@ -71,6 +71,18 @@ search.advanced.help.read_more: "Läs mer:"
 search.advanced.help.guide: Att söka i Korp med CQP och Regexp
 search.advanced.help.manual: CQP Interface and Query Language Manual
 
+search.storage: Sparade
+search.storage.help: Spara sökfrågor för att kunna använda dem för jämförelser. Detta sparas i din aktuella webbläsare.
+search.storage.current: Aktuell sökning
+search.storage.none: Gör en sökning genom en av sökflikarna för att sedan kunna spara den här.
+search.storage.cqp: Fråga
+search.storage.corpora: Korpusar
+search.storage.corpora_count: "{0} st"
+search.storage.label: Spara som
+search.storage.save: Spara sökning
+search.storage.saved: Sparade sökningar
+search.storage.delete: Radera
+
 search.operator.is: är
 search.operator.equal: lika med
 search.operator.not_equal: inte lika med
@@ -131,6 +143,12 @@ result.wordpic.limit: Antal rader
 result.wordpic.show_pos: Visa ordklasser
 result.wordpic.sort: Sortera på
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
+
+result.compare: Jämförelse
+result.compare.help: TODO hjälptext
+result.compare.search_left: Sökning vänster
+result.compare.search_right: Sökning höger
+result.compare.attribute: Sammanställ på
 
 pos.nn: substantiv
 pos.av: adjektiv

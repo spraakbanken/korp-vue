@@ -11,6 +11,7 @@ import ExampleResults from "./ExampleResults.vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import WordpicResult from "./WordpicResult.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
+import CompareResults from "./CompareResults.vue"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -23,6 +24,7 @@ const tabOptions = [
   { key: 1, name: "kwic" },
   { key: 2, name: "statistics" },
   { key: 3, name: "wordpic" },
+  { key: "compare", name: "compare" },
 ]
 
 // Sync active tab to the store.
@@ -132,6 +134,17 @@ watch(
         tabindex="0"
       >
         <WordpicResult :active="currentTab == 3" />
+      </div>
+
+      <div
+        class="tab-pane"
+        :class="{ 'show active': currentTab == 'compare' }"
+        id="result-tabs-pane-compare"
+        role="tabpanel"
+        aria-labelledby="result-tabs-tab-compare"
+        tabindex="0"
+      >
+        <CompareResults :active="currentTab == 'compare'" />
       </div>
 
       <div

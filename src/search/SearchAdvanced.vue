@@ -37,8 +37,7 @@ function commitSearch() {
 <template>
   <form
     @submit.prevent="submit"
-    class="d-flex flex-column gap-4 align-items-center"
-    style="max-width: 50em"
+    class="container-max-md d-flex flex-column gap-4 align-items-center"
   >
     <div>
       <label for="advanced-search-textarea" class="form-label">

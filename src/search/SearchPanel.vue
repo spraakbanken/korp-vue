@@ -6,12 +6,13 @@ import { vTab } from "@/bootstrap"
 import SearchExtended from "./extended/SearchExtended.vue"
 import settings from "@/core/config"
 import SearchAdvanced from "./SearchAdvanced.vue"
+import SearchStorage from "./SearchStorage.vue"
 
 const store = useAppStore()
 
 const { search_tab } = storeToRefs(store)
 
-const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced"]
+const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced", "storage"]
 </script>
 
 <template>
@@ -74,6 +75,17 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
         tabindex="0"
       >
         <SearchAdvanced />
+      </div>
+
+      <div
+        class="tab-pane"
+        :class="{ 'show active': search_tab == tabOptions.indexOf('storage') }"
+        id="search-tabs-pane-storage"
+        role="tabpanel"
+        aria-labelledby="search-tabs-tab-storage"
+        tabindex="0"
+      >
+        <SearchStorage />
       </div>
     </div>
   </section>

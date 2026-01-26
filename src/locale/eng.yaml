@@ -70,6 +70,18 @@ search.advanced.help.read_more: "Read more:"
 search.advanced.help.guide: Att söka i Korp med CQP och Regexp (in Swedish)
 search.advanced.help.manual: CQP Interface and Query Language Manual
 
+search.storage: Saved
+search.storage.help: Store search queries to use them for comparison. Data is saved to your current web browser.
+search.storage.current: Current search
+search.storage.none: Make a search using one of the search tabs and then save it here.
+search.storage.cqp: Query
+search.storage.corpora: Corpora
+search.storage.corpora_count: "{0} corpora"
+search.storage.label: Save as
+search.storage.save: Save search
+search.storage.saved: Saved searches
+search.storage.delete: Delete
+
 search.operator.is: is
 search.operator.equal: equal
 search.operator.not_equal: not equal

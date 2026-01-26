@@ -21,6 +21,13 @@ function update(event: Event) {
 <template>
   <div>
     <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
-    <input :id="inputId" type="text" :value="condition.val" @change="update" class="form-control" />
+    <input
+      :id="inputId"
+      type="text"
+      :value="condition.val"
+      @change="update"
+      class="form-control"
+      size="10"
+    />
   </div>
 </template>

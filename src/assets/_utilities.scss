@@ -1,7 +1,21 @@
+// Link-like text
 .link {
   &:hover {
     color: $primary;
     text-decoration: underline;
     cursor: pointer;
+  }
+}
+
+// Max-width containers: fluid until breakpoint, then fixed max-width
+@each $name, $width in $grid-breakpoints {
+  .container-max-#{$name} {
+    @extend .container-fluid;
+  }
+
+  @include media-breakpoint-up($name, $grid-breakpoints) {
+    .container-max-#{$name} {
+      max-width: $width;
+    }
   }
 }
