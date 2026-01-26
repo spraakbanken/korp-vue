@@ -125,7 +125,11 @@ result.statistics.relative: Show relative frequencies
 result.statistics.relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
 result.statistics.total: Total
 
-result.wordpicture: Word picture
+result.wordpic: Word picture
+result.wordpic.limit: Rows
+result.wordpic.show_pos: Show word classes
+result.wordpic.sort: Sort by
+result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, an adaptation of the Mutual Information association measure prioritizing typical items over infrequent ones
 
 pos.nn: noun
 pos.av: adjective

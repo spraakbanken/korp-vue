@@ -70,7 +70,7 @@ watch(pageLocal, () => doSearch(true))
 <template>
   <div class="vstack gap-2">
     <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
-      <label class="form-check-label">
+      <label class="form-check form-check-label">
         <input
           type="checkbox"
           v-model="context"

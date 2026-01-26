@@ -126,7 +126,11 @@ result.statistics.relative: Visa relativa frekvenser
 result.statistics.relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.statistics.total: Total
 
-result.wordpicture: Ordbild
+result.wordpic: Ordbild
+result.wordpic.limit: Antal rader
+result.wordpic.show_pos: Visa ordklasser
+result.wordpic.sort: Sortera på
+result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
 
 pos.nn: substantiv
 pos.av: adjektiv

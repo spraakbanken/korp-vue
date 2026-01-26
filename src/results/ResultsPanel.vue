@@ -21,7 +21,7 @@ const currentTab = ref<number | string>(result_tab.value)
 const tabOptions = [
   { key: 1, name: "kwic" },
   { key: 2, name: "statistics" },
-  { key: 3, name: "wordpicture" },
+  { key: 3, name: "wordpic" },
 ]
 
 // Sync active tab to the store.
@@ -125,9 +125,9 @@ watch(
       <div
         class="tab-pane"
         :class="{ 'show active': currentTab == 3 }"
-        id="result-tabs-pane-wordpicture"
+        id="result-tabs-pane-wordpic"
         role="tabpanel"
-        aria-labelledby="result-tabs-tab-wordpicture"
+        aria-labelledby="result-tabs-tab-wordpic"
         tabindex="0"
       >
         <WordpicResult :active="currentTab == 3" />

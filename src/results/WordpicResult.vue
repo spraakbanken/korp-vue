@@ -9,15 +9,11 @@ import { debounce } from "lodash"
 import { storeToRefs } from "pinia"
 import { RelationsProxy, type RelationsQuery } from "@/core/backend/proxy/RelationsProxy"
 import type { RelationsSort } from "@/core/backend/types/relations"
-import {
-  formatWordOrLemgram,
-  type WordPicture,
-  type WordPictureSectionHeading,
-} from "@/core/wordpic"
-import { getWordPictureConfig } from "@/core/config"
+import { formatWordOrLemgram, type WordPicture } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
-import { Lemgram } from "@/core/lemgram"
+import HelpBadge from "@/components/HelpBadge.vue"
 
+const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
 
 const props = defineProps<{
@@ -32,7 +28,8 @@ const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<WordPicture>()
 const { activeSearch } = storeToRefs(store)
 const errorMessage = ref<string>()
-const limit = ref<number>(15)
+const limit = ref(LIMITS[0])
+const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
 const sortLocal = ref<RelationsSort>("mi")
 
@@ -58,6 +55,9 @@ async function doSearch() {
 
   proxy.abort()
   data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
+
+  // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
+  sort.value = sortLocal.value
 }
 
 function getValidQuery(): RelationsQuery | undefined {
@@ -70,15 +70,39 @@ function getValidQuery(): RelationsQuery | undefined {
   }
 }
 
-const onOptionsChange = debounce(() => {}, UPDATE_DELAY_MS)
+// Debounce repeated request to avoid lag when changing options quickly, e.g. by keyboard.
+const onOptionsChange = debounce(() => {
+  doSearch()
+}, UPDATE_DELAY_MS)
 </script>
 
 <template>
   <div class="vstack gap-2">
+    <!-- Options bar -->
     <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
-      <label class="d-flex align-items-baseline gap-1"> </label>
+      <label class="d-flex gap-2 align-items-baseline">
+        {{ $t("result.wordpic.sort") }}:
+        <select class="form-select form-select-sm w-auto" v-model="sortLocal" @change="onOptionsChange">
+          <option value="freq">{{ $t("stat.freq") }}</option>
+          <option value="mi">{{ $t("stat.mi") }}</option>
+        </select>
+        <HelpBadge :text="$t('result.wordpic.sort.help')" />
+      </label>
+
+      <label class="d-flex gap-2 align-items-baseline">
+        {{ $t("result.wordpic.limit") }}:
+        <select class="form-select form-select-sm w-auto" v-model="limit">
+          <option v-for="n in LIMITS" :key="n" :value="n">{{ n }}</option>
+        </select>
+      </label>
+
+      <label class="form-check form-check-label">
+        <input type="checkbox" v-model="showPos" class="form-check-input" />
+        {{ $t("result.wordpic.show_pos") }}
+      </label>
     </div>
 
+    <!-- Wordpic cards -->
     <div v-if="data" class="d-flex flex-wrap gap-2">
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div
@@ -130,6 +154,7 @@ const onOptionsChange = debounce(() => {}, UPDATE_DELAY_MS)
                     :key="j"
                     :row="row"
                     :sort="sort"
+                    :showPos
                   />
                 </table>
               </div>
