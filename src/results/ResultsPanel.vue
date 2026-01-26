@@ -10,6 +10,7 @@ import { ref, watch } from "vue"
 import ExampleResults from "./ExampleResults.vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import WordpicResult from "./WordpicResult.vue"
+import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -144,6 +145,7 @@ watch(
         tabindex="0"
       >
         <ExampleResults v-if="tab.task instanceof ExampleTask" :task="tab.task" />
+        <ExampleResults v-else-if="tab.task instanceof WordpicExampleTask" :task="tab.task" />
         <div v-else>TODO Dynamic tab for {{ tab.task }}</div>
       </div>
     </div>

@@ -7,10 +7,11 @@ import { onMounted, ref, watch } from "vue"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 import { debounce } from "lodash"
 import HelpBadge from "@/components/HelpBadge.vue"
+import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 
 const UPDATE_DELAY_MS = 500
 
-const props = defineProps<{ task: ExampleTask }>()
+const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 
 const store = useAppStore()
 const { hpp } = storeToRefs(store)
@@ -28,7 +29,7 @@ onMounted(async () => {
 async function doSearch(isPaging = false) {
   loading.value = !isPaging
   const willBeReading = context.value
-  const response = await props.task.send(page.value, hpp.value, isPaging, context.value)
+  const response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
   loading.value = false
   hitsCount.value = response.hits
   kwic.value = response.kwic

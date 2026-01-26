@@ -1,7 +1,7 @@
+import { corpusListing } from "@/core/corpora/corpusListing"
 import { pageToRange } from "../common"
+import type { RelationsSentencesResponse } from "../types/relations-sentences"
 import ProxyBase from "./ProxyBase"
-import { RelationsSentencesResponse } from "../types/relations-sentences"
-import { corpusListing } from "@/corpora/corpus_listing"
 
 export class RelationsSentencesProxy extends ProxyBase<"relations_sentences"> {
   protected readonly endpoint = "relations_sentences"

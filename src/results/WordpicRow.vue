@@ -30,7 +30,11 @@ const statsText = computed(() =>
 
 <template>
   <tr>
-    <td class="px-1" v-html="formatWordOrLemgram(row.other, row.otherpos, $t, props.showPos)" />
+    <td
+      class="px-1 link"
+      v-html="formatWordOrLemgram(row.other, row.otherpos, $t, props.showPos)"
+      @click="$emit('clickRow', row)"
+    />
     <td
       v-popover
       data-bs-toggle="popover"

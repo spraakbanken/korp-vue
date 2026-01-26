@@ -9,9 +9,11 @@ import { debounce } from "lodash"
 import { storeToRefs } from "pinia"
 import { RelationsProxy, type RelationsQuery } from "@/core/backend/proxy/RelationsProxy"
 import type { RelationsSort } from "@/core/backend/types/relations"
-import { formatWordOrLemgram, type WordPicture } from "@/core/wordpic"
+import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
+import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
+import { Lemgram } from "@/core/lemgram"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -74,6 +76,11 @@ function getValidQuery(): RelationsQuery | undefined {
 const onOptionsChange = debounce(() => {
   doSearch()
 }, UPDATE_DELAY_MS)
+
+function onClickRow(row: MatchedRelation): void {
+  const task = new WordpicExampleTask(row.source.join())
+  createTab(t("result.kwic"), task)
+}
 </script>
 
 <template>
@@ -82,7 +89,11 @@ const onOptionsChange = debounce(() => {
     <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
       <label class="d-flex gap-2 align-items-baseline">
         {{ $t("result.wordpic.sort") }}:
-        <select class="form-select form-select-sm w-auto" v-model="sortLocal" @change="onOptionsChange">
+        <select
+          class="form-select form-select-sm w-auto"
+          v-model="sortLocal"
+          @change="onOptionsChange"
+        >
           <option value="freq">{{ $t("stat.freq") }}</option>
           <option value="mi">{{ $t("stat.mi") }}</option>
         </select>
@@ -155,6 +166,7 @@ const onOptionsChange = debounce(() => {
                     :row="row"
                     :sort="sort"
                     :showPos
+                    @clickRow="onClickRow"
                   />
                 </table>
               </div>

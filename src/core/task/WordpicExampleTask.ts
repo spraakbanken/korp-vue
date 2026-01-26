@@ -1,5 +1,5 @@
-import { RelationsSentencesProxy } from "../proxy/RelationsSentencesProxy"
-import type { RelationsSentencesResponse } from "../../backend/types/relations-sentences"
+import { RelationsSentencesProxy } from "../backend/proxy/RelationsSentencesProxy"
+import type { RelationsSentencesResponse } from "../backend/types/relations-sentences"
 import { TaskBase } from "./TaskBase"
 
 export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
