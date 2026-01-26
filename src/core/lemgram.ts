@@ -33,10 +33,11 @@ export class Lemgram {
   }
 
   /** Render a lemgram string as pretty HTML. */
-  toHtml(loc?: (msg: string) => string): string {
+  toHtml(loc?: (msg: string) => string, skipPos = false): string {
     const pos = loc ? loc(`pos.${this.pos}`) : this.pos
     const indexHtml = this.index > 1 ? `<sup>${this.index}</sup>` : ""
-    return `${this.form}${indexHtml} (${pos})`
+    const posHtml = skipPos ? "" : ` (${pos})`
+    return `${this.form}${indexHtml}${posHtml}`
   }
 
   /** Render a lemgram string in pretty plain text. */

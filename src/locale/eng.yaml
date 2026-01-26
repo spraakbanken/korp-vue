@@ -145,6 +145,24 @@ pos.e: e
 pos.mx: flerordsprefix
 pos.sx: prefix
 
+rel.at: pre-modifier
+rel.et: post-modifier
+rel.io: indirect object
+rel.oo: direct object
+rel.oa: object adverbial
+rel.ra: place adverbial
+rel.ss: subject
+rel.sbj: subject
+rel.ta: time adverbial
+rel.obj: object
+rel.adv: adverbial
+rel.pa: preposition
+rel.head: head
+rel.aa: adverbial
+
+stat.freq: absolute frequency
+stat.mi: LMI
+
 tag.sentence: sentence
 tag.paragraph: paragraph
 tag.np: np

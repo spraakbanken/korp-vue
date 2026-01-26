@@ -1,4 +1,5 @@
 import type { Labeled, LangString, LocLangMap, LocMap } from "@/core/model/locale"
+import type { MaybeWithOptions } from "./config.types"
 
 /** Typings for config as fetched from backend. */
 export type CorpusConfigRaw = {
@@ -29,6 +30,7 @@ export type CorpusRaw = {
   /** Attributes to use in global filters */
   attribute_filters: string[]
   context: Labeled[]
+  deptree?: DeptreeConfig
   description: LangString
   hide?: boolean
   id: string
@@ -102,13 +104,17 @@ export type CustomAttribute = {
   sidebar_component?: MaybeWithOptions
 }
 
-/** A value that names some object and possibly supplies options for that object. */
-export type MaybeWithOptions<O extends object = Record<string, unknown>> =
-  | string
-  | { name: string; options: O }
-
-/** An object that possibly requires options for instantiation. */
-export type MaybeConfigurable<T, O = object> = T | Configurable<T, O>
-
-/** An object that requires options for instantiation. */
-export type Configurable<T, O = object> = (options: O) => T
+export type DeptreeConfig = {
+  attrs?: {
+    /** Attribute name for the token position (default: "ref") */
+    ref?: string
+    /** Attribute name for the part of speech (default: "pos") */
+    pos?: string
+    /** Attribute name for the head token position (default: "dephead") */
+    head?: string
+    /** Attribute name for the syntactic relation (default: "deprel") */
+    rel?: string
+  }
+  /** Disable deptree visualization */
+  hidden?: boolean
+}

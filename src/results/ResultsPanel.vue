@@ -9,6 +9,7 @@ import { useLocale } from "@/i18n/useLocale"
 import { ref, watch } from "vue"
 import ExampleResults from "./ExampleResults.vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
+import WordpicResult from "./WordpicResult.vue"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -129,7 +130,7 @@ watch(
         aria-labelledby="result-tabs-tab-wordpicture"
         tabindex="0"
       >
-        TODO Word picture
+        <WordpicResult :active="currentTab == 3" />
       </div>
 
       <div

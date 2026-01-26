@@ -146,6 +146,24 @@ pos.e: e
 pos.mx: flerordsprefix
 pos.sx: prefix
 
+rel.at: attribut
+rel.et: efterställt attribut
+rel.io: indirekt objekt
+rel.oo: direkt objekt
+rel.oa: objektsadverbial
+rel.ra: platsadverbial
+rel.ss: subjekt
+rel.sbj: subjekt
+rel.ta: tidsadverbial
+rel.obj: objekt
+rel.adv: adverbial
+rel.pa: preposition
+rel.head: huvud
+rel.aa: adverbial
+
+stat.freq: absolut frekvens
+stat.mi: LMI
+
 tag.sentence: mening
 tag.paragraph: stycke
 tag.np: np

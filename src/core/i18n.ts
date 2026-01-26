@@ -26,20 +26,17 @@ export function locObj(map?: LangString, lang?: string): string {
 }
 
 /**
- * Format a number of "relative hits" (hits per 1 million tokens), using exactly one decimal.
- * @param x Number of relative hits
- * @param lang The locale to use.
- * @returns A string with the number nicely formatted.
- */
-export function formatRelativeHits(x: number | string, lang?: string) {
-  lang = lang || getLang()
-  return Number(x).toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
-}
-
-/**
  * Format frequency as relative or absolute using chosen mode.
  */
 export function formatFrequency(absrel: AbsRelSeq, statsRelative: boolean, lang?: string) {
   const [absolute, relative] = absrel
-  return statsRelative ? formatRelativeHits(relative, lang) : absolute.toLocaleString(lang)
+  return statsRelative ? formatDecimals(relative, 1) : absolute.toLocaleString(lang)
+}
+
+/** Format a number with a given number of decimal places */
+export function formatDecimals(x: number | string, fractionDigits: number) {
+  return Number(x).toLocaleString(getLang(), {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })
 }

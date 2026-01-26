@@ -83,6 +83,6 @@ export type WordPictureDef = (WordPictureDefItem | "_")[]
 export type WordPictureDefItem = {
   rel: string
   alt_label?: string
-  css_class?: string
+  color?: string
   field_reverse?: boolean
 }

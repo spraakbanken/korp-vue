@@ -1,6 +1,6 @@
-import type { InstanceConfig } from "./instanceConfig.types"
+import type { InstanceConfig, WordPictureDef } from "./instanceConfig.types"
 import type { Attribute, MaybeConfigurable, MaybeWithOptions } from "./corpusConfigRaw.types"
-import type { CorpusConfig } from "./corpusConfig.types"
+import type { Corpus, CorpusConfig } from "./corpusConfig.types"
 import { isFunction } from "lodash"
 import { getAllCorporaInFolders } from "../corpora/corpora"
 
@@ -43,6 +43,35 @@ export const getDefaultCorpusSelection = (): string[] =>
   (settings["preselected_corpora"] || []).flatMap((name) =>
     getAllCorporaInFolders(settings["folders"], name.replace(/^__/, "")),
   )
+
+/** Identify deptree attribute names */
+export function getDeptreeAttrMapping(corpus: Corpus): Record<string, string> {
+  const defaultMapping = {
+    ref: "ref",
+    pos: "pos",
+    head: "dephead",
+    rel: "deprel",
+  }
+  return { ...defaultMapping, ...corpus.deptree?.attrs }
+}
+
+/** Convert Word picture config to use abbreviations for POS and relation, to match the data. */
+export function getWordPictureConfig(): Record<string, WordPictureDef[]> {
+  // The tagset maps long labels to lower-case short codes
+  const labelToCode = (label: string) => settings["word_picture_tagset"]?.[label]?.toUpperCase()
+  return Object.fromEntries(
+    Object.entries(settings["word_picture_conf"] || {}).map(([posLong, section]) => [
+      // Convert the conf object's long POS keys
+      labelToCode(posLong),
+      // Convert each column's `rel` long relation label
+      section.map((table) =>
+        table.map((column) =>
+          column == "_" ? column : { ...column, rel: labelToCode(column.rel) },
+        ),
+      ),
+    ]),
+  )
+}
 
 /** An attribute's dataset options as an object */
 export const normalizeDataset = (
