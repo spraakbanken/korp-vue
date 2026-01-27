@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import { useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
-import QueryBuilderAttribute from "./QueryBuilderAttribute.vue"
-import QueryBuilderOperator from "./QueryBuilderOperator.vue"
-import QueryBuilderValue from "./QueryBuilderValue.vue"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
   isCqpStruct,
@@ -93,8 +90,9 @@ function addBoundary(start: boolean) {
               <div class="hstack gap-2">
                 <!-- Cannot use `v-model` syntax because we cannot replace the repetition variable, so we need `Object.assign` -->
                 <QueryBuilderCondition
-                  :modelValue="condition"
-                  @update:model-value="Object.assign(condition, $event)"
+                  v-model:attribute="condition.type"
+                  v-model:operator="condition.op"
+                  v-model:value="condition.val"
                 />
 
                 <button
