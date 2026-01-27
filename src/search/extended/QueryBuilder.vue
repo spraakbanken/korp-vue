@@ -14,6 +14,7 @@ import {
 } from "@/core/cqp/cqp.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { computed } from "vue"
+import QueryBuilderCondition from "./QueryBuilderCondition.vue"
 
 const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
 
@@ -90,17 +91,11 @@ function addBoundary(start: boolean) {
 
               <!-- Each condition (attribute-operator-value) -->
               <div class="hstack gap-2">
-                <div class="flex-grow-1 vstack gap-1">
-                  <QueryBuilderAttribute v-model="condition.type" />
-                  <div class="hstack gap-1 align-items-baseline">
-                    <QueryBuilderOperator :condition v-model="condition.op" />
-                    <QueryBuilderValue
-                      :condition
-                      @update="(value) => (condition.val = value)"
-                      class="flex-grow-1"
-                    />
-                  </div>
-                </div>
+                <!-- Cannot use `v-model` syntax because we cannot replace the repetition variable, so we need `Object.assign` -->
+                <QueryBuilderCondition
+                  :modelValue="condition"
+                  @update:model-value="Object.assign(condition, $event)"
+                />
 
                 <button
                   type="button"
