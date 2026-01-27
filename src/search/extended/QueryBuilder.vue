@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
-import SearchExtendedAttribute from "./SearchExtendedAttribute.vue"
-import SearchExtendedOperator from "./SearchExtendedOperator.vue"
-import SearchExtendedValue from "./SearchExtendedValue.vue"
+import QueryBuilderAttribute from "./QueryBuilderAttribute.vue"
+import QueryBuilderOperator from "./QueryBuilderOperator.vue"
+import QueryBuilderValue from "./QueryBuilderValue.vue"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
   isCqpStruct,
@@ -91,10 +91,10 @@ function addBoundary(start: boolean) {
               <!-- Each condition (attribute-operator-value) -->
               <div class="hstack gap-2">
                 <div class="flex-grow-1 vstack gap-1">
-                  <SearchExtendedAttribute :condition @update="(name) => (condition.type = name)" />
+                  <QueryBuilderAttribute :condition @update="(name) => (condition.type = name)" />
                   <div class="hstack gap-1 align-items-baseline">
-                    <SearchExtendedOperator :condition @update="(op) => (condition.op = op)" />
-                    <SearchExtendedValue
+                    <QueryBuilderOperator :condition @update="(op) => (condition.op = op)" />
+                    <QueryBuilderValue
                       :condition
                       @update="(value) => (condition.val = value)"
                       class="flex-grow-1"
