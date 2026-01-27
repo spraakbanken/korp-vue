@@ -14,10 +14,11 @@ const emit = defineEmits<{
 
 const id = useId()
 
+// TODO Emit update when attribute changes
 const operators = computed(() => {
   const attributes = corpusSelection.getAttributeGroupsExtended()
-  const attribute = attributes.find((attr) => attr.name == props.condition.type)!
-  if (attribute.opts) return attribute.opts
+  const attribute = attributes.find((attr) => attr.name == props.condition.type)
+  if (attribute?.opts) return attribute.opts
   return settings["default_options"]
 })
 

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { prefixAttr } from "@/core/config"
+import AttributeSelector from "@/AttributeSelector.vue"
+import { prefixAttr, unprefixAttr } from "@/core/config"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import type { Condition } from "@/core/cqp/cqp.types"
-import { useLocale } from "@/i18n/useLocale"
-import { groupBy } from "lodash"
-import { computed, onMounted, ref } from "vue"
+import { onMounted, ref, useId, watch } from "vue"
 
 const props = defineProps<{
   condition: Condition
@@ -15,53 +15,33 @@ const emit = defineEmits<{
   (e: "update", value: string): void
 }>()
 
-const { locObj } = useLocale()
+const inputId = useId()
 
-const optionsAll = ref<AttributeOption[]>([])
-const optionsGrouped = computed(() => groupBy(optionsAll.value, "group"))
+const options = ref<AttributeOption[]>(corpusSelection.getAttributeGroupsExtended())
+const findOption = (name: string) =>
+  options.value.find((option) => option.name == unprefixAttr(name))
+const selected = ref<Attribute>(findOption(props.condition.type) || options.value[0]!)
 
-function findOption(name: string): AttributeOption | undefined {
-  return optionsAll.value.find((option) => option.name === name)
-}
-
+/** Get available attributes from current corpus selection */
 function refresh() {
-  const items = corpusSelection.getAttributeGroupsExtended()
-  optionsAll.value = items
+  options.value = corpusSelection.getAttributeGroupsExtended()
 
   // If selected attribute is no longer available, reset selection
-  if (!findOption(props.condition.type)) {
-    const wordOption = items[0]!
-    emit("update", prefixAttr(wordOption))
-  }
+  selected.value = findOption(props.condition.type) || options.value[0]!
 }
 
 onMounted(refresh)
 corpusSelection.listen(refresh)
 
-function update(event: Event) {
-  const target = event.target as HTMLSelectElement
-  const selected = findOption(target.value)!
-  emit("update", prefixAttr(selected))
-}
+// Emit update event on selection change
+watch(selected, () => {
+  if (selected.value) emit("update", prefixAttr(selected.value))
+})
 </script>
 
 <template>
   <div>
-    <select class="form-select" @change="update">
-      <optgroup
-        v-for="(options, type) in optionsGrouped"
-        :key="type"
-        :label="$t(`attribute_type.${type}`)"
-      >
-        <option
-          v-for="option in options"
-          :key="option.name"
-          :value="option.name"
-          :selected="condition.type === option.name"
-        >
-          {{ locObj(option.label) }}
-        </option>
-      </optgroup>
-    </select>
+    <label :for="inputId" class="visually-hidden">{{ $t("search.extended.attribute") }}</label>
+    <AttributeSelector :options="options" v-model="selected" :id="inputId" />
   </div>
 </template>

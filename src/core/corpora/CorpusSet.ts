@@ -14,7 +14,7 @@ import {
   uniq,
 } from "lodash"
 import moment, { type Moment } from "moment"
-import settings, { normalizeDataset } from "@/core/config"
+import settings, { normalizeDataset, unprefixAttr } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
@@ -395,13 +395,9 @@ export class CorpusSet extends Observable {
   }
 
   isDateInterval(type: string): boolean {
-    if (!type) {
-      return false
-    }
-    const attribute = type.split("_.").slice(-1)[0]
     return (
-      this.commonAttributes[attribute]?.["extended_component"] == "dateInterval" ||
-      this.structAttributes[attribute]?.["extended_component"] == "dateInterval"
+      this.commonAttributes[unprefixAttr(type)]?.["extended_component"] == "dateInterval" ||
+      this.structAttributes[unprefixAttr(type)]?.["extended_component"] == "dateInterval"
     )
   }
 }

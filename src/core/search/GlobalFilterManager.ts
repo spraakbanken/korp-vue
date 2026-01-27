@@ -7,6 +7,7 @@ import { countAttrValues } from "@/core/backend/attrValues"
 import type { Condition, CqpQuery } from "@/core/cqp/cqp.types"
 import { getLang } from "../i18n"
 import { mergeCqpExprs } from "../cqp/cqp"
+import { prefixAttr } from "../config"
 
 export type FilterData = {
   attribute: Attribute
@@ -170,6 +171,6 @@ export class GlobalFilterManager extends Observable {
 
   private createCondition(attr: Attribute, value: string): Condition {
     const op = attr.type === "set" ? "contains" : "="
-    return { type: `_.${attr.name}`, op, val: regescape(value) }
+    return { type: prefixAttr(attr), op, val: regescape(value) }
   }
 }
