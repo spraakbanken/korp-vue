@@ -91,9 +91,9 @@ function addBoundary(start: boolean) {
               <!-- Each condition (attribute-operator-value) -->
               <div class="hstack gap-2">
                 <div class="flex-grow-1 vstack gap-1">
-                  <QueryBuilderAttribute :condition @update="(name) => (condition.type = name)" />
+                  <QueryBuilderAttribute v-model="condition.type" />
                   <div class="hstack gap-1 align-items-baseline">
-                    <QueryBuilderOperator :condition @update="(op) => (condition.op = op)" />
+                    <QueryBuilderOperator :condition v-model="condition.op" />
                     <QueryBuilderValue
                       :condition
                       @update="(value) => (condition.val = value)"

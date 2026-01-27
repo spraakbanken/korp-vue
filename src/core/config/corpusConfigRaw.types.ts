@@ -1,5 +1,6 @@
 import type { Labeled, LangString, LocLangMap, LocMap } from "@/core/model/locale"
 import type { MaybeWithOptions } from "./config.types"
+import type { OperatorKorp } from "../cqp/cqp.types"
 
 /** Typings for config as fetched from backend. */
 export type CorpusConfigRaw = {
@@ -81,8 +82,7 @@ export type Attribute = {
   label: LangString
   name: string
   /** Available operators, default is to copy the `default_options` setting */
-  // TODO Type values as OperatorKorp
-  opts?: Record<string, string> | false
+  opts?: Record<string, OperatorKorp> | false
   order?: number
   pattern?: string
   ranked?: boolean
