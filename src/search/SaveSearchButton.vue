@@ -41,9 +41,9 @@ function save() {
 
   <div class="dropdown-menu p-2" style="width: 20em">
     <form @submit.prevent="save()">
-      <p class="text-muted">{{ $t("search.storage.help") }}</p>
+      <p class="text-muted">{{ $t("search.save.help") }}</p>
       <div class="form-label">
-        {{ $t("search.storage.save_as") }}
+        {{ $t("search.save.save_as") }}
       </div>
       <div class="hstack gap-2 align-items-baseline">
         <input type="text" v-model="label" class="form-control" />

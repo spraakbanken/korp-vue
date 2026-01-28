@@ -1,10 +1,16 @@
-import { korpRequest } from "../common"
 import { groupBy, pick, range, sumBy, uniq, zip } from "lodash"
-import { ExampleTask } from "./ExampleTask"
+import type { Attribute } from "../config/corpusConfigRaw.types"
+import { corpusListing } from "../corpora/corpusListing"
+import { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
-import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { CorpusListing, corpusListing } from "@/core/corpora/corpusListing"
-import { prefixAttr } from "@/core/config"
+import { korpRequest } from "../backend/common"
+import { ExampleTask } from "./ExampleTask"
+import { prefixAttr } from "../config"
+
+export type SavedSearch = {
+  cqp: string
+  corpora: string[]
+}
 
 export type CompareResult = {
   tables: CompareTables
@@ -35,7 +41,7 @@ export type CompareItem = {
 
 export class CompareTask extends TaskBase<CompareResult> {
   attributes: Record<string, Attribute>
-  cl: CorpusListing
+  cl: CorpusSet
   reduce: string[]
 
   constructor(
@@ -44,7 +50,7 @@ export class CompareTask extends TaskBase<CompareResult> {
     reduce: string[],
   ) {
     super()
-    this.cl = corpusListing.subsetFactory([...cmp1.corpora, ...cmp2.corpora])
+    this.cl = corpusListing.pick([...cmp1.corpora, ...cmp2.corpora])
     this.reduce = reduce.map((item) => item.replace(/^_\./, ""))
     this.attributes = pick(this.cl.getReduceAttrs(), this.reduce)
   }
@@ -63,7 +69,7 @@ export class CompareTask extends TaskBase<CompareResult> {
     const split = this.reduce.filter((r) => this.attributes[r]?.type === "set").join(",")
 
     const rankedReduce = this.reduce.filter(
-      (item) => this.cl.getCurrentAttributes(this.cl.getReduceLang())[item]?.ranked,
+      (item) => this.cl.getAttributes(this.cl.getReduceLang())[item]?.ranked,
     )
     const top = rankedReduce.map((item) => item + ":1").join(",")
 
@@ -87,7 +93,11 @@ export class CompareTask extends TaskBase<CompareResult> {
       abs: value > 0 ? data.set2[key] : data.set1[key],
     }))
 
-    const tables = groupBy(objs, (obj) => (obj.loglike > 0 ? "positive" : "negative"))
+    type Polarity = "positive" | "negative"
+    const tables = groupBy(objs, (obj) => (obj.loglike > 0 ? "positive" : "negative")) as Record<
+      Polarity,
+      CompareItemRaw[]
+    >
 
     let max = 0
     const groupAndSum = function (table: CompareItemRaw[]) {
@@ -124,7 +134,7 @@ export class CompareTask extends TaskBase<CompareResult> {
   buildItemCqp(row: CompareItem) {
     // If the grouping attribute is positional, the value is a space-separated list, otherwise it's a single value.
     const parseToken = (value: string, i: number) =>
-      CorpusListing.isStruct(this.attributes[this.reduce[i]]) ? [value] : value.split(" ")
+      CorpusSet.isStruct(this.attributes[this.reduce[i]]) ? [value] : value.split(" ")
 
     const splitTokens = row.elems.map((elem) => elem.split("/").map(parseToken))
 

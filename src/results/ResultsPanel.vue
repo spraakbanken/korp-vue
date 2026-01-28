@@ -6,12 +6,14 @@ import StatisticsResult from "./statistics/StatisticsResult.vue"
 import { vTab } from "@/bootstrap"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useLocale } from "@/i18n/useLocale"
-import { ref, watch } from "vue"
+import { ref, watch, type Component } from "vue"
 import ExampleResults from "./ExampleResults.vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import WordpicResult from "./WordpicResult.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import CompareResults from "./CompareResults.vue"
+import { CompareTask } from "@/core/task/CompareTask"
+import type { TaskBase } from "@/core/task/TaskBase"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -24,7 +26,6 @@ const tabOptions = [
   { key: 1, name: "kwic" },
   { key: 2, name: "statistics" },
   { key: 3, name: "wordpic" },
-  { key: "compare", name: "compare" },
 ]
 
 // Sync active tab to the store.
@@ -61,6 +62,13 @@ watch(
     }
   },
 )
+
+function selectTaskResultComponent(task: TaskBase): Component | null {
+  if (task instanceof ExampleTask) return ExampleResults
+  if (task instanceof WordpicExampleTask) return ExampleResults
+  if (task instanceof CompareTask) return CompareResults
+  return null
+}
 </script>
 
 <template>
@@ -137,17 +145,6 @@ watch(
       </div>
 
       <div
-        class="tab-pane"
-        :class="{ 'show active': currentTab == 'compare' }"
-        id="result-tabs-pane-compare"
-        role="tabpanel"
-        aria-labelledby="result-tabs-tab-compare"
-        tabindex="0"
-      >
-        <CompareResults :active="currentTab == 'compare'" />
-      </div>
-
-      <div
         v-for="tab in dynamicTabs"
         :key="tab.id"
         class="tab-pane"
@@ -157,9 +154,7 @@ watch(
         :aria-labelledby="`result-tabs-tab-${tab.id}`"
         tabindex="0"
       >
-        <ExampleResults v-if="tab.task instanceof ExampleTask" :task="tab.task" />
-        <ExampleResults v-else-if="tab.task instanceof WordpicExampleTask" :task="tab.task" />
-        <div v-else>TODO Dynamic tab for {{ tab.task }}</div>
+        <component :is="selectTaskResultComponent(tab.task as TaskBase)" :task="tab.task" />
       </div>
     </div>
   </div>

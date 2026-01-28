@@ -6,13 +6,13 @@ import { vTab } from "@/bootstrap"
 import SearchExtended from "./extended/SearchExtended.vue"
 import settings from "@/core/config"
 import SearchAdvanced from "./SearchAdvanced.vue"
-import SearchStorage from "./SearchStorage.vue"
+import SearchCompare from "./SearchCompare.vue"
 
 const store = useAppStore()
 
 const { search_tab } = storeToRefs(store)
 
-const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced", "storage"]
+const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced", "compare"]
 </script>
 
 <template>
@@ -79,13 +79,13 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
 
       <div
         class="tab-pane"
-        :class="{ 'show active': search_tab == tabOptions.indexOf('storage') }"
-        id="search-tabs-pane-storage"
+        :class="{ 'show active': search_tab == tabOptions.indexOf('compare') }"
+        id="search-tabs-pane-compare"
         role="tabpanel"
-        aria-labelledby="search-tabs-tab-storage"
+        aria-labelledby="search-tabs-tab-compare"
         tabindex="0"
       >
-        <SearchStorage />
+        <SearchCompare />
       </div>
     </div>
   </section>
