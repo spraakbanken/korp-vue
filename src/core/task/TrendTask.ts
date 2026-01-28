@@ -1,6 +1,6 @@
 import type { Moment } from "moment"
 import type { CountTimeParams, CountTimeResponse } from "../backend/types/countTime"
-import { GRANULARITIES, type Level } from "../trend-diagram/util"
+import { GRANULARITIES, type Level } from "../trend/util"
 import { TaskBase } from "./TaskBase"
 import type { NumericString, ProgressHandler } from "../backend/types"
 import { padStart } from "lodash"
