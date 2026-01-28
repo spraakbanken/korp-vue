@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue"
+import { computed, ref, watch, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
@@ -9,10 +9,11 @@ import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import GlobalFilters from "./GlobalFilters.vue"
-import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
+import { useReactiveFilterManager } from "./useReactiveFilterManager"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
+const filterManager = useReactiveFilterManager()
 
 const prefixLocal = ref(prefix.value)
 const midfixLocal = ref(false)
@@ -21,7 +22,6 @@ const freeOrder = ref(!in_order.value)
 const ignoreCase = ref(isCaseInsensitive.value)
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 const isFilterReady = ref(false)
-const globalFilterManager = GlobalFilterManager.getInstance()
 
 /** Trimmed autocomplete input */
 const input = computed<LemgramAutocompleteModel>(() => ({
@@ -38,12 +38,12 @@ const query = computed(() => {
 })
 
 /** Reactive CQP representation of the query */
-const cqp = computed(() => stringify(globalFilterManager.mergeToCqp(query.value)))
+const cqp = computed(() => stringify(filterManager.mergeToCqp(query.value)))
 
 syncRefs(cqp, simpleCqp)
 
 // Flag when the filter manager is ready, so that the initial search can include the filter selection.
-globalFilterManager.listen(() => (isFilterReady.value = true))
+watch(filterManager, () => (isFilterReady.value = true))
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))

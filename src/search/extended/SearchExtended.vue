@@ -7,18 +7,18 @@ import GlobalFilters from "../GlobalFilters.vue"
 import { until, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { splitFirst } from "@/core/util"
-import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
 import QueryBuilder from "./QueryBuilder.vue"
+import { useReactiveFilterManager } from "../useReactiveFilterManager"
 
 const store = useAppStore()
+const filterManager = useReactiveFilterManager()
 
 const tokens = reactive<CqpQuery>([{ and_block: [[createCondition("")]] }])
 const { search } = storeToRefs(store)
 const isFilterReady = ref(false)
-const globalFilterManager = GlobalFilterManager.getInstance()
 
 // Flag when the filter manager is ready, so that the initial search can include the filter selection.
-globalFilterManager.listen(() => (isFilterReady.value = true))
+watch(filterManager, () => (isFilterReady.value = true))
 
 watchImmediate(search, () => {
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
@@ -45,14 +45,14 @@ async function commitSearch() {
   // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
   await until(isFilterReady).toBe(true, { timeout: 1000 })
 
-  const cqp = stringify(globalFilterManager.mergeToCqp(tokens))
+  const cqp = stringify(filterManager.mergeToCqp(tokens))
   store.activeSearch = { cqp }
 }
 
 watchImmediate(
   tokens,
   () => {
-    store.extendedCqp = stringify(globalFilterManager.mergeToCqp(tokens), true)
+    store.extendedCqp = stringify(filterManager.mergeToCqp(tokens), true)
   },
   { deep: true },
 )

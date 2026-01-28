@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ApiKwic } from "@/core/backend/types"
-import { corpusSelection } from "@/core/corpora/corpusListing"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
 import { massageData, type SelectedToken } from "@/core/kwic/kwic"
@@ -20,15 +20,13 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const tokensTotal = ref(corpusSelection.getTokenCount())
+const corpusSelection = useReactiveCorpusSelection()
+
+const tokensTotal = computed(() => corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
 const selectedToken = ref<SelectedToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
-
-corpusSelection.listen(() => {
-  tokensTotal.value = corpusSelection.getTokenCount()
-})
 </script>
 
 <template>

@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import { corpusSelection } from "@/core/corpora/corpusListing"
-import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
-import { watchImmediate } from "@vueuse/core"
-import { isEqual, once } from "lodash"
+import { watchDeep, watchImmediate, watchOnce } from "@vueuse/core"
+import { isEqual } from "lodash"
 import { storeToRefs } from "pinia"
-import { computed, reactive } from "vue"
+import { computed, watch } from "vue"
 import GlobalFilterSelector from "./GlobalFilterSelector.vue"
+import { useReactiveFilterManager } from "./useReactiveFilterManager"
 
 const store = useAppStore()
+const corpusSelection = useReactiveCorpusSelection()
 
 const { global_filter } = storeToRefs(store)
-const manager = reactive(GlobalFilterManager.getInstance())
-const isEnabled = computed(() => Object.keys(manager.filters).length > 0)
+const filterManager = useReactiveFilterManager()
+const isEnabled = computed(() => Object.keys(filterManager.filters).length > 0)
+const selection = computed(() => filterManager.getSelection())
 
 // Whenever corpus selection is changed, update available filters.
-corpusSelection.listen(() => manager.update(corpusSelection.getDefaultFilters()))
+watch(corpusSelection, () => filterManager.update(corpusSelection.getDefaultFilters()))
 
 // When initial corpus selection has settled, start syncing filter values from URL.
-corpusSelection.listen(
-  once(() => watchImmediate(global_filter, () => manager.setSelection(global_filter.value))),
+watchOnce(corpusSelection, () =>
+  watchImmediate(global_filter, () => filterManager.setSelection(global_filter.value)),
 )
 
-// Whenever filter values are changed
-manager.listen(() => {
-  // Update URL
-  const selectedValues = manager.getSelection()
-  if (!isEqual(global_filter.value, selectedValues)) global_filter.value = selectedValues
+// Update URL whenever filter values are changed
+watchDeep(selection, () => {
+  if (!isEqual(global_filter.value, selection.value)) global_filter.value = selection.value
 })
 </script>
 
 <template>
   <div v-if="isEnabled" class="d-flex gap-2 align-items-baseline">
     <span class="fw-bold">{{ $t("search.filters") }}:</span>
-    <div v-for="filter in manager.filters" :key="filter.attribute.name">
+    <div v-for="filter in filterManager.filters" :key="filter.attribute.name">
       <GlobalFilterSelector
         v-model="filter.value"
         :label="filter.attribute.label"
         :options="filter.options"
-        @update:model-value="manager.updateOptions()"
+        @update:model-value="filterManager.updateOptions()"
       />
     </div>
   </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { watchImmediate } from "@vueuse/core"
-import { corpusListing, corpusSelection } from "@/core/corpora/corpusListing"
+import { corpusListing } from "@/core/corpora/corpusListing"
+import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
 import { useLocale } from "@/i18n/useLocale"
@@ -8,6 +9,7 @@ import ModalDialog from "@/components/ModalDialog.vue"
 import { ref, watchEffect } from "vue"
 import { useAuth } from "@/auth/useAuth"
 
+const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
 const auth = useAuth()
 const { locObj } = useLocale()

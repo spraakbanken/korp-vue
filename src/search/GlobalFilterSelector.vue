@@ -3,7 +3,7 @@ import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { capitalize, sortBy } from "lodash"
-import { computed, onMounted, ref, useTemplateRef } from "vue"
+import { computed, onMounted, ref, useTemplateRef, watch } from "vue"
 
 const model = defineModel<string[]>({ default: [] })
 
@@ -41,6 +41,9 @@ onMounted(() => {
   // When menu is closed, commit local selection to model
   dropdown.value!.addEventListener("hidden.bs.dropdown", () => (model.value = selectionLocal.value))
 })
+
+// Sync local selection when model changes from outside
+watch(model, () => (selectionLocal.value = model.value))
 </script>
 
 <template>
