@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { processStatisticsResult } from "@/core/statistics/statistics"
-import { type StatisticsProcessed } from "@/core/statistics/statistics.types"
+import { getCqp, processStatisticsResult } from "@/core/statistics/statistics"
+import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { watchDeep, watchImmediate, whenever } from "@vueuse/core"
@@ -10,12 +10,14 @@ import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { debounce } from "lodash"
+import { compact, debounce } from "lodash"
 import StatisticsAttributeSelector, {
   type StatisticsAttributeSelectorModel,
 } from "./StatisticsAttributeSelector.vue"
 import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
+import { TrendTask } from "@/core/task/TrendTask"
+import type { CorpusSet } from "@/core/corpora/CorpusSet"
 
 const UPDATE_DELAY_MS = 500
 
@@ -31,8 +33,11 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: store.stats_reduce.split(","),
   insensitive: store.stats_reduce_insensitive.split(","),
 })
+let corpusSelectionSearched: CorpusSet | null = null
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+const rowsSelected = ref<Row[]>([])
+let withinSearched: string | null = null
 const { activeSearch, statsRelative } = storeToRefs(store)
 
 const proxy = new StatsProxy()
@@ -54,13 +59,14 @@ whenever(
 async function doSearch() {
   // Empty search is possible when doing comparison first
   if (!store.activeSearch) return
+  corpusSelectionSearched = corpusSelection.pick(corpusSelection.getIds())
+  withinSearched = store.within
   const attrs = attributesSelected.value
   const cqpValue = cqp.value
-  const originalCorpora = corpusSelection.stringify(false)
   const ignoreCase = !!attrs.insensitive.length
-  const counts = await proxy.makeRequest(cqpValue, attrs.selected, store.within, ignoreCase)
+  const counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
   data.value = await processStatisticsResult(
-    originalCorpora,
+    corpusSelectionSearched.stringify(false),
     counts,
     attrs.selected,
     ignoreCase,
@@ -87,6 +93,32 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
   const task = new ExampleTask(corpusIds, cqps, within)
   createTab(t("result.kwic"), task)
 }
+
+function openTrendTab() {
+  const ignoreCase = !!attributesSelected.value.insensitive.length
+  let showTotal = false
+  const subqueries: [string, string][] = []
+  for (const row of rowsSelected.value) {
+    if (isTotalRow(row)) {
+      showTotal = true
+      continue
+    }
+    const cqp = getCqp(row.statsValues, ignoreCase)
+    const label = attributesSelected.value.selected
+      .map((attr) => row.formattedValue[attr])
+      .join(", ")
+    subqueries.push([cqp, label])
+  }
+
+  const task = new TrendTask(
+    cqp.value,
+    subqueries,
+    showTotal,
+    corpusSelectionSearched!,
+    withinSearched!,
+  )
+  createTab(t("result.trend"), task)
+}
 </script>
 
 <template>
@@ -104,11 +136,18 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
       </label>
     </div>
 
+    <div class="hstack gap-2 align-items-baseline">
+      <button type="button" class="btn btn-secondary" :disabled="!data" @click="openTrendTab()">
+        {{ $t("result.statistics.trend") }}
+      </button>
+    </div>
+
     <StatisticsGrid
       v-if="data"
       :attributes="attributesSelected.selected"
       :rows="data.rows"
       :params="data.params"
+      v-model="rowsSelected"
       @click-value="onClickValue($event.corpusIds, $event.cqp)"
     />
   </div>

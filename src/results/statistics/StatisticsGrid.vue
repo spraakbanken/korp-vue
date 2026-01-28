@@ -21,6 +21,8 @@ const props = defineProps<{
   rows: Row[]
 }>()
 
+const rowsSelected = defineModel<Row[]>({ default: [] })
+
 const emit = defineEmits<{
   (e: "clickValue", payload: { corpusIds: string[]; cqp?: string }): void
 }>()
@@ -61,6 +63,10 @@ async function renderGrid() {
     onValueClick,
   )
   grid.render()
+
+  grid.onSelectedRowsChanged.subscribe((event, args) => {
+    rowsSelected.value = args.rows.map((i) => grid!.getDataItem(i))
+  })
 }
 
 watch(statsRelative, () => grid?.refreshColumns())

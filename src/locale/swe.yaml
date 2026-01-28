@@ -138,6 +138,9 @@ result.statistics.group_by: Sammanställ på
 result.statistics.relative: Visa relativa frekvenser
 result.statistics.relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.statistics.total: Total
+result.statistics.trend: Trenddiagram
+
+result.trend: Trenddiagram
 
 result.wordpic: Ordbild
 result.wordpic.limit: Antal rader

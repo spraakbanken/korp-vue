@@ -15,6 +15,8 @@ import CompareResults from "./CompareResults.vue"
 import { CompareTask } from "@/core/task/CompareTask"
 import type { TaskBase } from "@/core/task/TaskBase"
 import { watchImmediate } from "@vueuse/core"
+import { TrendTask } from "@/core/task/TrendTask"
+import TrendResults from "@/search/TrendResults.vue"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -65,9 +67,11 @@ watchImmediate(
 )
 
 function selectTaskResultComponent(task: TaskBase): Component | null {
+  // TODO Lazy-load components
   if (task instanceof ExampleTask) return ExampleResults
   if (task instanceof WordpicExampleTask) return ExampleResults
   if (task instanceof CompareTask) return CompareResults
+  if (task instanceof TrendTask) return TrendResults
   return null
 }
 </script>
