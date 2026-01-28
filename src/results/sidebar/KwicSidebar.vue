@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { corpusSelection } from "@/core/corpora/corpusListing"
+import { corpusListing } from "@/core/corpora/corpusListing"
 import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
@@ -9,7 +9,7 @@ const { locObj } = useLocale()
 
 const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
-  selectedToken?.value ? corpusSelection.get(selectedToken.value.row.corpus) : undefined,
+  selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
 )
 </script>
 

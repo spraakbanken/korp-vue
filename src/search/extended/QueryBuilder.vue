@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import { useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
-import SearchExtendedAttribute from "./SearchExtendedAttribute.vue"
-import SearchExtendedOperator from "./SearchExtendedOperator.vue"
-import SearchExtendedValue from "./SearchExtendedValue.vue"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
   isCqpStruct,
@@ -14,6 +11,7 @@ import {
 } from "@/core/cqp/cqp.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { computed } from "vue"
+import QueryBuilderCondition from "./QueryBuilderCondition.vue"
 
 const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
 
@@ -90,17 +88,12 @@ function addBoundary(start: boolean) {
 
               <!-- Each condition (attribute-operator-value) -->
               <div class="hstack gap-2">
-                <div class="flex-grow-1 vstack gap-1">
-                  <SearchExtendedAttribute :condition @update="(name) => (condition.type = name)" />
-                  <div class="hstack gap-1 align-items-baseline">
-                    <SearchExtendedOperator :condition @update="(op) => (condition.op = op)" />
-                    <SearchExtendedValue
-                      :condition
-                      @update="(value) => (condition.val = value)"
-                      class="flex-grow-1"
-                    />
-                  </div>
-                </div>
+                <!-- Cannot use `v-model` syntax because we cannot replace the repetition variable, so we need `Object.assign` -->
+                <QueryBuilderCondition
+                  v-model:attribute="condition.type"
+                  v-model:operator="condition.op"
+                  v-model:value="condition.val"
+                />
 
                 <button
                   type="button"

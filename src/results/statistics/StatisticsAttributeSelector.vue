@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { corpusSelection } from "@/core/corpora/corpusListing"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
 import { watchImmediate } from "@vueuse/core"
 import { compact, groupBy, isEqual, sortBy } from "lodash"
-import { computed, onMounted, reactive, ref, unref, useTemplateRef } from "vue"
+import { computed, onMounted, reactive, unref, useTemplateRef } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
   selected: string[]
@@ -13,10 +13,11 @@ export type StatisticsAttributeSelectorModel = {
 
 const model = defineModel<StatisticsAttributeSelectorModel>({ required: true })
 
+const corpusSelection = useReactiveCorpusSelection()
 const { locObj } = useLocale()
 
 const dropdown = useTemplateRef("dropdown")
-const attributes = ref(corpusSelection.getAttributeGroupsStatistics())
+const attributes = computed(() => corpusSelection.getAttributeGroupsStatistics())
 const optionsGrouped = computed(
   () => groupBy(attributes.value, "group") as Record<AttributeOption["group"], AttributeOption[]>,
 )
@@ -28,11 +29,6 @@ const selectedAttributes = computed(() =>
     model.value.selected.map((name) => attributes.value.find((option) => option.name === name)),
   ),
 )
-
-// Update available attributes when corpus selection changes
-corpusSelection.listen(() => {
-  attributes.value = corpusSelection.getAttributeGroupsStatistics()
-})
 
 // Validate and update selection against incoming changes
 watchImmediate([model, attributes], () => {

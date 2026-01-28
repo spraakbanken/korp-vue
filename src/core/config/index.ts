@@ -82,3 +82,6 @@ export const normalizeDataset = (
 /** Get attribute name for use in CQP, prepended with `_.` if it is a structural attribute. */
 export const prefixAttr = (attr: Attribute): string =>
   attr["is_struct_attr"] ? `_.${attr.name}` : attr.name
+
+/** Parse an attribute possibly prefixed with `_.` for use in CQP */
+export const unprefixAttr = (name: string): string => name.replace(/^_\./, "")

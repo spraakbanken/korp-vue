@@ -2,6 +2,7 @@ import type { Labeled, LangString } from "@/core/model/locale"
 import type { Attribute } from "./corpusConfigRaw.types"
 import type { Store } from "../model/store"
 import type { StatisticsProcessed } from "../statistics/statistics.types"
+import type { OperatorKorp } from "../cqp/cqp.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
 export type InstanceConfig = {
@@ -16,8 +17,7 @@ export type InstanceConfig = {
     label: LangString
   }
   cqp_prio: string[]
-  // TODO Type values as OperatorKorp
-  default_options: Record<string, string>
+  default_options: Record<string, OperatorKorp>
   default_language: string
   default_overview_context: string
   default_reading_context: string
