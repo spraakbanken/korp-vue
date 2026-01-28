@@ -8,6 +8,7 @@ import { ExampleTask } from "./ExampleTask"
 import { prefixAttr } from "../config"
 
 export type SavedSearch = {
+  label: string
   cqp: string
   corpora: string[]
 }

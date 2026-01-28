@@ -5,15 +5,9 @@ import { watchImmediate } from "@vueuse/core"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import AttributeSelector from "@/AttributeSelector.vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { CompareTask } from "@/core/task/CompareTask"
+import { CompareTask, type SavedSearch } from "@/core/task/CompareTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
-
-export type SavedSearch = {
-  label: string
-  cqp: string
-  corpora: string[]
-}
 
 const { searches } = useSearchStorage()
 const { createTab } = useDynamicTabs()

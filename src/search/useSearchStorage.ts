@@ -1,11 +1,6 @@
 import currentMode from "@/core/corpora/mode"
+import type { SavedSearch } from "@/core/task/CompareTask"
 import { useLocalStorage } from "@vueuse/core"
-
-export type SavedSearch = {
-  label: string
-  cqp: string
-  corpora: string[]
-}
 
 export function useSearchStorage() {
   const searches = useLocalStorage<SavedSearch[]>(`korp.search_storage.${currentMode}`, [])

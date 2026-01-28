@@ -113,6 +113,8 @@ search.or: or
 search.filters: Filters
 search.filters.add: Add {0}…
 
+result.compare.column_heading: Prominent in {label}
+
 result.kwic: KWIC
 result.kwic.show_context: Show context
 result.kwic.show_context.help: By default, search hits are listed in a keywords-in-context layout (KWIC). Enabling this option will instead show them with wrapped lines, suitable for reading. For some corpora, this also retrieves more of the context, such as a full paragraph.
