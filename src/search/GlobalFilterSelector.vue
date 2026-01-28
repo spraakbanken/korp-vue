@@ -3,7 +3,7 @@ import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { capitalize, sortBy } from "lodash"
-import { computed, onMounted, ref, useTemplateRef, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 const model = defineModel<string[]>({ default: [] })
 
@@ -16,8 +16,6 @@ const { locObj } = useLocale()
 const store = useAppStore()
 // Store WIP selection locally until menu is closed
 const selectionLocal = ref<string[]>(model.value)
-// Reference to the dropdown menu element, necessary for listening to events with "." in the name
-const dropdown = useTemplateRef("dropdown")
 
 // Sort options by name, then by hits (any or none), then by selection
 const optionsSorted = computed(() =>
@@ -37,17 +35,18 @@ function toggle(value: string) {
   }
 }
 
-onMounted(() => {
-  // When menu is closed, commit local selection to model
-  dropdown.value!.addEventListener("hidden.bs.dropdown", () => (model.value = selectionLocal.value))
-})
-
 // Sync local selection when model changes from outside
 watch(model, () => (selectionLocal.value = model.value))
 </script>
 
 <template>
-  <div class="dropdown" ref="dropdown">
+  <div
+    class="dropdown"
+    v-on="{
+      // Commit selection when dropdown is closed
+      'hidden.bs.dropdown': () => (model = selectionLocal),
+    }"
+  >
     <button
       class="btn dropdown-toggle align-baseline"
       type="button"

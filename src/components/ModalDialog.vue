@@ -34,10 +34,6 @@ onMounted(() => {
   // Attach Bootstrap modal handler to the element.
   modal = new Modal(modalEl)
 
-  // Let confirm dialog handler pick up on modal events.
-  modalEl.addEventListener("hidden.bs.modal", () => dialog.isRevealed.value && dialog.cancel())
-  modalEl.addEventListener("shown.bs.modal", () => dialog.isRevealed.value || dialog.reveal())
-
   // Let modal pick up on confirm dialog events.
   dialog.onReveal(() => modal.show())
   dialog.onCancel(() => close(false))
@@ -64,6 +60,11 @@ function close(confirmed: boolean) {
       role="dialog"
       aria-labelledby="login-modal-title"
       aria-hidden="true"
+      v-on="{
+        // Let confirm dialog handler pick up on modal events.
+        'hidden.bs.modal': () => dialog.isRevealed.value && dialog.cancel(),
+        'shown.bs.modal': () => dialog.isRevealed.value || dialog.reveal(),
+      }"
     >
       <div class="modal-dialog">
         <div class="modal-content">

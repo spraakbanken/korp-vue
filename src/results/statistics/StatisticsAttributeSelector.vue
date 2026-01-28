@@ -4,7 +4,7 @@ import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
 import { watchImmediate } from "@vueuse/core"
 import { compact, groupBy, isEqual, sortBy } from "lodash"
-import { computed, onMounted, reactive, unref, useTemplateRef } from "vue"
+import { computed, reactive, unref } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
   selected: string[]
@@ -16,7 +16,6 @@ const model = defineModel<StatisticsAttributeSelectorModel>({ required: true })
 const corpusSelection = useReactiveCorpusSelection()
 const { locObj } = useLocale()
 
-const dropdown = useTemplateRef("dropdown")
 const attributes = computed(() => corpusSelection.getAttributeGroupsStatistics())
 const optionsGrouped = computed(
   () => groupBy(attributes.value, "group") as Record<AttributeOption["group"], AttributeOption[]>,
@@ -44,13 +43,6 @@ function toggle(name: string) {
   if (selectedLocal.has(name)) selectedLocal.delete(name)
   else selectedLocal.add(name)
 }
-
-onMounted(() => {
-  // When menu is closed, commit local selection to model
-  dropdown.value!.addEventListener("hidden.bs.dropdown", () => {
-    commit(selectedLocal, insensitiveLocal)
-  })
-})
 
 function commit(selected: Set<string>, insensitive: Set<string>) {
   // Clone arguments to avoid mutating them
@@ -83,7 +75,13 @@ function sortNames(names: string[]) {
 </script>
 
 <template>
-  <div class="dropdown" ref="dropdown">
+  <div
+    class="dropdown"
+    v-on="{
+      // Commit selection when dropdown is closed
+      'hidden.bs.dropdown': () => commit(selectedLocal, insensitiveLocal),
+    }"
+  >
     <button
       class="btn btn-sm btn-secondary dropdown-toggle"
       type="button"
