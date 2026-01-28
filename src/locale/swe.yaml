@@ -5,6 +5,7 @@ language: Språk
 modes: Lägen
 more: Fler
 search: Sök
+save: Spara
 ok: OK
 previous: Föregående
 next: Nästa
@@ -78,8 +79,9 @@ search.storage.none: Gör en sökning genom en av sökflikarna för att sedan ku
 search.storage.cqp: Fråga
 search.storage.corpora: Korpusar
 search.storage.corpora_count: "{0} st"
-search.storage.label: Spara som
+search.storage.label: Namn
 search.storage.save: Spara sökning
+search.storage.save_as: Spara sökning som
 search.storage.saved: Sparade sökningar
 search.storage.delete: Radera
 

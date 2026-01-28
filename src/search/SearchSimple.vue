@@ -10,10 +10,14 @@ import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAut
 import HelpBadge from "@/components/HelpBadge.vue"
 import GlobalFilters from "./GlobalFilters.vue"
 import { useReactiveFilterManager } from "./useReactiveFilterManager"
+import SaveSearchButton from "./SaveSearchButton.vue"
+import { Lemgram } from "@/core/lemgram"
+import { useI18n } from "vue-i18n"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
 const filterManager = useReactiveFilterManager()
+const { t } = useI18n()
 
 const prefixLocal = ref(prefix.value)
 const midfixLocal = ref(false)
@@ -28,6 +32,11 @@ const input = computed<LemgramAutocompleteModel>(() => ({
   type: lemgram.value.type,
   value: lemgram.value.value.trim(),
 }))
+
+/** Formatted input */
+const inputFormatted = computed(
+  () => Lemgram.parse(input.value.value)?.toString(t) || input.value.value,
+)
 
 /** Reactive query model built from input */
 const query = computed(() => {
@@ -98,7 +107,10 @@ async function commitSearch() {
 
     <div class="d-flex gap-2 justify-content-center my-2">
       <LemgramAutocomplete v-model="lemgram" />
-      <input type="submit" :value="$t('search')" class="btn btn-primary" />
+      <div class="btn-group">
+        <input type="submit" :value="$t('search')" class="btn btn-primary" />
+        <SaveSearchButton :cqp :suggested-label="inputFormatted" />
+      </div>
     </div>
 
     <!-- Options 1 -->

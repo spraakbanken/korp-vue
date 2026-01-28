@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from "vue"
+import { computed, reactive, ref, watch, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify } from "@/core/cqp/cqp"
 import { type CqpQuery } from "@/core/cqp/cqp.types"
@@ -9,11 +9,14 @@ import { storeToRefs } from "pinia"
 import { splitFirst } from "@/core/util"
 import QueryBuilder from "./QueryBuilder.vue"
 import { useReactiveFilterManager } from "../useReactiveFilterManager"
+import SaveSearchButton from "../SaveSearchButton.vue"
 
 const store = useAppStore()
 const filterManager = useReactiveFilterManager()
 
 const tokens = reactive<CqpQuery>([{ and_block: [[createCondition("")]] }])
+const cqp = computed(() => stringify(filterManager.mergeToCqp(tokens)))
+const cqpExpanded = computed(() => stringify(filterManager.mergeToCqp(tokens), true))
 const { search } = storeToRefs(store)
 const isFilterReady = ref(false)
 
@@ -45,17 +48,10 @@ async function commitSearch() {
   // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
   await until(isFilterReady).toBe(true, { timeout: 1000 })
 
-  const cqp = stringify(filterManager.mergeToCqp(tokens))
-  store.activeSearch = { cqp }
+  store.activeSearch = { cqp: cqp.value }
 }
 
-watchImmediate(
-  tokens,
-  () => {
-    store.extendedCqp = stringify(filterManager.mergeToCqp(tokens), true)
-  },
-  { deep: true },
-)
+watchEffect(() => (store.extendedCqp = cqpExpanded.value))
 </script>
 
 <template>
@@ -68,6 +64,9 @@ watchImmediate(
       {{ $t("search.extended.instructions") }}
     </div>
 
-    <input type="submit" :value="$t('search')" class="btn btn-primary" />
+    <div class="btn-group">
+      <input type="submit" :value="$t('search')" class="btn btn-primary" />
+      <SaveSearchButton :cqp="cqpExpanded" :suggested-label="cqpExpanded" />
+    </div>
   </form>
 </template>

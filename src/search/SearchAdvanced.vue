@@ -4,6 +4,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { ref } from "vue"
+import SaveSearchButton from "./SaveSearchButton.vue"
 
 const store = useAppStore()
 
@@ -103,6 +104,9 @@ function commitSearch() {
       </div>
     </div>
 
-    <input type="submit" :value="$t('search')" class="btn btn-primary" />
+    <div class="btn-group">
+      <input type="submit" :value="$t('search')" class="btn btn-primary" />
+      <SaveSearchButton :cqp="cqpLocal" :suggested-label="cqpLocal" />
+    </div>
   </form>
 </template>

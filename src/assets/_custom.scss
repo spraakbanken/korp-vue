@@ -1,6 +1,11 @@
+// White works better on orange
 .btn-primary {
-  // White works better on orange
+  // Mixin defined at https://github.com/twbs/bootstrap/blob/v5.3.0/scss/mixins/_buttons.scss
   @include button-variant($primary, $primary, white);
+}
+.btn-outline-primary {
+  // Mixin defined at https://github.com/twbs/bootstrap/blob/v5.3.0/scss/mixins/_buttons.scss
+  @include button-outline-variant($primary, white, $active-color: white);
 }
 
 .w-0 {

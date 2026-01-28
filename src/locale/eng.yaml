@@ -5,6 +5,7 @@ language: Language
 modes: Modes
 more: More
 search: Search
+save: Save
 ok: OK
 previous: Previous
 next: Next
