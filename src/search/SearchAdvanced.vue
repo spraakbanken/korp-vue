@@ -36,10 +36,7 @@ function commitSearch() {
 </script>
 
 <template>
-  <form
-    @submit.prevent="submit"
-    class="container-max-md d-flex flex-column gap-4 align-items-center"
-  >
+  <form @submit.prevent="submit" class="w-max-md d-flex flex-column gap-4 align-items-center">
     <div>
       <label for="advanced-search-textarea" class="form-label">
         {{ $t("search.advanced.label") }}

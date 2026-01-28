@@ -7,14 +7,14 @@
   }
 }
 
-// Max-width containers: fluid until breakpoint, then fixed max-width
+// Max-width by breakpoint: fluid until breakpoint, then fixed max-width
 @each $name, $width in $grid-breakpoints {
-  .container-max-#{$name} {
-    @extend .container-fluid;
+  .w-max-#{$name} {
+    max-width: 100%;
   }
 
   @include media-breakpoint-up($name, $grid-breakpoints) {
-    .container-max-#{$name} {
+    .w-max-#{$name} {
       max-width: $width;
     }
   }

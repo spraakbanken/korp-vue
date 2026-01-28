@@ -102,10 +102,10 @@ async function commitSearch() {
 </script>
 
 <template>
-  <form @submit.prevent="submit" class="text-center">
+  <form @submit.prevent="submit" class="vstack gap-4">
     <GlobalFilters class="mb-4" />
 
-    <div class="d-flex gap-2 justify-content-center my-2">
+    <div class="d-flex gap-2 justify-content-center">
       <LemgramAutocomplete v-model="lemgram" />
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
@@ -113,75 +113,77 @@ async function commitSearch() {
       </div>
     </div>
 
-    <!-- Options 1 -->
-    <div class="d-flex justify-content-center gap-4 my-2">
-      <div class="form-check">
-        <input
-          id="search-simple-prefix"
-          class="form-check-input"
-          type="checkbox"
-          v-model="prefixLocal"
-        />
-        <label class="form-check-label" for="search-simple-prefix">
-          {{ $t("search.simple.prefix") }}
-          <HelpBadge :text="$t('search.simple.prefix.help')" />
-        </label>
+    <div>
+      <!-- Options 1 -->
+      <div class="d-flex justify-content-center gap-4">
+        <div class="form-check">
+          <input
+            id="search-simple-prefix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="prefixLocal"
+          />
+          <label class="form-check-label" for="search-simple-prefix">
+            {{ $t("search.simple.prefix") }}
+            <HelpBadge :text="$t('search.simple.prefix.help')" />
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="search-simple-midfix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="midfixLocal"
+            @change="onMidfixChange()"
+          />
+          <label class="form-check-label" for="search-simple-midfix">
+            {{ $t("search.simple.midfix") }}
+            <HelpBadge :text="$t('search.simple.midfix.help')" />
+          </label>
+        </div>
+
+        <div class="form-check">
+          <input
+            id="search-simple-suffix"
+            class="form-check-input"
+            type="checkbox"
+            v-model="suffixLocal"
+          />
+          <label class="form-check-label" for="search-simple-suffix">
+            {{ $t("search.simple.suffix") }}
+            <HelpBadge :text="$t('search.simple.suffix.help')" />
+          </label>
+        </div>
       </div>
 
-      <div class="form-check">
-        <input
-          id="search-simple-midfix"
-          class="form-check-input"
-          type="checkbox"
-          v-model="midfixLocal"
-          @change="onMidfixChange()"
-        />
-        <label class="form-check-label" for="search-simple-midfix">
-          {{ $t("search.simple.midfix") }}
-          <HelpBadge :text="$t('search.simple.midfix.help')" />
-        </label>
-      </div>
+      <!-- Options 2 -->
+      <div class="d-flex justify-content-center gap-4 mt-2">
+        <div class="form-check">
+          <input
+            id="search-simple-free-order"
+            class="form-check-input"
+            type="checkbox"
+            v-model="freeOrder"
+            :disabled="!supportsInOrder(query)"
+          />
+          <label class="form-check-label" for="search-simple-free-order">
+            {{ $t("search.simple.free_order") }}
+            <HelpBadge :text="$t('search.simple.free_order.help')" />
+          </label>
+        </div>
 
-      <div class="form-check">
-        <input
-          id="search-simple-suffix"
-          class="form-check-input"
-          type="checkbox"
-          v-model="suffixLocal"
-        />
-        <label class="form-check-label" for="search-simple-suffix">
-          {{ $t("search.simple.suffix") }}
-          <HelpBadge :text="$t('search.simple.suffix.help')" />
-        </label>
-      </div>
-    </div>
-
-    <!-- Options 2 -->
-    <div class="d-flex justify-content-center gap-4 my-2">
-      <div class="form-check">
-        <input
-          id="search-simple-free-order"
-          class="form-check-input"
-          type="checkbox"
-          v-model="freeOrder"
-          :disabled="!supportsInOrder(query)"
-        />
-        <label class="form-check-label" for="search-simple-free-order">
-          {{ $t("search.simple.free_order") }}
-          <HelpBadge :text="$t('search.simple.free_order.help')" />
-        </label>
-      </div>
-
-      <div class="form-check">
-        <input
-          id="search-simple-ignore-case"
-          class="form-check-input"
-          type="checkbox"
-          v-model="ignoreCase"
-        />
-        <label class="form-check-label" for="search-simple-ignore-case">
-          {{ $t("search.simple.ignore_case") }}
-        </label>
+        <div class="form-check">
+          <input
+            id="search-simple-ignore-case"
+            class="form-check-input"
+            type="checkbox"
+            v-model="ignoreCase"
+          />
+          <label class="form-check-label" for="search-simple-ignore-case">
+            {{ $t("search.simple.ignore_case") }}
+          </label>
+        </div>
       </div>
     </div>
   </form>

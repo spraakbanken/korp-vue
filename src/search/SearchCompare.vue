@@ -47,11 +47,11 @@ function submit() {
 </script>
 
 <template>
-  <form class="container-max-md vstack gap-2" @submit.prevent="submit()">
-    <p>{{ $t("search.compare.help") }}</p>
+  <form class="w-max-md vstack gap-4" @submit.prevent="submit()">
+    <div>{{ $t("search.compare.help") }}</div>
 
-    <div class="row">
-      <div class="col-sm-6 mb-2">
+    <div class="row row-gap-2">
+      <div class="col-sm-6 col-md-4">
         <label :for="`${id}-left`" class="form-label">
           {{ $t("search.compare.search_left") }}
         </label>
@@ -67,7 +67,7 @@ function submit() {
         </select>
       </div>
 
-      <div class="col-sm-6">
+      <div class="col-sm-6 col-md-4">
         <label :for="`${id}-right`" class="form-label">
           {{ $t("search.compare.search_right") }}
         </label>
@@ -82,18 +82,18 @@ function submit() {
           </option>
         </select>
       </div>
-    </div>
 
-    <div>
-      <label :for="`${id}-attribute`" class="form-label">
-        {{ $t("search.compare.attribute") }}
-      </label>
-      <AttributeSelector
-        v-model="attribute"
-        :options="attributes"
-        :disabled="!attributes.length"
-        :id="`${id}-attribute`"
-      />
+      <div class="col-sm-12 col-md-4">
+        <label :for="`${id}-attribute`" class="form-label">
+          {{ $t("search.compare.attribute") }}
+        </label>
+        <AttributeSelector
+          v-model="attribute"
+          :options="attributes"
+          :disabled="!attributes.length"
+          :id="`${id}-attribute`"
+        />
+      </div>
     </div>
 
     <div class="d-flex justify-content-center">
