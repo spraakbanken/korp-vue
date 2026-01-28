@@ -5,7 +5,7 @@ import { processStatisticsResult } from "@/core/statistics/statistics"
 import { type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { watchDeep, whenever } from "@vueuse/core"
+import { watchDeep, watchImmediate, whenever } from "@vueuse/core"
 import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
@@ -33,7 +33,7 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
 })
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
-const { statsRelative } = storeToRefs(store)
+const { activeSearch, statsRelative } = storeToRefs(store)
 
 const proxy = new StatsProxy()
 
@@ -41,9 +41,12 @@ const proxy = new StatsProxy()
 whenever(
   () => props.active,
   () => {
-    // Initial corpus selection may not have settled yet.
-    if (corpusSelection.corpora.length) doSearch()
-    else setTimeout(() => doSearch())
+    // Start watching search query
+    watchImmediate(activeSearch, () => {
+      // Initial corpus selection may not have settled yet.
+      if (corpusSelection.corpora.length) doSearch()
+      else setTimeout(() => doSearch())
+    })
   },
   { once: true, immediate: true },
 )
