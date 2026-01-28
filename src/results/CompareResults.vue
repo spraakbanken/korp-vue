@@ -2,7 +2,7 @@
 import { useI18n } from "vue-i18n"
 import { computedAsync } from "@vueuse/core"
 import type { CompareItem, CompareResult, CompareTask } from "@/core/task/CompareTask"
-import CompareColumn from "./CompareColumn.vue"
+import CompareRow from "./CompareRow.vue"
 import { useDynamicTabs } from "./useDynamicTabs"
 
 const props = defineProps<{ task: CompareTask }>()
@@ -23,20 +23,28 @@ function clickItem(side: 0 | 1, item: CompareItem) {
     <div v-if="result" class="row">
       <div class="col-sm-6">
         <h3>{{ $t("result.compare.column_heading", { label: result.cmp1.label }) }}</h3>
-        <CompareColumn
-          :items="result.tables.negative"
-          :max="result.max"
-          left
-          @select="(item) => clickItem(0, item)"
-        />
+        <ul class="list-group">
+          <CompareRow
+            v-for="item in result.tables.negative"
+            :key="item.key"
+            :item
+            :max="result.max"
+            left
+            @select="() => clickItem(0, item)"
+          />
+        </ul>
       </div>
       <div class="col-sm-6">
         <h3>{{ $t("result.compare.column_heading", { label: result.cmp2.label }) }}</h3>
-        <CompareColumn
-          :items="result.tables.positive"
-          :max="result.max"
-          @select="(item) => clickItem(1, item)"
-        />
+        <ul class="list-group">
+          <CompareRow
+            v-for="item in result.tables.positive"
+            :key="item.key"
+            :item
+            :max="result.max"
+            @select="() => clickItem(1, item)"
+          />
+        </ul>
       </div>
     </div>
   </div>

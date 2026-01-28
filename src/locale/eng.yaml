@@ -178,6 +178,7 @@ rel.head: head
 rel.aa: adverbial
 
 stat.freq: absolute frequency
+stat.loglike: log-likelihood
 stat.mi: LMI
 
 tag.sentence: sentence

@@ -179,6 +179,7 @@ rel.head: huvud
 rel.aa: adverbial
 
 stat.freq: absolut frekvens
+stat.loglike: log-likelihood
 stat.mi: LMI
 
 tag.sentence: mening
