@@ -49,6 +49,8 @@ whenever(
 )
 
 async function doSearch() {
+  // Empty search is possible when doing comparison first
+  if (!store.activeSearch) return
   const attrs = attributesSelected.value
   const cqpValue = cqp.value
   const originalCorpora = corpusSelection.stringify(false)

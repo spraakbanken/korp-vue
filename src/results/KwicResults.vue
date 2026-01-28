@@ -41,7 +41,8 @@ watchImmediate(activeSearch, () => {
 })
 
 async function doSearch(isPaging = false) {
-  if (!activeSearch.value) throw new Error("No active search")
+  // Empty search is possible when doing comparison first
+  if (!activeSearch.value) return
   loading.value = !isPaging
   // Remember options affecting result display in case they are changed while the request is ongoing
   const willBeReading = context.value || !store.in_order

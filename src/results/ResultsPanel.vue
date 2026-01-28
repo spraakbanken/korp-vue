@@ -14,6 +14,7 @@ import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import CompareResults from "./CompareResults.vue"
 import { CompareTask } from "@/core/task/CompareTask"
 import type { TaskBase } from "@/core/task/TaskBase"
+import { watchImmediate } from "@vueuse/core"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -53,11 +54,11 @@ function closeTabLocal(id: string) {
   }
 }
 
-watch(
+watchImmediate(
   () => dynamicTabs.length,
   (newCount, oldCount) => {
     // When adding a tab, switch to it
-    if (newCount > oldCount) {
+    if (newCount > (oldCount || 0)) {
       currentTab.value = dynamicTabs[dynamicTabs.length - 1]!.id
     }
   },
