@@ -1,6 +1,6 @@
 import type { Moment } from "moment"
-import type { CountTimeParams, CountTimeResponse } from "../backend/types/countTime"
-import { GRANULARITIES, type Level } from "../trend/util"
+import type { CountTimeParams } from "../backend/types/countTime"
+import { GRANULARITIES, parseDate, type Level } from "../trend/util"
 import { TaskBase } from "./TaskBase"
 import type { NumericString, ProgressHandler } from "../backend/types"
 import { padStart } from "lodash"
@@ -8,7 +8,29 @@ import { expandCqp } from "../cqp/cqp"
 import { korpRequest } from "../backend/common"
 import type { CorpusSet } from "../corpora/CorpusSet"
 
-export class TrendTask extends TaskBase<CountTimeResponse> {
+export type TrendResult = {
+  series: Series[]
+  level: Level
+}
+
+export type Series = {
+  points: Point[]
+  /** The value being counted */
+  label?: string
+  /** CQP used to match the value */
+  subcqp?: string
+}
+
+export type Point = {
+  /** Time (start of an interval being counted) */
+  x: Moment
+  /** Relative frequency */
+  y: number
+  /** Absolute frequency */
+  absolute: number
+}
+
+export class TrendTask extends TaskBase<TrendResult> {
   constructor(
     readonly cqp: string,
     readonly subqueries: [string, string][],
@@ -19,7 +41,7 @@ export class TrendTask extends TaskBase<CountTimeResponse> {
     super()
   }
 
-  send(zoom: Level, from: Moment, to: Moment, onProgress: ProgressHandler<"count_time">) {
+  async send(level: Level, from: Moment, to: Moment, onProgress: ProgressHandler<"count_time">) {
     this.abort()
 
     const formatDate = (d: Moment) => d.format("YYYYMMDDHHmmss") as NumericString
@@ -34,7 +56,7 @@ export class TrendTask extends TaskBase<CountTimeResponse> {
       cqp: expandCqp(this.cqp),
       default_within: this.defaultWithin,
       corpus: this.corpusSet.stringify(),
-      granularity: GRANULARITIES[zoom],
+      granularity: GRANULARITIES[level],
       from: formatDate(from),
       to: formatDate(to),
       incremental: true,
@@ -43,6 +65,23 @@ export class TrendTask extends TaskBase<CountTimeResponse> {
     }
 
     const abortSignal = this.getAbortSignal()
-    return korpRequest("count_time", params, { abortSignal, onProgress })
+    const response = await korpRequest("count_time", params, { abortSignal, onProgress })
+
+    const labels = Object.fromEntries(this.subqueries)
+    const seriesRaw = Array.isArray(response.combined) ? response.combined : [response.combined]
+    const series: Series[] = seriesRaw.map((series) => ({
+      // TODO Fill zeroes
+      points: Object.entries(series.relative).map(
+        ([timestamp, frequency]): Point => ({
+          x: parseDate(level, timestamp),
+          y: frequency,
+          absolute: series.absolute[timestamp as `${number}`]!,
+        }),
+      ),
+      label: "cqp" in series ? labels[series.cqp] : undefined,
+      subcqp: "cqp" in series ? series.cqp : undefined,
+    }))
+
+    return { series, level }
   }
 }

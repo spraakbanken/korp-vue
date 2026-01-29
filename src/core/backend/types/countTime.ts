@@ -19,16 +19,22 @@ export type CountTimeParams = {
   incremental?: boolean
 }
 
+/** The data series are arrays if `subcqpN` parameters were used */
 export type CountTimeResponse = {
-  corpora: Record<string, GraphStats | (GraphStats | GraphStatsCqp)[]>
-  combined: GraphStats | (GraphStats | GraphStatsCqp)[]
+  /** Present if `per_corpus` was enabled */
+  corpora?: Record<string, GraphStats | GraphStats[]>
+  /** Present if `combined` was enabled – let's assume it is */
+  combined: GraphStatsSum | GraphStats[]
 }
 
-export type GraphStats = {
+export type GraphStats = GraphStatsSum | GraphStatsSub
+
+/** A series corresponding to the totals row */
+export type GraphStatsSum = {
   absolute: Histogram
   relative: Histogram
   sums: AbsRelTuple
 }
 
-/** Stats contains subquery if graph was created with multiple rows selected in the stats table. */
-export type GraphStatsCqp = GraphStats & { cqp: string }
+/** A series corresponding to a `subcqpN` parameter */
+export type GraphStatsSub = GraphStatsSum & { cqp: string }
