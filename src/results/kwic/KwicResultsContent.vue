@@ -24,6 +24,7 @@ const corpusSelection = useReactiveCorpusSelection()
 
 const tokensTotal = computed(() => corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
+const rows = computed(() => (props.kwic ? massageData(props.kwic) : undefined))
 const selectedToken = ref<SelectedToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
@@ -46,9 +47,9 @@ provide(injectionKeys.selectedToken, selectedToken)
     </div>
 
     <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
-      <template v-if="kwic">
-        <KwicGrid v-if="!isReading" :data="massageData(kwic)" />
-        <KwicList v-else :data="massageData(kwic)" />
+      <template v-if="rows">
+        <KwicGrid v-if="!isReading" :data="rows" />
+        <KwicList v-else :data="rows" />
       </template>
 
       <KwicSidebar @click.stop />

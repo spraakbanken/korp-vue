@@ -10,7 +10,7 @@ import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { compact, debounce } from "lodash"
+import { debounce } from "lodash"
 import StatisticsAttributeSelector, {
   type StatisticsAttributeSelectorModel,
 } from "./StatisticsAttributeSelector.vue"
@@ -144,6 +144,7 @@ function openTrendTab() {
 
     <StatisticsGrid
       v-if="data"
+      :active
       :attributes="attributesSelected.selected"
       :rows="data.rows"
       :params="data.params"

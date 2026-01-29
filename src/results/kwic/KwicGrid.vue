@@ -2,7 +2,7 @@
 import { ref } from "vue"
 import KwicRow from "./KwicRow.vue"
 import { isCorpusHeading, isKwic, type Row } from "@/core/kwic/kwic"
-import { watchImmediate } from "@vueuse/core"
+import { useElementVisibility, watchImmediate, whenever } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
 
 const props = defineProps<{ data: Row[] }>()
@@ -10,6 +10,7 @@ const props = defineProps<{ data: Row[] }>()
 const { locObj } = useLocale()
 
 const scrollArea = ref<HTMLElement>()
+const isVisible = useElementVisibility(scrollArea)
 /** Counter to trigger re-render when data changes */
 const dataCounter = ref(0)
 
@@ -18,10 +19,13 @@ watchImmediate(
   () => {
     dataCounter.value++
     // TODO Select first match token
-    // Wait for rendering
+    // Re-center, but wait for rendering to finish
     setTimeout(scrollToMatchColumn)
   },
 )
+
+// Re-center when becoming visible (e.g. switching to this tab)
+whenever(isVisible, scrollToMatchColumn, { flush: "post" })
 
 /** Scroll the KWIC table to center the match column */
 function scrollToMatchColumn() {

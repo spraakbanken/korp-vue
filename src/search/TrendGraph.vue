@@ -30,6 +30,7 @@ const id = useId()
 Chart.register(Colors, Tooltip, Legend, LinearScale, TimeScale, PointElement, LineElement)
 
 const options: ChartOptions<"line"> = {
+  responsive: true,
   scales: { x: { type: "time" } },
 }
 
@@ -42,5 +43,8 @@ const data = computed<ChartData<"line", Point[]>>(() => ({
 </script>
 
 <template>
-  <Line :id :options :data />
+  <!-- TODO Does not grow when window resizes -->
+  <div class="position-relative w-100">
+    <Line :id :options :data />
+  </div>
 </template>

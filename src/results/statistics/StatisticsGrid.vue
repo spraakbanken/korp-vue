@@ -16,6 +16,7 @@ import { onMounted, reactive, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
+  active?: boolean
   attributes: string[]
   params: SearchParams
   rows: Row[]
@@ -40,10 +41,11 @@ onMounted(() => {
   watchImmediate(() => props.rows, renderGrid)
 })
 
-// Update grid size when window is resized
-watchImmediate(
-  reactive(useWindowSize()),
-  throttle(() => grid?.resize(), 100),
+// Update grid size when window is resized, unless not currently visible
+watch(
+  [reactive(useWindowSize()), () => props.active],
+  throttle(() => props.active && grid?.resize(), 100),
+  { flush: "post" },
 )
 
 /** (Re)create and show the grid */
