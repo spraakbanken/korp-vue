@@ -37,6 +37,7 @@ Chart.register(Colors, Tooltip, Legend, LinearScale, TimeScale, PointElement, Li
 
 const options: ChartOptions<"line"> = {
   responsive: true,
+  maintainAspectRatio: false,
   scales: { x: { type: "time" } },
   interaction: {
     mode: "nearest",
@@ -75,8 +76,8 @@ const data = computed<ChartData<"line", Point[]>>(() => ({
 </script>
 
 <template>
-  <!-- TODO Does not grow when window resizes -->
-  <div class="position-relative w-100">
+  <!-- 100vh to maximize on a small landscape screen, but fixed max height to save readability on portrait -->
+  <div class="position-relative w-100" style="height: 100vh; max-height: 40rem">
     <Line :id :options :data />
   </div>
 </template>
