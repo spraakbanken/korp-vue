@@ -42,6 +42,7 @@ export const LEVELS: Level[] = ["year", "month", "day", "hour", "minute", "secon
 
 /** How to express dates of different granularities */
 export const FORMATS: Record<Level, string> = {
+  // TODO Localize with Moment locales or toLocaleDateString()
   second: "YYYY-MM-DD hh:mm:ss",
   minute: "YYYY-MM-DD hh:mm",
   hour: "YYYY-MM-DD hh:00",

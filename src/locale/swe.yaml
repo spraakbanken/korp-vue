@@ -182,6 +182,7 @@ rel.head: huvud
 rel.aa: adverbial
 
 stat.freq: absolut frekvens
+stat.freq_relative: relativ frekvens
 stat.loglike: log-likelihood
 stat.mi: LMI
 

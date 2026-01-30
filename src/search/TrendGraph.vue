@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { formatDecimals } from "@/core/i18n"
 import type { Point, Series } from "@/core/task/TrendTask"
-import type { Level } from "@/core/trend/util"
+import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
   Colors,
@@ -33,6 +34,26 @@ Chart.register(Colors, Tooltip, Legend, LinearScale, TimeScale, PointElement, Li
 const options: ChartOptions<"line"> = {
   responsive: true,
   scales: { x: { type: "time" } },
+  interaction: {
+    mode: "nearest",
+    axis: "xy",
+    intersect: false,
+  },
+  plugins: {
+    tooltip: {
+      callbacks: {
+        // Format date in tooltip
+        title: (items) => (items[0]!.raw as Point).x.format(FORMATS[props.level]),
+        label: (item) => {
+          const point = item.raw as Point
+          return [
+            `${t("stat.freq_relative")}: ${formatDecimals(point.y, 1)}`,
+            `${t("stat.freq")}: ${point.absolute}`,
+          ]
+        },
+      },
+    },
+  },
 }
 
 const data = computed<ChartData<"line", Point[]>>(() => ({

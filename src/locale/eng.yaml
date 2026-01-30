@@ -181,6 +181,7 @@ rel.head: head
 rel.aa: adverbial
 
 stat.freq: absolute frequency
+stat.freq_relative: relative frequency
 stat.loglike: log-likelihood
 stat.mi: LMI
 
