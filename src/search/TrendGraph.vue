@@ -29,6 +29,7 @@ const id = useId()
 
 Chart.register(Colors, Tooltip, Legend, LinearScale, TimeScale, PointElement, LineElement)
 
+// TODO Show relative+absolute frequencies on hover
 const options: ChartOptions<"line"> = {
   responsive: true,
   scales: { x: { type: "time" } },

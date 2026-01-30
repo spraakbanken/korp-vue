@@ -1,6 +1,6 @@
 /** @see https://ws.spraakbanken.gu.se/docs/korp#tag/Statistics/paths/~1count_time/get */
 
-import type { AbsRelTuple, Granularity, Histogram, NumericString } from "./common"
+import type { AbsRelTuple, Granularity, NumericString } from "./common"
 
 export type CountTimeParams = {
   corpus: string
@@ -22,7 +22,7 @@ export type CountTimeParams = {
 /** The data series are arrays if `subcqpN` parameters were used */
 export type CountTimeResponse = {
   /** Present if `per_corpus` was enabled */
-  corpora?: Record<string, GraphStats | GraphStats[]>
+  corpora?: Record<string, GraphStatsSum | GraphStats[]>
   /** Present if `combined` was enabled – let's assume it is */
   combined: GraphStatsSum | GraphStats[]
 }
@@ -31,8 +31,8 @@ export type GraphStats = GraphStatsSum | GraphStatsSub
 
 /** A series corresponding to the totals row */
 export type GraphStatsSum = {
-  absolute: Histogram
-  relative: Histogram
+  absolute: Record<NumericString, number | null>
+  relative: Record<NumericString, number | null>
   sums: AbsRelTuple
 }
 

@@ -1,7 +1,10 @@
-import { maxBy, minBy, range, sortedIndexOf } from "lodash"
+import { maxBy, minBy, sortedIndexOf } from "lodash"
 import type { Moment } from "moment"
-import type { Granularity, Histogram } from "../backend/types"
+import type { Granularity } from "../backend/types"
 import moment from "moment"
+import type { Point } from "../task/TrendTask"
+
+// TODO Remove unused things after Vue port is done
 
 export type Series = {
   data: SeriesPoint[]
@@ -11,8 +14,6 @@ export type Series = {
   cqp: string
   emptyIntervals?: SeriesPoint[][]
 }
-
-type Point = { x: Moment; y: number }
 
 export type SeriesPoint = {
   /** Unix timestamp */
@@ -85,21 +86,7 @@ export function findOptimalLevel(from: Moment, to: Moment): Level {
   })!
 }
 
-/** Transform a count-by-date map to a range-covering, sorted list of points. */
-export function getSeriesData(data: Histogram, zoom: Level): SeriesPoint[] {
-  delete data[""]
-  const points: Point[] = Object.entries(data).map(([date, y]) => ({ x: parseDate(zoom, date), y }))
-  const pointsFilled = fillMissingDate(points, zoom)
-  const output: SeriesPoint[] = pointsFilled.map((point) => ({
-    x: point.x.unix(),
-    y: point.y,
-    zoom,
-  }))
-  output.sort((a, b) => a.x - b.x)
-  return output
-}
-
-/** Fill missing time units with the value of the last previous count. Result is not sorted. */
+/** Fill missing time units with the value of the last previous count. */
 export function fillMissingDate(data: Point[], level: Level): Point[] {
   const dateArray = data.map((point) => point.x)
   // Round range boundaries, e.g. [June 5, Sep 18] => [June 1, Sep 30]
@@ -107,31 +94,27 @@ export function fillMissingDate(data: Point[], level: Level): Point[] {
   const max = maxBy(dateArray)?.endOf(level)
   if (!min || !max) return data
 
-  // Number of time units between min and max
-  const n_diff = moment(max).diff(min, level)
-
-  // Create a mapping from unix timestamps to counts
-  const momentMapping: Record<number, number> = Object.fromEntries(
-    data.map((point) => [point.x.startOf(level).unix(), point.y]),
+  // Convert tuple list to map to enable lookup
+  const dataMap: Record<number, Point> = Object.fromEntries(
+    data.map((point) => [point.x.startOf(level).unix(), point]),
   )
 
   // Step through the range and fill in missing timestamps
   /** Copied counts for unseen timestamps in the range */
-  const newMoments: Point[] = []
-  let lastYVal: number = 0
-  for (const i of range(0, n_diff + 1)) {
-    // Get timestamp at current iteration step
-    const newMoment = moment(min).add(i, level)
-    const count = momentMapping[newMoment.unix()]
+  const newPoints: Point[] = []
+  let lastPoint: Point | null = null
+  for (let t = min.clone(); t <= max; t.add(1, level)) {
+    // Get point at timestep
+    const point = dataMap[t.unix()]
     // If this timestamp has been counted, don't fill this timestamp but remember the count
     // Distinguish between null (no text at timestamp) and undefined (timestamp has not been counted)
-    if (count !== undefined) lastYVal = count
+    if (point) lastPoint = point
     // If there's no count here, fill this timestamp with the last seen count
-    else newMoments.push({ x: newMoment, y: lastYVal })
+    else newPoints.push({ ...lastPoint!, x: t.clone() })
   }
 
-  // Merge actual counts with filled ones
-  return [...data, ...newMoments]
+  // Merge actual counts with filled ones and sort
+  return [...data, ...newPoints].sort((a, b) => a.x.diff(b.x))
 }
 
 /** Find intervals within the full timespan where no material is dated. */
