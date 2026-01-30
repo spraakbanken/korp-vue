@@ -25,9 +25,9 @@ export type Point = {
   /** Time (start of an interval being counted) */
   x: Moment
   /** Relative frequency */
-  y: number
+  y: number | null
   /** Absolute frequency */
-  absolute: number
+  absolute: number | null
 }
 
 export class TrendTask extends TaskBase<TrendResult> {
