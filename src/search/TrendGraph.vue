@@ -135,7 +135,7 @@ type SelectDragEvent = {
 
 <template>
   <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
-  <div class="position-relative w-100" style="height: 90vh; max-height: 66vw">
+  <div class="position-relative w-100" style="height: 90svh; max-height: 66vw">
     <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
     <Line :id="`${id}-main`" :options="mainOptions" :data :plugins="[Legend, Tooltip]" />
   </div>

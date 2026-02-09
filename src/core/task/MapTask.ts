@@ -1,8 +1,9 @@
-import type { CountParams, StatsRow } from "../../backend/types/count"
-import { korpRequest } from "../common"
+import { korpRequest } from "../backend/common"
 import { compact } from "lodash"
+import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
-import { corpusListing } from "@/core/corpora/corpusListing"
+import { corpusListing } from "../corpora/corpusListing"
+import type { CountParams, StatsRow } from "../backend/types/count"
 
 export type MapAttribute = { label: string; corpora: string[] }
 
@@ -27,7 +28,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
   }
 
   async send(): Promise<MapSeries[]> {
-    const cl = corpusListing.subsetFactory(this.corpora)
+    const cl = corpusListing.pick(this.corpora)
     const within = cl.getWithinParam(this.within)
 
     const params: CountParams = {
@@ -52,7 +53,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
 
     this.data = combined.map((res) => ({
       // The totals row has no `cqp` property.
-      label: res.cqp ? this.cqpExprs[res.cqp] : "Σ",
+      label: res.cqp ? this.cqpExprs[res.cqp]! : "Σ",
       cqp: res.cqp || this.cqp,
       points: compact(res.rows.map(this.getPoint)),
     }))
@@ -61,9 +62,9 @@ export class MapTask extends TaskBase<MapSeries[]> {
   }
 
   getPoint(row: StatsRow): Point | undefined {
-    const value = Object.values(row.value)[0][0]
+    const value = Object.values(row.value)[0]?.[0]
     if (!value) return
-    const [name, countryCode, lat, lng] = value.split(";")
+    const [name, countryCode, lat, lng] = value.split(";") as [string, string, string, string]
     return {
       name,
       countryCode,
@@ -75,9 +76,8 @@ export class MapTask extends TaskBase<MapSeries[]> {
   }
 
   getMarkerGroups(newColor: () => string): Record<string, MarkerGroup> {
-    if (!this.data) throw new Error("No map data yet")
     const groups = Object.fromEntries(
-      this.data.map((series, idx) => {
+      this.data!.map((series, idx) => {
         const markers = Object.fromEntries(
           series.points.map((point, pointIdx) => {
             // Include point index in the key, so that multiple

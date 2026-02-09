@@ -17,6 +17,8 @@ import type { TaskBase } from "@/core/task/TaskBase"
 import { watchImmediate } from "@vueuse/core"
 import { TrendTask } from "@/core/task/TrendTask"
 import TrendResults from "@/search/TrendResults.vue"
+import { MapTask } from "@/core/task/MapTask"
+import MapResults from "@/search/MapResults.vue"
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -71,6 +73,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
   if (task instanceof ExampleTask) return ExampleResults
   if (task instanceof WordpicExampleTask) return ExampleResults
   if (task instanceof CompareTask) return CompareResults
+  if (task instanceof MapTask) return MapResults
   if (task instanceof TrendTask) return TrendResults
   return null
 }
@@ -159,7 +162,11 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         :aria-labelledby="`result-tabs-tab-${tab.id}`"
         tabindex="0"
       >
-        <component :is="selectTaskResultComponent(tab.task as TaskBase)" :task="tab.task" />
+        <component
+          :is="selectTaskResultComponent(tab.task as TaskBase)"
+          :active="currentTab == tab.id"
+          :task="tab.task"
+        />
       </div>
     </div>
   </div>

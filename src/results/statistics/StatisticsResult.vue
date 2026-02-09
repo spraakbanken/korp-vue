@@ -18,6 +18,8 @@ import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { TrendTask } from "@/core/task/TrendTask"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
+import { MapTask } from "@/core/task/MapTask"
+import { getGeoAttributes, MapAttributeOption } from "@/core/statistics/map"
 
 const UPDATE_DELAY_MS = 500
 
@@ -36,6 +38,8 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
 let corpusSelectionSearched: CorpusSet | null = null
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+/** List of map-compatible attributes in the searched corpus set */
+const mapAttributes = ref<MapAttributeOption[]>([])
 const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
 const { activeSearch, statsRelative } = storeToRefs(store)
@@ -64,7 +68,9 @@ async function doSearch() {
   const attrs = attributesSelected.value
   const cqpValue = cqp.value
   const ignoreCase = !!attrs.insensitive.length
+
   const counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
+
   data.value = await processStatisticsResult(
     corpusSelectionSearched.stringify(false),
     counts,
@@ -72,6 +78,8 @@ async function doSearch() {
     ignoreCase,
     cqpValue,
   )
+
+  mapAttributes.value = getGeoAttributes(corpusSelectionSearched.corpora)
 }
 
 const onOptionsChange = debounce(() => {
@@ -95,20 +103,8 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 }
 
 function openTrendTab() {
-  const ignoreCase = !!attributesSelected.value.insensitive.length
-  let showTotal = false
-  const subqueries: [string, string][] = []
-  for (const row of rowsSelected.value) {
-    if (isTotalRow(row)) {
-      showTotal = true
-      continue
-    }
-    const cqp = getCqp(row.statsValues, ignoreCase)
-    const label = attributesSelected.value.selected
-      .map((attr) => row.formattedValue[attr])
-      .join(", ")
-    subqueries.push([cqp, label])
-  }
+  const subqueries = getSubqueries()
+  const showTotal = rowsSelected.value.some(isTotalRow)
 
   const task = new TrendTask(
     cqp.value,
@@ -118,6 +114,35 @@ function openTrendTab() {
     withinSearched!,
   )
   createTab(t("result.trend"), task)
+}
+
+function openMapTab() {
+  const subqueries = Object.fromEntries(getSubqueries())
+  // TODO Show selector
+  const attribute = mapAttributes.value[0]!
+  const task = new MapTask(
+    cqp.value,
+    subqueries,
+    attribute.label,
+    attribute.corpora,
+    withinSearched!,
+  )
+  createTab(t("result.map"), task)
+}
+
+function getSubqueries() {
+  const ignoreCase = !!attributesSelected.value.insensitive.length
+
+  const subqueries: [string, string][] = []
+  for (const row of rowsSelected.value) {
+    if (isTotalRow(row)) continue
+    const cqp = getCqp(row.statsValues, ignoreCase)
+    const label = attributesSelected.value.selected
+      .map((attr) => row.formattedValue[attr])
+      .join(", ")
+    subqueries.push([cqp, label])
+  }
+  return subqueries
 }
 </script>
 
@@ -137,8 +162,19 @@ function openTrendTab() {
     </div>
 
     <div class="hstack gap-2 align-items-baseline">
+      <!-- Trend chart button -->
       <button type="button" class="btn btn-secondary" :disabled="!data" @click="openTrendTab()">
         {{ $t("result.statistics.trend") }}
+      </button>
+
+      <!-- Map button -->
+      <button
+        type="button"
+        class="btn btn-secondary"
+        :disabled="!mapAttributes.length"
+        @click="openMapTab()"
+      >
+        {{ $t("result.statistics.map") }}
       </button>
     </div>
 
