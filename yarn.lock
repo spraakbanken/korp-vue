@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@01coder/chartjs-plugin-selectdrag@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@01coder/chartjs-plugin-selectdrag/-/chartjs-plugin-selectdrag-2.0.3.tgz#ed873c66b301ab3788affafab43a295c76051179"
+  integrity sha512-8n+bxhu+v5MvAnx9IR2BQMl4WQ+tzzKr3ZNBr4VEdgliL1+xpHBVAgXobGHHSdDXF+CcaigR+9sg/LpFqKiI3g==
+
 "@babel/code-frame@^7.27.1", "@babel/code-frame@^7.28.6":
   version "7.28.6"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.28.6.tgz#72499312ec58b1e2245ba4a4f550c132be4982f7"

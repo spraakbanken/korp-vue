@@ -1,26 +1,26 @@
-import { maxBy, minBy, sortedIndexOf } from "lodash"
+import { last, maxBy, minBy, sortedIndexOf } from "lodash"
 import type { Moment } from "moment"
 import type { Granularity } from "../backend/types"
 import moment from "moment"
-import type { Point } from "../task/TrendTask"
+import type { Point, Series } from "../task/TrendTask"
 
 // TODO Remove unused things after Vue port is done
 
-export type Series = {
-  data: SeriesPoint[]
-  abs_data: SeriesPoint[]
-  color: string
-  name: string
-  cqp: string
-  emptyIntervals?: SeriesPoint[][]
-}
+// export type Series = {
+//   data: SeriesPoint[]
+//   abs_data: SeriesPoint[]
+//   color: string
+//   name: string
+//   cqp: string
+//   emptyIntervals?: SeriesPoint[][]
+// }
 
-export type SeriesPoint = {
-  /** Unix timestamp */
-  x: number
-  y: number
-  zoom: Level
-}
+// export type SeriesPoint = {
+//   /** Unix timestamp */
+//   x: number
+//   y: number
+//   zoom: Level
+// }
 
 export type Level = "year" | "month" | "day" | "hour" | "minute" | "second"
 
@@ -187,6 +187,43 @@ export function formatUnixDate(zoom: Level, time: number) {
   // TODO this should respect locale and could present whole months as August 2020 instead of 2020-08
   const m = moment.unix(time)
   return m.format(FORMATS[zoom])
+}
+
+/** Replace a part of the graph with new data (of a higher/lower resolution) */
+export function spliceGraphData(baseData: Series[], newData: Series[]) {
+  for (let seriesIndex = 0; seriesIndex < baseData.length; seriesIndex++) {
+    const baseSeries = baseData[seriesIndex]!
+    const newSeries = newData[seriesIndex]!
+    const first = newSeries.points[0]!.x
+    const last_ = last(newSeries.points)!.x
+
+    // Walk through old data, match timestamps with new data and find out what part to replace
+    let startSplice = false
+    let from = 0
+    // Default to replacing everything in case counting fails?
+    let n_elems = baseSeries.points.length + newSeries.points.length
+    let j = 0
+    for (let i = 0; i < baseSeries.points.length; i++) {
+      const { x } = baseSeries.points[i]!
+      if (x >= first && !startSplice) {
+        // Overlapping range starts here
+        startSplice = true
+        from = i
+      }
+      if (startSplice) {
+        // Count number of elements to replace
+        j++
+        // Stop counting at end of new data
+        if (x >= last_) {
+          n_elems = j
+          break
+        }
+      }
+    }
+
+    // Replace overlap with new data
+    baseSeries.points.splice(from, n_elems, ...newSeries.points)
+  }
 }
 
 export function createTrendTableCsv(series: Series[], relative: boolean): (string | number)[][] {

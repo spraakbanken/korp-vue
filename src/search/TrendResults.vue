@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { Series, TrendTask } from "@/core/task/TrendTask"
-import { findOptimalLevel, getTimeCqp, type Level } from "@/core/trend/util"
+import { findOptimalLevel, getTimeCqp, spliceGraphData, type Level } from "@/core/trend/util"
 import type { Moment } from "moment"
 import { computed, onMounted, ref } from "vue"
 import TrendGraph from "./TrendGraph.vue"
-import { compact } from "lodash"
+import { cloneDeep, compact } from "lodash"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
+import moment from "moment"
 
 const props = defineProps<{
   task: TrendTask
@@ -16,6 +17,8 @@ const props = defineProps<{
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
+/** What time span to show in main chart */
+const range = ref<{ from: Date; to: Date }>()
 const series = ref<Series[]>([])
 const level = ref<Level>("year")
 const labels = computed(() => Object.fromEntries(props.task.subqueries))
@@ -30,7 +33,15 @@ onMounted(() => {
 async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
   const data = await props.task.send(levelNew, from, to, () => {})
-  series.value = data.series
+
+  // If zooming: base data exists; splice new data into it
+  if (series.value.length) {
+    // Splicing the ref value directly seems to cause an infinite loop.
+    const copy = cloneDeep(series.value)
+    spliceGraphData(copy, data.series)
+    series.value = copy
+  } else series.value = data.series
+
   level.value = data.level
 }
 
@@ -45,8 +56,21 @@ function onClickPoint(series: Series[], time: Moment) {
   const task = new ExampleTask(props.task.corpusSet.getIds(), cqps, props.task.defaultWithin)
   createTab(t("result.kwic"), task)
 }
+
+function onSelectRange(from: Date, to: Date) {
+  range.value = { from, to }
+  doSearch(moment(from), moment(to))
+}
 </script>
 
 <template>
-  <TrendGraph v-if="series && level" :series :labels :level @clickPoint="onClickPoint" />
+  <TrendGraph
+    v-if="series.length && level"
+    :series
+    :labels
+    :level
+    :range
+    @clickPoint="onClickPoint"
+    @selectRange="onSelectRange"
+  />
 </template>
