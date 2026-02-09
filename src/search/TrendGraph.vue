@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDecimals } from "@/core/i18n"
 import type { Point, Series } from "@/core/task/TrendTask"
-import { FORMATS, getTimeCqp, type Level } from "@/core/trend/util"
+import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
   Colors,
@@ -17,7 +17,7 @@ import {
 import "chartjs-adapter-moment"
 import { type Moment } from "moment"
 import { computed, useId } from "vue"
-import { Line } from "vue-chartjs"
+import {  Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -69,6 +69,7 @@ const options: ChartOptions<"line"> = {
 
 const data = computed<ChartData<"line", Point[]>>(() => ({
   datasets: props.series.map((series) => ({
+    // TODO HTML in labels is being escaped
     label: series.label ?? t("result.statistics.total"),
     data: series.points,
   })),
@@ -76,8 +77,9 @@ const data = computed<ChartData<"line", Point[]>>(() => ({
 </script>
 
 <template>
-  <!-- 100vh to maximize on a small landscape screen, but fixed max height to save readability on portrait -->
-  <div class="position-relative w-100" style="height: 100vh; max-height: 40rem">
+  <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
+  <div class="position-relative w-100" style="height: 90vh; max-height: 66vw">
+    <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
     <Line :id :options :data />
   </div>
 </template>
