@@ -37,17 +37,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const id = useId()
 
-Chart.register(
-  Colors,
-  Tooltip,
-  Legend,
-  LinearScale,
-  TimeScale,
-  PointElement,
-  LineElement,
-  // TODO Registering this plugin messes up series colors
-  SelectDragPlugin,
-)
+Chart.register(Colors, LinearScale, TimeScale, PointElement, LineElement)
 
 /** Chart.js options for both main and overview charts */
 // TODO Localize thousands separators
@@ -113,8 +103,6 @@ const overviewOptions = merge(cloneDeep(baseOptions), <ChartOptions<"line">>{
     y: { ticks: { color: "transparent" } },
   },
   plugins: {
-    legend: { display: false },
-    tooltip: { enabled: false },
     selectdrag: {
       enabled: true,
       output: "value",
@@ -149,12 +137,12 @@ type SelectDragEvent = {
   <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
   <div class="position-relative w-100" style="height: 90vh; max-height: 66vw">
     <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-    <Line :id="`${id}-main`" :options="mainOptions" :data />
+    <Line :id="`${id}-main`" :options="mainOptions" :data :plugins="[Legend, Tooltip]" />
   </div>
 
   <!-- Full-span overview for zooming -->
   <div class="mt-4 position-relative w-100" style="height: 5rem">
     <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-    <Line :id="`${id}-overview`" :options="overviewOptions" :data />
+    <Line :id="`${id}-overview`" :options="overviewOptions" :data :plugins="[SelectDragPlugin]" />
   </div>
 </template>

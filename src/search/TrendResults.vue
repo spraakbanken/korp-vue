@@ -9,6 +9,7 @@ import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import moment from "moment"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const props = defineProps<{
   task: TrendTask
@@ -32,17 +33,29 @@ onMounted(() => {
 
 async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
-  const data = await props.task.send(levelNew, from, to, () => {})
 
+  try {
+    const data = await props.task.send(levelNew, from, to, () => {})
+    setSeries(data.series)
+    level.value = data.level
+  } catch (error) {
+    if (isAbortError(error)) return
+    throw error
+  }
+}
+
+/** Ingest new series data */
+function setSeries(newSeries: Series[]) {
+  // First load
+  if (!series.value.length) series.value = newSeries
   // If zooming: base data exists; splice new data into it
-  if (series.value.length) {
+  else {
     // Splicing the ref value directly seems to cause an infinite loop.
     const copy = cloneDeep(series.value)
-    spliceGraphData(copy, data.series)
+    // TODO Remove unintuitive animation when splicing data
+    spliceGraphData(copy, newSeries)
     series.value = copy
-  } else series.value = data.series
-
-  level.value = data.level
+  }
 }
 
 function onClickPoint(series: Series[], time: Moment) {

@@ -45,3 +45,8 @@ export default abstract class ProxyBase<K extends keyof API = keyof API> {
     return this
   }
 }
+
+/** Check if an error is from aborting a request. */
+export function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name == "AbortError"
+}
