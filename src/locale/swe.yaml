@@ -130,7 +130,14 @@ result.kwic.sort.left: kontext före
 result.kwic.sort.right: kontext efter
 result.kwic.sort.random: slumpvis
 
-result.map: Karta
+result.map.attribute: Välj attribut
+result.map.attribute.sentence__geocontext: Plats i samma mening
+result.map.attribute.paragraph__geocontext: Plats i samma stycke
+result.map.attribute.text__geoauthorhome: Författarens hemort
+result.map.button: Karta
+result.map.confirm: Öppna karta
+result.map.relative: Relativ
+result.map.relative.help: Gör varje platsmarkörs storlek relativ till platsens förekomst i korpusurvalet
 
 result.pagination.label: "Sida:"
 result.pagination.goto: Gå till {input} av {total}

@@ -27,11 +27,10 @@ function save() {
 </script>
 
 <template>
-  <!-- <div class="dropdown btn btn-outline-primary dropdown-toggle"> -->
   <button
     type="button"
     ref="dropdown"
-    class="ddropdown btn btn-outline-primary dropdown-toggle"
+    class="btn btn-outline-primary dropdown-toggle"
     data-bs-toggle="dropdown"
     data-bs-auto-close="outside"
     aria-expanded="false"

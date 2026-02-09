@@ -129,7 +129,14 @@ result.kwic.sort.left: context before
 result.kwic.sort.right: context after
 result.kwic.sort.random: random
 
-result.map: Map
+result.map.attribute: Choose attribute
+result.map.attribute.sentence__geocontext: Location in the same sentence
+result.map.attribute.paragraph__geocontext: Location in the same paragraph
+result.map.attribute.text__geoauthorhome: Author's home
+result.map.button: Map
+result.map.confirm: Open map
+result.map.relative: Relative
+result.map.relative.help: Make map marker sizes relative to location prevalence in the corpus selection
 
 result.pagination.label: "Page:"
 result.pagination.goto: Go to {input} of {total}

@@ -20,6 +20,7 @@ import { TrendTask } from "@/core/task/TrendTask"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { MapTask } from "@/core/task/MapTask"
 import { getGeoAttributes, MapAttributeOption } from "@/core/statistics/map"
+import MapButton from "./MapButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -116,16 +117,15 @@ function openTrendTab() {
   createTab(t("result.trend"), task)
 }
 
-function openMapTab() {
+function openMapTab(attribute: MapAttributeOption, relative: boolean) {
   const subqueries = Object.fromEntries(getSubqueries())
-  // TODO Show selector
-  const attribute = mapAttributes.value[0]!
   const task = new MapTask(
     cqp.value,
     subqueries,
     attribute.label,
     attribute.corpora,
     withinSearched!,
+    relative,
   )
   createTab(t("result.map"), task)
 }
@@ -168,14 +168,7 @@ function getSubqueries() {
       </button>
 
       <!-- Map button -->
-      <button
-        type="button"
-        class="btn btn-secondary"
-        :disabled="!mapAttributes.length"
-        @click="openMapTab()"
-      >
-        {{ $t("result.statistics.map") }}
-      </button>
+      <MapButton :attributes="mapAttributes" @open="openMapTab" />
     </div>
 
     <StatisticsGrid

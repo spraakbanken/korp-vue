@@ -81,7 +81,6 @@ export type Point = {
 export type MapAttributeOption = {
   label: string
   corpora: string[]
-  selected?: boolean
 }
 
 export function getGeoAttributes(corpora: Corpus[]) {
@@ -102,8 +101,6 @@ export function getGeoAttributes(corpora: Corpus[]) {
   }
 
   const attributes = Object.values(attrs)
-  // Select first attribute
-  if (attributes.length) attributes[0]!.selected = true
   return attributes
 }
 
