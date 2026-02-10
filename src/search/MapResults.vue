@@ -23,6 +23,7 @@ const { t } = useI18n()
 const id = useId()
 const mapEl = useTemplateRef("map")
 const seriesAll = ref<Record<string, MarkerGroup>>({})
+const enableClustering = ref(false)
 const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
@@ -39,16 +40,17 @@ onMounted(() => {
   model.setCenter(settings["map_center"])
 })
 
-// TODO Merge
 async function doSearch() {
   await props.task.send()
 
   const palette = new GoldenAnglePaletteHsl()
+  palette.shift() // Skip the first color, same as the primary UI color
   seriesAll.value = props.task.getMarkerGroups(() => palette.shift())
   enabledSeries.value = Object.keys(seriesAll.value)
 }
 
-watch(enabledSeries, () => {
+watch([enableClustering, enabledSeries], () => {
+  model.useClustering = enableClustering.value
   const series = enabledSeries.value.map((label) => seriesAll.value[label]!)
   model.updateMarkers(series, "gray")
 })
@@ -77,20 +79,37 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="vstack gap-2">
-    <!-- Toggleable legend -->
-    <div class="p-2 d-flex justify-content-center flex-wrap gap-4 align-items-baseline">
-      <div v-for="(series, label) in seriesAll" :key="label" class="form-check">
+    <!-- Search options bar -->
+    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+      <div class="form-check">
         <input
           type="checkbox"
-          :id="id + '-' + label"
-          :value="label"
-          v-model="enabledSeries"
+          :id="id + '-cluster'"
+          v-model="enableClustering"
           class="form-check-input"
-          :style="{ backgroundColor: series.color, borderColor: series.color }"
         />
-        <label :for="id + '-' + label" class="form-check-label">
-          {{ label }}
+        <label :for="id + '-cluster'" class="form-check-label">
+          {{ $t("result.map.cluster") }}
         </label>
+      </div>
+
+      <!-- Toggleable legend -->
+      <div
+        class="d-flex flex-grow-1 justify-content-end flex-wrap column-gap-3 align-items-baseline"
+      >
+        <div v-for="(series, label) in seriesAll" :key="label" class="form-check">
+          <input
+            type="checkbox"
+            :id="id + '-' + label"
+            :value="label"
+            v-model="enabledSeries"
+            class="form-check-input"
+            :style="{ backgroundColor: series.color, borderColor: series.color }"
+          />
+          <label :for="id + '-' + label" class="form-check-label">
+            {{ label }}
+          </label>
+        </div>
       </div>
     </div>
 

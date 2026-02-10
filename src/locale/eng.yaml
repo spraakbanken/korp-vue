@@ -135,6 +135,7 @@ result.map.attribute: Choose attribute
 result.map.attribute.sentence__geocontext: Location in the same sentence
 result.map.attribute.paragraph__geocontext: Location in the same paragraph
 result.map.attribute.text__geoauthorhome: Author's home
+result.map.cluster: Cluster markers
 result.map.confirm: Open map
 result.map.relative: Relative
 result.map.relative.help: Make map marker sizes relative to location prevalence in the corpus selection
