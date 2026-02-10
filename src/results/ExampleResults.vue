@@ -15,7 +15,8 @@ const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 
 const store = useAppStore()
 const { hpp } = storeToRefs(store)
-const context = ref(store.reading_mode)
+// Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
+const context = ref(props.task.isReadingInit || store.reading_mode)
 const hitsCount = ref(0)
 const isReading = ref(store.reading_mode)
 const kwic = ref<ApiKwic[]>()

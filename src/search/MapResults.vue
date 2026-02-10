@@ -3,14 +3,21 @@ import settings from "@/core/config"
 import { formatDecimals } from "@/core/i18n"
 import type { MarkerData, MarkerGroup } from "@/core/statistics/map"
 import { MapModel } from "@/core/statistics/MapModel"
+import { ExampleTask } from "@/core/task/ExampleTask"
 import type { MapTask } from "@/core/task/MapTask"
+import { regescape } from "@/core/util"
+import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useCycleList, whenever } from "@vueuse/core"
-import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
+import { onMounted, ref, useTemplateRef } from "vue"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
   active: boolean
   task: MapTask
 }>()
+
+const { createTab } = useDynamicTabs()
+const { t } = useI18n()
 
 const colors = useCycleList(["", "orange", "teal", "purple", "blue", "red"])
 const mapEl = useTemplateRef("map")
@@ -21,7 +28,6 @@ let model: MapModel
 onMounted(() => {
   doSearch()
 
-  // TODO Click to subsearch
   model = new MapModel(
     mapEl.value!,
     (markers) => (markersList.value = markers.sort((a, b) => b.point.rel - a.point.rel)),
@@ -38,6 +44,17 @@ async function doSearch() {
   markerGroups.value = props.task.getMarkerGroups(() => colors.next())
 
   model.updateMarkers(Object.values(markerGroups.value), "teal")
+}
+
+function onMarkerClick(marker: MarkerData) {
+  const { point, queryData } = marker
+  const location = [point.name, point.countryCode, point.lat, point.lng].join(";")
+  const cqpGeo = `<match> [_.${queryData.label} contains "${regescape(location)}"] []{0,} </match>`
+
+  const cqps = [queryData.searchCqp, queryData.subCqp, cqpGeo]
+  const readingMode = queryData.label === "paragraph__geocontext"
+  const task = new ExampleTask(queryData.corpora, cqps, queryData.within, readingMode)
+  createTab(t("result.kwic"), task)
 }
 
 whenever(
@@ -65,7 +82,15 @@ whenever(
             <div class="swatch" :style="{ backgroundColor: marker.color }" />
             {{ marker.label }}
           </div>
-          <div class="fw-bold">{{ marker.point.name }}</div>
+          <div class="fw-bold">
+            <a
+              href="#"
+              class="stretched-link text-decoration-none"
+              @click.prevent="onMarkerClick(marker)"
+            >
+              {{ marker.point.name }}
+            </a>
+          </div>
           <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
           <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
         </div>
