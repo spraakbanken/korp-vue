@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { GoldenAnglePaletteHsl } from "@/core/color"
 import settings from "@/core/config"
 import { formatDecimals } from "@/core/i18n"
 import type { MarkerData, MarkerGroup } from "@/core/statistics/map"
@@ -7,8 +8,8 @@ import { ExampleTask } from "@/core/task/ExampleTask"
 import type { MapTask } from "@/core/task/MapTask"
 import { regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
-import { useCycleList, whenever } from "@vueuse/core"
-import { onMounted, ref, useTemplateRef } from "vue"
+import { whenever } from "@vueuse/core"
+import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -19,7 +20,6 @@ const props = defineProps<{
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 
-const colors = useCycleList(["", "orange", "teal", "purple", "blue", "red"])
 const mapEl = useTemplateRef("map")
 const markerGroups = ref<Record<string, MarkerGroup>>({})
 const markersList = ref<MarkerData[]>([])
@@ -39,11 +39,12 @@ onMounted(() => {
 
 async function doSearch() {
   await props.task.send()
-  // TODO Colors
-  // TODO Show/hide series
-  markerGroups.value = props.task.getMarkerGroups(() => colors.next())
 
-  model.updateMarkers(Object.values(markerGroups.value), "teal")
+  // TODO Show/hide series
+  const palette = new GoldenAnglePaletteHsl()
+  markerGroups.value = props.task.getMarkerGroups(() => palette.shift())
+
+  model.updateMarkers(Object.values(markerGroups.value), "gray")
 }
 
 function onMarkerClick(marker: MarkerData) {
@@ -62,6 +63,10 @@ whenever(
   () => model.map.invalidateSize(),
   { flush: "post" },
 )
+
+onBeforeUnmount(() => {
+  props.task.abort()
+})
 </script>
 
 <template>

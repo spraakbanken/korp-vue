@@ -19,7 +19,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import { TrendTask } from "@/core/task/TrendTask"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { MapTask } from "@/core/task/MapTask"
-import { getGeoAttributes, MapAttributeOption } from "@/core/statistics/map"
+import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import MapButton from "./MapButton.vue"
 
 const UPDATE_DELAY_MS = 500

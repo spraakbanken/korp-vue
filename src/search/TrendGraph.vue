@@ -4,7 +4,6 @@ import type { Point, Series } from "@/core/task/TrendTask"
 import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
-  Colors,
   Legend,
   LinearScale,
   LineElement,
@@ -21,6 +20,7 @@ import { computed, useId } from "vue"
 import { Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { cloneDeep, merge } from "lodash"
+import { GoldenAnglePaletteHsl } from "@/core/color"
 
 const props = defineProps<{
   series: Series[]
@@ -37,7 +37,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const id = useId()
 
-Chart.register(Colors, LinearScale, TimeScale, PointElement, LineElement)
+Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
 /** Chart.js options for both main and overview charts */
 // TODO Localize thousands separators
@@ -118,13 +118,21 @@ const overviewOptions = merge(cloneDeep(baseOptions), <ChartOptions<"line">>{
   },
 })
 
-const data = computed<ChartData<"line", Point[]>>(() => ({
-  datasets: props.series.map((series) => ({
-    // TODO HTML in labels is being escaped
-    label: series.label ?? t("result.statistics.total"),
-    data: series.points,
-  })),
-}))
+const data = computed<ChartData<"line", Point[]>>(() => {
+  const palette = new GoldenAnglePaletteHsl()
+  return {
+    datasets: props.series.map((series) => {
+      const color = palette.shift()
+      return {
+        // TODO HTML in labels is being escaped
+        label: series.label ?? t("result.statistics.total"),
+        data: series.points,
+        borderColor: color,
+        backgroundColor: color,
+      }
+    }),
+  }
+})
 
 /** The type of event passed to `onSelectComplete` */
 type SelectDragEvent = {
