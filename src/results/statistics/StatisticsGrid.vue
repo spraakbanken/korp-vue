@@ -107,7 +107,7 @@ function buildExampleCqp(row: SingleRow) {
 
 <style scoped>
 [role="grid"] {
-  height: 30em;
+  height: 90svh;
 }
 
 :deep(div[role="columnheader"]) {

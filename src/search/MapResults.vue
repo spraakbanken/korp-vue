@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import settings from "@/core/config"
-import type { MarkerGroup } from "@/core/statistics/map"
+import { formatDecimals } from "@/core/i18n"
+import type { MarkerData, MarkerGroup } from "@/core/statistics/map"
 import { MapModel } from "@/core/statistics/MapModel"
 import type { MapTask } from "@/core/task/MapTask"
-import { whenever } from "@vueuse/core"
-import { onMounted, ref, useTemplateRef, watch } from "vue"
+import { useCycleList, whenever } from "@vueuse/core"
+import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
 
 const props = defineProps<{
   active: boolean
   task: MapTask
 }>()
 
+const colors = useCycleList(["", "orange", "teal", "purple", "blue", "red"])
 const mapEl = useTemplateRef("map")
 const markerGroups = ref<Record<string, MarkerGroup>>({})
+const markersList = ref<MarkerData[]>([])
 let model: MapModel
 
 onMounted(() => {
   doSearch()
 
-  // TODO Mouse handlers
+  // TODO Click to subsearch
   model = new MapModel(
     mapEl.value!,
-    () => {},
-    () => {},
+    (markers) => (markersList.value = markers.sort((a, b) => b.point.rel - a.point.rel)),
+    () => (markersList.value = []),
   )
 
   model.setCenter(settings["map_center"])
@@ -32,7 +35,7 @@ async function doSearch() {
   await props.task.send()
   // TODO Colors
   // TODO Show/hide series
-  markerGroups.value = props.task.getMarkerGroups(() => "orange")
+  markerGroups.value = props.task.getMarkerGroups(() => colors.next())
 
   model.updateMarkers(Object.values(markerGroups.value), "teal")
 }
@@ -45,7 +48,30 @@ whenever(
 </script>
 
 <template>
-  <div ref="map" class="w-100" style="height: 90svh"></div>
+  <div class="w-100 position-relative" style="height: 90svh">
+    <!-- Map container -->
+    <div ref="map" class="position-absolute w-100 h-100 z-0" />
+
+    <!-- Place info on hover/click -->
+    <div
+      v-if="markersList.length"
+      class="hover-info-container position-absolute end-0 p-1 z-1"
+      style="width: 15rem"
+    >
+      <!-- TODO Merge cards with same location -->
+      <div v-for="marker in markersList" :key="marker.label + marker.point.name" class="card mb-1">
+        <div class="card-body p-2">
+          <div class="fw-bold">
+            <div class="swatch" :style="{ backgroundColor: marker.color }" />
+            {{ marker.label }}
+          </div>
+          <div class="fw-bold">{{ marker.point.name }}</div>
+          <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
+          <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -101,82 +127,10 @@ whenever(
   padding-left: 1px;
 }
 
-.leaflet-marker-icon.leaflet-div-icon.leaflet-clickable {
-  border: none;
-  background-color: transparent;
-}
-
-.leaflet-popup-content-wrapper {
-  border-radius: 4px;
-  background-color: #f6f6f6;
-  background-image: linear-gradient(to bottom, #fff, #e6e6e6);
-  background-repeat: repeat-x;
-}
-
-.leaflet-popup-tip {
-  background-color: #e6e6e6;
-}
-
-.leaflet-bar a:link,
-.leaflet-bar a:visited {
-  color: black;
-}
-
 .swatch {
   width: 10px;
   height: 10px;
   display: inline-block;
   margin-right: 5px;
-}
-
-.marker-cluster-small {
-  background-color: rgba(136, 220, 168, 0.6);
-}
-
-.marker-cluster-small div {
-  background-color: rgba(136, 220, 168, 0.6);
-}
-
-.map {
-  border: 1px solid black;
-  position: relative;
-  height: 522px;
-}
-
-.map-container {
-  height: 520px;
-}
-
-.map-outer-container {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.hover-info-container {
-  margin: 5px;
-  border-radius: 5px;
-  width: 200px;
-  height: 500px;
-  overflow: auto;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 800;
-  opacity: 1;
-  transition: opacity 500ms;
-}
-
-.hover-info {
-  z-index: 10;
-  background-color: #f6f6f6;
-  background-image: linear-gradient(to bottom, #fff, #e6e6e6);
-  background-repeat: repeat-x;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 4px;
-  cursor: pointer;
 }
 </style>

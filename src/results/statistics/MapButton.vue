@@ -39,7 +39,7 @@ function confirm() {
     aria-expanded="false"
     :disabled="!attributes.length"
   >
-    {{ $t("result.map.button") }}
+    {{ $t("result.map") }}
   </button>
 
   <div class="dropdown-menu card p-0">

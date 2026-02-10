@@ -12,6 +12,7 @@ export type DynamicTab = {
 const dynamicTabs = reactive<DynamicTab[]>([])
 
 export function useDynamicTabs() {
+  // TODO Include all translations in the label arg, so we can retranslate when lang is changed.
   function createTab(label: LangString, task: TaskBase) {
     const id = randomString()
     const tab = { id, label, task }
