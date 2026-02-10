@@ -9,7 +9,7 @@ import type { MapTask } from "@/core/task/MapTask"
 import { regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { whenever } from "@vueuse/core"
-import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue"
+import { onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -20,8 +20,10 @@ const props = defineProps<{
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 
+const id = useId()
 const mapEl = useTemplateRef("map")
-const markerGroups = ref<Record<string, MarkerGroup>>({})
+const seriesAll = ref<Record<string, MarkerGroup>>({})
+const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
 
@@ -37,15 +39,19 @@ onMounted(() => {
   model.setCenter(settings["map_center"])
 })
 
+// TODO Merge
 async function doSearch() {
   await props.task.send()
 
-  // TODO Show/hide series
   const palette = new GoldenAnglePaletteHsl()
-  markerGroups.value = props.task.getMarkerGroups(() => palette.shift())
-
-  model.updateMarkers(Object.values(markerGroups.value), "gray")
+  seriesAll.value = props.task.getMarkerGroups(() => palette.shift())
+  enabledSeries.value = Object.keys(seriesAll.value)
 }
+
+watch(enabledSeries, () => {
+  const series = enabledSeries.value.map((label) => seriesAll.value[label]!)
+  model.updateMarkers(series, "gray")
+})
 
 function onMarkerClick(marker: MarkerData) {
   const { point, queryData } = marker
@@ -70,34 +76,58 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="w-100 position-relative" style="height: 90svh">
-    <!-- Map container -->
-    <div ref="map" class="position-absolute w-100 h-100 z-0" />
+  <div class="vstack gap-2">
+    <!-- Toggleable legend -->
+    <div class="p-2 d-flex justify-content-center flex-wrap gap-4 align-items-baseline">
+      <div v-for="(series, label) in seriesAll" :key="label" class="form-check">
+        <input
+          type="checkbox"
+          :id="id + '-' + label"
+          :value="label"
+          v-model="enabledSeries"
+          class="form-check-input"
+          :style="{ backgroundColor: series.color, borderColor: series.color }"
+        />
+        <label :for="id + '-' + label" class="form-check-label">
+          {{ label }}
+        </label>
+      </div>
+    </div>
 
-    <!-- Place info on hover/click -->
-    <div
-      v-if="markersList.length"
-      class="hover-info-container position-absolute end-0 p-1 z-1"
-      style="width: 15rem"
-    >
-      <!-- TODO Merge cards with same location -->
-      <div v-for="marker in markersList" :key="marker.label + marker.point.name" class="card mb-1">
-        <div class="card-body p-2">
-          <div class="fw-bold">
-            <div class="swatch" :style="{ backgroundColor: marker.color }" />
-            {{ marker.label }}
+    <!-- Stacking container -->
+    <div class="w-100 position-relative" style="height: 90svh">
+      <!-- Map target -->
+      <div ref="map" class="position-absolute w-100 h-100 z-0" />
+
+      <!-- Place info on hover/click -->
+      <div
+        v-if="markersList.length"
+        class="hover-info-container position-absolute end-0 p-1 z-1"
+        style="width: 15rem"
+      >
+        <!-- TODO Merge cards with same location -->
+        <div
+          v-for="marker in markersList"
+          :key="marker.label + marker.point.name"
+          class="card mb-1"
+        >
+          <div class="card-body p-2">
+            <div class="fw-bold">
+              <div class="swatch" :style="{ backgroundColor: marker.color }" />
+              {{ marker.label }}
+            </div>
+            <div class="fw-bold">
+              <a
+                href="#"
+                class="stretched-link text-decoration-none"
+                @click.prevent="onMarkerClick(marker)"
+              >
+                {{ marker.point.name }}
+              </a>
+            </div>
+            <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
+            <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
           </div>
-          <div class="fw-bold">
-            <a
-              href="#"
-              class="stretched-link text-decoration-none"
-              @click.prevent="onMarkerClick(marker)"
-            >
-              {{ marker.point.name }}
-            </a>
-          </div>
-          <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
-          <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
         </div>
       </div>
     </div>
