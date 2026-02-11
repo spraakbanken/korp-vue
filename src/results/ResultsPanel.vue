@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { useAppStore } from "@/store/useAppStore"
-import KwicResults from "./KwicResults.vue"
 import { storeToRefs } from "pinia"
-import StatisticsResult from "./statistics/StatisticsResult.vue"
 import { vTab } from "@/bootstrap"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useLocale } from "@/i18n/useLocale"
-import { ref, watch, type Component } from "vue"
-import ExampleResults from "./ExampleResults.vue"
+import { defineAsyncComponent, ref, watch, type Component } from "vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
-import WordpicResult from "./WordpicResult.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
-import CompareResults from "./CompareResults.vue"
 import { CompareTask } from "@/core/task/CompareTask"
 import type { TaskBase } from "@/core/task/TaskBase"
 import { watchImmediate } from "@vueuse/core"
 import { TrendTask } from "@/core/task/TrendTask"
-import TrendResults from "@/search/TrendResults.vue"
 import { MapTask } from "@/core/task/MapTask"
-import MapResults from "@/search/MapResults.vue"
+
+const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
+const ExampleResults = defineAsyncComponent(() => import("./ExampleResults.vue"))
+const KwicResults = defineAsyncComponent(() => import("./KwicResults.vue"))
+const MapResults = defineAsyncComponent(() => import("./MapResults.vue"))
+const StatisticsResult = defineAsyncComponent(() => import("./statistics/StatisticsResult.vue"))
+const TrendResults = defineAsyncComponent(() => import("./TrendResults.vue"))
+const WordpicResult = defineAsyncComponent(() => import("./WordpicResult.vue"))
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
