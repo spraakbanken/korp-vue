@@ -33,6 +33,18 @@ frontpage.updates: Korpusuppdateringar
 frontpage.updates.item: "{title} har uppdaterats"
 frontpage.updates.select: Välj
 
+links.sbx.url: https://spraakbanken.gu.se/
+links.gu.label: Göteborgs universitet
+links.gu.url: https://gu.se/
+links.contact.label: Kontakta oss
+links.contact.url: https://spraakbanken.gu.se/kontakt
+links.about.label: Om oss
+links.about.url: https://spraakbanken.gu.se/om
+links.news.label: Nyheter
+links.news.url: https://spraakbanken.gu.se/aktuellt
+links.platforms.label: Andra plattformar
+links.platforms.url: https://spraakbanken.gu.se/verktyg
+
 search.history: Historik
 search.history.clear: Töm historik
 search.history.empty: Inga sökningar har gjorts än

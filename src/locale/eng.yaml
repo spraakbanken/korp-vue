@@ -33,6 +33,18 @@ frontpage.updates: Corpus updates
 frontpage.updates.item: "{title} was updated"
 frontpage.updates.select: Select
 
+links.sbx.url: https://spraakbanken.gu.se/en/
+links.gu.label: University of Gothenburg
+links.gu.url: https://gu.se/en/
+links.contact.label: Contact us
+links.contact.url: https://spraakbanken.gu.se/en/contact
+links.about.label: About us
+links.about.url: https://spraakbanken.gu.se/en/about
+links.news.label: News
+links.news.url: https://spraakbanken.gu.se/en/news-and-events
+links.platforms.label: Other platforms
+links.platforms.url: https://spraakbanken.gu.se/en/tools
+
 search.history: History
 search.history.clear: Clear history
 search.history.empty: No searches made yet

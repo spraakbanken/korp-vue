@@ -8,6 +8,7 @@ import { useAuth } from "./auth/useAuth"
 import { useAsyncState } from "@vueuse/core"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useUrlParams } from "./useUrlParams"
+import AppFooter from "./AppFooter.vue"
 
 const auth = useAuth()
 useUrlParams()
@@ -32,6 +33,7 @@ const { isReady } = useAsyncState(async () => {
   <template v-if="isReady">
     <HeaderSection />
     <MainSection />
+    <AppFooter class="flex-grow-1" />
   </template>
   <div v-else>Loading...</div>
 </template>

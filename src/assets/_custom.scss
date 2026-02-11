@@ -11,3 +11,11 @@
 .w-0 {
   width: 0;
 }
+
+// Bootstrap expects default link color to be primary, but we have set it to be dark, so for dark backgrounds we need to override it again to light.
+.bg-dark,
+.text-bg-dark {
+  a {
+    --bs-link-color-rgb: var(--bs-light-color-rgb);
+  }
+}
