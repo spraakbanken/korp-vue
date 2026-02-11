@@ -41,16 +41,6 @@ export class Factory<T extends new (...args: unknown[]) => InstanceType<T>> {
   }
 }
 
-export abstract class Observable {
-  private listeners: Array<() => void> = []
-  listen(cb: () => void) {
-    this.listeners.push(cb)
-  }
-  protected notify() {
-    this.listeners.forEach((cb) => cb())
-  }
-}
-
 /** Provides a slot for an async function. */
 export class PromiseStarter<T = void> {
   protected starter?: () => Promise<T>

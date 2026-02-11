@@ -1,6 +1,6 @@
 import { cloneDeep, isEqual, mapValues, pickBy } from "lodash"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { Observable, regescape } from "@/core/util"
+import { regescape } from "@/core/util"
 import type { RecursiveRecord } from "@/core/backend/types/attrValues"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
@@ -17,15 +17,13 @@ export type FilterData = {
   options: [string, number][]
 }
 
-export class GlobalFilterManager extends Observable {
+export class GlobalFilterManager {
   attrs: Attribute[] = []
   data: RecursiveRecord<number> = {}
   filters: Record<string, FilterData> = {}
   private static instance: GlobalFilterManager
 
-  private constructor() {
-    super()
-  }
+  private constructor() {}
 
   static getInstance(): GlobalFilterManager {
     if (!this.instance) this.instance = new GlobalFilterManager()
@@ -111,8 +109,6 @@ export class GlobalFilterManager extends Observable {
       // Cast back to list and sort alphabetically
       filter.options = Object.entries(options).sort((a, b) => a[0].localeCompare(b[0], getLang()))
     }
-
-    this.notify()
   }
 
   /** Recursive helper for `updateData` */

@@ -18,7 +18,7 @@ import settings, { normalizeDataset, unprefixAttr } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
-import { objectIntersection, objectUnion, Observable } from "@/core/util"
+import { objectIntersection, objectUnion } from "@/core/util"
 
 export type AttributeOption = Attribute & {
   group: "word" | "pos" | "struct"
@@ -27,8 +27,7 @@ export type AttributeOption = Attribute & {
 /** How to join attribute lists of different corpora */
 export type SetOperator = "union" | "intersection"
 
-export class CorpusSet extends Observable {
-  corpora: Corpus[]
+export class CorpusSet {
   structAttributes: Record<string, Attribute> = {}
   commonAttributes: Record<string, Attribute> = {}
   _wordGroup: AttributeOption = {
@@ -37,10 +36,7 @@ export class CorpusSet extends Observable {
     label: settings["word_label"],
   }
 
-  constructor(corpora: Corpus[] = []) {
-    super()
-    this.corpora = corpora
-  }
+  constructor(public corpora: Corpus[] = []) {}
 
   get(key: string): Corpus {
     const corpus = this.corpora.find((corpus) => corpus.id == key.toLowerCase())
@@ -390,8 +386,6 @@ export class CorpusSet extends Observable {
     >
     Object.entries(this.commonAttributes).forEach(([name, attr]) => (attr.name = name))
     this.structAttributes = this._getStructAttrs()
-
-    this.notify()
   }
 
   isDateInterval(type: string): boolean {
