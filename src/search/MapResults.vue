@@ -9,7 +9,8 @@ import type { MapTask } from "@/core/task/MapTask"
 import { regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { whenever } from "@vueuse/core"
-import { onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
+import { groupBy } from "lodash"
+import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
@@ -27,6 +28,11 @@ const enableClustering = ref(false)
 const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
+
+/** Selected markers grouped by location. Makes a difference when clustering is enabled. */
+const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
+  groupBy(markersList.value, (marker) => marker.point.name),
+)
 
 onMounted(() => {
   doSearch()
@@ -124,28 +130,31 @@ onBeforeUnmount(() => {
         class="hover-info-container position-absolute end-0 p-1 z-1"
         style="width: 15rem"
       >
-        <!-- TODO Merge cards with same location -->
-        <div
-          v-for="marker in markersList"
-          :key="marker.label + marker.point.name"
-          class="card mb-1"
-        >
+        <div v-for="(markers, location) in markersGrouped" :key="location" class="card mb-1">
           <div class="card-body p-2">
             <div class="fw-bold">
+              {{ location }}
+            </div>
+            <div
+              v-for="marker in markers"
+              :key="marker.label"
+              class="hstack align-items-baseline position-relative"
+            >
               <div class="swatch" :style="{ backgroundColor: marker.color }" />
-              {{ marker.label }}
+              <div class="flex-grow-1">
+                <div>
+                  <a
+                    href="#"
+                    class="stretched-link text-decoration-none fw-bold"
+                    @click.prevent="onMarkerClick(marker)"
+                  >
+                    {{ marker.label }}
+                  </a>
+                </div>
+                <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
+                <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
+              </div>
             </div>
-            <div class="fw-bold">
-              <a
-                href="#"
-                class="stretched-link text-decoration-none"
-                @click.prevent="onMarkerClick(marker)"
-              >
-                {{ marker.point.name }}
-              </a>
-            </div>
-            <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
-            <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
           </div>
         </div>
       </div>
