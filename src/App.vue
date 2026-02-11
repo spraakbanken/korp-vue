@@ -32,8 +32,8 @@ const { isReady } = useAsyncState(async () => {
 <template>
   <template v-if="isReady">
     <HeaderSection />
-    <MainSection />
-    <AppFooter class="flex-grow-1" />
+    <MainSection class="flex-grow-1" />
+    <AppFooter />
   </template>
   <div v-else>Loading...</div>
 </template>

@@ -16,6 +16,7 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 
 <template>
   <header class="bg-body-secondary pb-3 mb-2">
+    <!-- Top row -->
     <nav class="navbar navbar-expand">
       <div class="container-fluid">
         <ModeSelector />
@@ -26,6 +27,7 @@ const selfUrl = window.location.href.replace(/#.*/, "")
       </div>
     </nav>
 
+    <!-- Main row -->
     <section class="container-fluid">
       <div class="row my-2 px-2 align-items-center">
         <a :href="selfUrl" class="col-6 col-xl-3">

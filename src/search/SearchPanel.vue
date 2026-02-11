@@ -39,11 +39,12 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
         {{ $t(`search.${name}`) }}
       </button>
 
+      <!-- Search history dropdown -->
       <div class="nav-item dropdown">
         <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           {{ $t("search.history") }}
         </button>
-        <ul class="dropdown-menu dropdown-menu-end">
+        <ul class="dropdown-menu dropdown-menu-end overflow-auto" style="max-height: 20rem">
           <template v-if="historyOptions.length">
             <li>
               <a href="#" class="dropdown-item link-danger" @click.prevent="clearHistory()">
