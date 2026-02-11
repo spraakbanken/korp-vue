@@ -7,8 +7,10 @@ import SearchExtended from "./extended/SearchExtended.vue"
 import settings from "@/core/config"
 import SearchAdvanced from "./SearchAdvanced.vue"
 import SearchCompare from "./SearchCompare.vue"
+import useSearchHistory from "./useSearchHistory"
 
 const store = useAppStore()
+const { clearHistory, historyOptions, isCurrentSearch, restoreFromHistory } = useSearchHistory()
 
 const { search_tab } = storeToRefs(store)
 
@@ -36,6 +38,35 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
       >
         {{ $t(`search.${name}`) }}
       </button>
+
+      <div class="nav-item dropdown">
+        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          {{ $t("search.history") }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <template v-if="historyOptions.length">
+            <li>
+              <a href="#" class="dropdown-item link-danger" @click.prevent="clearHistory()">
+                {{ $t("search.history.clear") }}
+              </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+          </template>
+          <li v-else>
+            <a href="#" class="dropdown-item disabled">{{ $t("search.history.empty") }}</a>
+          </li>
+          <li v-for="option in historyOptions" :key="option.id">
+            <a
+              href="#"
+              class="dropdown-item"
+              @click.prevent="restoreFromHistory(option.state)"
+              :class="{ active: isCurrentSearch(option.state) }"
+            >
+              {{ option.label }}
+            </a>
+          </li>
+        </ul>
+      </div>
     </nav>
 
     <!-- Tab content -->

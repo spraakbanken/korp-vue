@@ -95,6 +95,7 @@ function passToggleFocus($event: FocusEvent) {
       ref="inputElement"
       autocomplete="off"
       v-model="input"
+      size="30"
       @input="onInput"
       @click="openMenuInBackground()"
       @keyup.down="openMenu(true)"

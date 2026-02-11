@@ -33,6 +33,10 @@ frontpage.updates: Korpusuppdateringar
 frontpage.updates.item: "{title} har uppdaterats"
 frontpage.updates.select: Välj
 
+search.history: Historik
+search.history.clear: Töm historik
+search.history.empty: Inga sökningar har gjorts än
+
 search.simple: Enkel
 search.simple.prefix: förled
 search.simple.prefix.help: Tillåt ord som börjar med sökorden.

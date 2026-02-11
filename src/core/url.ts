@@ -74,7 +74,6 @@ export type SearchParamNames = Extract<
   | "search_tab"
   | "within"
   | "prefix"
-  | "mid_comp"
   | "suffix"
   | "isCaseInsensitive"
 >
@@ -90,7 +89,6 @@ export const getSearchParamNames = (): SearchParamNames[] => [
   "search_tab",
   "within",
   "prefix",
-  "mid_comp",
   "suffix",
   "isCaseInsensitive",
 ]
