@@ -138,7 +138,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-statistics"
         tabindex="0"
       >
-        <StatisticsResult :active="currentTab == 2" />
+        <StatisticsResult />
       </div>
 
       <div
@@ -149,7 +149,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-wordpic"
         tabindex="0"
       >
-        <WordpicResult :active="currentTab == 3" />
+        <WordpicResult />
       </div>
 
       <div
@@ -162,11 +162,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         :aria-labelledby="`result-tabs-tab-${tab.id}`"
         tabindex="0"
       >
-        <component
-          :is="selectTaskResultComponent(tab.task as TaskBase)"
-          :active="currentTab == tab.id"
-          :task="tab.task"
-        />
+        <component :is="selectTaskResultComponent(tab.task as TaskBase)" :task="tab.task" />
       </div>
     </div>
   </div>

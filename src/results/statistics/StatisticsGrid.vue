@@ -9,14 +9,13 @@ import {
 } from "@/core/statistics/statistics.types"
 import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
-import { useWindowSize, watchImmediate } from "@vueuse/core"
+import { useElementVisibility, useWindowSize, watchImmediate } from "@vueuse/core"
 import { throttle } from "lodash"
 import { storeToRefs } from "pinia"
 import { onMounted, reactive, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
-  active?: boolean
   attributes: string[]
   params: SearchParams
   rows: Row[]
@@ -33,6 +32,7 @@ const { t } = useI18n()
 
 let grid: StatisticsGrid | undefined
 const gridEl = useTemplateRef("gridEl")
+const isVisible = useElementVisibility(gridEl)
 const { statsRelative } = storeToRefs(store)
 
 // Wait for the grid element ref to be set
@@ -43,8 +43,8 @@ onMounted(() => {
 
 // Update grid size when window is resized, unless not currently visible
 watch(
-  [reactive(useWindowSize()), () => props.active],
-  throttle(() => props.active && grid?.resize(), 100),
+  [reactive(useWindowSize()), isVisible],
+  throttle(() => isVisible && grid?.resize(), 100),
   { flush: "post" },
 )
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
-import { watchImmediate, whenever } from "@vueuse/core"
-import { computed, ref } from "vue"
+import { useElementVisibility, watchImmediate, whenever } from "@vueuse/core"
+import { computed, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash"
@@ -13,23 +13,20 @@ import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/c
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
-import { Lemgram } from "@/core/lemgram"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
-
-const props = defineProps<{
-  active: boolean
-}>()
 
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
+const containerEl = useTemplateRef("container")
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<WordPicture>()
 const { activeSearch } = storeToRefs(store)
 const errorMessage = ref<string>()
+const isVisible = useElementVisibility(containerEl)
 const limit = ref(LIMITS[0])
 const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
@@ -39,7 +36,7 @@ const proxy = new RelationsProxy()
 
 // Activate when opening tab first time
 whenever(
-  () => props.active,
+  isVisible,
   () => {
     // Start watching the active search query
     watchImmediate(activeSearch, () => {
@@ -84,7 +81,7 @@ function onClickRow(row: MatchedRelation): void {
 </script>
 
 <template>
-  <div class="vstack gap-2">
+  <div class="vstack gap-2" ref="container">
     <!-- Options bar -->
     <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
       <label class="d-flex gap-2 align-items-baseline">

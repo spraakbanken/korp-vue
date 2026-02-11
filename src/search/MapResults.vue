@@ -8,13 +8,12 @@ import { ExampleTask } from "@/core/task/ExampleTask"
 import type { MapTask } from "@/core/task/MapTask"
 import { regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
-import { whenever } from "@vueuse/core"
+import { useElementVisibility, whenever } from "@vueuse/core"
 import { groupBy } from "lodash"
 import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
-  active: boolean
   task: MapTask
 }>()
 
@@ -23,6 +22,7 @@ const { t } = useI18n()
 
 const id = useId()
 const mapEl = useTemplateRef("map")
+const isMapVisible = useElementVisibility(mapEl)
 const seriesAll = ref<Record<string, MarkerGroup>>({})
 const enableClustering = ref(false)
 const enabledSeries = ref<string[]>([])
@@ -61,6 +61,8 @@ watch([enableClustering, enabledSeries], () => {
   model.updateMarkers(series, "gray")
 })
 
+whenever(isMapVisible, () => model.map.invalidateSize())
+
 function onMarkerClick(marker: MarkerData) {
   const { point, queryData } = marker
   const location = [point.name, point.countryCode, point.lat, point.lng].join(";")
@@ -71,12 +73,6 @@ function onMarkerClick(marker: MarkerData) {
   const task = new ExampleTask(queryData.corpora, cqps, queryData.within, readingMode)
   createTab(t("result.kwic"), task)
 }
-
-whenever(
-  () => props.active,
-  () => model.map.invalidateSize(),
-  { flush: "post" },
-)
 
 onBeforeUnmount(() => {
   props.task.abort()

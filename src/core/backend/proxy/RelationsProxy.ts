@@ -29,6 +29,7 @@ export class RelationsProxy extends ProxyBase<"relations"> {
 
     if (!condition.val) throw new RelationsParseError("Condition value must not be empty")
 
+    // TODO Check for prefix/suffix
     return {
       type: isWord ? "word" : "lemgram",
       word: condition.val as string,

@@ -5,8 +5,8 @@ import { getCqp, processStatisticsResult } from "@/core/statistics/statistics"
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { watchDeep, watchImmediate, whenever } from "@vueuse/core"
-import { computed, ref } from "vue"
+import { useElementVisibility, watchDeep, watchImmediate, whenever } from "@vueuse/core"
+import { computed, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
@@ -24,10 +24,6 @@ import MapButton from "./MapButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
-const props = defineProps<{
-  active: boolean
-}>()
-
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
@@ -37,8 +33,10 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   insensitive: store.stats_reduce_insensitive.split(","),
 })
 let corpusSelectionSearched: CorpusSet | null = null
+const containerEl = useTemplateRef("container")
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+const isVisible = useElementVisibility(containerEl)
 /** List of map-compatible attributes in the searched corpus set */
 const mapAttributes = ref<MapAttributeOption[]>([])
 const rowsSelected = ref<Row[]>([])
@@ -49,7 +47,7 @@ const proxy = new StatsProxy()
 
 // Enable statistics when opening tab first time
 whenever(
-  () => props.active,
+  isVisible,
   () => {
     // Start watching search query
     watchImmediate(activeSearch, () => {
@@ -57,6 +55,8 @@ whenever(
       if (corpusSelection.corpora.length) doSearch()
       else setTimeout(() => doSearch())
     })
+
+    watchDeep(attributesSelected, () => onOptionsChange())
   },
   { once: true, immediate: true },
 )
@@ -89,8 +89,6 @@ const onOptionsChange = debounce(() => {
   store.stats_reduce_insensitive = insensitive.join()
   doSearch()
 }, UPDATE_DELAY_MS)
-
-watchDeep(attributesSelected, onOptionsChange)
 
 /** Open a dynamic subsearch tab when clicking a frequency value */
 function onClickValue(corpusIds: string[], subcqp?: string) {
@@ -147,7 +145,7 @@ function getSubqueries() {
 </script>
 
 <template>
-  <div class="vstack gap-2">
+  <div class="vstack gap-2" ref="container">
     <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:
@@ -173,7 +171,6 @@ function getSubqueries() {
 
     <StatisticsGrid
       v-if="data"
-      :active
       :attributes="attributesSelected.selected"
       :rows="data.rows"
       :params="data.params"
