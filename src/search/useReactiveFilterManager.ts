@@ -1,5 +1,5 @@
 import { GlobalFilterManager } from "@/core/search/GlobalFilterManager"
-import { once } from "lodash"
+import { once } from "lodash-es"
 import { reactive, type Reactive } from "vue"
 
 /** Reactive wrapper around the `GlobalFilterManager` singleton object */

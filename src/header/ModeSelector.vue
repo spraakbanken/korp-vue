@@ -2,7 +2,7 @@
 import settings from "@/core/config"
 import currentMode from "@/core/corpora/mode"
 import { useLocale } from "@/i18n/useLocale"
-import { remove } from "lodash"
+import { remove } from "lodash-es"
 
 const { locObj } = useLocale()
 

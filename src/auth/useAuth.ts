@@ -2,7 +2,7 @@ import { inject } from "vue"
 import { dummyAuth } from "./authDummy"
 import type { VueAuthModule } from "./auth.types"
 import { setAuth } from "@/core/auth"
-import { once } from "lodash"
+import { once } from "lodash-es"
 import { injectionKeys } from "@/injection"
 
 const setAuthOnce = once(setAuth)

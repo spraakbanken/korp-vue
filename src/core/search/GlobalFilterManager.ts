@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual, mapValues, pickBy } from "lodash"
+import { cloneDeep, isEqual, mapValues, pickBy } from "lodash-es"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { regescape } from "@/core/util"
 import type { RecursiveRecord } from "@/core/backend/types/attrValues"

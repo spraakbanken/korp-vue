@@ -1,4 +1,4 @@
-import { intersection, mapValues, merge, pick } from "lodash"
+import { intersection, mapValues, merge, pick } from "lodash-es"
 import moment, { type Moment } from "moment"
 
 /** Length of a day, in ms */

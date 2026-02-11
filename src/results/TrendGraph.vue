@@ -19,7 +19,7 @@ import { type Moment } from "moment"
 import { computed, useId } from "vue"
 import { Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { cloneDeep, merge } from "lodash"
+import { cloneDeep, merge } from "lodash-es"
 import { GoldenAnglePaletteHsl } from "@/core/color"
 
 const props = defineProps<{

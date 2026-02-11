@@ -9,7 +9,7 @@ import type { MapTask } from "@/core/task/MapTask"
 import { regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useElementVisibility, whenever } from "@vueuse/core"
-import { groupBy } from "lodash"
+import { groupBy } from "lodash-es"
 import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 

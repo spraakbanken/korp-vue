@@ -4,7 +4,7 @@ import { findOptimalLevel, getTimeCqp, spliceGraphData, type Level } from "@/cor
 import type { Moment } from "moment"
 import { computed, onMounted, ref } from "vue"
 import TrendGraph from "./TrendGraph.vue"
-import { cloneDeep, compact } from "lodash"
+import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"

@@ -1,5 +1,5 @@
 import { defineAsyncComponent, inject, type Component, type InjectionKey, type Ref } from "vue"
-import { mapValues } from "lodash"
+import { mapValues } from "lodash-es"
 import type { AuthModule } from "./core/auth"
 import type { SelectedToken } from "./core/kwic/kwic"
 import type { Stringifier } from "./attributes/attributes.types"

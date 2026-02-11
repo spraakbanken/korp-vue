@@ -1,4 +1,4 @@
-import sum from "lodash/sum"
+import { sum } from "lodash-es"
 import type { ApiKwic, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"

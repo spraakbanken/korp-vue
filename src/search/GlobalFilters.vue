@@ -2,7 +2,7 @@
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 import { watchDeep, watchImmediate, watchOnce } from "@vueuse/core"
-import { isEqual } from "lodash"
+import { isEqual } from "lodash-es"
 import { storeToRefs } from "pinia"
 import { computed, watch } from "vue"
 import GlobalFilterSelector from "./GlobalFilterSelector.vue"

@@ -7,7 +7,7 @@ import type {
   ProgressResponse,
   Response as KResponse,
 } from "./types"
-import { omitBy, pickBy } from "lodash"
+import { omitBy, pickBy } from "lodash-es"
 import { buildUrl, toFormData } from "@/core/util"
 import { auth } from "@/core/auth"
 

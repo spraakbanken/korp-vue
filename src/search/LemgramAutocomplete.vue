@@ -4,7 +4,7 @@ import { corpusSelection } from "@/core/corpora/corpusListing"
 import { Lemgram } from "@/core/lemgram"
 import { watchImmediate } from "@vueuse/core"
 import { Dropdown } from "bootstrap"
-import { throttle } from "lodash"
+import { throttle } from "lodash-es"
 import { ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 

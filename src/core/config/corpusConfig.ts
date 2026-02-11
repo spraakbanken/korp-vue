@@ -1,4 +1,4 @@
-import { keyBy, mapValues, omit, pick } from "lodash"
+import { keyBy, mapValues, omit, pick } from "lodash-es"
 import { korpRequest } from "../backend/common"
 import currentMode from "../corpora/mode"
 import { fromKeys } from "../util"

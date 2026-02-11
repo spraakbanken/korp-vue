@@ -1,4 +1,4 @@
-import { pick } from "lodash"
+import { pick } from "lodash-es"
 import ProxyBase from "./ProxyBase"
 import type { CountParams, CountsMerged } from "../types/count"
 import { corpusSelection } from "@/core/corpora/corpusListing"

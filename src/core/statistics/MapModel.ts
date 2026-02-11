@@ -1,5 +1,5 @@
 import L from "leaflet"
-import keyBy from "lodash/keyBy"
+import { keyBy } from "lodash-es"
 import {
   createCircleMarker,
   createMultiMarkerIcon,

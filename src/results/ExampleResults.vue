@@ -5,7 +5,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
 import { onMounted, ref, watch } from "vue"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
-import { debounce } from "lodash"
+import { debounce } from "lodash-es"
 import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 

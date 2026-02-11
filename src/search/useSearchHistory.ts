@@ -4,7 +4,7 @@ import { getSearchParamNames, type SearchParamNames } from "@/core/url"
 import { splitFirst, unregescape } from "@/core/util"
 import { useAppStore } from "@/store/useAppStore"
 import { useLocalStorage, whenever } from "@vueuse/core"
-import { isEqual, pick } from "lodash"
+import { isEqual, pick } from "lodash-es"
 import { storeToRefs } from "pinia"
 import { computed, readonly } from "vue"
 

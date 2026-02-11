@@ -1,4 +1,4 @@
-import { assignWith, memoize, omit, pickBy, range } from "lodash"
+import { assignWith, memoize, omit, pickBy, range } from "lodash-es"
 import type { Histogram } from "./types"
 import { korpRequest } from "./common"
 import settings from "@/core/config"

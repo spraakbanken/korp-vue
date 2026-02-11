@@ -1,5 +1,5 @@
 import { korpRequest } from "../backend/common"
-import { compact } from "lodash"
+import { compact } from "lodash-es"
 import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "../corpora/corpusListing"

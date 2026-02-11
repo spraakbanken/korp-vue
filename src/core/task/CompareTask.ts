@@ -1,4 +1,4 @@
-import { groupBy, pick, range, sumBy, uniq, zip } from "lodash"
+import { groupBy, pick, range, sumBy, uniq, zip } from "lodash-es"
 import type { Attribute } from "../config/corpusConfigRaw.types"
 import { corpusListing } from "../corpora/corpusListing"
 import { CorpusSet } from "../corpora/CorpusSet"

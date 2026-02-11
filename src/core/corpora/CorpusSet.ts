@@ -12,7 +12,7 @@ import {
   sum,
   union,
   uniq,
-} from "lodash"
+} from "lodash-es"
 import moment, { type Moment } from "moment"
 import settings, { normalizeDataset, unprefixAttr } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"

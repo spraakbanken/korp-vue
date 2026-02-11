@@ -1,5 +1,5 @@
 import { locObj } from "@/core/i18n"
-import { sum } from "lodash"
+import { sum } from "lodash-es"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import type { LangString } from "@/core/model/locale"
 import type { Folder } from "@/core/config/corpusConfigRaw.types"

@@ -1,4 +1,4 @@
-import { compact, escape } from "lodash"
+import { compact, escape } from "lodash-es"
 import type { CountsMerged } from "../backend/types/count"
 import {
   isTotalRow,

@@ -1,4 +1,4 @@
-import { zip } from "lodash"
+import { zip } from "lodash-es"
 import "slickgrid/dist/styles/css/slick.grid.css"
 import { isTotalRow, type Dataset, type Row, type SingleRow } from "./statistics.types"
 import {

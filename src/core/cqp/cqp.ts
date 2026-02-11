@@ -1,4 +1,4 @@
-import { cloneDeep, compact, sortBy } from "lodash"
+import { cloneDeep, compact, sortBy } from "lodash-es"
 import { parse } from "./CQPParser.peggy"
 import {
   isCqpBound,

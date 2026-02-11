@@ -1,6 +1,6 @@
 import { korpRequest } from "../common"
 import type { ApiKwic, Token } from "../../backend/types"
-import { omit } from "lodash"
+import { omit } from "lodash-es"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { Corpus } from "@/core/config/corpusConfig.types"

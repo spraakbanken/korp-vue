@@ -1,4 +1,4 @@
-import { isEqual, once } from "lodash"
+import { isEqual, once } from "lodash-es"
 import type { WordPictureDef, WordPictureDefItem } from "./config/instanceConfig.types"
 import type { Relation } from "./backend/types/relations"
 import { getWordPictureConfig } from "./config"

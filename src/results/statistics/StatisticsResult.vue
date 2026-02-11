@@ -10,7 +10,7 @@ import { computed, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { debounce } from "lodash"
+import { debounce } from "lodash-es"
 import StatisticsAttributeSelector, {
   type StatisticsAttributeSelectorModel,
 } from "./StatisticsAttributeSelector.vue"

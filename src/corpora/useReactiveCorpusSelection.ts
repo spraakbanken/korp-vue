@@ -1,6 +1,6 @@
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
-import { once } from "lodash"
+import { once } from "lodash-es"
 import { reactive, type Reactive } from "vue"
 
 /** Reactive wrapper around the global `corpusSelection` object */

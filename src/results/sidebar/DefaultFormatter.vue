@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStringifier } from "@/attributes/useStringifier"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { compact } from "lodash"
+import { compact } from "lodash-es"
 
 const props = defineProps<{
   attribute: Attribute

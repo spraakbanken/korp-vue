@@ -3,7 +3,7 @@ import type { SearchExample } from "@/core/config/instanceConfig.types"
 import type { Store } from "@/core/model/store"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
-import { shuffle } from "lodash"
+import { shuffle } from "lodash-es"
 
 const props = defineProps<{
   items: SearchExample[]

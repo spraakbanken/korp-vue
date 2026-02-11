@@ -2,7 +2,7 @@
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { onMounted, ref } from "vue"
-import { partition } from "lodash"
+import { partition } from "lodash-es"
 import { getDefaultCorpusSelection } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { useAuth } from "@/auth/useAuth"

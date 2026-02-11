@@ -4,7 +4,7 @@ import type { Stringifier } from "./attributes.types"
 import { useI18n } from "vue-i18n"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
-import { escape } from "lodash"
+import { escape } from "lodash-es"
 import { useLocale } from "@/i18n/useLocale"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 

@@ -1,6 +1,4 @@
-import groupBy from "lodash/groupBy"
-import mapValues from "lodash/mapValues"
-import sumBy from "lodash/sumBy"
+import { groupBy, mapValues, sumBy } from "lodash-es"
 import type {
   AbsRelSeq,
   Dataset,

@@ -1,7 +1,7 @@
 import type { InstanceConfig, WordPictureDef } from "./instanceConfig.types"
 import type { Attribute, MaybeConfigurable, MaybeWithOptions } from "./corpusConfigRaw.types"
 import type { Corpus, CorpusConfig } from "./corpusConfig.types"
-import { isFunction } from "lodash"
+import { isFunction } from "lodash-es"
 import { getAllCorporaInFolders } from "../corpora/corpora"
 
 /** A combination of frontend app settings and corpus config from backend. */

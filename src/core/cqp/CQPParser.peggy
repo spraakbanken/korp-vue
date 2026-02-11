@@ -1,5 +1,5 @@
 {{
-  import { mergeWith } from "lodash"
+  import { mergeWith } from "lodash-es"
 
   function makeObj(type, op, val, flags) {
     return {type : type, op : op, val: val, flags: flags}

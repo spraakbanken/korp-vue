@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
-import { groupBy } from "lodash"
+import { groupBy } from "lodash-es"
 import { computed } from "vue"
 import type { Attribute } from "./core/config/corpusConfigRaw.types"
 

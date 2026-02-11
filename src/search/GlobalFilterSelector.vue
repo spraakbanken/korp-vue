@@ -2,7 +2,7 @@
 import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
-import { capitalize, sortBy } from "lodash"
+import { capitalize, sortBy } from "lodash-es"
 import { computed, ref, watch } from "vue"
 
 const model = defineModel<string[]>({ default: [] })

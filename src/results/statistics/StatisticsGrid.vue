@@ -10,7 +10,7 @@ import {
 import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, useWindowSize, watchImmediate } from "@vueuse/core"
-import { throttle } from "lodash"
+import { throttle } from "lodash-es"
 import { storeToRefs } from "pinia"
 import { onMounted, reactive, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"

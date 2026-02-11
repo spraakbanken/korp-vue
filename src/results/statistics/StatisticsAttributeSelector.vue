@@ -3,7 +3,7 @@ import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useLocale } from "@/i18n/useLocale"
 import { watchImmediate } from "@vueuse/core"
-import { compact, groupBy, isEqual, sortBy } from "lodash"
+import { compact, groupBy, isEqual, sortBy } from "lodash-es"
 import { computed, reactive, unref } from "vue"
 
 export type StatisticsAttributeSelectorModel = {
