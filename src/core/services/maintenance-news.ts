@@ -1,5 +1,5 @@
 import { html } from "@/util"
-import { fetchNews } from "./news-service"
+import { fetchNews } from "./news"
 import { locObj } from "@/i18n"
 
 /** Show simple HTML for maintenance-tagged news items. */

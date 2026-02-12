@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { fetchNews } from "@/core/services/news-service"
 import { useLocale } from "@/i18n/useLocale"
 import { computedAsync, useToggle } from "@vueuse/core"
 import { computed } from "vue"
@@ -9,7 +8,10 @@ const COLLAPSED_MAX = 3
 const [expanded, toggle] = useToggle()
 const { locObj } = useLocale()
 
-const items = computedAsync(fetchNews)
+const items = computedAsync(async () => {
+  const news = await import("@/core/services/news")
+  return news.fetchNews()
+})
 const itemsFiltered = computed(() =>
   expanded.value ? items.value : items.value?.slice(0, COLLAPSED_MAX),
 )
