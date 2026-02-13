@@ -141,6 +141,8 @@ result.export.separator.tab: tab
 result.kwic: KWIC
 result.kwic.show_context: Show context
 result.kwic.show_context.help: By default, search hits are listed in a keywords-in-context layout (KWIC). Enabling this option will instead show them with wrapped lines, suitable for reading. For some corpora, this also retrieves more of the context, such as a full paragraph.
+result.kwic.export.type.kwic: One sentence per row
+result.kwic.export.type.annotations: One token per row with annotations
 result.kwic.hits_count: "Number of hits: {0}"
 result.kwic.hits_relative: "Relative frequency: {0}"
 result.kwic.hits_relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.

@@ -12,7 +12,7 @@ import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
-import { transformData } from "@/core/kwic/export"
+import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
 
 const UPDATE_DELAY_MS = 500
@@ -25,6 +25,7 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 const { activeSearch, page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
+const exportType = ref<ExportType>("kwic")
 const hitsCount = ref(0)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
@@ -73,7 +74,7 @@ watch(pageLocal, () => doSearch(true))
 function createExport() {
   const params = proxy.getParams()
   // TODO Chose kwic/annotations
-  return transformData("kwic", kwic.value!, params, hitsCount.value)
+  return transformData(exportType.value, kwic.value!, params, hitsCount.value)
 }
 </script>
 
@@ -120,7 +121,22 @@ function createExport() {
       </label>
 
       <template #end>
-        <ExportButton name="kwic" :get-rows="createExport" />
+        <ExportButton name="kwic" :get-rows="createExport">
+          <div>
+            <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                :id="`export-type-${option}`"
+                :value="option"
+                v-model="exportType"
+              />
+              <label :for="`export-type-${option}`" class="form-check-label">
+                {{ $t(`result.kwic.export.type.${option}`) }}
+              </label>
+            </div>
+          </div>
+        </ExportButton>
       </template>
     </OptionsBar>
 
