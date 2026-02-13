@@ -14,6 +14,7 @@ import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
+import ExportButton from "./ExportButton.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -79,6 +80,10 @@ function onClickRow(row: MatchedRelation): void {
   const task = new WordpicExampleTask(row.source.join())
   createTab(t("result.kwic"), task)
 }
+
+function createExport() {
+  return data.value!.generateCsv()
+}
 </script>
 
 <template>
@@ -109,6 +114,10 @@ function onClickRow(row: MatchedRelation): void {
         <input type="checkbox" v-model="showPos" class="form-check-input" />
         {{ $t("result.wordpic.show_pos") }}
       </label>
+
+      <template #end>
+        <ExportButton :disabled="!data" name="wordpic" :get-rows="createExport" />
+      </template>
     </OptionsBar>
 
     <!-- Wordpic cards -->
