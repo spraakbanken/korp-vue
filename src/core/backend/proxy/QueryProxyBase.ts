@@ -4,12 +4,18 @@ import type { QueryParams, QueryResponse } from "../types/query"
 import ProxyBase from "./ProxyBase"
 import { getDefaultWithin } from "@/core/config"
 import { expandCqp } from "@/core/cqp/cqp"
+import { massageData, type Row } from "@/core/kwic/kwic"
 
 export type QueryParamOptions = {
   isPaging?: boolean
   page?: number
   isReading?: boolean
   defaultWithin?: string
+}
+
+export type QueryData = {
+  hits: number
+  kwic: Row[]
 }
 
 export abstract class QueryProxyBase extends ProxyBase<"query"> {
@@ -43,5 +49,10 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     const data = await super.send(params)
     this.queryData = data.query_data
     return data
+  }
+
+  protected processData(data: QueryResponse): QueryData {
+    const kwic = massageData(data.kwic)
+    return { hits: data.hits, kwic }
   }
 }

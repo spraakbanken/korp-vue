@@ -1,5 +1,5 @@
-import type { QueryParams, QueryResponse } from "../types/query"
-import { QueryProxyBase } from "./QueryProxyBase"
+import type { QueryParams } from "../types/query"
+import { QueryProxyBase, type QueryData } from "./QueryProxyBase"
 
 export class ExampleProxy extends QueryProxyBase {
   constructor(
@@ -35,13 +35,14 @@ export class ExampleProxy extends QueryProxyBase {
     }
   }
 
-  makeRequest(
+  async makeRequest(
     page: number,
     hpp: number,
     isPaging = false,
     isReading = false,
-  ): Promise<QueryResponse> {
+  ): Promise<QueryData> {
     const params = this.buildParams(page, hpp, isPaging, isReading)
-    return this.send(params)
+    const data = await this.send(params)
+    return this.processData(data)
   }
 }

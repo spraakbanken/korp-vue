@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { ApiKwic } from "@/core/backend/types"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
-import { massageData, type SelectedToken } from "@/core/kwic/kwic"
+import { type Row, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
 import KwicSidebar from "../sidebar/KwicSidebar.vue"
@@ -16,7 +15,7 @@ const props = defineProps<{
   hitsCount: number
   hpp: number
   isReading?: boolean
-  kwic?: ApiKwic[]
+  kwic?: Row[]
   loading?: boolean
 }>()
 
@@ -24,7 +23,6 @@ const corpusSelection = useReactiveCorpusSelection()
 
 const tokensTotal = computed(() => corpusSelection.getTokenCount())
 const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
-const rows = computed(() => (props.kwic ? massageData(props.kwic) : undefined))
 const selectedToken = ref<SelectedToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
@@ -47,9 +45,9 @@ provide(injectionKeys.selectedToken, selectedToken)
     </div>
 
     <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
-      <template v-if="rows">
-        <KwicGrid v-if="!isReading" :data="rows" />
-        <KwicList v-else :data="rows" />
+      <template v-if="kwic">
+        <KwicGrid v-if="!isReading" :data="kwic" />
+        <KwicList v-else :data="kwic" />
       </template>
 
       <KwicSidebar @click.stop />

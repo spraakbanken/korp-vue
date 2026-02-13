@@ -1,6 +1,6 @@
 import type { Store } from "@/core/model/store"
-import { QueryProxyBase } from "./QueryProxyBase"
-import type { QueryParams, QueryResponse } from "../types/query"
+import { QueryProxyBase, type QueryData } from "./QueryProxyBase"
+import type { QueryParams } from "../types/query"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 
 export class KwicProxy extends QueryProxyBase {
@@ -27,8 +27,9 @@ export class KwicProxy extends QueryProxyBase {
     }
   }
 
-  makeRequest(cqp: string, isPaging = false): Promise<QueryResponse> {
+  async makeRequest(cqp: string, isPaging = false): Promise<QueryData> {
     const params = this.buildParams(cqp, isPaging)
-    return this.send(params)
+    const data = await this.send(params)
+    return this.processData(data)
   }
 }

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
-import type { ApiKwic } from "@/core/backend/types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { syncRef, watchImmediate } from "@vueuse/core"
@@ -14,6 +13,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
 import { transformData } from "@/core/kwic/export"
+import type { Row } from "@/core/kwic/kwic"
 
 const UPDATE_DELAY_MS = 500
 
@@ -29,7 +29,7 @@ const hitsCount = ref(0)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(settings["hits_per_page_default"])
-const kwic = ref<ApiKwic[]>()
+const kwic = ref<Row[]>()
 const loading = ref(false)
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>("")

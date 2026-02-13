@@ -1,8 +1,8 @@
 import { ExampleProxy } from "../backend/proxy/ExampleProxy"
-import type { QueryResponse } from "../backend/types/query"
+import type { QueryData } from "../backend/proxy/QueryProxyBase"
 import { TaskBase } from "./TaskBase"
 
-export class ExampleTask extends TaskBase<QueryResponse> {
+export class ExampleTask extends TaskBase<QueryData> {
   readonly proxy: ExampleProxy
 
   constructor(
@@ -19,7 +19,7 @@ export class ExampleTask extends TaskBase<QueryResponse> {
     this.proxy.abort()
   }
 
-  send(page: number, hpp: number, isPaging: boolean, isReading: boolean): Promise<QueryResponse> {
+  send(page: number, hpp: number, isPaging: boolean, isReading: boolean): Promise<QueryData> {
     return this.proxy.makeRequest(page, hpp, isPaging, isReading)
   }
 }

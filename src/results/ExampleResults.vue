@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ApiKwic } from "@/core/backend/types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
@@ -9,6 +8,7 @@ import { debounce } from "lodash-es"
 import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
+import type { Row } from "@/core/kwic/kwic"
 
 const UPDATE_DELAY_MS = 500
 
@@ -20,7 +20,7 @@ const { hpp } = storeToRefs(store)
 const context = ref(props.task.isReadingInit || store.reading_mode)
 const hitsCount = ref(0)
 const isReading = ref(store.reading_mode)
-const kwic = ref<ApiKwic[]>()
+const kwic = ref<Row[]>()
 const loading = ref(false)
 const page = ref(1)
 
