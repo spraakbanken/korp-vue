@@ -132,6 +132,12 @@ search.filters.add: Lägg till {0}…
 
 result.compare.column_heading: Utmärkande för {label}
 
+result.export.action: Exportera
+result.export.separator: Avskiljare
+result.export.separator.comma: komma
+result.export.separator.semi: semikolon
+result.export.separator.tab: tabb
+
 result.kwic: KWIC
 result.kwic.show_context: Visa kontext
 result.kwic.show_context.help: Som standard visas sökträffar med träfforden centrerade (keyword in context, KWIC). Med detta alternativ påslaget visas de istället med radbrytningar för bättre läsbarhet. Vissa korpusar ger också mer kontext i det läget, typiskt ett helt stycke.

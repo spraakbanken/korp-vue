@@ -12,6 +12,8 @@ import type { QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
+import ExportButton from "./ExportButton.vue"
+import { transformData } from "@/core/kwic/export"
 
 const UPDATE_DELAY_MS = 500
 
@@ -67,6 +69,12 @@ const onOptionsChange = debounce(() => {
 }, UPDATE_DELAY_MS)
 
 watch(pageLocal, () => doSearch(true))
+
+function createExport() {
+  const params = proxy.getParams()
+  // TODO Chose kwic/annotations
+  return transformData("kwic", kwic.value!, params, hitsCount.value)
+}
 </script>
 
 <template>
@@ -110,6 +118,10 @@ watch(pageLocal, () => doSearch(true))
           </select>
         </i18n-t>
       </label>
+
+      <template #end>
+        <ExportButton name="kwic" :get-rows="createExport" />
+      </template>
     </OptionsBar>
 
     <KwicResultsContent :hitsCount :hpp :isReading :kwic :loading v-model="pageLocal" />
