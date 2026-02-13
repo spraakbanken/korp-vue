@@ -133,6 +133,7 @@ search.filters.add: Lägg till {0}…
 result.compare.column_heading: Utmärkande för {label}
 
 result.export.action: Exportera
+result.export.help: Spara visad data som tabell i en CSV-fil. Filen kan till exempel öppnas som kalkylark.
 result.export.separator: Avskiljare
 result.export.separator.comma: komma
 result.export.separator.semi: semikolon

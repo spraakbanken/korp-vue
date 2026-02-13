@@ -122,7 +122,7 @@ function createExport() {
 
       <template #end>
         <ExportButton name="kwic" :get-rows="createExport">
-          <div>
+          <div class="text-nowrap">
             <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
               <input
                 type="radio"

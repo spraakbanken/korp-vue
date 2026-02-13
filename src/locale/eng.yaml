@@ -133,6 +133,7 @@ search.filters.add: Add {0}…
 result.compare.column_heading: Prominent in {label}
 
 result.export.action: Export
+result.export.help: Save displayed data as a table in a CSV file, compatible with spreadsheet applications.
 result.export.separator: Separator
 result.export.separator.comma: comma
 result.export.separator.semi: semicolon

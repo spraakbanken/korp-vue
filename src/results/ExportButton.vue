@@ -32,33 +32,37 @@ function onSubmit() {
     </button>
 
     <!-- Dropdown form -->
-    <div class="dropdown-menu p-2" :aria-labelledby="`export-button-${id}`" style="min-width: 15em">
-      <form @submit.prevent="onSubmit()" class="vstack gap-2">
-        <!-- Custom content -->
-        <slot />
+    <div class="dropdown-menu card p-0" :aria-labelledby="`export-button-${id}`">
+      <form @submit.prevent="onSubmit()">
+        <div class="card-body p-2 vstack gap-2">
+          <div class="text-muted">{{ $t("result.export.help") }}</div>
 
-        <!-- Separator field -->
-        <div>
-          <div class="form-label">{{ $t("result.export.separator") }}</div>
-          <div class="d-flex flex-wrap gap-3">
-            <div v-for="option in Object.keys(CSV_TYPES)" :key="option" class="form-check">
-              <input
-                type="radio"
-                class="form-check-input"
-                :id="`${id}-${option}`"
-                :value="option"
-                v-model="separator"
-              />
-              <label :for="`${id}-${option}`" class="form-check-label">
-                <code>{{ CSV_TYPES[option as CsvType].display }}</code>
-                {{ $t(`result.export.separator.${option}`) }}
-              </label>
-            </div>
-          </div>
+          <!-- Custom content -->
+          <slot />
         </div>
 
-        <!-- Submit button -->
-        <button type="submit" class="btn btn-primary">{{ $t("result.export.action") }}</button>
+        <div class="card-footer p-2 hstack align-items-baseline gap-2">
+          <!-- Separator field -->
+          <div class="d-flex align-items-baseline">
+            {{ $t("result.export.separator") }}
+            <select
+              v-model="separator"
+              class="form-select form-select-sm d-inline-block w-auto ms-1"
+            >
+              <option v-for="(option, key) in CSV_TYPES" :key="key" :value="key">
+                {{ $t(`result.export.separator.${key}`) }}
+                {{ option.display }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex-grow-1"></div>
+
+          <!-- Submit button -->
+          <button type="submit" class="btn btn-primary btn-sm">
+            {{ $t("result.export.action") }}
+          </button>
+        </div>
       </form>
     </div>
   </div>
