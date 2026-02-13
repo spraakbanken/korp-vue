@@ -161,19 +161,20 @@ function reduceStringify(name: string, cl?: CorpusSet): (values: string[]) => st
 export function createStatisticsCsv(
   data: Dataset,
   attrs: string[],
-  corpora: Corpus[],
+  corpusTitles: Record<string, string>,
   relative: boolean,
-  lang?: string,
+  totalStr: string,
 ): (string | number)[][] {
+  /** Which value to pick from each `[abs, rel]` cell */
   const frequencyIndex = relative ? 1 : 0
-  const corpusTitles = corpora.map((corpus) => locObj(corpus.title, lang))
-  const header = [...attrs, loc("stats_total", lang), ...corpusTitles]
+  const header = [...attrs, totalStr, ...Object.values(corpusTitles)]
 
   const output = data.map((row) => {
     // One cell per grouped attribute
     // TODO Should isPhraseLevelDisjunction be handled here?
-    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]))
-    const frequencies = corpora.map((corpus) => row.count[corpus.id.toUpperCase()]![frequencyIndex])
+    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]!))
+    const corpusIds = Object.keys(corpusTitles)
+    const frequencies = corpusIds.map((id) => row.count[id.toUpperCase()]![frequencyIndex])
     return [...attrValues, row.total[frequencyIndex], ...frequencies]
   })
 

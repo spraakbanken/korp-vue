@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { getCqp, processStatisticsResult } from "@/core/statistics/statistics"
+import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/statistics/statistics"
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
@@ -22,6 +22,8 @@ import { MapTask } from "@/core/task/MapTask"
 import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
+import ExportButton from "../ExportButton.vue"
+import { locObj } from "@/core/i18n"
 
 const UPDATE_DELAY_MS = 500
 
@@ -143,6 +145,20 @@ function getSubqueries() {
   }
   return subqueries
 }
+
+function createExport() {
+  const corpusTitles = Object.fromEntries(
+    corpusSelectionSearched!.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
+  )
+
+  return createStatisticsCsv(
+    data.value!.rows,
+    attributesSelected.value.selected,
+    corpusTitles,
+    statsRelative.value,
+    t("result.statistics.total"),
+  )
+}
 </script>
 
 <template>
@@ -158,6 +174,10 @@ function getSubqueries() {
         {{ $t("result.statistics.relative") }}
         <HelpBadge :text="$t('result.statistics.relative.help')" />
       </label>
+
+      <template #end>
+        <ExportButton :disabled="!data" name="statistics" :get-rows="createExport" />
+      </template>
     </OptionsBar>
 
     <div class="hstack gap-2 align-items-baseline">

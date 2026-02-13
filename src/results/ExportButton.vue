@@ -3,6 +3,7 @@ import { CSV_TYPES, downloadCsvFile, type CsvType } from "@/core/services/csv"
 import { ref, useId } from "vue"
 
 const props = defineProps<{
+  disabled?: boolean
   name: string
   getRows: () => Iterable<(string | number)[]>
 }>()
@@ -23,6 +24,7 @@ function onSubmit() {
       class="btn btn-secondary dropdown-toggle"
       type="button"
       :id="`export-button-${id}`"
+      :disabled
       data-bs-toggle="dropdown"
       data-bs-auto-close="outside"
       aria-haspopup="true"
