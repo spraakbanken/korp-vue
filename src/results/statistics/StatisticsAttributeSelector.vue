@@ -83,7 +83,7 @@ function sortNames(names: string[]) {
     }"
   >
     <button
-      class="btn btn-sm btn-secondary dropdown-toggle"
+      class="form-control form-control-sm dropdown-toggle"
       type="button"
       id="statistics-attribute-selector-dropdown"
       data-bs-toggle="dropdown"

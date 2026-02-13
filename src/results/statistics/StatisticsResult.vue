@@ -21,6 +21,7 @@ import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { MapTask } from "@/core/task/MapTask"
 import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import MapButton from "./MapButton.vue"
+import OptionsBar from "@/components/OptionsBar.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -146,7 +147,7 @@ function getSubqueries() {
 
 <template>
   <div class="vstack gap-2" ref="container">
-    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+    <OptionsBar>
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:
         <StatisticsAttributeSelector v-model="attributesSelected" />
@@ -157,7 +158,7 @@ function getSubqueries() {
         {{ $t("result.statistics.relative") }}
         <HelpBadge :text="$t('result.statistics.relative.help')" />
       </label>
-    </div>
+    </OptionsBar>
 
     <div class="hstack gap-2 align-items-baseline">
       <!-- Trend chart button -->

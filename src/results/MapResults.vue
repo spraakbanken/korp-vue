@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OptionsBar from "@/components/OptionsBar.vue"
 import { GoldenAnglePaletteHsl } from "@/core/color"
 import settings from "@/core/config"
 import { formatDecimals } from "@/core/i18n"
@@ -82,7 +83,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="vstack gap-2">
     <!-- Search options bar -->
-    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+    <OptionsBar>
       <div class="form-check">
         <input
           type="checkbox"
@@ -113,7 +114,7 @@ onBeforeUnmount(() => {
           </label>
         </div>
       </div>
-    </div>
+    </OptionsBar>
 
     <!-- Stacking container -->
     <div class="w-100 position-relative" style="height: 90svh">

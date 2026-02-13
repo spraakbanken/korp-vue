@@ -8,6 +8,7 @@ import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 import { debounce } from "lodash-es"
 import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
+import OptionsBar from "@/components/OptionsBar.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -47,7 +48,7 @@ watch(page, () => doSearch(true))
 
 <template>
   <div class="vstack gap-2">
-    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+    <OptionsBar>
       <label class="form-check-label">
         <input
           type="checkbox"
@@ -58,7 +59,7 @@ watch(page, () => doSearch(true))
         {{ $t("result.kwic.show_context") }}
         <HelpBadge :text="$t('result.kwic.show_context.help')" />
       </label>
-    </div>
+    </OptionsBar>
 
     <KwicResultsContent :hitsCount :hpp :isReading :kwic v-model="page" />
   </div>

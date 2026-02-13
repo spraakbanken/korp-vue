@@ -13,6 +13,7 @@ import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/c
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
+import OptionsBar from "@/components/OptionsBar.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -83,7 +84,7 @@ function onClickRow(row: MatchedRelation): void {
 <template>
   <div class="vstack gap-2" ref="container">
     <!-- Options bar -->
-    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+    <OptionsBar>
       <label class="d-flex gap-2 align-items-baseline">
         {{ $t("result.wordpic.sort") }}:
         <select
@@ -108,7 +109,7 @@ function onClickRow(row: MatchedRelation): void {
         <input type="checkbox" v-model="showPos" class="form-check-input" />
         {{ $t("result.wordpic.show_pos") }}
       </label>
-    </div>
+    </OptionsBar>
 
     <!-- Wordpic cards -->
     <div v-if="data" class="d-flex flex-wrap gap-2">

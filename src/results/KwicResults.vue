@@ -11,6 +11,7 @@ import { debounce } from "lodash-es"
 import type { QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./kwic/KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
+import OptionsBar from "@/components/OptionsBar.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -70,7 +71,7 @@ watch(pageLocal, () => doSearch(true))
 
 <template>
   <div class="vstack gap-2">
-    <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+    <OptionsBar>
       <label class="form-check form-check-label">
         <input
           type="checkbox"
@@ -109,7 +110,7 @@ watch(pageLocal, () => doSearch(true))
           </select>
         </i18n-t>
       </label>
-    </div>
+    </OptionsBar>
 
     <KwicResultsContent :hitsCount :hpp :isReading :kwic :loading v-model="pageLocal" />
   </div>
