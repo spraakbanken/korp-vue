@@ -14,8 +14,12 @@ const corpus = computed(() =>
 </script>
 
 <template>
-  <Transition>
-    <aside v-if="selectedToken && corpus" class="card shadow" style="width: 30rem">
+  <Transition appear>
+    <aside
+      v-if="selectedToken && corpus"
+      class="position-absolute top-0 end-0 h-100 overflow-y-auto card shadow"
+      style="width: 20rem"
+    >
       <div class="card-body d-flex flex-column gap-3">
         <header class="d-flex gap-2 justify-content-between">
           <div>
@@ -71,7 +75,6 @@ const corpus = computed(() =>
 
 .v-enter-from,
 .v-leave-to {
-  /* opacity: 0; */
   transform: translateX(100%);
 }
 </style>

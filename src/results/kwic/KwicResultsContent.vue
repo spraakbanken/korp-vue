@@ -57,7 +57,16 @@ watchImmediate(
       <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
     </div>
 
-    <div class="d-flex gap-2 align-items-start" @click="selectedToken = undefined">
+    <div
+      class="position-relative"
+      @click="selectedToken = undefined"
+      :style="{
+        // Make sure sidebar isn't too short if KWIC page is short
+        minHeight: '50rem',
+        // Make room for sidebar
+        paddingRight: selectedToken ? '20.5rem' : undefined,
+      }"
+    >
       <template v-if="kwic">
         <KwicGrid v-if="!isReading" :data="kwic" />
         <KwicList v-else :data="kwic" />

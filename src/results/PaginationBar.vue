@@ -60,6 +60,7 @@ function setPage(page: number) {
 
     <i18n-t tag="label" scope="global" keypath="result.pagination.goto">
       <template #input>
+        <!-- TODO Prevent out-of-bounds input -->
         <input
           type="number"
           min="1"
