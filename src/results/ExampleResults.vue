@@ -9,6 +9,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import type { Row } from "@/core/kwic/kwic"
+import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
@@ -18,6 +19,7 @@ const store = useAppStore()
 const { hpp } = storeToRefs(store)
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
 const context = ref(props.task.isReadingInit || store.reading_mode)
+const distribution = ref<HitsDistribution[]>()
 const hitsCount = ref(0)
 const isReading = ref(store.reading_mode)
 const kwic = ref<Row[]>()
@@ -33,6 +35,7 @@ async function doSearch(isPaging = false) {
   const willBeReading = context.value
   const response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
   loading.value = false
+  distribution.value = response.distribution
   hitsCount.value = response.hits
   kwic.value = response.kwic
   isReading.value = willBeReading
@@ -61,6 +64,6 @@ watch(page, () => doSearch(true))
       </label>
     </OptionsBar>
 
-    <KwicResultsContent :hitsCount :hpp :isReading :kwic v-model="page" />
+    <KwicResultsContent :distribution :hitsCount :hpp :isReading :kwic v-model="page" />
   </div>
 </template>

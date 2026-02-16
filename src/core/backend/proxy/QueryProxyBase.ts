@@ -16,6 +16,12 @@ export type QueryParamOptions = {
 export type QueryData = {
   hits: number
   kwic: Row[]
+  distribution: HitsDistribution[]
+}
+
+export type HitsDistribution = {
+  corpus: string
+  hits: number
 }
 
 export abstract class QueryProxyBase extends ProxyBase<"query"> {
@@ -53,6 +59,14 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
 
   protected processData(data: QueryResponse): QueryData {
     const kwic = massageData(data.kwic)
-    return { hits: data.hits, kwic }
+    const distribution = data.corpus_order.map((corpus) => ({
+      corpus,
+      hits: data.corpus_hits[corpus] || 0,
+    }))
+    return {
+      distribution,
+      hits: data.hits,
+      kwic,
+    }
   }
 }

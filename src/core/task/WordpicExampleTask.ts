@@ -1,8 +1,8 @@
+import type { QueryData } from "../backend/proxy/QueryProxyBase"
 import { RelationsSentencesProxy } from "../backend/proxy/RelationsSentencesProxy"
-import type { RelationsSentencesResponse } from "../backend/types/relations-sentences"
 import { TaskBase } from "./TaskBase"
 
-export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
+export class WordpicExampleTask extends TaskBase<QueryData> {
   readonly isReadingInit = false // Context param is not supported by /relations_sentences
   readonly proxy = new RelationsSentencesProxy()
 
@@ -14,7 +14,7 @@ export class WordpicExampleTask extends TaskBase<RelationsSentencesResponse> {
     this.proxy.abort()
   }
 
-  send(page: number, hpp: number): Promise<RelationsSentencesResponse> {
+  send(page: number, hpp: number): Promise<QueryData> {
     return this.proxy.makeRequest(this.source, page, hpp)
   }
 }

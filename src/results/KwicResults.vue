@@ -14,6 +14,7 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
+import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
@@ -25,6 +26,7 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 const { activeSearch, page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
+const distribution = ref<HitsDistribution[]>()
 const exportType = ref<ExportType>("kwic")
 const hitsCount = ref(0)
 /** Controls result display style */
@@ -51,6 +53,8 @@ async function doSearch(isPaging = false) {
   // Remember options affecting result display in case they are changed while the request is ongoing
   const willBeReading = context.value || !store.in_order
   proxy.setProgressHandler((report) => {
+    // TODO Show first KWIC page when available
+    distribution.value = undefined
     hitsCount.value = report.hits || 0
   })
   const response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
@@ -58,6 +62,7 @@ async function doSearch(isPaging = false) {
   isReading.value = willBeReading
   loading.value = false
   kwic.value = response.kwic
+  distribution.value = response.distribution
   hitsCount.value = response.hits
 }
 
@@ -140,6 +145,14 @@ function createExport() {
       </template>
     </OptionsBar>
 
-    <KwicResultsContent :hitsCount :hpp :isReading :kwic :loading v-model="pageLocal" />
+    <KwicResultsContent
+      :distribution
+      :hitsCount
+      :hpp
+      :isReading
+      :kwic
+      :loading
+      v-model="pageLocal"
+    />
   </div>
 </template>

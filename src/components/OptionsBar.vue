@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline">
+  <div class="bg-secondary-subtle p-2 d-flex gap-4 align-items-baseline rounded">
     <!-- Primary content -->
     <slot />
 

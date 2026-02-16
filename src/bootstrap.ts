@@ -6,6 +6,10 @@ export const vPopover: Directive<HTMLElement> = {
   mounted(el) {
     new Popover(el)
   },
+  unmounted(el) {
+    const popover = Popover.getInstance(el)
+    popover?.dispose()
+  },
 }
 
 /** Directive for initializing a tab. */

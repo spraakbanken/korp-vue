@@ -142,10 +142,11 @@ result.export.separator.tab: tabb
 result.kwic: KWIC
 result.kwic.show_context: Visa kontext
 result.kwic.show_context.help: Som standard visas sökträffar med träfforden centrerade (keyword in context, KWIC). Med detta alternativ påslaget visas de istället med radbrytningar för bättre läsbarhet. Vissa korpusar ger också mer kontext i det läget, typiskt ett helt stycke.
+result.kwic.distribution.goto: Gå till sida {page}
 result.kwic.export.type.kwic: En mening per rad
 result.kwic.export.type.annotations: Ett token per rad med annotationer
-result.kwic.hits_count: "Antal träffar: {0}"
-result.kwic.hits_relative: "Relativ frekvens: {0}"
+result.kwic.hits_count: Antal träffar
+result.kwic.hits_relative: Relativ frekvens
 result.kwic.hits_relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.kwic.page_size.label: "Träffar per sida: {0}"
 result.kwic.sort.label: "Sortera varje korpus efter: {0}"
