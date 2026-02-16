@@ -74,9 +74,9 @@ watchImmediate(
           v-if="distribution && hitsCount > hpp"
           :distribution
           :hpp
+          v-model="page"
           class="flex-grow-1"
           style="min-width: 0"
-          @selectPage="page = $event"
         />
       </div>
 
