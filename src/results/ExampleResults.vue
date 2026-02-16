@@ -10,6 +10,7 @@ import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import type { Row } from "@/core/kwic/kwic"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
@@ -33,8 +34,18 @@ onMounted(async () => {
 async function doSearch(isPaging = false) {
   loading.value = !isPaging
   const willBeReading = context.value
-  const response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
-  loading.value = false
+  props.task.abort()
+
+  let response
+  try {
+    response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
+  } catch (error) {
+    if (isAbortError(error)) return
+    throw error
+  } finally {
+    loading.value = false
+  }
+
   distribution.value = response.distribution
   hitsCount.value = response.hits
   kwic.value = response.kwic

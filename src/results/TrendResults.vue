@@ -34,14 +34,16 @@ onMounted(() => {
 async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
 
+  let data
   try {
-    const data = await props.task.send(levelNew, from, to, () => {})
-    setSeries(data.series)
-    level.value = data.level
+    data = await props.task.send(levelNew, from, to, () => {})
   } catch (error) {
     if (isAbortError(error)) return
     throw error
   }
+
+  setSeries(data.series)
+  level.value = data.level
 }
 
 /** Ingest new series data */

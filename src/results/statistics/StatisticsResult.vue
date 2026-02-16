@@ -24,6 +24,7 @@ import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { locObj } from "@/core/i18n"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
@@ -67,13 +68,20 @@ whenever(
 async function doSearch() {
   // Empty search is possible when doing comparison first
   if (!store.activeSearch) return
+  proxy.abort()
   corpusSelectionSearched = corpusSelection.pick(corpusSelection.getIds())
   withinSearched = store.within
   const attrs = attributesSelected.value
   const cqpValue = cqp.value
   const ignoreCase = !!attrs.insensitive.length
 
-  const counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
+  let counts
+  try {
+    counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
+  } catch (error) {
+    if (isAbortError(error)) return
+    throw error
+  }
 
   data.value = await processStatisticsResult(
     corpusSelectionSearched.stringify(false),

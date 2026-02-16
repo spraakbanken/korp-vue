@@ -15,6 +15,7 @@ import ExportButton from "./ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
@@ -49,6 +50,7 @@ watchImmediate(activeSearch, () => {
 async function doSearch(isPaging = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
+  proxy.abort()
   loading.value = !isPaging
   // Remember options affecting result display in case they are changed while the request is ongoing
   const willBeReading = context.value || !store.in_order
@@ -57,10 +59,19 @@ async function doSearch(isPaging = false) {
     distribution.value = undefined
     hitsCount.value = report.hits || 0
   })
-  const response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
+
+  let response
+  try {
+    response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
+  } catch (error) {
+    if (isAbortError(error)) return
+    throw error
+  } finally {
+    loading.value = false
+  }
+
   // Use remembered state to control the result display
   isReading.value = willBeReading
-  loading.value = false
   kwic.value = response.kwic
   distribution.value = response.distribution
   hitsCount.value = response.hits
@@ -78,7 +89,6 @@ watch(pageLocal, () => doSearch(true))
 
 function createExport() {
   const params = proxy.getParams()
-  // TODO Chose kwic/annotations
   return transformData(exportType.value, kwic.value!, params, hitsCount.value)
 }
 </script>

@@ -15,6 +15,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -55,7 +56,13 @@ async function doSearch() {
   if (!query) return
 
   proxy.abort()
-  data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
+
+  try {
+    data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
+  } catch (error) {
+    if (isAbortError(error)) return
+    throw error
+  }
 
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
   sort.value = sortLocal.value
