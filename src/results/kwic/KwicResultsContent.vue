@@ -2,12 +2,13 @@
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
-import { type Row, type SelectedToken } from "@/core/kwic/kwic"
+import { isKwic, type Row, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
 import KwicSidebar from "../sidebar/KwicSidebar.vue"
 import { injectionKeys } from "@/injection"
 import KwicList from "./KwicList.vue"
+import { watchImmediate } from "@vueuse/core"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -26,6 +27,18 @@ const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / token
 const selectedToken = ref<SelectedToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
+
+watchImmediate(
+  () => props.kwic,
+  () => {
+    // Select first match token
+    const row = props.kwic?.find(isKwic)
+    if (!row) return
+    const match = [row.match].flat()[0]!
+    const token = row.tokens[match.start]!
+    selectedToken!.value = { row, token }
+  },
+)
 </script>
 
 <template>

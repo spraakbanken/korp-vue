@@ -13,7 +13,6 @@ const { locObj } = useLocale()
 /** Counter to trigger re-render when data changes */
 const dataCounter = ref(0)
 
-// TODO Select first match token
 watchImmediate(
   () => props.data,
   () => dataCounter.value++,

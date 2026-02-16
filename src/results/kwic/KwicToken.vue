@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import type { ApiKwic, Token } from "@/core/backend/types"
 import { injectionKeys } from "@/injection"
-import { computed, inject, useId } from "vue"
+import { isEqual } from "lodash-es"
+import { computed, inject } from "vue"
 
-defineProps<{
+const props = defineProps<{
   row: ApiKwic
   token: Token
 }>()
 
-/** Unique identifier for this component instance. Used for tracking selected token. */
-const id = useId()
-
 const selectedToken = inject(injectionKeys.selectedToken)
-const isSelected = computed(() => selectedToken?.value?.id == id)
+const isSelected = computed(() => {
+  const value = selectedToken?.value
+  if (!value) return
+  return isEqual(value.row.match, props.row.match) && value.token.position == props.token.position
+})
 </script>
 
 <template>
@@ -23,7 +25,7 @@ const isSelected = computed(() => selectedToken?.value?.id == id)
       'fw-bold': token._match,
       'kwic-token-selected': isSelected,
     }"
-    @click.stop="selectedToken = { id, token, row }"
+    @click.stop="selectedToken = { token, row }"
   >
     {{ token.word }}
   </span>
