@@ -5,7 +5,7 @@ import KwicGrid from "./KwicGrid.vue"
 import { isKwic, type Row, type SelectedToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "../PaginationBar.vue"
-import KwicSidebar from "../sidebar/KwicSidebar.vue"
+import KwicSidebar, { SIDEBAR_WIDTH_REM } from "../sidebar/KwicSidebar.vue"
 import { injectionKeys } from "@/injection"
 import KwicList from "./KwicList.vue"
 import { watchImmediate } from "@vueuse/core"
@@ -42,37 +42,35 @@ watchImmediate(
 </script>
 
 <template>
-  <div>
-    <div class="d-flex flex-wrap justify-content-between align-items-baseline">
-      <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
-        <div>
-          {{ $t("result.kwic.hits_count", [$n(hitsCount)]) }}
-        </div>
-        <div>
-          {{ $t("result.kwic.hits_relative", [$n(hitsRelative)]) }}
-          <HelpBadge :text="$t('result.kwic.hits_relative.help')" />
-        </div>
+  <div
+    class="position-relative vstack gap-2"
+    @click="selectedToken = undefined"
+    :style="{
+      // Make sure sidebar isn't too short if KWIC page is short
+      minHeight: '50rem',
+      // Make room for sidebar
+      paddingRight: selectedToken ? `${SIDEBAR_WIDTH_REM + 0.5}rem` : undefined,
+    }"
+  >
+    <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
+      <div>
+        {{ $t("result.kwic.hits_count", [$n(hitsCount)]) }}
       </div>
+      <div>
+        {{ $t("result.kwic.hits_relative", [$n(hitsRelative)]) }}
+        <HelpBadge :text="$t('result.kwic.hits_relative.help')" />
+      </div>
+    </div>
+
+    <template v-if="kwic">
+      <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
+
+      <KwicGrid v-if="!isReading" :data="kwic" />
+      <KwicList v-else :data="kwic" />
 
       <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
-    </div>
+    </template>
 
-    <div
-      class="position-relative"
-      @click="selectedToken = undefined"
-      :style="{
-        // Make sure sidebar isn't too short if KWIC page is short
-        minHeight: '50rem',
-        // Make room for sidebar
-        paddingRight: selectedToken ? '20.5rem' : undefined,
-      }"
-    >
-      <template v-if="kwic">
-        <KwicGrid v-if="!isReading" :data="kwic" />
-        <KwicList v-else :data="kwic" />
-      </template>
-
-      <KwicSidebar @click.stop />
-    </div>
+    <KwicSidebar @click.stop />
   </div>
 </template>

@@ -13,12 +13,16 @@ const corpus = computed(() =>
 )
 </script>
 
+<script lang="ts">
+export const SIDEBAR_WIDTH_REM = 20
+</script>
+
 <template>
   <Transition appear>
     <aside
       v-if="selectedToken && corpus"
       class="position-absolute top-0 end-0 h-100 overflow-y-auto card shadow"
-      style="width: 20rem"
+      :style="{ width: `${SIDEBAR_WIDTH_REM}rem` }"
     >
       <div class="card-body d-flex flex-column gap-3">
         <header class="d-flex gap-2 justify-content-between">
@@ -35,8 +39,8 @@ const corpus = computed(() =>
           />
         </header>
 
-        <details v-if="'structs' in selectedToken.row" open class="border">
-          <summary class="bg-body-secondary p-1">{{ $t("attribute_type.struct") }}</summary>
+        <details v-if="'structs' in selectedToken.row" open class="bg-body-tertiary rounded">
+          <summary class="bg-body-tertiary p-1">{{ $t("attribute_type.struct") }}</summary>
 
           <div class="p-2">
             <KwicSidebarAttribute
@@ -49,8 +53,8 @@ const corpus = computed(() =>
           </div>
         </details>
 
-        <details open class="border">
-          <summary class="bg-body-secondary p-1">{{ $t("attribute_type.pos") }}</summary>
+        <details open class="bg-body-tertiary rounded">
+          <summary class="bg-body-tertiary p-1">{{ $t("attribute_type.pos") }}</summary>
 
           <div class="p-2">
             <KwicSidebarAttribute

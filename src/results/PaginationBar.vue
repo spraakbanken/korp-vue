@@ -6,7 +6,11 @@ const props = defineProps<{
   max: number
 }>()
 
-const model = defineModel({ default: 1 })
+const model = defineModel({
+  default: 1,
+  // Prevent out-of-bounds page numbers
+  set: (value) => (value >= 1 && value <= props.max ? value : model.value),
+})
 
 const pages = computed<number[]>(() => {
   // Show up to 5 pages, with current in the middle if possible
@@ -18,30 +22,25 @@ const pages = computed<number[]>(() => {
   }
   return range(start, end + 1)
 })
-
-function setPage(page: number) {
-  if (page < 1 || page > props.max) return
-  model.value = page
-}
 </script>
 
 <template>
   <nav :aria-label="$t('result.pagination.label')" class="d-flex align-items-baseline gap-3">
     <div>
       {{ $t("result.pagination.label") }}
-      <ul class="pagination pagination-sm d-inline-flex ms-1">
+      <ul class="pagination pagination-sm d-inline-flex ms-1 mb-0">
         <li class="page-item" :class="{ disabled: model === 1 }">
           <button
             :aria-label="$t('previous')"
             class="page-link"
-            @click="setPage(model - 1)"
+            @click="model--"
             :disabled="model === 1"
           >
             ‹
           </button>
         </li>
         <li v-for="page in pages" :key="page" class="page-item" :class="{ active: page === model }">
-          <button class="page-link" @click="setPage(page)">
+          <button class="page-link" @click="model = page">
             {{ page }}
           </button>
         </li>
@@ -49,7 +48,7 @@ function setPage(page: number) {
           <button
             :aria-label="$t('next')"
             class="page-link"
-            @click="setPage(model + 1)"
+            @click="model++"
             :disabled="model === max"
           >
             ›
@@ -60,7 +59,6 @@ function setPage(page: number) {
 
     <i18n-t tag="label" scope="global" keypath="result.pagination.goto">
       <template #input>
-        <!-- TODO Prevent out-of-bounds input -->
         <input
           type="number"
           min="1"
