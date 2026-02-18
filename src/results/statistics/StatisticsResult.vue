@@ -28,6 +28,8 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
+const progress = defineModel<number>("progress")
+
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
@@ -47,7 +49,9 @@ const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
 const { activeSearch, statsRelative } = storeToRefs(store)
 
-const proxy = new StatsProxy()
+const proxy = new StatsProxy().setProgressHandler((report) => {
+  progress.value = report.percent
+})
 
 // Enable statistics when opening tab first time
 whenever(
@@ -74,11 +78,14 @@ async function doSearch() {
   const attrs = attributesSelected.value
   const cqpValue = cqp.value
   const ignoreCase = !!attrs.insensitive.length
+  progress.value = 0
 
   let counts
   try {
     counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
+    progress.value = 100
   } catch (error) {
+    progress.value = undefined
     if (isAbortError(error)) return
     throw error
   }

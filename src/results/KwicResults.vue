@@ -19,9 +19,10 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 
 const UPDATE_DELAY_MS = 500
 
+const progress = defineModel<number>("progress")
+
 const store = useAppStore()
 
-const proxy = new KwicProxy(store)
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
 const { activeSearch, page } = storeToRefs(store)
@@ -34,9 +35,15 @@ const hitsCount = ref(0)
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(settings["hits_per_page_default"])
 const kwic = ref<Row[]>()
-const loading = ref(false)
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>("")
+
+const proxy = new KwicProxy(store).setProgressHandler((report) => {
+  // TODO Show first KWIC page when available
+  distribution.value = undefined
+  hitsCount.value = report.hits || 0
+  progress.value = report.percent
+})
 
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
@@ -51,23 +58,18 @@ async function doSearch(isPaging = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
   proxy.abort()
-  loading.value = !isPaging
+  progress.value = undefined
   // Remember options affecting result display in case they are changed while the request is ongoing
   const willBeReading = context.value || !store.in_order
-  proxy.setProgressHandler((report) => {
-    // TODO Show first KWIC page when available
-    distribution.value = undefined
-    hitsCount.value = report.hits || 0
-  })
 
   let response
   try {
     response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
+    progress.value = 100
   } catch (error) {
+    progress.value = undefined
     if (isAbortError(error)) return
     throw error
-  } finally {
-    loading.value = false
   }
 
   // Use remembered state to control the result display
@@ -161,7 +163,7 @@ function createExport() {
       :hpp
       :isReading
       :kwic
-      :loading
+      :loading="progress != undefined"
       v-model="pageLocal"
     />
   </div>

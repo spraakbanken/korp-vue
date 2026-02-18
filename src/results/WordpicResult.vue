@@ -20,6 +20,8 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
 
+const progress = defineModel<number>("progress")
+
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
@@ -35,7 +37,9 @@ const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
 const sortLocal = ref<RelationsSort>("mi")
 
-const proxy = new RelationsProxy()
+const proxy = new RelationsProxy().setProgressHandler((report) => {
+  progress.value = report.percent
+})
 
 // Activate when opening tab first time
 whenever(
@@ -56,10 +60,13 @@ async function doSearch() {
   if (!query) return
 
   proxy.abort()
+  progress.value = 0
 
   try {
     data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
+    progress.value = 100
   } catch (error) {
+    progress.value = undefined
     if (isAbortError(error)) return
     throw error
   }

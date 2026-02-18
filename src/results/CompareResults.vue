@@ -7,10 +7,17 @@ import { useDynamicTabs } from "./useDynamicTabs"
 
 const props = defineProps<{ task: CompareTask }>()
 
+const progress = defineModel<number>("progress")
+
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 
-const result = computedAsync<CompareResult>(() => props.task.send())
+const result = computedAsync<CompareResult>(async () => {
+  progress.value = 0
+  const result = await props.task.send()
+  progress.value = 100
+  return result
+})
 
 function clickItem(side: 0 | 1, item: CompareItem) {
   const exampleTask = props.task.createExampleTask(side, item)

@@ -27,5 +27,6 @@ export const injectionKeys = {
   attribute: {
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
+  resultProgress: Symbol() as InjectionKey<Ref<number>>,
   selectedToken: Symbol() as InjectionKey<Ref<SelectedToken | undefined>>,
 }

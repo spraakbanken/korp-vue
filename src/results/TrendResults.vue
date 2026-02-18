@@ -15,6 +15,8 @@ const props = defineProps<{
   task: TrendTask
 }>()
 
+const progress = defineModel<number>("progress")
+
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
@@ -33,11 +35,14 @@ onMounted(() => {
 
 async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
+  progress.value = 0
 
   let data
   try {
-    data = await props.task.send(levelNew, from, to, () => {})
+    data = await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
+    progress.value = 100
   } catch (error) {
+    progress.value = undefined
     if (isAbortError(error)) return
     throw error
   }

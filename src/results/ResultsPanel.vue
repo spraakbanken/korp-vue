@@ -12,6 +12,7 @@ import type { TaskBase } from "@/core/task/TaskBase"
 import { watchImmediate } from "@vueuse/core"
 import { TrendTask } from "@/core/task/TrendTask"
 import { MapTask } from "@/core/task/MapTask"
+import TabProgressBar from "./TabProgressBar.vue"
 
 const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
 const ExampleResults = defineAsyncComponent(() => import("./ExampleResults.vue"))
@@ -21,18 +22,25 @@ const StatisticsResult = defineAsyncComponent(() => import("./statistics/Statist
 const TrendResults = defineAsyncComponent(() => import("./TrendResults.vue"))
 const WordpicResult = defineAsyncComponent(() => import("./WordpicResult.vue"))
 
+type TabId = FixedTabId | DynamicTabId
+type FixedTabId = number
+type DynamicTabId = string
+
+const FIXED_TABS = [
+  { key: 1, name: "kwic" },
+  { key: 2, name: "statistics" },
+  { key: 3, name: "wordpic" },
+]
+
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
 const { locObj } = useLocale()
 
 const { result_tab } = storeToRefs(store)
-const currentTab = ref<number | string>(result_tab.value)
+const currentTab = ref<TabId>(result_tab.value)
 
-const tabOptions = [
-  { key: 1, name: "kwic" },
-  { key: 2, name: "statistics" },
-  { key: 3, name: "wordpic" },
-]
+/** Mapping from tab ids to loading progress */
+const progressMap = ref<Record<TabId, number | undefined>>({})
 
 // Sync active tab to the store.
 watch(currentTab, () => {
@@ -41,7 +49,7 @@ watch(currentTab, () => {
 })
 
 /** Close a dynamic tab and ensure the current tab is valid */
-function closeTabLocal(id: string) {
+function closeTabLocal(id: DynamicTabId) {
   const tabIndex = dynamicTabs.findIndex((tab) => tab.id == id)
   closeTab(id)
 
@@ -70,7 +78,6 @@ watchImmediate(
 )
 
 function selectTaskResultComponent(task: TaskBase): Component | null {
-  // TODO Lazy-load components
   if (task instanceof ExampleTask) return ExampleResults
   if (task instanceof WordpicExampleTask) return ExampleResults
   if (task instanceof CompareTask) return CompareResults
@@ -83,11 +90,11 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
 <template>
   <div>
     <!-- Tab bar -->
-    <nav class="nav nav-tabs" id="result-tabs-list">
+    <nav id="result-tabs-list" class="nav nav-tabs gap-2">
       <button
-        v-for="{ key, name } in tabOptions"
+        v-for="{ key, name } in FIXED_TABS"
         :key
-        class="nav-link"
+        class="nav-link position-relative"
         :class="{ active: currentTab == key }"
         :id="`result-tabs-tab-${name}`"
         v-tab
@@ -96,12 +103,13 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         @click="currentTab = key"
       >
         {{ $t(`result.${name}`) }}
+        <TabProgressBar :progress="progressMap[key]" />
       </button>
 
       <button
         v-for="tab in dynamicTabs"
         :key="tab.id"
-        class="nav-link"
+        class="nav-link position-relative"
         :class="{ active: currentTab == tab.id }"
         :id="`result-tabs-tab-${tab.id}`"
         v-tab
@@ -110,6 +118,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         @click="currentTab = tab.id"
       >
         {{ locObj(tab.label) }}
+        <TabProgressBar :progress="progressMap[tab.id]" />
         <span
           class="btn-close ms-2"
           style="width: 0.1rem; background-size: contain"
@@ -128,7 +137,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-kwic"
         tabindex="0"
       >
-        <KwicResults />
+        <KwicResults v-model:progress="progressMap[1]" />
       </div>
 
       <div
@@ -139,7 +148,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-statistics"
         tabindex="0"
       >
-        <StatisticsResult />
+        <StatisticsResult v-model:progress="progressMap[2]" />
       </div>
 
       <div
@@ -150,7 +159,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-wordpic"
         tabindex="0"
       >
-        <WordpicResult />
+        <WordpicResult v-model:progress="progressMap[3]" />
       </div>
 
       <div
@@ -163,7 +172,11 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         :aria-labelledby="`result-tabs-tab-${tab.id}`"
         tabindex="0"
       >
-        <component :is="selectTaskResultComponent(tab.task as TaskBase)" :task="tab.task" />
+        <component
+          :is="selectTaskResultComponent(tab.task as TaskBase)"
+          :task="tab.task"
+          v-model:progress="progressMap[tab.id]"
+        />
       </div>
     </div>
   </div>
