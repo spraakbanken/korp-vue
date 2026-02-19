@@ -119,6 +119,13 @@ export function simpleModal(html: string) {
   dialog.querySelector("button")!.addEventListener("click", () => dialog.close())
 }
 
+/** Creates a simple HTML snippet for a key-value pair list */
+export function createKeyValueHtml(stats: Record<string, unknown>) {
+  return Object.entries(stats)
+    .map(([key, value]) => `<strong>${key}:</strong> ${value}\n`)
+    .join("<br />\n")
+}
+
 /** Split a string by the first occurence of a given separator */
 export const splitFirst = (sep: string, s: string): [string, string] => {
   const pos = s.indexOf(sep)

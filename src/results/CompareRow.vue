@@ -3,7 +3,7 @@ import type { CompareItem } from "@/core/task/CompareTask"
 import { vPopover } from "@/bootstrap"
 import { useI18n } from "vue-i18n"
 import { formatDecimals } from "@/core/i18n"
-import { computed } from "vue"
+import { createKeyValueHtml } from "@/core/util"
 
 const props = defineProps<{
   item: CompareItem
@@ -15,18 +15,7 @@ defineEmits<{
   (e: "select", item: CompareItem): void
 }>()
 
-const { t } = useI18n()
-
-// TODO This is recomputed on lang change, but popover content is not updated
-const statsHtml = computed(() => {
-  const stats = {
-    freq: String(props.item.abs),
-    loglike: formatDecimals(Math.abs(props.item.loglike), 2),
-  }
-  return Object.entries(stats)
-    .map(([key, value]) => `<strong>${t(`stat.${key}`)}:</strong> ${value}`)
-    .join("<br />")
-})
+const { locale } = useI18n()
 </script>
 
 <template>
@@ -51,8 +40,14 @@ const statsHtml = computed(() => {
         data-bs-trigger="focus hover"
         data-bs-delay="200"
         data-bs-html="true"
-        :data-bs-content="statsHtml"
+        :data-bs-content="
+          createKeyValueHtml({
+            [$t('stat.freq')]: String(props.item.abs),
+            [$t('stat.loglike')]: formatDecimals(Math.abs(props.item.loglike), 2),
+          })
+        "
         class="text-muted"
+        :key="locale"
       >
         {{ item.abs }}
       </span>

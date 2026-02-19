@@ -5,8 +5,10 @@ import { formatWordOrLemgram, type MatchedRelation } from "@/core/wordpic"
 import { computed } from "vue"
 import { useI18n } from "vue-i18n"
 import { vPopover } from "@/bootstrap"
+import { mapKeys } from "lodash-es"
+import { createKeyValueHtml } from "@/core/util"
 
-const { t } = useI18n()
+const { locale } = useI18n()
 
 const props = defineProps<{
   row: MatchedRelation
@@ -20,12 +22,6 @@ const stats = computed(() => {
     mi: formatDecimals(props.row.mi, 2),
   }
 })
-
-const statsText = computed(() =>
-  Object.entries(stats.value)
-    .map(([key, value]) => `${t(`stat.${key}`)}: ${value}`)
-    .join("<br />"),
-)
 </script>
 
 <template>
@@ -39,11 +35,12 @@ const statsText = computed(() =>
       v-popover
       data-bs-toggle="popover"
       data-bs-trigger="focus hover"
-      :data-bs-content="statsText"
+      :data-bs-content="createKeyValueHtml(mapKeys(stats, (_, key) => $t(`stat.${key}`)))"
       data-bs-placement="bottom"
       data-bs-delay="200"
       data-bs-html="true"
       class="px-1 ps-2 text-end"
+      :key="locale"
     >
       {{ stats[sort] }}
     </td>
