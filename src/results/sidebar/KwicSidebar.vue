@@ -4,6 +4,7 @@ import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
+import { sortBy } from "lodash-es"
 
 const { locObj } = useLocale()
 
@@ -11,6 +12,24 @@ const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
   selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
 )
+
+const structAttributes = computed(() => {
+  if (!corpus.value) return []
+  const attrs = Object.entries(corpus.value.struct_attributes).filter(
+    ([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar,
+  )
+  // TODO Custom attrs
+  return sortBy(attrs, ([a]) => corpus.value?._struct_attributes_order.indexOf(a) || 0)
+})
+
+const posAttributes = computed(() => {
+  if (!corpus.value) return []
+  const attrs = Object.entries(corpus.value.attributes).filter(
+    ([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar,
+  )
+  // TODO Custom attrs
+  return sortBy(attrs, ([a]) => corpus.value?._attributes_order.indexOf(a) || 0)
+})
 </script>
 
 <script lang="ts">
@@ -44,7 +63,7 @@ export const SIDEBAR_WIDTH_REM = 20
 
           <div class="p-2">
             <KwicSidebarAttribute
-              v-for="(attribute, name) in corpus.struct_attributes"
+              v-for="[name, attribute] in structAttributes"
               :key="name"
               :corpus
               :attribute
@@ -58,7 +77,7 @@ export const SIDEBAR_WIDTH_REM = 20
 
           <div class="p-2">
             <KwicSidebarAttribute
-              v-for="(attribute, name) in corpus.attributes"
+              v-for="[name, attribute] in posAttributes"
               :key="name"
               :corpus
               :attribute

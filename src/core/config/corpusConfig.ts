@@ -60,11 +60,13 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
     function transformAttributes2<T extends Attribute | CustomAttribute>(
       attrsKey: keyof CorpusConfigRaw["attributes"],
     ): [Record<string, T>, string[]] {
+      /** Attribute names, possibly suffixed to distinguish from others with same name */
       const names = corpus[attrsKey]
       const attrs = config.attributes[attrsKey] as Record<string, T>
       if (!names || !attrs) return [{}, []]
       const defs1 = pick(attrs, names)
       const defs = keyBy(defs1, "name")
+      // Translate attribute names back to original unsuffixed versions
       const order = names.map((name) => attrs[name].name)
       return [defs, order]
     }
