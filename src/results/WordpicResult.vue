@@ -154,7 +154,7 @@ function createExport() {
               <div
                 v-for="(column, i) in table.columnsBefore"
                 :key="i"
-                class="p-2"
+                class="p-2 text-dark"
                 :style="{ backgroundColor: column.config.color }"
               >
                 {{ $t(column.config.alt_label || `rel.${column.config.rel.toLowerCase()}`) }}
@@ -166,7 +166,7 @@ function createExport() {
               <div
                 v-for="(column, i) in table.columnsAfter"
                 :key="i"
-                class="p-2"
+                class="p-2 text-dark"
                 :style="{ backgroundColor: column.config.color }"
               >
                 {{ $t(column.config.alt_label || `rel.${column.config.rel.toLowerCase()}`) }}
@@ -178,6 +178,7 @@ function createExport() {
               <div
                 v-for="(column, i) in table.columns"
                 :key="i"
+                class="text-dark"
                 :style="{ backgroundColor: column.config.color }"
               >
                 <table class="m-1">

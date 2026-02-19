@@ -139,6 +139,24 @@ function buildExampleCqp(row: SingleRow) {
   background-color: #e6ebff;
 }
 
+@media (prefers-color-scheme: dark) {
+  :deep(.total-column) {
+    background-color: #4d2c0f;
+  }
+
+  :deep(.slick-row:hover .total-column) {
+    background-color: #5e3b1a;
+  }
+
+  :deep(.parameter-column) {
+    background-color: #1e3a5f;
+  }
+
+  :deep(.slick-row:hover .parameter-column) {
+    background-color: #274e7a;
+  }
+}
+
 :deep(.slick-cell):has(input[type="checkbox"]),
 :deep([role="columnheader"]):has(input[type="checkbox"]) {
   text-align: center;
