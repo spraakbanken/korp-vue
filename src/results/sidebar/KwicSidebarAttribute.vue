@@ -8,6 +8,7 @@ import type { ApiKwic, Token } from "@/core/backend/types"
 defineProps<{
   corpus: Corpus
   attribute: Attribute
+  isCustom?: boolean
   row: ApiKwic
   token: Token
   value?: string
@@ -21,7 +22,7 @@ const formatterComponent = DefaultFormatter
 <template>
   <div class="sidebar-attribute mb-1">
     <strong v-if="!attribute.sidebar_hide_label">{{ locObj(attribute.label) }}: </strong>
-    <component :is="formatterComponent" :attribute :value :row :token />
+    <component :is="formatterComponent" :attribute :isCustom :row :token :value />
   </div>
 </template>
 

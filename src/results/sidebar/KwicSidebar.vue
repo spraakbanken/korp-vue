@@ -4,7 +4,7 @@ import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
-import { sortBy } from "lodash-es"
+import { pickBy, sortBy } from "lodash-es"
 
 const { locObj } = useLocale()
 
@@ -15,20 +15,22 @@ const corpus = computed(() =>
 
 const structAttributes = computed(() => {
   if (!corpus.value) return []
-  const attrs = Object.entries(corpus.value.struct_attributes).filter(
-    ([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar,
-  )
-  // TODO Custom attrs
-  return sortBy(attrs, ([a]) => corpus.value?._struct_attributes_order.indexOf(a) || 0)
+  const attrs = Object.entries({
+    ...corpus.value.struct_attributes,
+    ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type == "struct"),
+  }).filter(([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar)
+  const ordering = corpus.value?._struct_attributes_order || []
+  return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
 
 const posAttributes = computed(() => {
   if (!corpus.value) return []
-  const attrs = Object.entries(corpus.value.attributes).filter(
-    ([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar,
-  )
-  // TODO Custom attrs
-  return sortBy(attrs, ([a]) => corpus.value?._attributes_order.indexOf(a) || 0)
+  const attrs = Object.entries({
+    ...corpus.value.attributes,
+    ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type != "struct"),
+  }).filter(([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar)
+  const ordering = corpus.value?._attributes_order || []
+  return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
 </script>
 
@@ -67,6 +69,7 @@ export const SIDEBAR_WIDTH_REM = 20
               :key="name"
               :corpus
               :attribute
+              :is-custom="'custom_type' in attribute && !!attribute.custom_type"
               :row="selectedToken.row"
               :token="selectedToken.token"
               :value="selectedToken.row.structs[name]"
@@ -83,6 +86,7 @@ export const SIDEBAR_WIDTH_REM = 20
               :key="name"
               :corpus
               :attribute
+              :is-custom="'custom_type' in attribute && !!attribute.custom_type"
               :row="selectedToken.row"
               :token="selectedToken.token"
               :value="selectedToken.token[name]"

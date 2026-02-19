@@ -6,6 +6,7 @@ import { compact } from "lodash-es"
 
 const props = defineProps<{
   attribute: Attribute
+  isCustom?: boolean
   row: ApiKwic
   token: Token
   value?: string
@@ -24,7 +25,7 @@ const isEmpty =
 
 <template>
   <!-- No value -->
-  <span v-if="isEmpty" class="text-muted">∅</span>
+  <span v-if="isEmpty && !isCustom" class="text-muted">∅</span>
 
   <!-- Multi-value attribute -->
   <ul v-else-if="attribute.type == 'set' && value" class="list-unstyled my-0">

@@ -96,12 +96,8 @@ export type Attribute = {
   type?: "set" | "url"
 }
 
-export type CustomAttribute = {
+export type CustomAttribute = Attribute & {
   custom_type: string
-  label: LangString
-  name: string
-  pattern?: string
-  sidebar_component?: MaybeWithOptions
 }
 
 export type DeptreeConfig = {
