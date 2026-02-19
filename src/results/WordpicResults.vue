@@ -16,6 +16,7 @@ import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
+import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -135,7 +136,7 @@ function createExport() {
     </OptionsBar>
 
     <!-- Wordpic cards -->
-    <div v-if="data" class="d-flex flex-wrap gap-2">
+    <div v-if="data" class="d-flex flex-wrap gap-2" v-fade-if-loading="progress">
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div
         v-for="section of data.getData()"

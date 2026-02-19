@@ -13,10 +13,13 @@ import { useElementVisibility, whenever } from "@vueuse/core"
 import { groupBy } from "lodash-es"
 import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
+import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const props = defineProps<{
   task: MapTask
 }>()
+
+const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
@@ -48,7 +51,9 @@ onMounted(() => {
 })
 
 async function doSearch() {
+  progress.value = 0
   await props.task.send()
+  progress.value = 100
 
   const palette = new GoldenAnglePaletteHsl()
   palette.shift() // Skip the first color, same as the primary UI color
@@ -117,7 +122,7 @@ onBeforeUnmount(() => {
     </OptionsBar>
 
     <!-- Stacking container -->
-    <div class="w-100 position-relative" style="height: 90svh">
+    <div class="w-100 position-relative" style="height: 90svh" v-fade-if-loading="progress">
       <!-- Map target -->
       <div ref="map" class="position-absolute w-100 h-100 z-0" />
 

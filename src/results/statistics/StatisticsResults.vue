@@ -25,6 +25,7 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { locObj } from "@/core/i18n"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
+import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const UPDATE_DELAY_MS = 500
 
@@ -211,6 +212,7 @@ function createExport() {
       :rows="data.rows"
       :params="data.params"
       v-model="rowsSelected"
+      v-fade-if-loading="progress"
       @click-value="onClickValue($event.corpusIds, $event.cqp)"
     />
   </div>

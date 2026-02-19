@@ -10,6 +10,7 @@ import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import moment from "moment"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
+import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const props = defineProps<{
   task: TrendTask
@@ -90,6 +91,7 @@ function onSelectRange(from: Date, to: Date) {
     :labels
     :level
     :range
+    v-fade-if-loading="progress"
     @clickPoint="onClickPoint"
     @selectRange="onSelectRange"
   />

@@ -15,12 +15,12 @@ import { MapTask } from "@/core/task/MapTask"
 import TabProgressBar from "./TabProgressBar.vue"
 
 const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
-const ExampleResults = defineAsyncComponent(() => import("./ExampleResults.vue"))
-const KwicResults = defineAsyncComponent(() => import("./KwicResults.vue"))
+const ExampleResults = defineAsyncComponent(() => import("./kwic/ExampleResults.vue"))
+const KwicResults = defineAsyncComponent(() => import("./kwic/KwicResults.vue"))
 const MapResults = defineAsyncComponent(() => import("./MapResults.vue"))
-const StatisticsResult = defineAsyncComponent(() => import("./statistics/StatisticsResult.vue"))
+const StatisticsResults = defineAsyncComponent(() => import("./statistics/StatisticsResults.vue"))
 const TrendResults = defineAsyncComponent(() => import("./TrendResults.vue"))
-const WordpicResult = defineAsyncComponent(() => import("./WordpicResult.vue"))
+const WordpicResults = defineAsyncComponent(() => import("./WordpicResults.vue"))
 
 type TabId = FixedTabId | DynamicTabId
 type FixedTabId = number
@@ -148,7 +148,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-statistics"
         tabindex="0"
       >
-        <StatisticsResult v-model:progress="progressMap[2]" />
+        <StatisticsResults v-model:progress="progressMap[2]" />
       </div>
 
       <div
@@ -159,7 +159,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-wordpic"
         tabindex="0"
       >
-        <WordpicResult v-model:progress="progressMap[3]" />
+        <WordpicResults v-model:progress="progressMap[3]" />
       </div>
 
       <div
