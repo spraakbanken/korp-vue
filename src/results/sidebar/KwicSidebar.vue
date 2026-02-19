@@ -67,6 +67,8 @@ export const SIDEBAR_WIDTH_REM = 20
               :key="name"
               :corpus
               :attribute
+              :row="selectedToken.row"
+              :token="selectedToken.token"
               :value="selectedToken.row.structs[name]"
             />
           </div>
@@ -81,6 +83,8 @@ export const SIDEBAR_WIDTH_REM = 20
               :key="name"
               :corpus
               :attribute
+              :row="selectedToken.row"
+              :token="selectedToken.token"
               :value="selectedToken.token[name]"
             />
           </div>

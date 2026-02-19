@@ -4,7 +4,7 @@ import type { Stringifier } from "./attributes.types"
 import { useI18n } from "vue-i18n"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
-import { escape } from "lodash-es"
+import { escape, template } from "lodash-es"
 import { useLocale } from "@/i18n/useLocale"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 
@@ -13,7 +13,10 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
  *
  * Custom stringifiers can be added using `provide`. For advanced output, implement a formatter component instead.
  */
-export function useStringifier(attribute: Attribute) {
+export function useStringifier(
+  attribute: Attribute,
+  context?: { pos: Record<string, unknown>; struct: Record<string, unknown> },
+) {
   const { t } = useI18n()
   const { locObj } = useLocale()
 
@@ -53,6 +56,17 @@ export function useStringifier(attribute: Attribute) {
         console.error(`Error in "${attribute.name}" stringifier with value "${input}":`, error)
       }
     }
+
+    if (attribute.type == "url")
+      str = `<a href="${input}" target="_blank" rel="noopener">${str.replace(/^https?:\/\//, "")}</a>`
+
+    if (attribute.pattern)
+      str = template(attribute.pattern)({
+        key: attribute.name,
+        val: str,
+        pos_attrs: context?.pos,
+        struct_attrs: context?.struct,
+      })
 
     // Fall back to input value
     return str

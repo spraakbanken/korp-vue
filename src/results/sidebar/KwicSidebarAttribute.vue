@@ -3,10 +3,13 @@ import type { Corpus } from "@/core/config/corpusConfig.types"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { useLocale } from "@/i18n/useLocale"
 import DefaultFormatter from "./DefaultFormatter.vue"
+import type { ApiKwic, Token } from "@/core/backend/types"
 
 defineProps<{
   corpus: Corpus
   attribute: Attribute
+  row: ApiKwic
+  token: Token
   value?: string
 }>()
 
@@ -17,8 +20,8 @@ const formatterComponent = DefaultFormatter
 
 <template>
   <div class="sidebar-attribute mb-1">
-    <strong>{{ locObj(attribute.label) }}: </strong>
-    <component :is="formatterComponent" :attribute :value />
+    <strong v-if="!attribute.sidebar_hide_label">{{ locObj(attribute.label) }}: </strong>
+    <component :is="formatterComponent" :attribute :value :row :token />
   </div>
 </template>
 

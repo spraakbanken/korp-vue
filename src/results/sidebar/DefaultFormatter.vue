@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { useStringifier } from "@/attributes/useStringifier"
+import type { ApiKwic, Token } from "@/core/backend/types"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { compact } from "lodash-es"
 
 const props = defineProps<{
   attribute: Attribute
+  row: ApiKwic
+  token: Token
   value?: string
 }>()
 
-const { stringify } = useStringifier(props.attribute)
+const { stringify } = useStringifier(props.attribute, {
+  pos: props.token,
+  struct: props.row.structs,
+})
 
 const isEmpty =
   props.value == undefined ||
