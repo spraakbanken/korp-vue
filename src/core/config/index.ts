@@ -1,5 +1,6 @@
 import type { InstanceConfig, WordPictureDef } from "./instanceConfig.types"
-import type { Attribute, MaybeConfigurable, MaybeWithOptions } from "./corpusConfigRaw.types"
+import type { Attribute } from "./corpusConfigRaw.types"
+import type { MaybeConfigurable, MaybeWithOptions } from "./config.types"
 import type { Corpus, CorpusConfig } from "./corpusConfig.types"
 import { isFunction } from "lodash-es"
 import { getAllCorporaInFolders } from "../corpora/corpora"

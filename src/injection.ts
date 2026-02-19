@@ -25,6 +25,7 @@ export const injectionKeys = {
     widgets: Symbol() as InjectionKey<Record<string, Component>>,
   },
   attribute: {
+    formatters: Symbol() as InjectionKey<Record<string, Component>>,
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
   resultProgress: Symbol() as InjectionKey<Ref<number>>,
