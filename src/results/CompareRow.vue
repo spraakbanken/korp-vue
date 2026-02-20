@@ -4,6 +4,9 @@ import { vPopover } from "@/bootstrap"
 import { useI18n } from "vue-i18n"
 import { formatDecimals } from "@/core/i18n"
 import { createKeyValueHtml } from "@/core/util"
+import { useStringifiers } from "@/attributes/useStringifiers"
+import { computed } from "vue"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 
 const props = defineProps<{
   item: CompareItem
@@ -16,6 +19,20 @@ defineEmits<{
 }>()
 
 const { locale } = useI18n()
+const getStringifier = useStringifiers()
+
+const valuesHtml = computed(() =>
+  props.item.values.flatMap(({ attribute, tokens }) =>
+    tokens.map((token) => formatToken(token, attribute)),
+  ),
+)
+
+const formatToken = (token: string, attribute?: Attribute) =>
+  token
+    ? attribute
+      ? getStringifier(attribute)(token)
+      : token
+    : "<span class='text-muted'>∅</span>"
 </script>
 
 <template>
@@ -29,8 +46,7 @@ const { locale } = useI18n()
 
     <div class="hstack align-items-baseline position-relative z-1">
       <!-- Value string -->
-      <span class="link flex-grow-1" @click="$emit('select', item)">
-        {{ String(item.tokenLists) }}
+      <span class="link flex-grow-1" @click="$emit('select', item)" v-html="valuesHtml.join(' ')">
       </span>
 
       <!-- Frequency -->
