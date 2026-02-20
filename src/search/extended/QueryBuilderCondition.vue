@@ -7,7 +7,7 @@ import AttributeSelector from "@/AttributeSelector.vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
 /** Model for selected attribute name */
-const attribute = defineModel<string>("attribute", { required: true })
+const name = defineModel<string>("attribute", { required: true })
 /** Model for selected operator */
 const operator = defineModel<OperatorKorp>("operator", { required: true })
 /** Model for input value */
@@ -20,15 +20,15 @@ const corpusSelectionReactive = reactive(corpusSelection)
 /** Available attribute options */
 const attributeOptions = computed(() => corpusSelectionReactive.getAttributeGroupsExtended())
 /** Attribute object matching the currently selected attribute name */
-const attributeObject = computed(() =>
-  attributeOptions.value.find((attr) => attr.name == unprefixAttr(attribute.value)),
+const attribute = computed(() =>
+  attributeOptions.value.find((attr) => attr.name == unprefixAttr(name.value)),
 )
 /** Available operator options for the selected attribute */
-const operatorOptions = computed(() => attributeObject.value?.opts || settings["default_options"])
+const operatorOptions = computed(() => attribute.value?.opts || settings["default_options"])
 
-watch(attributeObject, () => {
+watch(attribute, () => {
   // If selected attribute is no longer available, reset selection
-  if (!attributeObject.value) attribute.value = "word"
+  if (!attribute.value) name.value = "word"
 })
 
 watch(operatorOptions, () => {
@@ -48,8 +48,8 @@ watch(operatorOptions, () => {
       <!-- Instead of the v-model syntax, use v-bind and event handler explicitly to convert between our `string` model and the child component's `Attribute` model. -->
       <AttributeSelector
         :options="attributeOptions"
-        :model-value="attributeObject"
-        @update:model-value="(attr) => (attribute = attr ? prefixAttr(attr) : '')"
+        :model-value="attribute"
+        @update:model-value="(attr) => (name = attr ? prefixAttr(attr) : '')"
         :id="`${inputId}-attr`"
       />
     </div>
@@ -61,14 +61,14 @@ watch(operatorOptions, () => {
           {{ $t("search.extended.operator") }}
         </label>
         <select :id="`${inputId}-op`" class="form-select" v-model="operator">
-          <option v-for="(op, name) in operatorOptions" :key="name" :value="op">
-            {{ $t(`search.operator.${name}`) }}
+          <option v-for="(value, key) in operatorOptions" :key :value>
+            {{ $t(`search.operator.${key}`) }}
           </option>
         </select>
       </div>
 
       <!-- Value -->
-      <QueryBuilderValue v-model="value" class="flex-grow-1" />
+      <QueryBuilderValue v-if="attribute" :attribute v-model="value" class="flex-grow-1" />
     </div>
   </div>
 </template>
