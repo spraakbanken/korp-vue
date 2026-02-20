@@ -88,11 +88,11 @@ function addBoundary(start: boolean) {
 
               <!-- Each condition (attribute-operator-value) -->
               <div class="hstack gap-2">
-                <!-- Cannot use `v-model` syntax because we cannot replace the repetition variable, so we need `Object.assign` -->
                 <QueryBuilderCondition
                   v-model:attribute="condition.type"
                   v-model:operator="condition.op"
                   v-model:value="condition.val"
+                  v-model:flags="condition.flags"
                 />
 
                 <button

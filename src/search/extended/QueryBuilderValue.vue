@@ -5,6 +5,7 @@ import { computed, inject, useId, type Component } from "vue"
 import WordWidget from "./WordWidget.vue"
 
 const model = defineModel<string>({ required: true })
+const flags = defineModel<Record<string, true> | undefined>("flags")
 
 const props = defineProps<{
   attribute?: Attribute
@@ -23,7 +24,7 @@ const widget = computed(() => (props.attribute ? widgets[props.attribute.name] :
 <template>
   <div>
     <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
-    <component v-if="widget" :is="widget" :id="inputId" v-model="model" />
+    <component v-if="widget" :is="widget" :id="inputId" v-model="model" v-model:flags="flags" />
     <!-- Fall back to standard text input -->
     <input v-else type="text" :id="inputId" v-model="model" size="10" class="form-control" />
   </div>

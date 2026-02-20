@@ -12,6 +12,8 @@ const name = defineModel<string>("attribute", { required: true })
 const operator = defineModel<OperatorKorp>("operator", { required: true })
 /** Model for input value */
 const value = defineModel<string>("value", { required: true })
+/** Model for condition flags */
+const flags = defineModel<Record<string, true> | undefined>("flags")
 
 const corpusSelection = useReactiveCorpusSelection()
 
@@ -55,8 +57,8 @@ watch(operatorOptions, () => {
     </div>
 
     <div class="hstack gap-1">
+      <!-- Operator -->
       <div>
-        <!-- Operator -->
         <label :for="`${inputId}-op`" class="visually-hidden">
           {{ $t("search.extended.operator") }}
         </label>
@@ -68,7 +70,13 @@ watch(operatorOptions, () => {
       </div>
 
       <!-- Value -->
-      <QueryBuilderValue v-if="attribute" :attribute v-model="value" class="flex-grow-1" />
+      <QueryBuilderValue
+        v-if="attribute"
+        :attribute
+        v-model="value"
+        v-model:flags="flags"
+        class="flex-grow-1"
+      />
     </div>
   </div>
 </template>
