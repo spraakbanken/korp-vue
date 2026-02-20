@@ -1,4 +1,4 @@
-import { compact, escape } from "lodash-es"
+import { compact } from "lodash-es"
 import type { CountsMerged } from "../backend/types/count"
 import {
   isTotalRow,
@@ -7,16 +7,10 @@ import {
   type StatisticsProcessed,
   type StatisticsWorkerMessage,
 } from "./statistics.types"
-import { corpusListing, corpusSelection } from "../corpora/corpusListing"
-import { fromKeys, regescape, splitFirst } from "../util"
+import { corpusSelection } from "../corpora/corpusListing"
+import { regescape, splitFirst } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { CorpusSet } from "../corpora/CorpusSet"
-import { Lemgram } from "../lemgram"
-import { Saldo } from "../saldo"
-import type { Corpus } from "../config/corpusConfig.types"
-import { locObj } from "../i18n"
-
-type Stringifier = (tokens: string[], ignoreCase?: boolean) => string
+import type { Stringifier } from "@/attributes/attributes.types"
 
 const customFunctions: Record<string, Stringifier> = {}
 
@@ -33,12 +27,9 @@ export function processStatisticsResult(
   reduceVals: string[],
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
+  stringifiers: Record<string, Stringifier>,
 ): Promise<StatisticsProcessed> {
   const corpora = Object.keys(data.corpora)
-  const cl = corpusListing.pick(corpora)
-
-  // Get stringifiers for formatting attribute values
-  const stringifiers = fromKeys(reduceVals, (attr) => reduceStringify(attr, cl))
 
   const params: SearchParams = {
     reduceVals,
@@ -70,7 +61,9 @@ export function processStatisticsResult(
         if (isTotalRow(row)) continue
         for (const attr of reduceVals) {
           const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
-          row.formattedValue[attr] = stringifiers[attr]!(words)
+          const wordsFormatted = words.map(stringifiers[attr]!)
+          // Join with spaces and then squash redundant and surrounding space.
+          row.formattedValue[attr] = wordsFormatted.join(" ").trim().replace(/\s+/g, " ")
         }
       }
 
@@ -131,31 +124,6 @@ function mergeRegex(values: string[]): string {
   const init = splitFirst(":", values[0]!)[0]
   const tails = values.map((v) => splitFirst(":", v)[1])
   return init + ":(" + tails.join("|") + ")"
-}
-
-// Get the html (no linking) representation of the result for the statistics table
-function reduceStringify(name: string, cl?: CorpusSet): (values: string[]) => string {
-  cl ??= corpusListing
-  const attr = cl.getReduceAttrs()[name]
-
-  // Use named stringifier from custom config code
-  if (attr?.stats_stringify) return customFunctions[attr.stats_stringify]!
-
-  const transforms: ((token: string) => string)[] = [escape]
-
-  if (attr?.ranked) transforms.push((token) => token.replace(/:.*/g, ""))
-  if (attr?.translation) transforms.push((token) => locObj(attr.translation?.[token]))
-
-  if (["prefix", "suffix", "lex"].includes(name))
-    transforms.push((token) => Lemgram.parse(token)?.toHtml() || token)
-  else if (name == "saldo" || name == "sense")
-    transforms.push((token) => Saldo.parse(token)?.toHtml() || token)
-  else if (name == "lemma")
-    transforms.push((lemma) => lemma.replace(/_/g, " ").replace(/:\d+$/g, ""))
-
-  const transform = (value: string) => transforms.reduce((acc, f) => f(acc), value)
-  // Join with spaces and then squash redundant and surrounding space.
-  return (values) => values.map(transform).join(" ").trim().replace(/\s+/g, " ")
 }
 
 export function createStatisticsCsv(

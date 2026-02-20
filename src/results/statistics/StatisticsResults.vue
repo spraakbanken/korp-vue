@@ -26,6 +26,8 @@ import ExportButton from "../ExportButton.vue"
 import { locObj } from "@/core/i18n"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import { useStringifiers } from "@/attributes/useStringifiers"
+import { fromKeys } from "@/core/util"
 
 const UPDATE_DELAY_MS = 500
 
@@ -34,6 +36,7 @@ const progress = defineModel<number>("progress")
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
+const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: store.stats_reduce.split(","),
@@ -91,12 +94,19 @@ async function doSearch() {
     throw error
   }
 
+  const stringifiers = fromKeys(attrs.selected, (name) => {
+    const attribute = corpusSelectionSearched?.getReduceAttrs()[name]
+    if (!attribute) console.warn("Attribute not found in corpus selection:", name)
+    return attribute ? getStringifier(attribute) : String
+  })
+
   data.value = await processStatisticsResult(
     corpusSelectionSearched.stringify(false),
     counts,
     attrs.selected,
     ignoreCase,
     cqpValue,
+    stringifiers,
   )
 
   mapAttributes.value = getGeoAttributes(corpusSelectionSearched.corpora)

@@ -23,6 +23,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
+// TODO Use corpus selection of the search, may have been changed
 const corpusSelection = useReactiveCorpusSelection()
 
 const tokensTotal = computed(() => corpusSelection.getTokenCount())
