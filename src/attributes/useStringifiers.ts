@@ -21,17 +21,11 @@ export function useStringifiers() {
   const customStringifiers = inject(injectionKeys.attribute.stringifiers, {})
 
   /** Get default or custom stringifier for the given attribute */
-  const getStringifier: (attribute: Attribute) => Stringifier = (attribute) => (str) => {
-    try {
-      // Use custom stringifier if configured for this attribute
-      if (customStringifiers[attribute.name]) return customStringifiers[attribute.name]!(str)
-      // Otherwise use default stringifier
-      return getDefaultStringifier(attribute)(str)
-    } catch (error) {
-      console.error(`Error in "${attribute.name}" stringifier with value "${str}":`, error)
-    }
-    // Return the input string as a fallback
-    return str
+  function getStringifier(attribute: Attribute): Stringifier {
+    // Use custom stringifier if configured for this attribute
+    if (customStringifiers[attribute.name]) return customStringifiers[attribute.name]!
+    // Otherwise use default stringifier
+    return getDefaultStringifier(attribute)
   }
 
   /** Handles a few standard attribute types */

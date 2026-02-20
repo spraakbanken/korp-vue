@@ -37,7 +37,12 @@ export type CompareItem = {
   abs: number
   /** Values of given attribute, as found including probability suffixes */
   elems: string[]
-  tokenLists: string[][]
+  values: AttributeValues[]
+}
+
+export type AttributeValues = {
+  attribute?: Attribute
+  tokens: string[]
 }
 
 export class CompareTask extends TaskBase<CompareResult> {
@@ -91,7 +96,7 @@ export class CompareTask extends TaskBase<CompareResult> {
     const objs: CompareItemRaw[] = Object.entries(data.loglike).map(([key, value]) => ({
       value: key,
       loglike: value,
-      abs: value > 0 ? data.set2[key] : data.set1[key],
+      abs: (value > 0 ? data.set2[key] : data.set1[key]) || 0,
     }))
 
     type Polarity = "positive" | "negative"
@@ -101,19 +106,23 @@ export class CompareTask extends TaskBase<CompareResult> {
     >
 
     let max = 0
-    const groupAndSum = function (table: CompareItemRaw[]) {
+    const groupAndSum = (table: CompareItemRaw[]): CompareItem[] => {
       // Merge items that are different only by probability suffix ":<number>"
       const groups = groupBy(table, (obj) => obj.value.replace(/(:.+?)(\/|$| )/g, "$2"))
       const res = Object.entries(groups).map(([key, items]): CompareItem => {
         // Add up similar items.
-        const tokenLists = key.split("/").map((tokens) => tokens.split(" "))
+        // Slash separates attributes, space separates tokens.
+        const values = key
+          .split("/")
+          .map((tokens) => tokens.split(" "))
+          .map((tokens, i) => ({ tokens, attribute: this.attributes[this.reduce[i]!] }))
         const loglike = sumBy(items, "loglike")
         const abs = sumBy(items, "abs")
         const elems = items.map((item) => item.value)
         max = Math.max(max, Math.abs(loglike))
-        return { key, loglike, abs, elems, tokenLists }
+        return { key, loglike, abs, elems, values }
       })
-      return res
+      return res.sort((a, b) => Math.abs(b.loglike) - Math.abs(a.loglike))
     }
     const positive = groupAndSum(tables.positive)
     const negative = groupAndSum(tables.negative)
