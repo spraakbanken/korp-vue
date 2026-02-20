@@ -30,6 +30,6 @@ export class KwicProxy extends QueryProxyBase {
   async makeRequest(cqp: string, isPaging = false): Promise<QueryData> {
     const params = this.buildParams(cqp, isPaging)
     const data = await this.send(params)
-    return this.processData(data)
+    return QueryProxyBase.processData(data)
   }
 }

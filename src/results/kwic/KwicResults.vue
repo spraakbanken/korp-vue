@@ -13,7 +13,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
-import type { Row } from "@/core/kwic/kwic"
+import { massageData, type Row } from "@/core/kwic/kwic"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
@@ -41,8 +41,8 @@ const pageLocal = ref(1)
 const sort = ref<QueryParamSort>("")
 
 const proxy = new KwicProxy(store).setProgressHandler((report) => {
-  // TODO Show first KWIC page when available
-  kwic.value = []
+  // Show first KWIC page when available
+  if ("kwic" in report.data && report.data.kwic) kwic.value = massageData(report.data.kwic)
   distribution.value = undefined
   hitsCount.value = report.hits || 0
   progress.value = report.percent
@@ -79,7 +79,7 @@ async function doSearch(isPaging = false) {
   // Use remembered state to control the result display
   isReading.value = willBeReading
   loading.value = false
-  kwic.value = response.kwic
+  kwic.value = massageData(response.kwic)
   distribution.value = response.distribution
   hitsCount.value = response.hits
 }

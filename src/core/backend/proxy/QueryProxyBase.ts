@@ -4,7 +4,7 @@ import type { QueryParams, QueryResponse } from "../types/query"
 import ProxyBase from "./ProxyBase"
 import { getDefaultWithin } from "@/core/config"
 import { expandCqp } from "@/core/cqp/cqp"
-import { massageData, type Row } from "@/core/kwic/kwic"
+import type { ApiKwic } from "../types"
 
 export type QueryParamOptions = {
   isPaging?: boolean
@@ -15,7 +15,7 @@ export type QueryParamOptions = {
 
 export type QueryData = {
   hits: number
-  kwic: Row[]
+  kwic: ApiKwic[]
   distribution: HitsDistribution[]
 }
 
@@ -57,8 +57,7 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     return data
   }
 
-  protected processData(data: QueryResponse): QueryData {
-    const kwic = massageData(data.kwic)
+  static processData(data: QueryResponse): QueryData {
     const distribution = data.corpus_order.map((corpus) => ({
       corpus,
       hits: data.corpus_hits[corpus] || 0,
@@ -66,7 +65,7 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     return {
       distribution,
       hits: data.hits,
-      kwic,
+      kwic: data.kwic,
     }
   }
 }

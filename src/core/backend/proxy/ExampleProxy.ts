@@ -43,6 +43,6 @@ export class ExampleProxy extends QueryProxyBase {
   ): Promise<QueryData> {
     const params = this.buildParams(page, hpp, isPaging, isReading)
     const data = await this.send(params)
-    return this.processData(data)
+    return QueryProxyBase.processData(data)
   }
 }
