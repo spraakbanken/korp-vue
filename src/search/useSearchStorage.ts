@@ -6,7 +6,7 @@ export function useSearchStorage() {
   const searches = useLocalStorage<SavedSearch[]>(`korp.search_storage.${currentMode}`, [])
 
   function saveSearch(cqp: string, label: string, corpora: string[]) {
-    searches.value.push({ cqp, label, corpora })
+    searches.value.unshift({ cqp, label, corpora })
   }
 
   function removeSearch(search: SavedSearch) {

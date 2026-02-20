@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useId } from "vue"
+import { computed, ref, useId, type Ref } from "vue"
 import { useSearchStorage } from "../search/useSearchStorage"
 import { watchImmediate } from "@vueuse/core"
 import { corpusListing } from "@/core/corpora/corpusListing"
@@ -9,7 +9,7 @@ import { CompareTask, type SavedSearch } from "@/core/task/CompareTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
 
-const { searches } = useSearchStorage()
+const { removeSearch, searches } = useSearchStorage()
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 
@@ -26,12 +26,9 @@ const attributes = computed(() => {
 
 watchImmediate(searches, () => {
   // Update default selected searches when adding new searches.
-  if (searches.value.length && !queryLeft.value) {
-    queryLeft.value = searches.value[0]!
-  }
-  if (searches.value.length > 1 && !queryRight.value) {
-    queryRight.value = searches.value[1]!
-  }
+  if (!queryLeft.value) queryLeft.value = searches.value[0] || null
+  if (!queryRight.value)
+    queryRight.value = searches.value[1] || searches.value[0] || null
 })
 
 watchImmediate(attributes, () => {
@@ -40,9 +37,33 @@ watchImmediate(attributes, () => {
 })
 
 function submit() {
-  if (!queryLeft.value || !queryRight.value || !attribute.value) return
+  if (
+    !queryLeft.value ||
+    !queryRight.value ||
+    !attribute.value ||
+    queryLeft.value == queryRight.value
+  )
+    return
   const task = new CompareTask(queryLeft.value, queryRight.value, [attribute.value.name])
   createTab(t("search.compare"), task)
+}
+
+/** Remove the currently selected left or right search */
+function removeSearchLocal(search: SavedSearch) {
+  // Remember index of removed search
+  const prevIndex = searches.value.findIndex((s) => s == search)
+
+  removeSearch(search)
+
+  // Update selectors that may have the removed search selected:
+  // Select next in the list, or the previous one if the removed was the last
+  const newIndex = Math.min(prevIndex, searches.value.length - 1)
+
+  for (const queryRef of [queryLeft, queryRight]) {
+    if (queryRef.value == search) {
+      queryRef.value = searches.value[newIndex] || null
+    }
+  }
 }
 </script>
 
@@ -52,6 +73,7 @@ function submit() {
 
     <div class="row row-gap-2">
       <div class="col-sm-6 col-md-4">
+        <!-- Left search selector -->
         <label :for="`${id}-left`" class="form-label">
           {{ $t("search.compare.search_left") }}
         </label>
@@ -61,13 +83,24 @@ function submit() {
           class="form-select"
           :disabled="!searches.length"
         >
-          <option v-for="query in searches" :key="query.cqp" :value="query">
+          <option v-for="query in searches" :key="query.corpora + query.cqp" :value="query">
             {{ query.label }}
           </option>
         </select>
+
+        <!-- Left remove button -->
+        <button
+          type="button"
+          class="d-block btn btn-sm link-danger mx-auto"
+          :class="{ invisible: !queryLeft }"
+          @click="removeSearchLocal(queryLeft!)"
+        >
+          {{ $t("remove") }}
+        </button>
       </div>
 
       <div class="col-sm-6 col-md-4">
+        <!-- Right search selector -->
         <label :for="`${id}-right`" class="form-label">
           {{ $t("search.compare.search_right") }}
         </label>
@@ -77,10 +110,20 @@ function submit() {
           class="form-select"
           :disabled="!searches.length"
         >
-          <option v-for="query in searches" :key="query.cqp" :value="query">
+          <option v-for="query in searches" :key="query.corpora + query.cqp" :value="query">
             {{ query.label }}
           </option>
         </select>
+
+        <!-- Right remove button -->
+        <button
+          type="button"
+          class="d-block btn btn-sm link-danger mx-auto"
+          :class="{ invisible: !queryRight }"
+          @click="removeSearchLocal(queryRight!)"
+        >
+          {{ $t("remove") }}
+        </button>
       </div>
 
       <div class="col-sm-12 col-md-4">

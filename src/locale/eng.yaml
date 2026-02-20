@@ -9,6 +9,7 @@ save: Save
 ok: OK
 previous: Previous
 next: Next
+remove: Remove
 show_more: Show more
 show_less: Show less
 close: Close
