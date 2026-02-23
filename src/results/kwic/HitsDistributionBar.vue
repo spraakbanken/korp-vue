@@ -51,28 +51,29 @@ const items = computed(() => {
 
     <!-- Percentage-sized buttons -->
     <nav class="w-100 btn-group text-nowrap">
-      <a
-        v-for="item in items"
-        :key="item.id + locale"
-        href="#"
-        class="btn btn-sm btn-outline-secondary overflow-hidden px-0"
-        :style="{ width: `${item.percentage}%` }"
-        v-popover
-        data-bs-toggle="popover"
-        data-bs-trigger="hover"
-        data-bs-placement="top"
-        data-bs-html="true"
-        :data-bs-title="`${$t('result.kwic.distribution.goto', { page: item.page })}`"
-        :data-bs-content="
-          createKeyValueHtml({
-            [$t('corpus')]: locObj(item.corpus.title),
-            [$t('result.kwic.hits_count')]: $n(item.hits),
-          })
-        "
-        @click.prevent="page = item.page"
-      >
-        <span class="mx-1">{{ locObj(item.corpus.title) }}</span>
-      </a>
+      <template v-for="item in items" :key="item.id + locale">
+        <a
+          v-if="item.percentage > 0"
+          href="#"
+          class="btn btn-sm btn-outline-secondary overflow-hidden px-0"
+          :style="{ width: `${item.percentage}%` }"
+          v-popover
+          data-bs-toggle="popover"
+          data-bs-trigger="hover"
+          data-bs-placement="top"
+          data-bs-html="true"
+          :data-bs-title="`${$t('result.kwic.distribution.goto', { page: item.page })}`"
+          :data-bs-content="
+            createKeyValueHtml({
+              [$t('corpus')]: locObj(item.corpus.title),
+              [$t('result.kwic.hits_count')]: $n(item.hits),
+            })
+          "
+          @click.prevent="page = item.page"
+        >
+          <span class="mx-1">{{ locObj(item.corpus.title) }}</span>
+        </a>
+      </template>
     </nav>
   </div>
 </template>
