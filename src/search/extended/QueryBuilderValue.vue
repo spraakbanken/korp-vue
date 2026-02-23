@@ -1,31 +1,43 @@
 <script lang="ts" setup>
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { injectionKeys } from "@/injection"
-import { computed, inject, useId, type Component } from "vue"
-import WordWidget from "./WordWidget.vue"
+import { injectionKeys, type ComponentWithProps } from "@/injection"
+import { computed, inject, useId } from "vue"
+import DefaultWidget from "./widgets/DefaultWidget.vue"
+import { getConfigurable } from "@/core/config"
+import LemgramAutocompleteWidget from "./widgets/LemgramAutocompleteWidget.vue"
+import type { MaybeConfigurable } from "@/core/config/config.types"
 
 const model = defineModel<string>({ required: true })
 const flags = defineModel<Record<string, true> | undefined>("flags")
 
 const props = defineProps<{
-  attribute?: Attribute
+  attribute: Attribute
 }>()
 
 const inputId = useId()
 
-const widgets: Record<string, Component> = {
-  word: WordWidget,
+/** Registry of available non-default widgets */
+const widgets: Record<string, MaybeConfigurable<ComponentWithProps>> = {
+  autocExtended: (props) => ({ component: LemgramAutocompleteWidget, props }),
   ...inject(injectionKeys.search.widgets),
 }
 
-const widget = computed(() => (props.attribute ? widgets[props.attribute.name] : undefined))
+/** The computed widget to use */
+const widget = computed<ComponentWithProps>(() => {
+  const def = props.attribute.extended_component
+  return (def && getConfigurable(widgets, def)) || { component: DefaultWidget }
+})
 </script>
 
 <template>
   <div>
     <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
-    <component v-if="widget" :is="widget" :id="inputId" v-model="model" v-model:flags="flags" />
-    <!-- Fall back to standard text input -->
-    <input v-else type="text" :id="inputId" v-model="model" size="10" class="form-control" />
+    <component
+      :is="widget.component"
+      :id="inputId"
+      v-bind="widget.props"
+      v-model="model"
+      v-model:flags="flags"
+    />
   </div>
 </template>

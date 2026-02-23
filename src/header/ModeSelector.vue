@@ -13,6 +13,7 @@ const modes = settings["modes"].filter((mode) => {
   return true
 })
 const primary = modes.slice(0, N_VISIBLE)
+// TODO Sort by label
 const secondary = modes.slice(N_VISIBLE)
 
 // Promote current secondary mode to primary

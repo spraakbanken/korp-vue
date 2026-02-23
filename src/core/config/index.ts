@@ -29,13 +29,20 @@ export function getConfigurable<T>(
   registry: Record<string, MaybeConfigurable<T>>,
   definition: MaybeWithOptions,
 ): T | undefined {
-  const name = typeof definition === "string" ? definition : definition.name
-  const widget = registry[name]
-  if (isFunction(widget)) {
-    const options = typeof definition == "object" ? definition.options : {}
-    return widget(options)
-  }
-  return widget
+  const { name, options } = normalizeDefinition(definition)
+  const plugin = registry[name]
+  if (isFunction(plugin)) return plugin(options)
+  return plugin
+}
+
+/** Normalize a plugin definition (name or object => object) */
+export function normalizeDefinition<O extends object = Record<string, unknown>>(
+  definition: MaybeWithOptions<O>,
+): { name: string; options: O } {
+  // Inflate string shorthand to an object with empty options
+  if (typeof definition == "string") return { name: definition, options: {} as O }
+  // Return object as-is
+  return definition
 }
 
 export const getDefaultWithin = () => Object.keys(settings["default_within"] || {})[0] || "sentence"

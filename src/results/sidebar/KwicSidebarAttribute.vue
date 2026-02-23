@@ -4,7 +4,7 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { useLocale } from "@/i18n/useLocale"
 import DefaultFormatter from "./DefaultFormatter.vue"
 import type { ApiKwic, Token } from "@/core/backend/types"
-import { type Component, computed, inject } from "vue"
+import { computed, inject } from "vue"
 import { injectionKeys } from "@/injection"
 import { getConfigurable } from "@/core/config"
 
@@ -23,7 +23,7 @@ const formatters = inject(injectionKeys.attribute.formatters, {})
 
 const formatterComponent = computed(() => {
   const def = props.attribute.sidebar_component
-  return (def && getConfigurable<Component>(formatters, def)) || DefaultFormatter
+  return (def && getConfigurable(formatters, def)) || DefaultFormatter
 })
 </script>
 

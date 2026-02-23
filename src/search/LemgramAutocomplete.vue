@@ -16,6 +16,10 @@ const model = defineModel<LemgramAutocompleteModel>({
   default: () => ({ type: "word", value: "" }),
 })
 
+const props = defineProps<{
+  morphologies?: string[]
+}>()
+
 /** Text in the form input */
 const input = ref("")
 const inputElement = useTemplateRef("inputElement")
@@ -44,7 +48,8 @@ const loadSuggestions = throttle(async () => {
   }
 
   // Fetch lemgrams and counts
-  const data = await getLemgrams(input.value, ["saldom"], corpusSelection.getIds())
+  const morphologies = props.morphologies || ["saldom"]
+  const data = await getLemgrams(input.value, morphologies, corpusSelection.getIds())
   // Get top 100
   options.value = data.sort((a, b) => b.count - a.count).slice(0, 100)
   openMenu()
