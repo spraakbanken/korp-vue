@@ -11,9 +11,12 @@ export async function getLemgrams(
   wf: string,
   resources: string[],
   corporaIDs: string[],
+  count = false,
 ): Promise<LemgramCount[]> {
   const lemgrams = (await karp.getLemgrams(wf, resources)).hits
   if (lemgrams.length == 0) return []
+
+  if (!count) return lemgrams.map((lemgram) => ({ lemgram, count: -1 }))
 
   const data = await korpRequest("lemgram_count", {
     lemgram: lemgrams.join(","),

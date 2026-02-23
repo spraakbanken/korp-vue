@@ -8,8 +8,12 @@ export type LemgramAutocompleteWidgetProps = {
   // TODO Implement these in LemgramAutocomplete
   error_on_empty?: boolean
   type?: "lemgram" | "sense"
-  /** Pipe-separated string of morphology resource names (`"saldom|dalinm"`), default is `"saldom"` */
-  variant?: string
+  /**
+   * One or none of:
+   * - `"dalin"` -> use `dalinm` morphology
+   * - `"affix"` -> hide counts
+   */
+  variant?: "dalin" | "affix"
 }
 
 const props = defineProps<LemgramAutocompleteWidgetProps>()
@@ -27,5 +31,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <LemgramAutocomplete :morphologies="variant?.split('|')" v-model="lemgram" />
+  <LemgramAutocomplete
+    :count="props.variant != 'affix'"
+    :morphologies="variant == 'dalin' ? ['dalinm'] : undefined"
+    v-model="lemgram"
+  />
 </template>

@@ -18,6 +18,7 @@ const model = defineModel<LemgramAutocompleteModel>({
 
 const props = defineProps<{
   morphologies?: string[]
+  count?: boolean
 }>()
 
 /** Text in the form input */
@@ -49,7 +50,7 @@ const loadSuggestions = throttle(async () => {
 
   // Fetch lemgrams and counts
   const morphologies = props.morphologies || ["saldom"]
-  const data = await getLemgrams(input.value, morphologies, corpusSelection.getIds())
+  const data = await getLemgrams(input.value, morphologies, corpusSelection.getIds(), props.count)
   // Get top 100
   options.value = data.sort((a, b) => b.count - a.count).slice(0, 100)
   openMenu()
@@ -130,7 +131,8 @@ function passToggleFocus($event: FocusEvent) {
             :class="{ active: option.lemgram == model.value }"
           >
             <span v-html="Lemgram.parse(option.lemgram)?.toHtml($t) || option.lemgram" />
-            <span v-if="option.count" class="badge text-secondary">
+            <!-- Count is -1 if counting is disabled -->
+            <span v-if="option.count > 0" class="badge text-secondary">
               {{ option.count }}
             </span>
           </a>

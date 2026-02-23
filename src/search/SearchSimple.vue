@@ -13,6 +13,7 @@ import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
+import { corpusSelection } from "@/core/corpora/corpusListing"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
@@ -106,7 +107,11 @@ async function commitSearch() {
     <GlobalFilters class="mb-4" />
 
     <div class="d-flex gap-2 justify-content-center">
-      <LemgramAutocomplete v-model="lemgram" />
+      <LemgramAutocomplete
+        count
+        :morphologies="corpusSelection.getMorphologies()"
+        v-model="lemgram"
+      />
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
         <SaveSearchButton :cqp :suggested-label="inputFormatted" />
