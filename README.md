@@ -9,8 +9,8 @@ A Vue 3 rewrite of [korp-frontend](https://github.com/spraakbanken/korp-frontend
 ```
 git clone git@github.com:spraakbanken/korp-vue
 git clone git@github.com:spraakbanken/korp-vue-sb
+mv korp-vue-sb korp-vue/instance
 cd korp-vue
-ln -s ../korp-vue-sb instance
 yarn install
 yarn dev
 ```

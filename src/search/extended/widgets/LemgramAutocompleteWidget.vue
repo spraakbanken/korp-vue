@@ -17,9 +17,9 @@ export type LemgramAutocompleteOptions = {
   variant?: "dalin" | "affix"
 }
 
-const props = defineProps<WidgetProps<LemgramAutocompleteOptions>>()
-
 const model = defineModel<string>({ required: true })
+
+const props = defineProps<WidgetProps<LemgramAutocompleteOptions>>()
 
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 

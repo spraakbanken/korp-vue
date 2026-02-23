@@ -8,6 +8,7 @@ import LemgramAutocompleteWidget from "./widgets/LemgramAutocompleteWidget.vue"
 import type { MaybeConfigurable } from "@/core/config/config.types"
 import DatasetSelectWidget from "./widgets/DatasetSelectWidget.vue"
 import type { Widget } from "./widgets/widget"
+import BackendSelectWidget from "./widgets/BackendSelectWidget.vue"
 
 const model = defineModel<string>({ required: true })
 const flags = defineModel<Record<string, true> | undefined>("flags")
@@ -21,7 +22,8 @@ const inputId = useId()
 /** Registry of available non-default widgets */
 const widgets: Record<string, MaybeConfigurable<Widget>> = {
   autocExtended: (options) => ({ component: LemgramAutocompleteWidget, options }),
-  datasetSelect: (options) => ({ component: DatasetSelectWidget, options }),
+  datasetSelect: () => ({ component: DatasetSelectWidget }),
+  structServiceSelect: () => ({ component: BackendSelectWidget }),
   ...inject(injectionKeys.search.widgets),
 }
 

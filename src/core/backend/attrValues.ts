@@ -23,7 +23,7 @@ export const countAttrValues: (
       per_corpus: false,
       split: split.join(",") || undefined,
     })) as AttrValuesResponseDeep
-    return data.combined[attributePath]
+    return data.combined[attributePath]!
   },
   // Memoize based on the values of all arguments
   (...args) => JSON.stringify(args),
@@ -43,7 +43,7 @@ export const getAttrValues: (
       per_corpus: false,
       split: split ? attr : undefined,
     })) as AttrValuesResponseFlat
-    return data.combined[attr]
+    return data.combined[attr]!
   },
   // Memoize based on the values of all arguments
   (...args) => JSON.stringify(args),
