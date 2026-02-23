@@ -7,6 +7,7 @@ import type { ApiKwic, Token } from "@/core/backend/types"
 import { computed, inject } from "vue"
 import { injectionKeys } from "@/injection"
 import { getConfigurable } from "@/core/config"
+import type { Formatter } from "../formatter"
 
 const props = defineProps<{
   corpus: Corpus
@@ -21,16 +22,24 @@ const { locObj } = useLocale()
 
 const formatters = inject(injectionKeys.attribute.formatters, {})
 
-const formatterComponent = computed(() => {
+const formatter = computed<Formatter>(() => {
   const def = props.attribute.sidebar_component
-  return (def && getConfigurable(formatters, def)) || DefaultFormatter
+  return (def && getConfigurable(formatters, def)) || { component: DefaultFormatter }
 })
 </script>
 
 <template>
   <div class="sidebar-attribute mb-1">
     <strong v-if="!attribute.sidebar_hide_label">{{ locObj(attribute.label) }}: </strong>
-    <component :is="formatterComponent" :attribute :isCustom :row :token :value />
+    <component
+      :is="formatter.component"
+      :attribute
+      :isCustom
+      :row
+      :token
+      :value
+      :options="formatter.options"
+    />
   </div>
 </template>
 

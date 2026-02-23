@@ -3,8 +3,9 @@ import LemgramAutocomplete, {
   type LemgramAutocompleteModel,
 } from "@/search/LemgramAutocomplete.vue"
 import { ref, watchEffect } from "vue"
+import type { WidgetProps } from "./widget"
 
-export type LemgramAutocompleteWidgetProps = {
+export type LemgramAutocompleteOptions = {
   // TODO Implement these in LemgramAutocomplete
   error_on_empty?: boolean
   type?: "lemgram" | "sense"
@@ -16,7 +17,7 @@ export type LemgramAutocompleteWidgetProps = {
   variant?: "dalin" | "affix"
 }
 
-const props = defineProps<LemgramAutocompleteWidgetProps>()
+const props = defineProps<WidgetProps<LemgramAutocompleteOptions>>()
 
 const model = defineModel<string>({ required: true })
 
@@ -24,7 +25,7 @@ const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 
 // Emit value change if it matches the expected type.
 watchEffect(() => {
-  if (lemgram.value.type == props.type) {
+  if (lemgram.value.type == props.options.type) {
     model.value = lemgram.value.value
   }
 })
@@ -32,8 +33,8 @@ watchEffect(() => {
 
 <template>
   <LemgramAutocomplete
-    :count="props.variant != 'affix'"
-    :morphologies="variant == 'dalin' ? ['dalinm'] : undefined"
+    :count="options.variant != 'affix'"
+    :morphologies="options.variant == 'dalin' ? ['dalinm'] : undefined"
     v-model="lemgram"
   />
 </template>
