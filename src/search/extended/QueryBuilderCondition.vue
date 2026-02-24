@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { OperatorKorp } from "@/core/cqp/cqp.types"
 import QueryBuilderValue from "./QueryBuilderValue.vue"
-import { computed, reactive, ref, useId, watch, watchEffect } from "vue"
+import { computed, ref, useId, watch, watchEffect } from "vue"
 import settings, { prefixAttr, unprefixAttr } from "@/core/config"
 import AttributeSelector from "@/AttributeSelector.vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"

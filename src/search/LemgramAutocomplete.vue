@@ -49,7 +49,7 @@ const loadSuggestions = throttle(async () => {
   }
 
   // Fetch lemgrams and counts
-  const morphologies = props.morphologies || ["saldom"]
+  const morphologies = props.morphologies || []
   const data = await getLemgrams(input.value, morphologies, corpusSelection.getIds(), props.count)
   // Get top 100
   options.value = data.sort((a, b) => b.count - a.count).slice(0, 100)

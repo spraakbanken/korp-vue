@@ -13,13 +13,14 @@ import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
-import { corpusSelection } from "@/core/corpora/corpusListing"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
 const filterManager = useReactiveFilterManager()
 const { t } = useI18n()
 
+const corpusSelection = useReactiveCorpusSelection()
 const prefixLocal = ref(prefix.value)
 const midfixLocal = ref(false)
 const suffixLocal = ref(suffix.value)

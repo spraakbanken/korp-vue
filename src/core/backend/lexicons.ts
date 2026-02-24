@@ -13,6 +13,8 @@ export async function getLemgrams(
   corporaIDs: string[],
   count = false,
 ): Promise<LemgramCount[]> {
+  // If no morphology specified, default to SALDO
+  if (resources.length == 0) resources = ["saldom"]
   const lemgrams = (await karp.getLemgrams(wf, resources)).hits
   if (lemgrams.length == 0) return []
 
