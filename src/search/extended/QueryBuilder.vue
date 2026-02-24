@@ -75,7 +75,8 @@ function addBoundary(start: boolean) {
 </script>
 
 <template>
-  <div class="d-flex gap-4 align-items-center overflow-x-auto">
+  <div class="d-flex gap-4 align-items-center overflow-x-auto overflow-y-hidden">
+    <!-- TODO Dropdowns in *AutocompleteWidget are clipped -->
     <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2">
       <!-- 2-dimensional repetition: an AND of OR's-->
       <div v-if="isCqpToken(token)" class="vstack gap-2">

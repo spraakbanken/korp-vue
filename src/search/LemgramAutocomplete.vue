@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// TODO Extract and reuse the simpler input+dropdown structure from BackendAutocompleteWidget.vue
 import { getLemgrams, type LemgramCount } from "@/core/backend/lexicons"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { Lemgram } from "@/core/lemgram"
