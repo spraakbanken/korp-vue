@@ -9,15 +9,19 @@ const model = defineModel<string | T>({ required: true })
 
 const props = defineProps<{
   loadSuggestions: (input: string) => Promise<Option<T>[]>
+  size?: number
   valueToString?: (value: string | T) => string
 }>()
 
 let dropdown: Dropdown | undefined
+/** String to show in input box: user input or stringified selected value */
 const input = ref((props.valueToString || String)(model.value))
 const inputEl = useTemplateRef("inputEl")
 const menuEl = useTemplateRef("menuEl")
+/** Raw user input to use for lookup */
+const raw = ref(typeof model.value == "string" ? model.value : "")
 
-const { execute, isLoading, state } = useAsyncState(() => props.loadSuggestions(input.value), [])
+const { execute, isLoading, state } = useAsyncState(() => props.loadSuggestions(raw.value), [])
 
 onMounted(() => {
   dropdown = new Dropdown(inputEl.value!)
@@ -25,17 +29,17 @@ onMounted(() => {
 
 async function onInput() {
   // Emit raw input value
-  model.value = input.value
-  // Show dropdown and load suggestions
+  model.value = raw.value = input.value
+  // Hide and show dropdown to trigger suggestions loading
+  dropdown?.hide()
   dropdown?.show()
-  execute()
 }
 
 /** Handle selection of an option */
 function select(value: T) {
   // Emit selected value
   model.value = value
-  // Fill input with selected value as string
+  // Fill input with selected value as string, but leave raw input unchanged
   input.value = (props.valueToString || String)(value)
   // Hide dropdown and focus input
   dropdown?.hide()
@@ -47,8 +51,13 @@ function select(value: T) {
 // See https://github.com/twbs/bootstrap/issues/41167
 function onDownKey() {
   dropdown?.show()
-  const item = menuEl.value?.querySelector(".dropdown-item:not(.disabled)")
-  if (item instanceof HTMLElement) item.focus()
+  // Move focus in next tick, when suggestions loader has started
+  // If loading is instant, focus is moved to first item as desired
+  // If loading takes a moment, focus remains on the input
+  setTimeout(() => {
+    const item = menuEl.value?.querySelector(".dropdown-item:not(.disabled)")
+    if (item instanceof HTMLElement) item.focus()
+  })
 }
 
 onUnmounted(() => {
@@ -63,7 +72,7 @@ onUnmounted(() => {
       type="text"
       ref="inputEl"
       autocomplete="off"
-      size="10"
+      :size="size ?? 10"
       v-model="input"
       class="form-control"
       data-bs-toggle="dropdown"
@@ -73,20 +82,21 @@ onUnmounted(() => {
     />
 
     <!-- Dropdown -->
-    <ul class="dropdown-menu" ref="menuEl" style="min-width: 100%">
+    <ul
+      class="dropdown-menu"
+      ref="menuEl"
+      :class="{ idnvisible: !isLoading && !state.length }"
+      style="min-width: 100%"
+    >
       <li v-if="isLoading" class="dropdown-item disabled">
         {{ $t("loading") }}
       </li>
       <li v-for="{ key, value } in state" :key>
-        <a
-          class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"
-          href="#"
-          @click.prevent="select(value)"
-        >
-          <slot name="item" v-bind="{ value }">
+        <slot name="item" v-bind="{ select, value }">
+          <a class="dropdown-item" href="#" @click.prevent="select(value)">
             {{ value }}
-          </slot>
-        </a>
+          </a>
+        </slot>
       </li>
     </ul>
   </div>

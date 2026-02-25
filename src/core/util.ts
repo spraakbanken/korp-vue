@@ -41,6 +41,28 @@ export class Factory<T extends new (...args: unknown[]) => InstanceType<T>> {
   }
 }
 
+/** Debounce an async function */
+export function debounceAsync<P extends unknown[], R>(
+  f: (...args: P) => Promise<R>,
+  wait: number,
+): (...args: P) => Promise<R> {
+  // Store timer in closure, so that it can be cleared on subsequent calls
+  let timer = -1
+
+  // The function returned
+  return async (...args) => {
+    // Clear previous timer; that promise will never resolve
+    clearTimeout(timer)
+
+    // Create a new promise with a new timer
+    const promise = new Promise((resolve) => (timer = setTimeout(resolve, wait)))
+
+    // Let timer run out before invoking
+    await promise
+    return f(...args)
+  }
+}
+
 /** Provides a slot for an async function. */
 export class PromiseStarter<T = void> {
   protected starter?: () => Promise<T>
