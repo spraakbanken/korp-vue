@@ -54,8 +54,6 @@ const date1 = ref(model.value[0])
 const date2 = ref(model.value[1])
 const time1 = ref(model.value[2])
 const time2 = ref(model.value[3])
-const fromDate = computed(() => new Date(date1.value + "T" + time1.value))
-const toDate = computed(() => new Date(date2.value + "T" + time2.value))
 
 watchEffect(() => {
   const values = [date1.value, date2.value, time1.value, time2.value]
@@ -81,11 +79,6 @@ watchEffect(() => {
 
       <!-- Time -->
       <input type="time" v-model="time1" class="form-control" />
-
-      <!-- Display -->
-      <div class="text-center">
-        <template v-if="!isNaN(fromDate.getTime())">{{ $d(fromDate, "long") }}</template>
-      </div>
     </div>
 
     <!-- To -->
@@ -104,11 +97,6 @@ watchEffect(() => {
 
       <!-- Time -->
       <input type="time" v-model="time2" class="form-control" />
-
-      <!-- Display -->
-      <div class="text-center">
-        <template v-if="!isNaN(toDate.getTime())">{{ $d(toDate, "long") }}</template>
-      </div>
     </div>
   </div>
 </template>
