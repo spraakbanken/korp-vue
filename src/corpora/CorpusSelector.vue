@@ -8,6 +8,7 @@ import { useLocale } from "@/i18n/useLocale"
 import ModalDialog from "@/components/ModalDialog.vue"
 import { ref, watchEffect } from "vue"
 import { useAuth } from "@/auth/useAuth"
+import { getTimeData } from "@/core/backend/timedata"
 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
@@ -25,6 +26,10 @@ function resolveValidation(ids: string[]) {
     () => store.corpus,
     () => corpusSelection.pickFrom(corpusListing, store.corpus),
   )
+
+  // Await time distribution data (already started in the App component)
+  // and then make sure time interval attributes are added
+  getTimeData().then(() => corpusSelection.updateAttributes())
 }
 
 watchEffect(() => (selection.value = store.corpus))

@@ -13,6 +13,8 @@ next: Nästa
 remove: Ta bort
 show_more: Visa mer
 show_less: Visa mindre
+time.from: Från
+time.to: Till
 close: Stäng
 
 attribute_type.word: Ord

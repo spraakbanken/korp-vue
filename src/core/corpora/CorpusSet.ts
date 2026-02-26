@@ -387,11 +387,4 @@ export class CorpusSet {
     Object.entries(this.commonAttributes).forEach(([name, attr]) => (attr.name = name))
     this.structAttributes = this._getStructAttrs()
   }
-
-  isDateInterval(type: string): boolean {
-    return (
-      this.commonAttributes[unprefixAttr(type)]?.["extended_component"] == "dateInterval" ||
-      this.structAttributes[unprefixAttr(type)]?.["extended_component"] == "dateInterval"
-    )
-  }
 }

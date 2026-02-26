@@ -6,12 +6,9 @@ import {
   isCqpToken,
   type Condition,
   type CqpQuery,
-  type DateRange,
   type Operator,
   type OperatorKorp,
-  type Value,
 } from "./cqp.types"
-import { corpusSelection } from "../corpora/corpusListing"
 import settings from "../config"
 
 /** Parse CQP string to syntax tree. */
@@ -21,17 +18,14 @@ export { parse }
  * Create CQP expression for a date interval condition.
  *
  * @param opKorp Operator to use if not using `expanded_format`
- * @param range An array like `[fromdate, todate, fromtime, totime]`
+ * @param value A string like `fromdate,todate,fromtime,totime`
  * @param expanded_format Whether to convert to standard CQP or keep Korp-specific operators
  */
-export function parseDateInterval(
-  opKorp: OperatorKorp,
-  range: DateRange | string,
-  expanded_format?: boolean,
-) {
-  // `range` could be a string if the query is being edited in extended search
-  if (!Array.isArray(range)) return ""
-  if (!expanded_format) return `$date_interval ${opKorp} '${range.join(",")}'`
+export function parseDateInterval(opKorp: OperatorKorp, value: string, expanded_format?: boolean) {
+  // Silently eliminate an invalid value, happens while changing attributes in the UI
+  const range = value.split(",")
+  if (range.length != 4) return ""
+  if (!expanded_format) return `$date_interval ${opKorp} '${value}'`
 
   const [fromdate, todate, fromtime, totime] = range
   if (!fromdate || !todate) return ""
@@ -60,7 +54,7 @@ export function parseDateInterval(
 }
 
 /** Helps parsing a frontend-type operator to a standard operator and a modified value. */
-const operatorMap: Readonly<Record<OperatorKorp, (val: Value) => [Value, Operator]>> = {
+const operatorMap: Readonly<Record<OperatorKorp, (val: string) => [string, Operator]>> = {
   "=": (val) => [val, "="],
   "!=": (val) => [val, "!="],
   contains: (val) => [val, "contains"],
@@ -126,8 +120,8 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
 
         if (type === "word" && val === "") {
           out = ""
-        } else if (corpusSelection.isDateInterval(type)) {
-          out = parseDateInterval(op, val as DateRange, expanded_format)
+        } else if (type == "date_interval") {
+          out = parseDateInterval(op, val, expanded_format)
         } else {
           out = `${type} ${op} \"${val}\"`
         }

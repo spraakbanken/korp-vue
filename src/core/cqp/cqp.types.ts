@@ -29,11 +29,9 @@ export const isCqpBound = (item?: CqpItem): item is CqpBound => !!item && "bound
 export type Condition = {
   type: string
   op: OperatorKorp
-  val: Value
+  val: string
   flags?: Record<string, true>
 }
-
-export type Value = string | DateRange
 
 /** Should be `[fromdate, todate, fromtime, totime]` */
 export type DateRange = (string | number)[]

@@ -13,6 +13,8 @@ next: Next
 remove: Remove
 show_more: Show more
 show_less: Show less
+time.from: From
+time.to: Until
 close: Close
 
 attribute_type.word: Word

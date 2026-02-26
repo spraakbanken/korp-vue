@@ -9,6 +9,7 @@ import { useAsyncState } from "@vueuse/core"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useUrlParams } from "./useUrlParams"
 import AppFooter from "./AppFooter.vue"
+import { getTimeData } from "./core/backend/timedata"
 
 const auth = useAuth()
 useUrlParams()
@@ -26,6 +27,9 @@ const { isReady } = useAsyncState(async () => {
   // Create global corpusListing and corpusSelection
   const corpora = Object.values(settings.corpora)
   setCorpusListing(new CorpusSet(corpora))
+
+  // Load corpus time data in the background
+  getTimeData()
 }, null)
 </script>
 

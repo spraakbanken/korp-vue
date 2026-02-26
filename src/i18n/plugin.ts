@@ -22,6 +22,26 @@ export default async function setupI18n(locale: string) {
     locale,
     fallbackLocale: "eng",
     messages: { eng, swe, ...instanceLocales },
+    datetimeFormats: {
+      eng: {
+        long: {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      },
+      swe: {
+        long: {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        },
+      },
+    },
   })
 }
 

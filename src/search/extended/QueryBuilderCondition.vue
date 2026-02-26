@@ -35,6 +35,8 @@ const attribute = computed(() =>
 )
 /** Available operator options for the selected attribute */
 const operatorOptions = computed(() => attribute.value?.opts || settings["default_options"])
+/** Allow attribute config to disable operator selection */
+const operatorDisabled = computed(() => attribute.value?.opts === false)
 /** User-facing value, unescaped for regex. */
 const valueInput = ref<string>(isRegex() ? value.value : unregescape(value.value))
 
@@ -71,7 +73,7 @@ watchEffect(() => (value.value = isRegex() ? valueInput.value : regescape(valueI
 
     <div class="hstack gap-1">
       <!-- Operator -->
-      <div>
+      <div v-if="!operatorDisabled">
         <label :for="`${inputId}-op`" class="visually-hidden">
           {{ $t("search.extended.operator") }}
         </label>

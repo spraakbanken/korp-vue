@@ -108,13 +108,9 @@ value_expr
 // date_expr
 
 date
-  = "$" "date_interval" " "? op:("!=" / "=") " "? ["'] val:([0-9]+ "," [0-9]+ "," [0-9]+ "," [0-9]+) ['"]
+  = "$" "date_interval" " "? op:("!=" / "=") " "? ["'] val:[0-9,]+ ['"]
 {
-
-  val = val.filter(Array.isArray).map(function(item) {
-    return item.join("")
-  })
-  return makeObj("date_interval", op, val)
+  return makeObj("date_interval", op, val.join(""))
 }
 
 infix_op
