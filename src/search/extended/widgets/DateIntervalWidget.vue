@@ -3,8 +3,8 @@ import { computed, ref, useId, watchEffect } from "vue"
 import type { WidgetProps } from "./widget"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
-/** List of `[fromdate, todate, fromtime, totime]`, using separators `-` and `:` */
-type DateRange = [string, string, string, string]
+/** Start and end dates on the format `YYYY-MM-DDTHH:mm` */
+type DateRange = [string, string]
 
 const model = defineModel({
   required: true,
@@ -17,30 +17,23 @@ const model = defineModel({
     if (parts.length != 4) {
       const bounds = corpusSelection.getMomentInterval()!
       return [
-        bounds[0].format("YYYY-MM-DD"),
-        bounds[1].format("YYYY-MM-DD"),
-        "00:00",
-        "23:59",
+        bounds[0].format("YYYY-MM-DDT00:00"),
+        bounds[1].format("YYYY-MM-DDT23:59"),
       ] as DateRange
     }
 
     // Convert valid range
     const [d1, d2, t1, t2] = parts as [string, string, string, string]
-    const formatDate = (d: string) => d.replace(/(....)(..)(..)/, "$1-$2-$3")
-    const formatTime = (t: string) => t.replace(/(..)(..)/, "$1:$2")
-    return [formatDate(d1), formatDate(d2), formatTime(t1), formatTime(t2)] as DateRange
+    const formatDate = (d: string, t: string) =>
+      d.replace(/(....)(..)(..)/, "$1-$2-$3") + "T" + t.replace(/(..)(..).*/, "$1:$2")
+    return [formatDate(d1, t1), formatDate(d2, t2)] as DateRange
   },
 
   // Convert local strings to CQP model string
-  set(range: DateRange) {
-    const formatDate = (d: string) => d.replace(/-/g, "")
-    const formatTime = (t: string) => t.replace(/:/g, "")
-    return [
-      formatDate(range[0]),
-      formatDate(range[1]),
-      formatTime(range[2]),
-      formatTime(range[3]),
-    ].join()
+  set([d1, d2]: DateRange) {
+    const formatDate = (d: string) => d.slice(0, 10).replace(/-/g, "")
+    const formatTime = (d: string) => d.slice(11).replace(/:/g, "")
+    return [formatDate(d1), formatDate(d2), formatTime(d1) + "00", formatTime(d2) + "59"].join()
   },
 })
 
@@ -52,51 +45,39 @@ const id = useId()
 const bounds = computed(() => corpusSelection.getMomentInterval()!)
 const date1 = ref(model.value[0])
 const date2 = ref(model.value[1])
-const time1 = ref(model.value[2])
-const time2 = ref(model.value[3])
 
 watchEffect(() => {
-  const values = [date1.value, date2.value, time1.value, time2.value]
+  const values = [date1.value, date2.value]
   if (values.every(Boolean)) model.value = values as DateRange
 })
 </script>
 
 <template>
-  <div class="d-flex gap-2">
+  <div>
     <!-- From -->
-    <div class="d-flex flex-column gap-1">
-      <label :for="`${id}-from`">{{ $t("time.from") }}</label>
+    <label :for="`${id}-from`">{{ $t("time.from") }}</label>
 
-      <!-- Date -->
-      <input
-        type="date"
-        :id="`${id}-from`"
-        :min="bounds[0].format('YYYY-MM-DD')"
-        :max="date2"
-        v-model="date1"
-        class="form-control"
-      />
-
-      <!-- Time -->
-      <input type="time" v-model="time1" class="form-control" />
-    </div>
+    <input
+      type="datetime-local"
+      :id="`${id}-from`"
+      :min="bounds[0].format('YYYY-MM-DDT00:00')"
+      :max="date2"
+      required
+      v-model="date1"
+      class="form-control"
+    />
 
     <!-- To -->
-    <div class="d-flex flex-column gap-1">
-      <label :for="`${id}-to`">{{ $t("time.to") }}</label>
+    <label :for="`${id}-to`">{{ $t("time.to") }}</label>
 
-      <!-- Date -->
-      <input
-        type="date"
-        :id="`${id}-to`"
-        :min="date1"
-        :max="bounds[1].format('YYYY-MM-DD')"
-        v-model="date2"
-        class="form-control"
-      />
-
-      <!-- Time -->
-      <input type="time" v-model="time2" class="form-control" />
-    </div>
+    <input
+      type="datetime-local"
+      :id="`${id}-to`"
+      :min="date1"
+      :max="bounds[1].format('YYYY-MM-DDT23:59')"
+      required
+      v-model="date2"
+      class="form-control"
+    />
   </div>
 </template>
