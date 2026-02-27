@@ -14,6 +14,13 @@ import settings from "../config"
 /** Parse CQP string to syntax tree. */
 export { parse }
 
+/** Split the `fromdate,todate,fromtime,totime` string if the format is correct */
+export function parseDateRange(str: string): [string, string, string, string] | undefined {
+  const match = str.match(/^(\d{8}),(\d{8}),(\d{6}),(\d{6})$/)
+  if (!match) return undefined
+  return match.slice(1) as [string, string, string, string]
+}
+
 /**
  * Create CQP expression for a date interval condition.
  *
@@ -23,12 +30,11 @@ export { parse }
  */
 export function parseDateInterval(opKorp: OperatorKorp, value: string, expanded_format?: boolean) {
   // Silently eliminate an invalid value, happens while changing attributes in the UI
-  const range = value.split(",")
-  if (range.length != 4) return ""
+  const range = parseDateRange(value)
+  if (!range) return ""
   if (!expanded_format) return `$date_interval ${opKorp} '${value}'`
 
   const [fromdate, todate, fromtime, totime] = range
-  if (!fromdate || !todate) return ""
 
   const isFromDateSame = `int(_.text_datefrom) = ${fromdate}`
   const isFromDateInclusive = `int(_.text_datefrom) >= ${fromdate}`
@@ -40,7 +46,7 @@ export function parseDateInterval(opKorp: OperatorKorp, value: string, expanded_
   const isToDateExclusive = `int(_.text_dateto) < ${todate}`
   const isToTimeInclusive = `(${isToDateSame} & int(_.text_timeto) <= ${totime})`
 
-  if (String(fromdate) == String(todate)) {
+  if (fromdate == todate) {
     const fromCond = fromtime == "000000" ? isFromDateSame : isFromTimeInclusive
     const toCond = totime == "235959" ? isToDateSame : isToTimeInclusive
     return `${fromCond} & ${toCond}`

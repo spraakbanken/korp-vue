@@ -1,50 +1,60 @@
 <script lang="ts" setup>
-import { computed, ref, useId, watchEffect } from "vue"
+import { ref, useId, watchEffect } from "vue"
 import type { WidgetProps } from "./widget"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
+import { parseDateRange } from "@/core/cqp/cqp"
 
 /** Start and end dates on the format `YYYY-MM-DDTHH:mm` */
 type DateRange = [string, string]
 
+/** The format used by `<input type="date">` and friends */
+const FORMAT = "YYYY-MM-DDTHH:mm"
+
+// The model is exposed to parent as a `fromdate,todate,fromtime,totime` string,
+// but internally we work with two `YYYY-MM-DDTHH:mm` strings for the two inputs.
 const model = defineModel({
   required: true,
 
-  // Convert the CQP model string to local strings
-  // TODO Better use standard formats in CQP model?
+  /** Convert the CQP model string to local strings */
   get: (str: string) => {
-    const parts = str.split(",")
-    // If invalid range, default to full available range
-    if (parts.length != 4) {
-      const bounds = corpusSelection.getMomentInterval()!
-      return [
-        bounds[0].format("YYYY-MM-DDT00:00"),
-        bounds[1].format("YYYY-MM-DDT23:59"),
-      ] as DateRange
-    }
+    const parts = parseDateRange(str)
+    // If invalid, fall back to full available range
+    if (!parts) return getBounds()
 
-    // Convert valid range
-    const [d1, d2, t1, t2] = parts as [string, string, string, string]
-    const formatDate = (d: string, t: string) =>
-      d.replace(/(....)(..)(..)/, "$1-$2-$3") + "T" + t.replace(/(..)(..).*/, "$1:$2")
-    return [formatDate(d1, t1), formatDate(d2, t2)] as DateRange
+    const [d1, d2, t1, t2] = parts
+    /** `("20260101", "120000")` => `"2026-01-01T12:00"` */
+    const numbersToDate = (d: string, t: string) =>
+      d.replace(/(....)(..)(..)/, "$1-$2-$3") + "T" + t.replace(/(..)(..)/, "$1:$2")
+    return [numbersToDate(d1, t1), numbersToDate(d2, t2)] as DateRange
   },
 
-  // Convert local strings to CQP model string
+  /** Convert local strings to CQP model string */
   set([d1, d2]: DateRange) {
-    const formatDate = (d: string) => d.slice(0, 10).replace(/-/g, "")
-    const formatTime = (d: string) => d.slice(11).replace(/:/g, "")
-    return [formatDate(d1), formatDate(d2), formatTime(d1) + "00", formatTime(d2) + "59"].join()
+    /** `"2026-01-01T12:00"` => `["20260101", "1200<seconds>"]` */
+    const dateToNumbers = (d: string, seconds: string) => [
+      d.slice(0, 10).replace(/-/g, ""),
+      d.slice(11).replace(/:/g, "") + seconds,
+    ]
+    const [fromdate, fromtime] = dateToNumbers(d1, "00")
+    const [todate, totime] = dateToNumbers(d2, "59")
+    return [fromdate, todate, fromtime, totime].join()
   },
 })
 
-const corpusSelection = useReactiveCorpusSelection()
-
 defineProps<WidgetProps>()
 
+const corpusSelection = useReactiveCorpusSelection()
+
 const id = useId()
-const bounds = computed(() => corpusSelection.getMomentInterval()!)
 const date1 = ref(model.value[0])
 const date2 = ref(model.value[1])
+
+/** Time span of current corpus selection */
+function getBounds(): DateRange {
+  // Interval return value is guaranteed, as this widget is only used with dated corpora.
+  const interval = corpusSelection.getMomentInterval()!
+  return [interval[0].format(FORMAT), interval[1].format(FORMAT)]
+}
 
 watchEffect(() => {
   const values = [date1.value, date2.value]
@@ -60,7 +70,7 @@ watchEffect(() => {
     <input
       type="datetime-local"
       :id="`${id}-from`"
-      :min="bounds[0].format('YYYY-MM-DDT00:00')"
+      :min="getBounds()[0]"
       :max="date2"
       required
       v-model="date1"
@@ -74,7 +84,7 @@ watchEffect(() => {
       type="datetime-local"
       :id="`${id}-to`"
       :min="date1"
-      :max="bounds[1].format('YYYY-MM-DDT23:59')"
+      :max="getBounds()[1]"
       required
       v-model="date2"
       class="form-control"
