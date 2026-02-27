@@ -12,9 +12,7 @@ export type LemgramAutocompleteModel = { type: "lemgram" | "word"; value: string
 
 const { t } = useI18n()
 
-const model = defineModel<LemgramAutocompleteModel>({
-  default: () => ({ type: "word", value: "" }),
-})
+const model = defineModel<LemgramAutocompleteModel>({ required: true })
 
 const props = defineProps<{
   count?: boolean
@@ -23,10 +21,14 @@ const props = defineProps<{
 }>()
 
 /** Text in the form input */
-const input = ref<string | LemgramCount>("")
+const input = ref<string | LemgramCount>(model.value.value)
 
-const valueToString = (value: string | LemgramCount) =>
-  typeof value == "string" ? value : Lemgram.parse(value.lemgram)?.toString(t) || String(value)
+/** Try to format a value as a lemgram */
+const valueToString = (value: string | LemgramCount) => {
+  // The value can be a selected LemgramCount object, a lemgram id string or any other string
+  const str = typeof value == "string" ? value : value.lemgram
+  return Lemgram.parse(str)?.toString(t) || str
+}
 
 // Emit raw or lemgram value
 watchEffect(() => {

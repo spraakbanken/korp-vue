@@ -1,7 +1,7 @@
 <script lang="ts" setup generic="T">
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
 import { Dropdown } from "bootstrap"
-import { useAsyncState } from "@vueuse/core"
+import { useAsyncState, watchImmediate } from "@vueuse/core"
 
 export type Option<T> = { key: string; value: T }
 
@@ -15,16 +15,22 @@ const props = defineProps<{
 
 let dropdown: Dropdown | undefined
 /** String to show in input box: user input or stringified selected value */
-const input = ref((props.valueToString || String)(model.value))
+const input = ref("")
 const inputEl = useTemplateRef("inputEl")
 const menuEl = useTemplateRef("menuEl")
 /** Raw user input to use for lookup */
-const raw = ref(typeof model.value == "string" ? model.value : "")
+const raw = ref("")
 
 const { execute, isLoading, state } = useAsyncState(() => props.loadSuggestions(raw.value), [])
 
 onMounted(() => {
   dropdown = new Dropdown(inputEl.value!)
+})
+
+// If model value changes (from outside), update locals
+watchImmediate(model, () => {
+  input.value = (props.valueToString || String)(model.value)
+  if (typeof model.value == "string") raw.value = model.value
 })
 
 async function onInput() {
