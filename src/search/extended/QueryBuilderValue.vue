@@ -43,6 +43,7 @@ const widgets: Record<string, MaybeConfigurable<Widget>> = {
   autocExtended: (options) => ({ component: LemgramAutocompleteWidget, options }),
   datasetSelect: () => ({ component: DatasetSelectWidget }),
   dateInterval: () => ({ component: DateIntervalWidget }),
+  default: (options) => ({ component: DefaultWidget, options }),
   singleValue: () => ({ component: SingleValueWidget }),
   structServiceSelect: () => ({ component: BackendSelectWidget }),
   structServiceAutocomplete: () => ({ component: BackendAutocompleteWidget }),
