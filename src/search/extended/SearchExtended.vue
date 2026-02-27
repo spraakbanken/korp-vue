@@ -14,9 +14,9 @@ import SaveSearchButton from "../SaveSearchButton.vue"
 const store = useAppStore()
 const filterManager = useReactiveFilterManager()
 
-const tokens = reactive<CqpQuery>([{ and_block: [[createCondition("")]] }])
-const cqp = computed(() => stringify(filterManager.mergeToCqp(tokens)))
-const cqpExpanded = computed(() => stringify(filterManager.mergeToCqp(tokens), true))
+const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
+const cqp = computed(() => stringify(filterManager.mergeToCqp(tokens.value)))
+const cqpExpanded = computed(() => stringify(filterManager.mergeToCqp(tokens.value), true))
 const { search } = storeToRefs(store)
 const isFilterReady = ref(false)
 
@@ -29,7 +29,7 @@ watchImmediate(search, () => {
   if (type != "cqp" || value) return
 
   // Replace query under construction
-  tokens.splice(0, tokens.length, ...parse<CqpQuery>(store.cqp))
+  tokens.value = parse<CqpQuery>(store.cqp)
 
   // Trigger search
   commitSearch()
@@ -37,7 +37,7 @@ watchImmediate(search, () => {
 
 /** Handle clicking the Search button */
 function submit() {
-  store.cqp = stringify(tokens)
+  store.cqp = stringify(tokens.value)
   store.search = "cqp"
   store.page = 0
   commitSearch()
