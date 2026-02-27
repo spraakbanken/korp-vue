@@ -108,6 +108,7 @@ async function commitSearch() {
     <GlobalFilters class="mb-4" />
 
     <div class="d-flex gap-2 justify-content-center">
+      <label class="visually-hidden">{{ $t("search.word_or_lemgram") }}</label>
       <LemgramAutocomplete
         count
         :morphologies="corpusSelection.getMorphologies()"

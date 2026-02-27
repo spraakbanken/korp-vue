@@ -57,11 +57,6 @@ const loadSuggestions = debounceAsync(
 
 <template>
   <div>
-    <!-- Hidden label -->
-    <label for="lemgram-autocomplete-input" class="visually-hidden">
-      {{ $t("search.word_or_lemgram") }}
-    </label>
-
     <AutocompleteInput :loadSuggestions :size :valueToString v-model="input">
       <template v-slot:item="{ select, value }">
         <a

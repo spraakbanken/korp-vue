@@ -14,6 +14,7 @@ import SingleValueWidget from "./widgets/SingleValueWidget.vue"
 import DateIntervalWidget from "./widgets/DateIntervalWidget.vue"
 import type { OperatorKorp } from "@/core/cqp/cqp.types"
 import { regescape, unregescape } from "@/core/util"
+import SenseAutocompleteWidget from "./widgets/SenseAutocompleteWidget.vue"
 
 const model = defineModel<string>({
   required: true,
@@ -40,7 +41,10 @@ const isRegex = () =>
 
 /** Registry of available non-default widgets */
 const widgets: Record<string, MaybeConfigurable<Widget>> = {
-  autocExtended: (options) => ({ component: LemgramAutocompleteWidget, options }),
+  autocExtended: (options) => ({
+    component: options.type == "sense" ? SenseAutocompleteWidget : LemgramAutocompleteWidget,
+    options,
+  }),
   datasetSelect: () => ({ component: DatasetSelectWidget }),
   dateInterval: () => ({ component: DateIntervalWidget }),
   default: (options) => ({ component: DefaultWidget, options }),
