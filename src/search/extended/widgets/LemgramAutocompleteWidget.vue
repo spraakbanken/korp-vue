@@ -25,7 +25,7 @@ const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
 
 // Emit value change if it matches the expected type.
 watchEffect(() => {
-  if (lemgram.value.type == props.options.type) {
+  if (lemgram.value.type == (props.options.type || "lemgram")) {
     model.value = lemgram.value.value
   }
 })

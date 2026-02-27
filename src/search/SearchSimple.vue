@@ -111,6 +111,7 @@ async function commitSearch() {
       <LemgramAutocomplete
         count
         :morphologies="corpusSelection.getMorphologies()"
+        :size="30"
         v-model="lemgram"
       />
       <div class="btn-group">

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { OperatorKorp } from "@/core/cqp/cqp.types"
 import QueryBuilderValue from "./QueryBuilderValue.vue"
-import { computed, ref, useId, watch, watchEffect } from "vue"
+import { computed, useId, watch } from "vue"
 import settings, { prefixAttr, unprefixAttr } from "@/core/config"
 import AttributeSelector from "@/AttributeSelector.vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
-import { regescape, unregescape } from "@/core/util"
 
 /** Model for selected attribute name */
 const name = defineModel<string>("attribute", { required: true })
@@ -15,14 +14,6 @@ const operator = defineModel<OperatorKorp>("operator", { required: true })
 const value = defineModel<string>("value", { required: true })
 /** Model for condition flags */
 const flags = defineModel<Record<string, true> | undefined>("flags")
-
-/**
- * Whether input value should be used raw, not escaped.
- * The backend interprets regex, so user-entered values should be escaped unless otherwise specified by certain operators or attribute config.
- */
-const isRegex = () =>
-  attribute.value?.escape === false ||
-  ["*=", "!*=", "regexp_contains", "not_regexp_contains"].includes(operator.value)
 
 const corpusSelection = useReactiveCorpusSelection()
 
@@ -37,8 +28,6 @@ const attribute = computed(() =>
 const operatorOptions = computed(() => attribute.value?.opts || settings["default_options"])
 /** Allow attribute config to disable operator selection */
 const operatorDisabled = computed(() => attribute.value?.opts === false)
-/** User-facing value, unescaped for regex. */
-const valueInput = ref<string>(isRegex() ? value.value : unregescape(value.value))
 
 watch(attribute, () => {
   // If selected attribute is no longer available, reset selection
@@ -50,9 +39,6 @@ watch(operatorOptions, () => {
   const ops = Object.values(operatorOptions.value)
   if (!operator.value || !ops.includes(operator.value)) operator.value = ops[0]!
 })
-
-// If regex requirements change, update value to add/remove escaping
-watchEffect(() => (value.value = isRegex() ? valueInput.value : regescape(valueInput.value)))
 </script>
 
 <template>
@@ -88,7 +74,8 @@ watchEffect(() => (value.value = isRegex() ? valueInput.value : regescape(valueI
       <QueryBuilderValue
         v-if="attribute"
         :attribute
-        v-model="valueInput"
+        :operator
+        v-model="value"
         v-model:flags="flags"
         class="flex-grow-1"
       />

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// TODO Extract and reuse the simpler input+dropdown structure from BackendAutocompleteWidget.vue
 import AutocompleteInput from "@/components/AutocompleteInput.vue"
 import { getLemgrams, type LemgramCount } from "@/core/backend/lexicons"
 import { corpusSelection } from "@/core/corpora/corpusListing"
@@ -18,8 +17,9 @@ const model = defineModel<LemgramAutocompleteModel>({
 })
 
 const props = defineProps<{
-  morphologies?: string[]
   count?: boolean
+  morphologies?: string[]
+  size?: number
 }>()
 
 /** Text in the form input */
@@ -60,7 +60,7 @@ const loadSuggestions = debounceAsync(
       {{ $t("search.word_or_lemgram") }}
     </label>
 
-    <AutocompleteInput :loadSuggestions :size="30" :valueToString v-model="input">
+    <AutocompleteInput :loadSuggestions :size :valueToString v-model="input">
       <template v-slot:item="{ select, value }">
         <a
           class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"
