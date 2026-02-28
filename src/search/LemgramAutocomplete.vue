@@ -21,7 +21,9 @@ const props = defineProps<{
 }>()
 
 /** Text in the form input */
-const input = ref<string | LemgramCount>(model.value.value)
+const input = ref<string | LemgramCount>(
+  model.value.type == "lemgram" ? { lemgram: model.value.value, count: -1 } : model.value.value,
+)
 
 /** Try to format a value as a lemgram */
 const valueToString = (value: string | LemgramCount) => {
