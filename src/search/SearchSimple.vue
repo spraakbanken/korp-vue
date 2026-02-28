@@ -105,9 +105,11 @@ async function commitSearch() {
 
 <template>
   <form @submit.prevent="submit" class="vstack gap-4">
+    <!-- Global filters bar -->
     <GlobalFilters class="mb-4" />
 
     <div class="d-flex gap-2 justify-content-center">
+      <!-- Word/lemgram input -->
       <label class="visually-hidden">{{ $t("search.word_or_lemgram") }}</label>
       <LemgramAutocomplete
         count
@@ -115,6 +117,8 @@ async function commitSearch() {
         :size="30"
         v-model="lemgram"
       />
+
+      <!-- Search/save buttons -->
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
         <SaveSearchButton :cqp :suggested-label="inputFormatted" />
@@ -176,8 +180,8 @@ async function commitSearch() {
             :disabled="!supportsInOrder(query)"
           />
           <label class="form-check-label" for="search-simple-free-order">
-            {{ $t("search.simple.free_order") }}
-            <HelpBadge :text="$t('search.simple.free_order.help')" />
+            {{ $t("search.free_order") }}
+            <HelpBadge :text="$t('search.free_order.help')" />
           </label>
         </div>
 

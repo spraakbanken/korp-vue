@@ -49,6 +49,9 @@ links.news.url: https://spraakbanken.gu.se/en/news-and-events
 links.platforms.label: Other platforms
 links.platforms.url: https://spraakbanken.gu.se/en/tools
 
+search.free_order: free order
+search.free_order.help: The search words can occur in any order, and not necessarily in sequence.
+
 search.history: History
 search.history.clear: Clear history
 search.history.empty: No searches made yet
@@ -60,8 +63,6 @@ search.simple.midfix: medial part
 search.simple.midfix.help: Allow words that contain the search words.
 search.simple.suffix: final part
 search.simple.suffix.help: Allow words that end with the search words.
-search.simple.free_order: free order
-search.simple.free_order.help: The search words can occur in any order, and not necessarily in sequence.
 search.simple.ignore_case: case-insensitive
 
 search.extended: Extended
@@ -80,6 +81,7 @@ search.extended.boundary: Boundary
 search.extended.boundary.type: Boundary unit
 search.extended.boundary.start: starts
 search.extended.boundary.end: ends
+search.extended.free_order_invalid: The {free_order} option requires multiple tokens, no repetition, no boundaries and no wildcards.
 
 search.advanced: Advanced
 search.advanced.current_query: "Current search query in {0}:"

@@ -49,6 +49,9 @@ links.news.url: https://spraakbanken.gu.se/aktuellt
 links.platforms.label: Andra plattformar
 links.platforms.url: https://spraakbanken.gu.se/verktyg
 
+search.free_order: fri följd
+search.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
+
 search.history: Historik
 search.history.clear: Töm historik
 search.history.empty: Inga sökningar har gjorts än
@@ -60,8 +63,6 @@ search.simple.midfix: mellanled
 search.simple.midfix.help: Tillåt ord som innehåller sökorden.
 search.simple.suffix: efterled
 search.simple.suffix.help: Tillåt ord som slutar med sökorden.
-search.simple.free_order: fri följd
-search.simple.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
 search.simple.ignore_case: skiftlägesokänsligt
 
 search.extended: Utökad
@@ -81,6 +82,7 @@ search.extended.boundary: Gräns
 search.extended.boundary.type: Gränsenhet
 search.extended.boundary.start: börjar
 search.extended.boundary.end: slutar
+search.extended.free_order_invalid: Alternativet {free_order} fungerar bara om sökfrågan har flera tokens samt inga repetitioner, gränser eller tomma token.
 
 search.advanced: Avancerad
 search.advanced.current_query: "Aktuell sökfråga i {0}:"
