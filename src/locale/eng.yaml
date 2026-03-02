@@ -187,10 +187,14 @@ result.statistics.trend: Trend graph
 result.trend: Trend graph
 
 result.wordpic: Word picture
+result.wordpic.description: The Word picture shows words that tend to co-occur in syntactic relations with the search word.
+result.wordpic.description.result: The part of speech of the search word determines what relations to show. Each list collects words that occur in the selected corpora and in the given relation to the search word.
+result.wordpic.empty: The search gave no results.
 result.wordpic.limit: Rows
 result.wordpic.show_pos: Show word classes
 result.wordpic.sort: Sort by
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, an adaptation of the Mutual Information association measure prioritizing typical items over infrequent ones
+result.wordpic.query.incompatible: For a word picture, the search query must be exactly one word or lemgram.
 
 pos.nn: noun
 pos.av: adjective

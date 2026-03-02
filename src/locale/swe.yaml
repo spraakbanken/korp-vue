@@ -187,10 +187,14 @@ result.statistics.trend: Trenddiagram
 result.trend: Trenddiagram
 
 result.wordpic: Ordbild
+result.wordpic.description: I ordbilden visas vilka ord som tenderar att förekomma i syntaktiska relationer med sökordet.
+result.wordpic.description.result: Vilka relationer som visas beror på sökordets ordklass. Varje lista innehåller ord som i det valda korpusmaterialet står i den givna relationen med sökordet.
+result.wordpic.empty: Sökningen gav inga träffar.
 result.wordpic.limit: Antal rader
 result.wordpic.show_pos: Visa ordklasser
 result.wordpic.sort: Sortera på
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
+result.wordpic.query.incompatible: Ordbild kräver att sökfrågan innehåller exakt ett ord eller lemgram.
 
 pos.nn: substantiv
 pos.av: adjektiv

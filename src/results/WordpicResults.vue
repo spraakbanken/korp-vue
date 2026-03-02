@@ -17,6 +17,7 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import HelpBox from "@/components/HelpBox.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -81,7 +82,7 @@ function getValidQuery(): RelationsQuery | undefined {
     return RelationsProxy.parseCqp(cqp.value)
   } catch (e) {
     console.warn(e)
-    errorMessage.value = t("wordpic.query.incompatible")
+    errorMessage.value = t("result.wordpic.query.incompatible")
     return undefined
   }
 }
@@ -102,7 +103,7 @@ function createExport() {
 </script>
 
 <template>
-  <div class="vstack gap-2" ref="container">
+  <div class="vstack align-items-center gap-2" ref="container">
     <!-- Options bar -->
     <OptionsBar>
       <label class="d-flex gap-2 align-items-baseline">
@@ -136,7 +137,11 @@ function createExport() {
     </OptionsBar>
 
     <!-- Wordpic cards -->
-    <div v-if="data" class="d-flex flex-wrap gap-2" v-fade-if-loading="progress">
+    <div
+      v-if="data"
+      class="d-flex flex-wrap justify-content-center gap-2"
+      v-fade-if-loading="progress"
+    >
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div
         v-for="section of data.getData()"
@@ -197,6 +202,19 @@ function createExport() {
           </div>
         </div>
       </div>
+
+      <div class="alert alert-warning" v-if="!data.getData().length">
+        {{ $t("result.wordpic.empty") }}
+      </div>
     </div>
+
+    <div v-else-if="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <HelpBox>
+      <p>{{ $t("result.wordpic.description") }}</p>
+      <p class="mb-0">{{ $t("result.wordpic.description.result") }}</p>
+    </HelpBox>
   </div>
 </template>

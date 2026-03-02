@@ -51,8 +51,8 @@ export class RelationsProxy extends ProxyBase<"relations"> {
     if (type == "lemgram") word = unregescape(word)
     const params = this.buildParams(type, word, sort)
     const data = await this.send(params)
-    if (!data.relations) throw new RelationsEmptyError("No relation data in response")
-    const result = new WordPicture(word, type, data.relations)
+    // if (!data.relations) throw new RelationsEmptyError("No relation data in response")
+    const result = new WordPicture(word, type, data.relations || [])
     return result
   }
 }
