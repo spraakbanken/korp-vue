@@ -86,6 +86,7 @@ search.extended.free_order_invalid: Alternativet {free_order} fungerar bara om s
 
 search.advanced: Avancerad
 search.advanced.current_query: "Aktuell sökfråga i {0}:"
+search.advanced.free_order.help: Alternativet {free_order} är kompatibelt med sökfrågor som har flera tokens samt inga repetitioner, gränser eller tomma token.
 search.advanced.label: CQP-sökfråga
 search.advanced.help.heading: Om CQP-frågespråket
 search.advanced.help.summary: Korp bygger på programvaran IMS Open Corpus Workbench, som bland annat innehåller komponenten CQP ("corpus query processor"). I Korp-sammanhang används "CQP" mest för att beteckna det frågespråk som används för sökning. I en typisk sökfråga finns sökvillkor inom hakparenteser som representerar token (ord) i följd.

@@ -3,13 +3,15 @@ import { splitFirst } from "@/core/util"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
-import { ref } from "vue"
+import { ref, watchEffect } from "vue"
 import SaveSearchButton from "./SaveSearchButton.vue"
+import HelpBadge from "@/components/HelpBadge.vue"
 
 const store = useAppStore()
 
-const { search, simpleCqp, extendedCqp } = storeToRefs(store)
+const { in_order, search, simpleCqp, extendedCqp } = storeToRefs(store)
 const cqpLocal = ref("[]")
+const freeOrder = ref(!in_order.value)
 
 watchImmediate(search, () => {
   // For advanced, `search` is `"cqp|<query>"`
@@ -23,8 +25,11 @@ watchImmediate(search, () => {
   commitSearch()
 })
 
+watchEffect(() => (freeOrder.value = !in_order.value))
+
 function submit() {
   store.cqp = cqpLocal.value
+  store.in_order = !freeOrder.value
   store.search = `cqp|${cqpLocal.value}`
   store.page = 0
   commitSearch()
@@ -101,9 +106,27 @@ function commitSearch() {
       </div>
     </div>
 
-    <div class="btn-group">
-      <input type="submit" :value="$t('search')" class="btn btn-primary" />
-      <SaveSearchButton :cqp="cqpLocal" :suggested-label="cqpLocal" />
+    <div class="hstack justify-content-center gap-2">
+      <!-- "Free order" option -->
+      <div class="form-check">
+        <input
+          type="checkbox"
+          id="search-advanced-free-order"
+          v-model="freeOrder"
+          class="form-check-input"
+        />
+        <label for="search-advanced-free-order" class="form-check-label">
+          {{ $t("search.free_order") }}
+          <HelpBadge
+            :text="$t('search.advanced.free_order.help', { free_order: $t('search.free_order') })"
+          />
+        </label>
+      </div>
+
+      <div class="btn-group">
+        <input type="submit" :value="$t('search')" class="btn btn-primary" />
+        <SaveSearchButton :cqp="cqpLocal" :suggested-label="cqpLocal" />
+      </div>
     </div>
   </form>
 </template>

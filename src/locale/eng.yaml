@@ -85,6 +85,7 @@ search.extended.free_order_invalid: The {free_order} option requires multiple to
 
 search.advanced: Advanced
 search.advanced.current_query: "Current search query in {0}:"
+search.advanced.free_order.help: The {free_order} option is compatible with queries that have multiple tokens, no repetition, no boundaries and no wildcards.
 search.advanced.label: CQP query
 search.advanced.help.heading: About the CQP query language
   CQP is the "corpus query processor" component of the Korp software.
