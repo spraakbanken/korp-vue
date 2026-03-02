@@ -39,10 +39,16 @@ const kwic = ref<Row[]>()
 const loading = ref(false)
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>("")
+/** Flags if the current running request will be shown in reading mode */
+let isCurrentRequestReading = false
 
 const proxy = new KwicProxy(store).setProgressHandler((report) => {
   // Show first KWIC page when available
-  if ("kwic" in report.data && report.data.kwic) kwic.value = massageData(report.data.kwic)
+  if ("kwic" in report.data && report.data.kwic) {
+    kwic.value = massageData(report.data.kwic)
+    // Use remembered state to control the result display
+    isReading.value = isCurrentRequestReading
+  }
   distribution.value = undefined
   if (report.hits !== null) hitsCount.value = report.hits
   progress.value = report.percent
@@ -64,7 +70,7 @@ async function doSearch(isPaging = false) {
   progress.value = 0
   loading.value = !isPaging
   // Remember options affecting result display in case they are changed while the request is ongoing
-  const willBeReading = context.value || !store.in_order
+  isCurrentRequestReading = context.value || !store.in_order
 
   let response
   try {
@@ -77,8 +83,6 @@ async function doSearch(isPaging = false) {
   }
 
   // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
-  // Use remembered state to control the result display
-  isReading.value = willBeReading
   loading.value = false
   distribution.value = response.distribution
   // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
