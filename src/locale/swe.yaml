@@ -1,6 +1,8 @@
 tagline: Språkbankens ordforskningsplattform
 corpus: Korpus
 corpora: Korpusar
+error.heading: Ett fel har uppstått.
+error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna sb-info{'@'}svenska.gu.se.
 language: Språk
 loading: Laddar…
 modes: Lägen

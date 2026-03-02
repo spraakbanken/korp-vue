@@ -10,8 +10,11 @@ import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useUrlParams } from "./useUrlParams"
 import AppFooter from "./AppFooter.vue"
 import { getTimeData } from "./core/backend/timedata"
+import AppMessages from "./AppMessages.vue"
+import useMessageStore from "./store/useMessageStore"
 
 const auth = useAuth()
+const messageStore = useMessageStore()
 useUrlParams()
 
 const { isReady } = useAsyncState(async () => {
@@ -31,6 +34,14 @@ const { isReady } = useAsyncState(async () => {
   // Load corpus time data in the background
   getTimeData()
 }, null)
+
+// Catch and show errors from anywhere in the app
+window.addEventListener("unhandledrejection", (event) => {
+  messageStore.addMessage("error", event.reason)
+})
+window.addEventListener("error", (event) => {
+  messageStore.addMessage("error", event.message)
+})
 </script>
 
 <template>
@@ -40,4 +51,5 @@ const { isReady } = useAsyncState(async () => {
     <AppFooter />
   </template>
   <div v-else>Loading...</div>
+  <AppMessages />
 </template>

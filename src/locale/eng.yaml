@@ -1,6 +1,8 @@
 tagline: Språkbanken's word research platform
 corpus: Corpus
 corpora: Corpora
+error.heading: An error has occurred.
+error.footer: If you have questions, or you want to report a bug, please contact sb-info{'@'}svenska.gu.se.
 language: Language
 loading: Loading…
 modes: Modes
