@@ -103,7 +103,6 @@ async function doSearch() {
 
   const stringifiers = fromKeys(attrs.selected, (name) => {
     const attribute = corpusSelectionSearched?.getReduceAttrs()[name]
-    if (!attribute) console.warn("Attribute not found in corpus selection:", name)
     return attribute ? getStringifier(attribute) : String
   })
 

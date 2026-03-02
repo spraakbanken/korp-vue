@@ -60,8 +60,9 @@ export function processStatisticsResult(
       for (const row of rows) {
         if (isTotalRow(row)) continue
         for (const attr of reduceVals) {
+          const stringifier = stringifiers[attr] || String
           const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
-          const wordsFormatted = words.map(stringifiers[attr]!)
+          const wordsFormatted = words.map(stringifier)
           // Join with spaces and then squash redundant and surrounding space.
           row.formattedValue[attr] = wordsFormatted.join(" ").trim().replace(/\s+/g, " ")
         }
