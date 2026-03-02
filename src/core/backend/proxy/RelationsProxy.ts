@@ -4,7 +4,7 @@ import { parse } from "@/core/cqp/cqp"
 import { isCqpToken, type CqpQuery } from "@/core/cqp/cqp.types"
 import type { RelationsParams, RelationsSort } from "../types/relations"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { unregescape } from "@/core/util"
+import { regescape, unregescape } from "@/core/util"
 
 export type RelationsQuery = {
   type: WordType
@@ -35,7 +35,9 @@ export class RelationsProxy extends ProxyBase<"relations"> {
 
     if (!condition.val) throw new RelationsParseError("Condition value must not be empty")
 
-    // TODO Check for prefix/suffix
+    if (condition.val != regescape(unregescape(condition.val)))
+      throw new RelationsParseError("Condition value must not contain regex patterns")
+
     return {
       type: isWord ? "word" : "lemgram",
       word: condition.val as string,
