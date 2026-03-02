@@ -25,11 +25,14 @@ export type ErrorMessage = {
  * It is suitable for reading piece by piece in order to display progress feedback to the user.
  */
 export type ProgressResponse = {
-  /** Corpora in the current result page. This is returned first. In parallel mode, a corpus is named as "<main>|<secondary>" */
+  /** Corpora being processed, in order. This is returned first. In parallel mode, a corpus is named as "<main>|<secondary>" */
   progress_corpora?: string[]
-  /** Repeated for each corpus. Hits can be 0. These are returned a few at a time. The value type (string or object with `hits`) depends on the API endpoint, e.g. `/query` returns objects */
-  [progress_n: `progress_${number}`]: string | { corpus: string; hits?: number }
+  /** Repeated for each corpus, returned a few at a time */
+  [progress_n: `progress_${number}`]: ProgressItem
 }
+
+/** The value type (string or object with `hits`) depends on the API endpoint, e.g. `/query` returns objects. Hits can be 0.  */
+export type ProgressItem = string | { corpus: string; hits?: number }
 
 /** Frequency count as absolute and relative (to some total size). */
 export type AbsRelTuple = { absolute: number; relative: number }

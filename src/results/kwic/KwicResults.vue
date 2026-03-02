@@ -44,7 +44,7 @@ const proxy = new KwicProxy(store).setProgressHandler((report) => {
   // Show first KWIC page when available
   if ("kwic" in report.data && report.data.kwic) kwic.value = massageData(report.data.kwic)
   distribution.value = undefined
-  hitsCount.value = report.hits || 0
+  if (report.hits !== null) hitsCount.value = report.hits
   progress.value = report.percent
 })
 
@@ -76,11 +76,12 @@ async function doSearch(isPaging = false) {
     throw error
   }
 
+  // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
   // Use remembered state to control the result display
   isReading.value = willBeReading
   loading.value = false
-  kwic.value = massageData(response.kwic)
   distribution.value = response.distribution
+  // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
   hitsCount.value = response.hits
 }
 

@@ -6,15 +6,16 @@ import type {
   ProgressReport,
   ProgressResponse,
   Response as KResponse,
+  ProgressItem,
 } from "./types"
-import { omitBy, pickBy } from "lodash-es"
+import { omitBy, pickBy, uniq } from "lodash-es"
 import { buildUrl, toFormData } from "@/core/util"
 import { auth } from "@/core/auth"
 
 type RequestOptions<K extends keyof API> = {
   /** Abort signal to cancel the request */
   abortSignal?: AbortSignal
-  /** Callback to visualize progress and paged data */
+  /** Callback to visualize progress and paged data (will be called with full response too) */
   onProgress?: ProgressHandler<K>
 }
 
@@ -71,10 +72,11 @@ async function readIncrementally(
   const reader = response.body!.getReader()
   let content = ""
   while (true) {
+    // If done, `value` is empty
     const { done, value } = await reader.read()
+    if (done) break
     content += new TextDecoder("utf-8").decode(value)
     handle(content)
-    if (done) break
   }
   return content
 }
@@ -97,33 +99,34 @@ export function calcProgress<K extends keyof API>(
 
   /** Look up sizes of corpora and sum them */
   const getCorpusSize = (corpora: string[]) =>
-    corpora
+    uniq(corpora)
       .map((corpus) => Number(settings.corpora[corpus.toLowerCase()]?.info.Size || 0))
       .reduce((a, b) => a + b, 0)
 
   /** Number of hits (`null` if this API endpoint doesn't report search hits) */
   let hits: number | null = null
-  /** Number of tokens processed */
-  let progress = 0
+  const corporaDone = []
 
-  type ProgressItem = ProgressResponse[`progress_${number}`]
   const progressItems = Object.values(
     pickBy(data, (value, key) => /progress_\d+/.test(key)),
   ) as ProgressItem[]
 
   for (const val of progressItems) {
     const corpus = typeof val == "string" ? val : val.corpus
-    progress += getCorpusSize(corpus.split("|"))
+    corporaDone.push(...corpus.split("|"))
     if (typeof val != "string" && "hits" in val) {
       hits = (hits || 0) + Number(val.hits)
     }
   }
 
-  /** Number of tokens in the corpora in the current result page */
-  const allCorpora = data.progress_corpora?.flatMap((corpus) => corpus.split("|"))
-  const total = allCorpora ? getCorpusSize(allCorpora) : 0
+  /** Number of tokens processed */
+  const progress = getCorpusSize(corporaDone)
 
-  const percent = total ? (progress / total) * 100 : 0
+  const allCorpora = data.progress_corpora?.flatMap((corpus) => corpus.split("|"))
+  /** Number of tokens that are being processed for this query */
+  const total = allCorpora ? getCorpusSize(allCorpora) : undefined
+
+  const percent = total === undefined ? 0 : total === 0 ? 100 : (progress / total) * 100
 
   return { data, percent, hits }
 }
