@@ -34,7 +34,6 @@ function getVariant(severity: Severity) {
       role="alert"
       class="alert d-flex align-items-center gap-4 shadow-lg pe-auto bg-body border-2"
       :class="`alert-${getVariant(message.severity)}`"
-      style="max-width: 50rem"
     >
       <div>
         <p v-if="isProblem(message.severity)">{{ $t("error.heading") }}</p>

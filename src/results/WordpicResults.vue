@@ -18,6 +18,8 @@ import ExportButton from "./ExportButton.vue"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
+import useError from "@/components/useError"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -25,6 +27,7 @@ const UPDATE_DELAY_MS = 500
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
+const { setError, clearError, errorMessage } = useError()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
@@ -32,7 +35,6 @@ const containerEl = useTemplateRef("container")
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<WordPicture>()
 const { activeSearch } = storeToRefs(store)
-const errorMessage = ref<string>()
 const isVisible = useElementVisibility(containerEl)
 const limit = ref(LIMITS[0])
 const showPos = ref(false)
@@ -58,33 +60,24 @@ whenever(
 )
 
 async function doSearch() {
-  const query = getValidQuery()
-  if (!query) return
-
   proxy.abort()
+  clearError()
   progress.value = 0
 
   try {
+    const query = RelationsProxy.parseCqp(cqp.value)
     data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
     progress.value = 100
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    throw error
+    setError(error)
+    data.value = undefined
+    return
   }
 
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
   sort.value = sortLocal.value
-}
-
-function getValidQuery(): RelationsQuery | undefined {
-  try {
-    return RelationsProxy.parseCqp(cqp.value)
-  } catch (e) {
-    console.warn(e)
-    errorMessage.value = t("result.wordpic.query.incompatible")
-    return undefined
-  }
 }
 
 // Debounce repeated request to avoid lag when changing options quickly, e.g. by keyboard.
@@ -208,9 +201,7 @@ function createExport() {
       </div>
     </div>
 
-    <div v-else-if="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
-    </div>
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
     <HelpBox>
       <p>{{ $t("result.wordpic.description") }}</p>

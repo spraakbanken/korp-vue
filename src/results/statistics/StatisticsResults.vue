@@ -28,6 +28,8 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
+import useError from "@/components/useError"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -36,6 +38,7 @@ const progress = defineModel<number>("progress")
 const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
+const { setError, clearError, errorMessage } = useError()
 const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
@@ -77,6 +80,7 @@ async function doSearch() {
   // Empty search is possible when doing comparison first
   if (!store.activeSearch) return
   proxy.abort()
+  clearError()
   corpusSelectionSearched = corpusSelection.pick(corpusSelection.getIds())
   withinSearched = store.within
   const attrs = attributesSelected.value
@@ -91,7 +95,10 @@ async function doSearch() {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    throw error
+    setError(error)
+    data.value = undefined
+    mapAttributes.value = []
+    return
   }
 
   const stringifiers = fromKeys(attrs.selected, (name) => {
@@ -215,6 +222,8 @@ function createExport() {
       <!-- Map button -->
       <MapButton :attributes="mapAttributes" @open="openMapTab" />
     </div>
+
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
     <StatisticsGrid
       v-if="data"

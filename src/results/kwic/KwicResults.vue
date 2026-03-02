@@ -17,12 +17,15 @@ import { massageData, type Row } from "@/core/kwic/kwic"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import ErrorBox from "@/components/ErrorBox.vue"
+import useError from "@/components/useError"
 
 const UPDATE_DELAY_MS = 500
 
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
+const { setError, clearError, errorMessage } = useError()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
@@ -67,6 +70,7 @@ async function doSearch(isPaging = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
   proxy.abort()
+  clearError()
   progress.value = 0
   loading.value = !isPaging
   // Remember options affecting result display in case they are changed while the request is ongoing
@@ -79,7 +83,8 @@ async function doSearch(isPaging = false) {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    throw error
+    setError(error)
+    return
   }
 
   // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
@@ -167,7 +172,10 @@ function createExport() {
       </template>
     </OptionsBar>
 
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+
     <KwicResultsContent
+      v-else
       :distribution
       :hitsCount
       :hpp

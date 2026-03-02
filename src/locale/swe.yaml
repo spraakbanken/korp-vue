@@ -1,6 +1,7 @@
 tagline: Språkbankens ordforskningsplattform
 corpus: Korpus
 corpora: Korpusar
+error.backend: Servern gav felet {type}
 error.heading: Ett fel har uppstått.
 error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna sb-info{'@'}svenska.gu.se.
 language: Språk
@@ -196,7 +197,8 @@ result.wordpic.limit: Antal rader
 result.wordpic.show_pos: Visa ordklasser
 result.wordpic.sort: Sortera på
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
-result.wordpic.query.incompatible: Ordbild kräver att sökfrågan innehåller exakt ett ord eller lemgram.
+result.wordpic.query.incompatible: Ogiltig sökfråga
+result.wordpic.query.incompatible.help: Sökfrågan för ordbild måste innehålla exakt ett ord eller lemgram.
 
 pos.nn: substantiv
 pos.av: adjektiv

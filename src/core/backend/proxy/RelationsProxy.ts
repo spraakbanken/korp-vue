@@ -14,11 +14,17 @@ export type RelationsQuery = {
 export class RelationsProxy extends ProxyBase<"relations"> {
   protected readonly endpoint = "relations"
 
-  /** Parse a Check if a query can be used for word picture. */
+  /** Parse and check if a query can be used for word picture. */
   static parseCqp(cqp: string): RelationsQuery {
-    const tokens = parse<CqpQuery>(cqp)
+    let tokens
+    try {
+      tokens = parse<CqpQuery>(cqp)
+    } catch (error) {
+      throw new RelationsParseError(String(error))
+    }
 
-    if (!isCqpToken(tokens[0])) throw new RelationsParseError("Must be single token")
+    if (tokens.length != 1 || !isCqpToken(tokens[0]))
+      throw new RelationsParseError("Must be single token")
     const conditions = tokens[0].and_block
     if (conditions[0]?.length != 1) throw new RelationsParseError("Must have a single condition")
     const condition = conditions[0][0]!

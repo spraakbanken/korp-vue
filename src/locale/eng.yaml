@@ -1,6 +1,7 @@
 tagline: Språkbanken's word research platform
 corpus: Corpus
 corpora: Corpora
+error.backend: Server returned {type}
 error.heading: An error has occurred.
 error.footer: If you have questions, or you want to report a bug, please contact sb-info{'@'}svenska.gu.se.
 language: Language
@@ -196,7 +197,8 @@ result.wordpic.limit: Rows
 result.wordpic.show_pos: Show word classes
 result.wordpic.sort: Sort by
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, an adaptation of the Mutual Information association measure prioritizing typical items over infrequent ones
-result.wordpic.query.incompatible: For a word picture, the search query must be exactly one word or lemgram.
+result.wordpic.query.incompatible: Ogiltig sökfråga
+result.wordpic.query.incompatible.help: The search query for a word picture must be exactly one word or lemgram.
 
 pos.nn: noun
 pos.av: adjective
