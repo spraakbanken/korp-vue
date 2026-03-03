@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia"
 import { vTab } from "@/bootstrap"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useLocale } from "@/i18n/useLocale"
-import { defineAsyncComponent, ref, watch, type Component } from "vue"
+import { defineAsyncComponent, ref, watch, watchEffect, type Component } from "vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import { CompareTask } from "@/core/task/CompareTask"
@@ -47,6 +47,9 @@ watch(currentTab, () => {
   // Only sync main tab selection. At initial load from URL, dynamic tabs are not yet created.
   if (typeof currentTab.value == "number") result_tab.value = currentTab.value
 })
+
+// Sync tab selection from store
+watchEffect(() => (currentTab.value = result_tab.value))
 
 /** Close a dynamic tab and ensure the current tab is valid */
 function closeTabLocal(id: DynamicTabId) {

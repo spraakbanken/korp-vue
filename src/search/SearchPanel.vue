@@ -15,6 +15,10 @@ const { clearHistory, historyOptions, isCurrentSearch, restoreFromHistory } = us
 const { search_tab } = storeToRefs(store)
 
 const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "advanced", "compare"]
+
+function selectTab(key: number) {
+  search_tab.value = key
+}
 </script>
 
 <template>
@@ -34,7 +38,7 @@ const tabOptions = settings.parallel ? ["extended"] : ["simple", "extended", "ad
         v-tab
         :aria-controls="`search-tabs-pane-${name}`"
         :aria-selected="search_tab == key"
-        @click="search_tab = key"
+        @click="selectTab(key)"
       >
         {{ $t(`search.${name}`) }}
       </button>

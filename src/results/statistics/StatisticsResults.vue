@@ -6,7 +6,7 @@ import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistic
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, watchDeep, watchImmediate, whenever } from "@vueuse/core"
-import { computed, ref, useTemplateRef } from "vue"
+import { computed, ref, useTemplateRef, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
@@ -42,8 +42,8 @@ const { setError, clearError, errorMessage } = useError()
 const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
-  selected: store.stats_reduce.split(","),
-  insensitive: store.stats_reduce_insensitive.split(","),
+  selected: [],
+  insensitive: [],
 })
 let corpusSelectionSearched: CorpusSet | null = null
 const containerEl = useTemplateRef("container")
@@ -75,6 +75,13 @@ whenever(
   },
   { once: true, immediate: true },
 )
+
+watchEffect(() => {
+  attributesSelected.value = {
+    selected: store.stats_reduce.split(","),
+    insensitive: store.stats_reduce_insensitive.split(","),
+  }
+})
 
 async function doSearch() {
   // Empty search is possible when doing comparison first

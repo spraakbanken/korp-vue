@@ -12,8 +12,11 @@ import AppFooter from "./AppFooter.vue"
 import { getTimeData } from "./core/backend/timedata"
 import AppMessages from "./AppMessages.vue"
 import useMessageStore from "./store/useMessageStore"
+import useHistory from "./useHistory"
+import { useAppStore } from "./store/useAppStore"
 
 const auth = useAuth()
+useHistory(useAppStore())
 const messageStore = useMessageStore()
 useUrlParams()
 
