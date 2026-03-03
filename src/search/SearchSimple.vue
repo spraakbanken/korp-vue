@@ -106,7 +106,7 @@ async function commitSearch() {
 <template>
   <form @submit.prevent="submit" class="vstack gap-4">
     <!-- Global filters bar -->
-    <GlobalFilters class="mb-4" />
+    <GlobalFilters />
 
     <div class="d-flex gap-2 justify-content-center">
       <!-- Word/lemgram input -->

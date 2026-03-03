@@ -20,13 +20,10 @@ export function buildSimpleWordCqp(
 }
 
 export function buildSimpleLemgramCqp(input: string, prefix = false, suffix = false): CqpQuery {
-  const conditions: Condition[] = [{ type: "lex", op: "contains", val: input }]
+  const val = regescape(input)
+  const conditions: Condition[] = [{ type: "lex", op: "contains", val }]
   // The complemgram attribute is a set of strings like: <part1>+<part2>+<...>:<probability>
-  if (prefix) {
-    conditions.push({ type: "complemgram", op: "contains", val: `${input}\\+.*` })
-  }
-  if (suffix) {
-    conditions.push({ type: "complemgram", op: "contains", val: `.*\\+${input}:.*` })
-  }
+  if (prefix) conditions.push({ type: "complemgram", op: "contains", val: `${val}\\+.*` })
+  if (suffix) conditions.push({ type: "complemgram", op: "contains", val: `.*\\+${val}:.*` })
   return [{ and_block: [conditions] }]
 }
