@@ -14,7 +14,7 @@ import {
   uniq,
 } from "lodash-es"
 import moment, { type Moment } from "moment"
-import settings, { normalizeDataset, unprefixAttr } from "@/core/config"
+import settings, { normalizeDataset } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
@@ -50,11 +50,6 @@ export class CorpusSet {
     const cl = new CorpusSet()
     cl.pickFrom(this, ids)
     return cl
-  }
-
-  // only applicable for parallel corpora
-  getReduceLang(): string {
-    return ""
   }
 
   /** Corpus ids, in lowercase by default */
@@ -132,10 +127,7 @@ export class CorpusSet {
   }
 
   getReduceAttrs(): Record<string, Attribute> {
-    const allAttrs = {
-      ...this.getAttributes(this.getReduceLang()),
-      ...this.getStructAttrs(this.getReduceLang()),
-    }
+    const allAttrs = { ...this.getAttributes(), ...this.getStructAttrs() }
     return pickBy(allAttrs, (attribute) => attribute["display_type"] !== "hidden")
   }
 
@@ -177,7 +169,7 @@ export class CorpusSet {
     )
   }
 
-  stringify(onlyMain?: boolean): string {
+  stringify(): string {
     return this.map((corpus) => corpus.id.toUpperCase()).join()
   }
 
@@ -353,18 +345,16 @@ export class CorpusSet {
     )
   }
 
-  getAttributeGroupsCompare(lang?: string): AttributeOption[] {
-    return this.getAttributeGroups("intersection", "intersection", lang).filter(
+  getAttributeGroupsCompare(): AttributeOption[] {
+    return this.getAttributeGroups("intersection", "intersection").filter(
       (attr) => !get(attr, "hide_compare"),
     )
   }
 
-  getAttributeGroupsStatistics(lang?: string): AttributeOption[] {
+  getAttributeGroupsStatistics(): AttributeOption[] {
     const wordOp = settings["reduce_word_attribute_selector"] || "union"
     const structOp = settings["reduce_struct_attribute_selector"] || "union"
-    return this.getAttributeGroups(wordOp, structOp, lang).filter(
-      (attr) => !get(attr, "hide_statistics"),
-    )
+    return this.getAttributeGroups(wordOp, structOp).filter((attr) => !get(attr, "hide_statistics"))
   }
 
   /** Get list of morphology ids used by the corpora. */

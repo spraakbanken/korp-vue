@@ -23,7 +23,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const isCaseInsensitive = ref(false)
   const lang = ref(settings["default_language"])
   const page = ref(0)
-  const parallel_corpora = ref<string[]>([])
   const prefix = ref(false)
   const random_seed = ref<number>()
   const reading_mode = ref(false)
@@ -57,7 +56,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     in_order,
     lang,
     page,
-    parallel_corpora,
     prefix,
     random_seed,
     reading_mode,

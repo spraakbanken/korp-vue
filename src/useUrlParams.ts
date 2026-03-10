@@ -34,7 +34,6 @@ export function useUrlParams() {
   watchUrl("isCaseInsensitive", (value) => value != undefined)
   watchUrl("lang", (value) => value || settings["default_language"])
   watchUrl("page", (value) => (value ? parseInt(value) : 0))
-  watchUrl("parallel_corpora", (value) => (value ? value.split(",") : []))
   watchUrl("prefix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("random_seed", (value) => (value ? parseInt(value) : undefined))
   watchUrl("reading_mode", (value) => value != undefined)
@@ -67,7 +66,6 @@ export function useUrlParams() {
     url.isCaseInsensitive = store.isCaseInsensitive ? "" : undefined
     url.lang = store.lang != settings["default_language"] ? store.lang : undefined
     url.page = store.page == 0 ? undefined : `${store.page}`
-    url.parallel_corpora = store.parallel_corpora.join() || undefined
     url.prefix = store.prefix ? "" : undefined
     url.random_seed = store.random_seed ? `${store.random_seed}` : undefined
     url.reading_mode = store.reading_mode ? "" : undefined

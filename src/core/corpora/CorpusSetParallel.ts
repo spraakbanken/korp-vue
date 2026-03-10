@@ -1,48 +1,51 @@
 import settings from "../config"
 import type { Corpus } from "../config/corpusConfig.types"
 import type { Attribute, CorpusParallel } from "../config/corpusConfigRaw.types"
-import { getUrlHash } from "../url"
 import { objectIntersection } from "../util"
 import { CorpusSet } from "./CorpusSet"
 
+type PCorpus = Corpus<CorpusParallel>
+
 export class CorpusSetParallel extends CorpusSet {
-  corpora: Corpus<CorpusParallel>[] = []
-  activeLangs: string[] = []
-
-  constructor(corpora: Corpus<CorpusParallel>[] = []) {
+  constructor(public corpora: PCorpus[] = []) {
     super(corpora)
-
-    // Cannot use Angular helpers (`locationSearchGet`) here, it's not initialized yet.
-    const activeLangs = getUrlHash("parallel_corpora") || ""
-    this.setActiveLangs(activeLangs.split(","))
   }
+
+  /** Languages being queried, main language first */
+  protected langs: string[] = []
 
   pick(ids: string[]): CorpusSetParallel {
     ids = ids.map((id) => id.toLowerCase())
     const cl = new CorpusSetParallel()
     cl.pickFrom(this, ids)
+    cl.setLangs(this.langs)
     return cl
   }
 
   pickFrom(source: CorpusSetParallel, ids: string[]): void {
-    // Include hidden linked corpora
-    const corpora = ids.flatMap((id) => source.getLinked(source.get(id)))
-    ids = corpora.map((corpus) => corpus.id)
-    super.pickFrom(source, ids)
+    // Include linked corpora, except if linked from pivot corpus
+    const corpora = ids
+      .flatMap((id) => id.split("|"))
+      .flatMap((id) => {
+        const corpus = source.get(id)
+        const isPivot = corpus.linked_to.length > 1
+        return isPivot ? corpus : source.getLinked(corpus)
+      })
+    const idsAll = corpora.map((corpus) => corpus.id)
+    super.pickFrom(source, idsAll)
   }
 
-  setActiveLangs(langlist: string[]): void {
-    this.activeLangs = langlist
+  setLangs(langs: string[]): void {
+    this.langs = langs
   }
 
-  getReduceLang(): string {
-    return this.activeLangs[0]
+  getCorporaWithLang(lang?: string): PCorpus[] {
+    return this.corpora.filter((item) => item.lang === lang)
   }
 
   getAttributes(lang?: string): Record<string, Attribute> {
-    if (!lang) lang = this.getReduceLang()
-
-    const corpora = this.corpora.filter((item) => item.lang === lang)
+    lang ??= this.langs[0]
+    const corpora = this.getCorporaWithLang(lang)
     return corpora.reduce(
       (attrs, corpus) => ({ ...attrs, ...corpus.attributes }),
       {} as Record<string, Attribute>,
@@ -50,9 +53,8 @@ export class CorpusSetParallel extends CorpusSet {
   }
 
   getStructAttrs(lang?: string): Record<string, Attribute> {
-    if (!lang) lang = this.getReduceLang()
-
-    const corpora = this.corpora.filter((item) => item.lang === lang)
+    lang ??= this.langs[0]
+    const corpora = this.getCorporaWithLang(lang)
     const struct = corpora.reduce(
       (attrs, corpus) => ({ ...attrs, ...corpus.struct_attributes }),
       {} as Record<string, Attribute>,
@@ -62,12 +64,12 @@ export class CorpusSetParallel extends CorpusSet {
     return struct
   }
 
-  getStructAttrsIntersection(lang: string): Record<string, Attribute> {
-    const corpora = this.corpora.filter((item) => item.lang === lang)
+  getStructAttrsIntersection(lang?: string): Record<string, Attribute> {
+    lang ??= this.langs[0]
+    const corpora = this.getCorporaWithLang(lang)
     const attrs = corpora.map(function (corpus) {
-      for (const key in corpus["struct_attributes"]) {
-        const value = corpus["struct_attributes"][key]
-        value["is_struct_attr"] = true
+      for (const attribute of Object.values(corpus["struct_attributes"])) {
+        attribute["is_struct_attr"] = true
       }
 
       return corpus["struct_attributes"]
@@ -75,32 +77,35 @@ export class CorpusSetParallel extends CorpusSet {
     return objectIntersection(attrs)
   }
 
-  getLinked(corp: Corpus<CorpusParallel>) {
-    const output: Corpus<CorpusParallel>[] = this.corpora.filter((item) =>
-      (corp["linked_to"] || []).includes(item.id),
-    )
-    return [corp].concat(output)
+  /** Get a list with the given corpus and its linked corpora */
+  getLinked(corp: PCorpus) {
+    const ids = corp["linked_to"] || []
+    const linked = this.corpora.filter((item) => ids.includes(item.id))
+    return [corp, ...linked]
   }
 
-  getEnabledByLang(lang: string): Corpus<CorpusParallel>[][] {
-    const corps = this.corpora.filter((item) => item["lang"] === lang)
+  /** Get lists of corpora of the given language and the linked corpora of each */
+  getEnabledByLang(lang: string): PCorpus[][] {
+    const corps = this.getCorporaWithLang(lang)
     return corps.map((item) => this.getLinked(item))
   }
 
-  getLinksFromLangs(activeLangs: string[]): Corpus<CorpusParallel>[][] {
-    if (activeLangs.length === 1) {
-      return this.getEnabledByLang(activeLangs[0])
+  /** Get corpora of the first given language, and corpora that are linked from those _and_ use any of the other given languages */
+  getLinksFromLangs(langs: string[] = this.langs): PCorpus[][] {
+    const [mainLang, ...otherLangs] = langs
+    if (mainLang && !otherLangs.length) {
+      return this.getEnabledByLang(mainLang)
     }
-    // get the languages that are enabled given a list of active languages
-    const main = this.corpora.filter((corp) => corp.lang === activeLangs[0])
+    /** Corpora of the first given language */
+    const mains = this.getCorporaWithLang(mainLang)
 
-    const output: Corpus<CorpusParallel>[][] = []
-    for (const lang of activeLangs.slice(1)) {
-      const other = this.corpora.filter((corp) => corp.lang === lang)
+    const output: PCorpus[][] = []
+    for (const lang of otherLangs) {
+      const others = this.getCorporaWithLang(lang)
 
-      for (const cps of other) {
-        const linked = main.filter((mainCorpus) => mainCorpus["linked_to"].includes(cps.id))
-        output.push(...linked.map((item) => [item, cps]))
+      for (const other of others) {
+        const linked = mains.filter((main) => main["linked_to"].includes(other.id))
+        output.push(...linked.map((item) => [item, other]))
       }
     }
 
@@ -109,18 +114,16 @@ export class CorpusSetParallel extends CorpusSet {
 
   /** Get the within and context queries */
   getAttributeQuery(attr: "context" | "within"): string {
-    const struct = this.getLinksFromLangs(this.activeLangs)
+    const struct = this.getLinksFromLangs()
     const output: string[][] = struct.map((corps) => {
-      const mainId = corps[0].id.toUpperCase()
-      const mainIsPivot = !!corps[0].pivot
-
-      const other = corps.slice(1)
-
-      const pair = other.map(function (corp) {
-        const a = mainIsPivot ? Object.keys(corp[attr])[0] : Object.keys(corps[0][attr])[0]
-        return mainId + "|" + corp.id.toUpperCase() + ":" + a
+      const [main, ...others] = corps
+      const isPivot = main.linked_to.length > 1
+      return others.map(function (other) {
+        // For pivot corpus, use the linked corpus config instead
+        const corpus = isPivot ? other : main
+        const value = Object.keys(corpus[attr])[0]
+        return `${main.id}|${other.id}`.toUpperCase() + ":" + value
       })
-      return pair
     })
 
     return output.join(",")
@@ -138,25 +141,23 @@ export class CorpusSetParallel extends CorpusSet {
   }
 
   stringify(onlyMain?: boolean): string {
-    let struct = this.getLinksFromLangs(this.activeLangs)
-    if (onlyMain) {
-      struct = struct.map((pair) => {
-        return pair.filter((item) => {
-          return item.lang === this.activeLangs[0]
-        })
-      })
+    const lists = this.getLinksFromLangs()
 
-      return struct
-        .flat()
-        .map((corpus) => corpus.id.toUpperCase())
-        .join()
+    if (onlyMain) {
+      // Select corpora in the first search language
+      const corpora = lists.flat().filter((item) => item.lang === this.langs[0])
+      return corpora.map((corpus) => corpus.id.toUpperCase()).join()
     }
 
-    return struct.map(([a, b]) => `${a.id}|${b.id}`.toUpperCase()).join()
+    // Format pairs like X-SV|X-DA,X-SV|X-EN...
+    return lists
+      .flatMap(([main, ...others]) => others.map((other) => `${main.id}|${other.id}`))
+      .join()
+      .toUpperCase()
   }
 
-  get(corpusID: string): Corpus<CorpusParallel> {
+  get(corpusID: string): PCorpus {
     // Remove first part if on the form "<a>|<b>"
-    return super.get(corpusID.replace(/.*\|/, "")) as Corpus<CorpusParallel>
+    return super.get(corpusID.replace(/.*\|/, "")) as PCorpus
   }
 }
