@@ -30,11 +30,6 @@ export type SetOperator = "union" | "intersection"
 export class CorpusSet {
   structAttributes: Record<string, Attribute> = {}
   commonAttributes: Record<string, Attribute> = {}
-  _wordGroup: AttributeOption = {
-    group: "word",
-    name: "word",
-    label: settings["word_label"],
-  }
 
   constructor(public corpora: Corpus[] = []) {}
 
@@ -79,7 +74,6 @@ export class CorpusSet {
 
   getAttributesIntersection() {
     const attrs = this.map((corpus) => corpus.attributes)
-
     return objectIntersection(attrs)
   }
 
@@ -332,11 +326,16 @@ export class CorpusSet {
   }
 
   getAttributeGroups(wordOp: SetOperator, structOp: SetOperator, lang?: string): AttributeOption[] {
+    const wordOption: AttributeOption = {
+      group: "word",
+      name: "word",
+      label: settings["word_label"],
+    }
     const attrs = this.getWordAttributeGroups(wordOp, lang)
     const sentAttrs = this.getStructAttributeGroups(structOp, lang)
     const comparator = (a: Attribute, b: Attribute) =>
       locObj(a.label).localeCompare(locObj(b.label), getLang())
-    return [this._wordGroup, ...attrs.sort(comparator), ...sentAttrs.sort(comparator)]
+    return [wordOption, ...attrs.sort(comparator), ...sentAttrs.sort(comparator)]
   }
 
   getAttributeGroupsExtended(lang?: string): AttributeOption[] {

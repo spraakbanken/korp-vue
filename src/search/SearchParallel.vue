@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 /** Search panel for parallel mode, like Extended but with multiple queries by language */
 import settings from "@/core/config"
-import { computed, ref } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import QueryBuilder from "./extended/QueryBuilder.vue"
 import { createCondition } from "@/core/cqp/cqp"
-import { getAvailableLangs, type ParallelQuery } from "@/core/search/parallel"
+import { getAvailableLangs, getParallelCqp, type ParallelQuery } from "@/core/search/parallel"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { CorpusSetParallel } from "@/core/corpora/CorpusSetParallel"
+import { useAppStore } from "@/store/useAppStore"
+import { uniq } from "lodash-es"
+import { corpusListing } from "@/core/corpora/corpusListing"
 
 /** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
+const store = useAppStore()
 
 /** Creates a new query */
 const newQuery = (lang: string): ParallelQuery => ({
@@ -21,6 +25,9 @@ const newQuery = (lang: string): ParallelQuery => ({
 /** Query structures by language, being edited */
 const queries = ref<ParallelQuery[]>([newQuery(settings["start_lang"]!)])
 
+/** Languages in use for queries */
+const langs = computed(() => uniq(queries.value.map((query) => query.lang)))
+
 /** Get languages available for each query index */
 const availableLangs = computed(() => {
   // Mention corpus selection to trigger recalculation on changes
@@ -31,8 +38,17 @@ const availableLangs = computed(() => {
 /** Unused languages available for a new query */
 const unusedLangs = computed(() => availableLangs.value[availableLangs.value.length - 1]!)
 
+/** Sync language choices to corpus listings */
+watchEffect(() => {
+  ;(corpusListing as CorpusSetParallel).setLangs(langs.value)
+  corpusSelection.setLangs(langs.value)
+})
+
 /** Handle submitting the search form */
-function submit() {}
+function submit() {
+  const cqp = getParallelCqp(queries.value)
+  store.activeSearch = { cqp }
+}
 </script>
 
 <template>

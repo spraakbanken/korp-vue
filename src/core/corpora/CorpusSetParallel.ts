@@ -37,7 +37,7 @@ export class CorpusSetParallel extends CorpusSet {
   }
 
   setLangs(langs: string[]): void {
-    this.langs = langs
+    this.langs = [...langs]
   }
 
   getCorporaWithLang(lang?: string): PCorpus[] {
