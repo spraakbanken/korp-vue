@@ -5,11 +5,16 @@ import LanguageSelector from "@/header/LanguageSelector.vue"
 import CorpusSelector from "@/corpora/CorpusSelector.vue"
 import SearchPanel from "@/search/SearchPanel.vue"
 import { injectComponent } from "@/injection"
+import settings from "@/core/config"
+import SearchParallel from "@/search/SearchParallel.vue"
 
 const auth = useAuth()
 
 const BrandPrimary = injectComponent("BrandPrimary")
 const BrandSecondary = injectComponent("BrandSecondary")
+
+/** Whether the mode is parallel */
+const isParallel = !!settings["parallel"]
 
 const selfUrl = window.location.href.replace(/#.*/, "")
 </script>
@@ -37,7 +42,8 @@ const selfUrl = window.location.href.replace(/#.*/, "")
         <CorpusSelector class="col-12 col-xl-6 mt-2" />
       </div>
 
-      <SearchPanel />
+      <SearchParallel v-if="isParallel" />
+      <SearchPanel v-else />
     </section>
   </header>
 </template>

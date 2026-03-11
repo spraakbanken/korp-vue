@@ -14,6 +14,9 @@ import AppMessages from "./AppMessages.vue"
 import useMessageStore from "./store/useMessageStore"
 import useHistory from "./useHistory"
 import { useAppStore } from "./store/useAppStore"
+import { CorpusSetParallel } from "./core/corpora/CorpusSetParallel"
+import type { CorpusParallel } from "./core/config/corpusConfigRaw.types"
+import type { Corpus } from "./core/config/corpusConfig.types"
 
 const auth = useAuth()
 useHistory(useAppStore())
@@ -32,7 +35,10 @@ const { isReady } = useAsyncState(async () => {
 
   // Create global corpusListing and corpusSelection
   const corpora = Object.values(settings.corpora)
-  setCorpusListing(new CorpusSet(corpora))
+  const corpusListing = settings.parallel
+    ? new CorpusSetParallel(corpora as Corpus<CorpusParallel>[])
+    : new CorpusSet(corpora)
+  setCorpusListing(corpusListing)
 
   // Load corpus time data in the background
   getTimeData()

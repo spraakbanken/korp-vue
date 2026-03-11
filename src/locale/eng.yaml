@@ -40,6 +40,36 @@ frontpage.updates: Corpus updates
 frontpage.updates.item: "{title} was updated"
 frontpage.updates.select: Select
 
+lang.swe: Swedish
+lang.dan: Danish
+lang.nld: Dutch
+lang.eng: English
+lang.deu: German
+lang.ell: Greek
+lang.est: Estonian
+lang.spa: Spanish
+lang.fin: Finnish
+lang.fra: French
+lang.ita: Italian
+lang.por: Portuguese
+lang.rus: Russian
+lang.bel: Belarusian
+lang.bul: Bulgarian
+lang.hrv: Croatian
+lang.ces: Czech
+lang.lat: Latin
+lang.mkd: Macedonian
+lang.pol: Polish
+lang.ron: Romanian
+lang.slk: Slovak
+lang.slv: Slovene
+lang.srp: Serbian
+lang.tuk: Turkmen
+lang.ukr: Ukrainian
+lang.dsb: Lower Sorbian
+lang.hsb: Upper Sorbian
+lang.svm: Molise Slavic
+
 links.sbx.url: https://spraakbanken.gu.se/en/
 links.gu.label: University of Gothenburg
 links.gu.url: https://gu.se/en/

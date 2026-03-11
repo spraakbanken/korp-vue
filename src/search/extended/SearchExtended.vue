@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+/** Content for the Extended search tab with a query builder GUI */
 import { computed, ref, watch, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify, supportsInOrder } from "@/core/cqp/cqp"
@@ -13,18 +14,24 @@ import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 
 const store = useAppStore()
+const { search } = storeToRefs(store)
+/** Reactive global filter manager singleton */
 const filterManager = useReactiveFilterManager()
 
+/** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
-const cqp = computed(() => stringify(filterManager.mergeToCqp(tokens.value)))
+
+/** Computed standard CQP string of query including global filters */
 const cqpExpanded = computed(() => stringify(filterManager.mergeToCqp(tokens.value), true))
-const { in_order, search } = storeToRefs(store)
+/** Flag indicating whether the global filter manager has loaded */
 const isFilterReady = ref(false)
-const freeOrder = ref(!in_order.value)
+/** Model for the free order option */
+const freeOrder = ref(!store.in_order)
 
 // Flag when the filter manager is ready, so that the initial search can include the filter selection.
 watch(filterManager, () => (isFilterReady.value = true))
 
+// React to the `search` param being changed, at first load or later
 watchImmediate(search, () => {
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
   const [type, value] = splitFirst("|", store.search || "")
@@ -51,10 +58,13 @@ async function commitSearch() {
   // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
   await until(isFilterReady).toBe(true, { timeout: 1000 })
 
-  store.activeSearch = { cqp: cqp.value }
+  const cqp = stringify(filterManager.mergeToCqp(tokens.value))
+  store.activeSearch = { cqp }
 }
 
-watchEffect(() => (freeOrder.value = !in_order.value))
+// Sync from store to local state
+watchEffect(() => (freeOrder.value = !store.in_order))
+// Sync from local state to store
 watchEffect(() => (store.extendedCqp = cqpExpanded.value))
 </script>
 

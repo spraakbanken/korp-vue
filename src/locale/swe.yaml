@@ -40,6 +40,36 @@ frontpage.updates: Korpusuppdateringar
 frontpage.updates.item: "{title} har uppdaterats"
 frontpage.updates.select: Välj
 
+lang.swe: svenska
+lang.dan: danska
+lang.nld: nederländska
+lang.eng: engelska
+lang.deu: tyska
+lang.ell: grekiska
+lang.est: estniska
+lang.spa: spanska
+lang.fin: finska
+lang.fra: franska
+lang.ita: italienska
+lang.por: portugisiska
+lang.rus: ryska
+lang.bel: belarusiska
+lang.bul: bulgariska
+lang.hrv: kroatiska
+lang.ces: tjeckiska
+lang.lat: latin
+lang.mkd: makedonska
+lang.pol: polska
+lang.ron: rumänska
+lang.slk: slovakiska
+lang.slv: slovenska
+lang.srp: serbiska
+lang.tuk: turkmeniska
+lang.ukr: ukrainska
+lang.dsb: lågsorbiska
+lang.hsb: högsorbiska
+lang.svm: moliseslaviska
+
 links.sbx.url: https://spraakbanken.gu.se/
 links.gu.label: Göteborgs universitet
 links.gu.url: https://gu.se/
@@ -131,6 +161,9 @@ search.operator.suffix: slutar med
 search.operator.not_compound_middle: inte mellanled
 search.operator.not_prefix: börjar inte med
 search.operator.not_suffix: slutar inte med
+
+search.parallel.add_query: Lägg till språk
+search.parallel.remove_query: Ta bort språk
 
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
