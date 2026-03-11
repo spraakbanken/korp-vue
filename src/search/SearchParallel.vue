@@ -3,32 +3,35 @@
 import settings from "@/core/config"
 import { computed, ref } from "vue"
 import QueryBuilder from "./extended/QueryBuilder.vue"
-import type { CqpQuery } from "@/core/cqp/cqp.types"
 import { createCondition } from "@/core/cqp/cqp"
-import { getEnabledLangs } from "@/core/search/parallel"
+import { getAvailableLangs, type ParallelQuery } from "@/core/search/parallel"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { CorpusSetParallel } from "@/core/corpora/CorpusSetParallel"
 
-type Query = {
-  lang: string
-  cqp: string
-  query: CqpQuery
-  negative?: boolean
-}
-
+/** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
 
-const newQuery = (lang?: string): Query => ({
-  lang: lang || settings["start_lang"]!,
-  cqp: "[]",
+/** Creates a new query */
+const newQuery = (lang: string): ParallelQuery => ({
+  lang,
+  negative: false,
   query: [{ and_block: [[createCondition("")]] }],
 })
 
-const queries = ref<Query[]>([newQuery()])
+/** Query structures by language, being edited */
+const queries = ref<ParallelQuery[]>([newQuery(settings["start_lang"]!)])
 
-const getLangs = (i: number) => getEnabledLangs(corpusSelection, queries.value, i)
-const unusedLangs = computed(() => getLangs(queries.value.length))
+/** Get languages available for each query index */
+const availableLangs = computed(() => {
+  // Mention corpus selection to trigger recalculation on changes
+  void corpusSelection
+  return getAvailableLangs(corpusSelection, queries.value)
+})
 
+/** Unused languages available for a new query */
+const unusedLangs = computed(() => availableLangs.value[availableLangs.value.length - 1]!)
+
+/** Handle submitting the search form */
 function submit() {}
 </script>
 
@@ -42,14 +45,29 @@ function submit() {}
           :key="query.lang"
           class="d-flex flex-column align-items-start gap-2"
         >
-          <!-- Language select -->
-          <div class="hstack">
+          <!-- Query header -->
+          <div class="hstack gap-2">
+            <!-- Language select -->
             <select v-model="query.lang" class="form-select w-auto" required>
-              <option v-for="lang in getLangs(i)" :key="lang" :value="lang">
+              <option v-for="lang in availableLangs[i]" :key="lang" :value="lang">
                 {{ $t(`lang.${lang}`) }}
               </option>
             </select>
 
+            <!-- Negative toggle -->
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                v-model="query.negative"
+                :id="`search-parallel-${i}-negative`"
+              />
+              <label class="form-check-label" :for="`search-parallel-${i}-negative`">
+                {{ $t("search.parallel.negative") }}
+              </label>
+            </div>
+
+            <!-- Remove query button -->
             <button
               type="button"
               class="btn-close ms-2"
@@ -67,8 +85,8 @@ function submit() {}
           <button
             type="button"
             class="btn btn-secondary"
-            @click="queries.push(newQuery(unusedLangs[0]))"
             :disabled="unusedLangs.length === 0"
+            @click="queries.push(newQuery(unusedLangs[0]!))"
           >
             + {{ $t("search.parallel.add_query") }}
           </button>
@@ -76,7 +94,7 @@ function submit() {}
 
         <!-- Instructions -->
         <div class="small text-muted text-center">
-          {{ $t("search.extended.instructions") }}
+          {{ $t("search.parallel.instructions") }}
         </div>
 
         <!-- Search button -->

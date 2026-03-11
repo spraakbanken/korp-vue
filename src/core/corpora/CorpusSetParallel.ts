@@ -1,3 +1,4 @@
+import { uniq } from "lodash-es"
 import settings from "../config"
 import type { Corpus } from "../config/corpusConfig.types"
 import type { Attribute, CorpusParallel } from "../config/corpusConfigRaw.types"
@@ -110,6 +111,12 @@ export class CorpusSetParallel extends CorpusSet {
     }
 
     return output
+  }
+
+  /** Get languages of corpora linked from corpora of a given language */
+  getLinkedLangs(lang: string) {
+    const corpora = this.getLinksFromLangs([lang]).flat()
+    return uniq(corpora.map((corpus) => corpus.lang))
   }
 
   /** Get the within and context queries */

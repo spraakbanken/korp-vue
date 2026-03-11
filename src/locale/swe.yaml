@@ -162,8 +162,10 @@ search.operator.not_compound_middle: inte mellanled
 search.operator.not_prefix: börjar inte med
 search.operator.not_suffix: slutar inte med
 
-search.parallel.add_query: Lägg till språk
-search.parallel.remove_query: Ta bort språk
+search.parallel.add_query: Lägg till parallellfråga
+search.parallel.instructions: Bygg sökfrågor i ett eller flera språk genom att lägga till lådor för token (ord) och deras matchningsvillkor.
+search.parallel.negative: innehåller inte
+search.parallel.remove_query: Ta bort sökfrågan för detta språk
 
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag

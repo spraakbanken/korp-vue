@@ -162,6 +162,11 @@ search.operator.not_compound_middle: not medial part
 search.operator.not_prefix: does not start with
 search.operator.not_suffix: does not end with
 
+search.parallel.add_query: Add parallel query
+search.parallel.instructions: Build search queries in one or more languages by adding boxes for tokens (words) and their match conditions.
+search.parallel.negative: does not contain
+search.parallel.remove_query: Remove the query for this language
+
 search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 search.and: and
