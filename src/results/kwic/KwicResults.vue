@@ -37,11 +37,11 @@ const exportType = ref<ExportType>("kwic")
 const hitsCount = ref(0)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
-const hpp = ref(settings["hits_per_page_default"])
+const hpp = ref(store.hpp)
 const kwic = ref<Row[]>()
 const loading = ref(false)
 const pageLocal = ref(1)
-const sort = ref<QueryParamSort>("")
+const sort = ref<QueryParamSort>(store.sort)
 /** Flags if the current running request will be shown in reading mode */
 let isCurrentRequestReading = false
 

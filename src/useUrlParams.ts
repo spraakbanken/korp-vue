@@ -40,7 +40,7 @@ export function useUrlParams() {
   watchUrl("result_tab", (value) => (value && parseInt(value)) || 1)
   watchUrl("search")
   watchUrl("search_tab", (value) => (value && parseInt(value)) || 0)
-  watchUrl("sort")
+  watchUrl("sort", (value) => value || "")
   watchUrl("stats_reduce", (value) => value || "word")
   watchUrl("stats_reduce_insensitive", (value) => value || "")
   watchUrl("suffix", (value) => value != undefined || url.mid_comp != undefined)

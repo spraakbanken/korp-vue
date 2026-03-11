@@ -1,15 +1,12 @@
-import { syncRef, watchImmediate } from "@vueuse/core"
+import { watchImmediate } from "@vueuse/core"
 import { ref } from "vue"
 import { defineStore } from "pinia"
 import settings, { getDefaultWithin } from "@/core/config"
-import { useI18n } from "vue-i18n"
 import { setLang } from "@/core/i18n"
 import type { ActiveSearch, Store } from "@/core/model/store"
 import { type NormalizeOptional } from "./util"
 
 export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", () => {
-  const { locale } = useI18n()
-
   /** Last executed search query. */
   const activeSearch = ref<ActiveSearch>()
   const corpus = ref<string[]>([])
@@ -36,9 +33,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const stats_reduce_insensitive = ref("")
   const suffix = ref(false)
   const within = ref(getDefaultWithin())
-
-  // Keep the lang param in sync with the i18n lib
-  syncRef(locale, lang)
 
   // Sync to the non-reactive lang global
   watchImmediate(lang, (langNew) => setLang(langNew))

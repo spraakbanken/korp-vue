@@ -1,48 +1,16 @@
 <script setup lang="ts">
 import HeaderSection from "@/header/HeaderSection.vue"
 import MainSection from "@/MainSection.vue"
-import { setCorpusListing } from "./core/corpora/corpusListing"
-import { CorpusSet } from "./core/corpora/CorpusSet"
-import settings from "./core/config"
-import { useAuth } from "./auth/useAuth"
-import { useAsyncState } from "@vueuse/core"
-import { loadCorpusConfig } from "./core/config/corpusConfig"
-import { useUrlParams } from "./useUrlParams"
 import AppFooter from "./AppFooter.vue"
-import { getTimeData } from "./core/backend/timedata"
 import AppMessages from "./AppMessages.vue"
 import useMessageStore from "./store/useMessageStore"
-import useHistory from "./useHistory"
-import { useAppStore } from "./store/useAppStore"
-import { CorpusSetParallel } from "./core/corpora/CorpusSetParallel"
-import type { CorpusParallel } from "./core/config/corpusConfigRaw.types"
-import type { Corpus } from "./core/config/corpusConfig.types"
+import useInit from "./useInit"
 
-const auth = useAuth()
-useHistory(useAppStore())
 const messageStore = useMessageStore()
-useUrlParams()
 
-const { isReady } = useAsyncState(async () => {
-  // Initialize authentication
-  await auth.init(settings)
+const { init, initDone } = useInit()
 
-  // Fetch config and info
-  const corpusConfig = await loadCorpusConfig(settings)
-
-  // Merge into global settings
-  Object.assign(settings, corpusConfig)
-
-  // Create global corpusListing and corpusSelection
-  const corpora = Object.values(settings.corpora)
-  const corpusListing = settings.parallel
-    ? new CorpusSetParallel(corpora as Corpus<CorpusParallel>[])
-    : new CorpusSet(corpora)
-  setCorpusListing(corpusListing)
-
-  // Load corpus time data in the background
-  getTimeData()
-}, null)
+init()
 
 // Catch and show errors from anywhere in the app
 window.addEventListener("unhandledrejection", (event) => {
@@ -54,7 +22,7 @@ window.addEventListener("error", (event) => {
 </script>
 
 <template>
-  <template v-if="isReady">
+  <template v-if="initDone">
     <HeaderSection />
     <MainSection class="flex-grow-1" />
     <AppFooter />
