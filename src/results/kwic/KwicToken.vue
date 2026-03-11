@@ -1,19 +1,31 @@
 <script setup lang="ts">
 import type { ApiKwic, Token } from "@/core/backend/types"
+import { isKwic, isLinkedKwic, type LinkedKwic } from "@/core/kwic/kwic"
 import { injectionKeys } from "@/injection"
 import { isEqual } from "lodash-es"
 import { computed, inject } from "vue"
 
 const props = defineProps<{
-  row: ApiKwic
+  row: ApiKwic | LinkedKwic
   token: Token
 }>()
 
 const selectedToken = inject(injectionKeys.selectedToken)
+
 const isSelected = computed(() => {
-  const value = selectedToken?.value
-  if (!value) return
-  return isEqual(value.row.match, props.row.match) && value.token.position == props.token.position
+  const selected = selectedToken?.value
+  if (!selected) return
+
+  if (isKwic(props.row) && isKwic(selected.row))
+    return (
+      selected.token.position == props.token.position &&
+      isEqual(selected.row.match, props.row.match)
+    )
+
+  if (isLinkedKwic(props.row) && isLinkedKwic(selected.row))
+    return selected.token.linkref == props.token.linkref && isEqual(selected.row, props.row)
+
+  return false
 })
 </script>
 

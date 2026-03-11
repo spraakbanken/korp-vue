@@ -8,7 +8,7 @@ import { corpusListing } from "../corpora/corpusListing"
 export type Row = ApiKwic | LinkedKwic | CorpusHeading
 
 export type SelectedToken = {
-  row: ApiKwic
+  row: ApiKwic | LinkedKwic
   token: Token
 }
 

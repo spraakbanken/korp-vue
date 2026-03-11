@@ -71,7 +71,7 @@ function submit() {
             </select>
 
             <!-- Negative toggle -->
-            <div class="form-check">
+            <div v-if="i > 0" class="form-check">
               <input
                 type="checkbox"
                 class="form-check-input"

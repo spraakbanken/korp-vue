@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import KwicRow from "./KwicRow.vue"
-import { isCorpusHeading, isKwic, type Row } from "@/core/kwic/kwic"
+import { isCorpusHeading, isKwic, isLinkedKwic, type Row } from "@/core/kwic/kwic"
 import { watchImmediate } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
 import vScrollToTarget from "@/components/vScrollToTargetOn"
+import KwicRowLinked from "./KwicRowLinked.vue"
 
 const props = defineProps<{ data: Row[] }>()
 
@@ -32,6 +33,7 @@ watchImmediate(
           </tr>
 
           <KwicRow v-if="isKwic(row)" :row />
+          <KwicRowLinked v-if="isLinkedKwic(row)" :row />
         </template>
       </tbody>
     </table>
