@@ -19,7 +19,7 @@ export default function vScrollToTarget(
 }
 
 /** Scroll an area horizontally to center the target element */
-export function scrollAreaHorizontally(area: Element, target: Element) {
+function scrollAreaHorizontally(area: Element, target: Element) {
   const matchBox = target.getBoundingClientRect()
   const areaBox = area.getBoundingClientRect()
   const scrollLeft = area.scrollLeft + matchBox.left + matchBox.width / 2 - areaBox.width / 2

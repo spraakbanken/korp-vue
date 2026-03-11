@@ -4,7 +4,7 @@ import KwicRow from "./KwicRow.vue"
 import { isCorpusHeading, isKwic, isLinkedKwic, type Row } from "@/core/kwic/kwic"
 import { watchImmediate } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
-import vScrollToTarget from "@/components/vScrollToTargetOn"
+import vScrollToTarget from "@/components/vScrollToTarget"
 import KwicRowLinked from "./KwicRowLinked.vue"
 
 const props = defineProps<{ data: Row[] }>()
