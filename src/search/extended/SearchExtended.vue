@@ -1,35 +1,32 @@
 <script lang="ts" setup>
 /** Content for the Extended search tab with a query builder GUI */
-import { computed, ref, watch, watchEffect } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify, supportsInOrder } from "@/core/cqp/cqp"
 import { type CqpQuery } from "@/core/cqp/cqp.types"
 import GlobalFilters from "../GlobalFilters.vue"
-import { until, watchImmediate } from "@vueuse/core"
+import { watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { splitFirst } from "@/core/util"
 import QueryBuilder from "./QueryBuilder.vue"
 import { useReactiveFilterManager } from "../useReactiveFilterManager"
 import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
+import useSearch from "../useSearch"
 
 const store = useAppStore()
 const { search } = storeToRefs(store)
 /** Reactive global filter manager singleton */
 const filterManager = useReactiveFilterManager()
+const { commitSearch } = useSearch()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
 
 /** Computed standard CQP string of query including global filters */
 const cqpExpanded = computed(() => stringify(filterManager.mergeToCqp(tokens.value), true))
-/** Flag indicating whether the global filter manager has loaded */
-const isFilterReady = ref(false)
 /** Model for the free order option */
 const freeOrder = ref(!store.in_order)
-
-// Flag when the filter manager is ready, so that the initial search can include the filter selection.
-watch(filterManager, () => (isFilterReady.value = true))
 
 // React to the `search` param being changed, at first load or later
 watchImmediate(search, () => {
@@ -41,7 +38,7 @@ watchImmediate(search, () => {
   tokens.value = parse<CqpQuery>(store.cqp)
 
   // Trigger search
-  commitSearch()
+  doSearch()
 })
 
 /** Handle clicking the Search button */
@@ -50,16 +47,13 @@ function submit() {
   store.cqp = stringify(tokens.value)
   store.search = "cqp"
   store.page = 0
-  commitSearch()
+  doSearch()
 }
 
 /** Declare query as the active search */
-async function commitSearch() {
-  // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
-  await until(isFilterReady).toBe(true, { timeout: 1000 })
-
+async function doSearch() {
   const cqp = stringify(filterManager.mergeToCqp(tokens.value))
-  store.activeSearch = { cqp }
+  commitSearch({ cqp })
 }
 
 // Sync from store to local state

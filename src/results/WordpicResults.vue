@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, watchImmediate, whenever } from "@vueuse/core"
 import { computed, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
-import { storeToRefs } from "pinia"
 import { RelationsProxy } from "@/core/backend/proxy/RelationsProxy"
 import type { RelationsSort } from "@/core/backend/types/relations"
 import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/core/wordpic"
@@ -20,23 +18,21 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
-import type { CorpusSet } from "@/core/corpora/CorpusSet"
+import useSearch from "@/search/useSearch"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
 
 const progress = defineModel<number>("progress")
 
-const store = useAppStore()
 const { setError, clearError, errorMessage } = useError()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
+const { activeSearch, activeCorpora } = useSearch()
 
 const containerEl = useTemplateRef("container")
-const corporaSearched = ref<CorpusSet>()
-const cqp = computed(() => store.activeSearch?.cqp || "[]")
+const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<WordPicture>()
-const { activeSearch } = storeToRefs(store)
 const isVisible = useElementVisibility(containerEl)
 const limit = ref(LIMITS[0])
 const showPos = ref(false)
@@ -64,7 +60,6 @@ whenever(
 async function doSearch() {
   proxy.abort()
   clearError()
-  corporaSearched.value = corpusSelection.clone()
   progress.value = 0
 
   try {
@@ -89,7 +84,7 @@ const onOptionsChange = debounce(() => {
 }, UPDATE_DELAY_MS)
 
 function onClickRow(row: MatchedRelation): void {
-  const task = new WordpicExampleTask(corporaSearched.value!, row.source.join())
+  const task = new WordpicExampleTask(activeCorpora.value!, row.source.join())
   createTab(t("result.kwic"), task)
 }
 

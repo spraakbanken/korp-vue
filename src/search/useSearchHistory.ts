@@ -5,8 +5,8 @@ import { splitFirst, unregescape } from "@/core/util"
 import { useAppStore } from "@/store/useAppStore"
 import { useLocalStorage, whenever } from "@vueuse/core"
 import { isEqual, pick } from "lodash-es"
-import { storeToRefs } from "pinia"
 import { computed, readonly } from "vue"
+import useSearch from "./useSearch"
 
 type SearchState = Pick<Store, SearchParamNames>
 
@@ -19,7 +19,7 @@ type HistoryOption = {
 export default function useSearchHistory() {
   const storage = useLocalStorage<SearchState[]>(`korp.history.${currentMode}`, [])
   const store = useAppStore()
-  const { activeSearch } = storeToRefs(store)
+  const { activeSearch } = useSearch()
 
   // Save every new search to history
   // TODO Will include params for non-active search modes (e.g. `prefix` from Simple when the active search is from Extended)

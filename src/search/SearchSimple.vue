@@ -14,9 +14,11 @@ import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
+import useSearch from "./useSearch"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
+const { commitSearch } = useSearch()
 const filterManager = useReactiveFilterManager()
 const { t } = useI18n()
 
@@ -27,7 +29,6 @@ const suffixLocal = ref(suffix.value)
 const freeOrder = ref(!in_order.value)
 const ignoreCase = ref(isCaseInsensitive.value)
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
-const isFilterReady = ref(false)
 
 /** Trimmed autocomplete input */
 const input = computed<LemgramAutocompleteModel>(() => ({
@@ -53,9 +54,6 @@ const cqp = computed(() => stringify(filterManager.mergeToCqp(query.value)))
 
 syncRefs(cqp, simpleCqp)
 
-// Flag when the filter manager is ready, so that the initial search can include the filter selection.
-watch(filterManager, () => (isFilterReady.value = true))
-
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
 watchEffect(() => (suffixLocal.value = suffix.value))
@@ -70,7 +68,7 @@ watchImmediate(search, () => {
   lemgram.value = { type, value }
 
   // Trigger search
-  commitSearch()
+  doSearch()
 })
 
 function onMidfixChange() {
@@ -88,18 +86,14 @@ function submit() {
   const { type, value } = input.value
   store.search = `${type}|${value}`
   store.page = 0
-  commitSearch()
+  doSearch()
 }
 
 /** Declare query as the active search */
-async function commitSearch() {
+async function doSearch() {
   const { type, value } = input.value
   if (!value) return
-
-  // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
-  await until(isFilterReady).toBe(true, { timeout: 1000 })
-
-  store.activeSearch = { type, cqp: cqp.value }
+  commitSearch({ type, cqp: cqp.value })
 }
 </script>
 

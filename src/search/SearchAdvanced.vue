@@ -6,8 +6,10 @@ import { storeToRefs } from "pinia"
 import { ref, watchEffect } from "vue"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
+import useSearch from "./useSearch"
 
 const store = useAppStore()
+const { commitSearch } = useSearch()
 
 const { in_order, search, simpleCqp, extendedCqp } = storeToRefs(store)
 const cqpLocal = ref("[]")
@@ -22,7 +24,7 @@ watchImmediate(search, () => {
   cqpLocal.value = value
 
   // Trigger search
-  commitSearch()
+  doSearch()
 })
 
 watchEffect(() => (freeOrder.value = !in_order.value))
@@ -32,11 +34,11 @@ function submit() {
   store.in_order = !freeOrder.value
   store.search = `cqp|${cqpLocal.value}`
   store.page = 0
-  commitSearch()
+  doSearch()
 }
 
-function commitSearch() {
-  store.activeSearch = { cqp: cqpLocal.value }
+function doSearch() {
+  commitSearch({ cqp: cqpLocal.value })
 }
 </script>
 
