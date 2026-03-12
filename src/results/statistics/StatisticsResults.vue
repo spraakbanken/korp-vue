@@ -51,6 +51,8 @@ let corpusSelectionSearched: CorpusSet | null = null
 const containerEl = useTemplateRef("container")
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
+/** Whether searched material is dated */
+const isDated = ref(false)
 const isVisible = useElementVisibility(containerEl)
 /** List of map-compatible attributes in the searched corpus set */
 const mapAttributes = ref<MapAttributeOption[]>([])
@@ -126,6 +128,7 @@ async function doSearch() {
     stringifiers,
   )
 
+  isDated.value = !!corpusSelectionSearched?.getTimeInterval()
   mapAttributes.value = getGeoAttributes(corpusSelectionSearched.corpora)
 }
 
@@ -225,7 +228,12 @@ function createExport() {
 
     <div class="hstack gap-2 align-items-baseline">
       <!-- Trend chart button -->
-      <button type="button" class="btn btn-secondary" :disabled="!data" @click="openTrendTab()">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        :disabled="!data || !isDated"
+        @click="openTrendTab()"
+      >
         {{ $t("result.statistics.trend") }}
       </button>
 
