@@ -4,12 +4,11 @@ import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
-import { stringify, supportsInOrder } from "@/core/cqp/cqp"
+import { supportsInOrder } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import GlobalFilters from "./GlobalFilters.vue"
-import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
@@ -17,9 +16,8 @@ import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection
 import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
-const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
-const { commitQuery } = useSearchStore()
-const filterManager = useReactiveFilterManager()
+const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
+const searchStore = useSearchStore()
 const { t } = useI18n()
 
 const corpusSelection = useReactiveCorpusSelection()
@@ -49,10 +47,7 @@ const query = computed(() => {
     : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
 })
 
-/** Reactive CQP representation of the query */
-const cqp = computed(() => stringify(filterManager.mergeToCqp(query.value)))
-
-watchEffect(() => (simpleCqp.value = cqp.value))
+watchEffect(() => (searchStore.querySimple = query.value))
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
@@ -68,7 +63,7 @@ watchImmediate(search, () => {
   lemgram.value = { type, value }
 
   // Trigger search
-  commitQuery(query.value)
+  searchStore.commitQuery(query.value)
 })
 
 function onMidfixChange() {
@@ -89,7 +84,7 @@ function submit() {
 
   store.search = `${type}|${value}`
   store.page = 0
-  commitQuery(query.value)
+  searchStore.commitQuery(query.value)
 }
 </script>
 
@@ -111,7 +106,7 @@ function submit() {
       <!-- Search/save buttons -->
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
-        <SaveSearchButton :cqp :suggested-label="inputFormatted" />
+        <SaveSearchButton :query :suggested-label="inputFormatted" />
       </div>
     </div>
 

@@ -11,7 +11,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const cqp = ref("[]")
   const cqpParallel = ref({})
   const display = ref("")
-  const extendedCqp = ref<string>()
   const global_filter = ref({})
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
@@ -24,7 +23,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const result_tab = ref(1)
   const search = ref("")
   const search_tab = ref(0)
-  const simpleCqp = ref<string>()
   const sort = ref("")
   const statsRelative = ref(false)
   const stats_reduce = ref("word")
@@ -40,7 +38,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     cqp,
     cqpParallel,
     display,
-    extendedCqp,
     global_filter,
     hpp,
     isCaseInsensitive,
@@ -53,7 +50,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     result_tab,
     search,
     search_tab,
-    simpleCqp,
     sort,
     stats_reduce,
     stats_reduce_insensitive,

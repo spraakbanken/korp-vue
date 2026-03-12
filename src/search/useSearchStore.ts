@@ -1,4 +1,4 @@
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { defineStore } from "pinia"
 import { until } from "@vueuse/core"
 import { useReactiveFilterManager } from "./useReactiveFilterManager"
@@ -19,6 +19,11 @@ export default defineStore("search", () => {
 
   const activeSearch = ref<ActiveSearch>()
   const isFilterReady = ref(false)
+  const queryExtended = ref<CqpQuery>()
+  const querySimple = ref<CqpQuery>()
+
+  const cqpExtended = computed(() => toCqp(queryExtended.value))
+  const cqpSimple = computed(() => toCqp(querySimple.value))
 
   async function commitCqp(cqp: string) {
     // Let filter manager finish settling, so that any filter selection can be included in the initial search query.
@@ -37,13 +42,16 @@ export default defineStore("search", () => {
     // Let filter manager finish settling, so that any filter selection can be included in the initial search query.
     await until(isFilterReady).toBe(true)
 
-    const cqp = stringify(filterManager.mergeToCqp(query), true)
-    commitCqp(cqp)
+    commitCqp(toCqp(query))
   }
 
   function clearSearch() {
     activeSearch.value = undefined
   }
+
+  /** Serialize query to CQP including any global filters */
+  const toCqp = (query?: CqpQuery) =>
+    query ? stringify(filterManager.mergeToCqp(query), true) : "[]"
 
   // Flag when the filter manager has been updated, which is after corpus selection has settled
   watch(filterManager, () => (isFilterReady.value = true))
@@ -53,5 +61,9 @@ export default defineStore("search", () => {
     clearSearch,
     commitCqp,
     commitQuery,
+    cqpExtended,
+    cqpSimple,
+    queryExtended,
+    querySimple,
   }
 })

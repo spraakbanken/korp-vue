@@ -9,9 +9,9 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
-const { commitCqp } = useSearchStore()
+const searchStore = useSearchStore()
 
-const { in_order, search, simpleCqp, extendedCqp } = storeToRefs(store)
+const { in_order, search } = storeToRefs(store)
 const cqpLocal = ref("[]")
 const freeOrder = ref(!in_order.value)
 
@@ -24,7 +24,7 @@ watchImmediate(search, () => {
   cqpLocal.value = value
 
   // Trigger search
-  commitCqp(cqpLocal.value)
+  searchStore.commitCqp(cqpLocal.value)
 })
 
 watchEffect(() => (freeOrder.value = !in_order.value))
@@ -34,7 +34,7 @@ function submit() {
   store.in_order = !freeOrder.value
   store.search = `cqp|${cqpLocal.value}`
   store.page = 0
-  commitCqp(cqpLocal.value)
+  searchStore.commitCqp(cqpLocal.value)
 }
 </script>
 
@@ -90,7 +90,7 @@ function submit() {
           {{ $t("search.advanced.current_query", [$t("search.simple")]) }}
         </div>
         <div>
-          <code>{{ simpleCqp }}</code>
+          <code>{{ searchStore.cqpSimple }}</code>
         </div>
       </div>
 
@@ -99,7 +99,7 @@ function submit() {
           {{ $t("search.advanced.current_query", [$t("search.extended")]) }}
         </div>
         <div>
-          <code>{{ extendedCqp }}</code>
+          <code>{{ searchStore.cqpExtended }}</code>
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@ function submit() {
 
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
-        <SaveSearchButton :cqp="cqpLocal" :suggested-label="cqpLocal" />
+        <SaveSearchButton :query="cqpLocal" />
       </div>
     </div>
   </form>

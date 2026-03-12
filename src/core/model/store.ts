@@ -10,8 +10,6 @@ export type Store = {
   cqpParallel: Record<string, string>
   /** What modal to show */
   display?: "about"
-  /** The current Extended search query as CQP */
-  extendedCqp?: string
   /** A simple attribute–values structure of selected filters. */
   global_filter: Record<string, string[]>
   /** Hits per page */
@@ -42,8 +40,6 @@ export type Store = {
   search?: `${string}|${string}` | "cqp"
   /** Active search tab */
   search_tab: number
-  /** The current Simple search query as CQP */
-  simpleCqp?: string
   /** Search result order */
   sort: QueryParamSort
   /** Attributes on which to aggregate counts in statistics query */
