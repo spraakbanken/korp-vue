@@ -57,7 +57,7 @@ async function renderGrid() {
   grid = new StatisticsGrid(
     gridEl.value,
     props.rows,
-    corpusSelection.getIds(true),
+    corpusSelection.stringify(true).split(","),
     props.attributes,
     store,
     t("result.statistics.total"),
@@ -75,10 +75,13 @@ watch(statsRelative, () => grid?.refreshColumns())
 
 /** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {
-  // If no specific corpus, find which corpora had any hits (uppercase ids)
-  const corpusIds = corpusId
+  // Unless corpus is given, find which corpora had any hits (uppercase ids)
+  const corpusIdsWithHits = corpusId
     ? [corpusId]
     : Object.keys(row.count).filter((id) => row.count[id]![0] > 0)
+  const corpusIds = props.params.originalCorpora
+    .split(",")
+    .filter((linkId) => corpusIdsWithHits.includes(linkId.split("|").shift()!))
 
   // Add a subquery CQP matching a value row
   const cqp = !isTotalRow(row) ? buildExampleCqp(row) : undefined

@@ -30,6 +30,7 @@ import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
+import settings from "@/core/config"
 
 const UPDATE_DELAY_MS = 500
 
@@ -91,9 +92,11 @@ async function doSearch() {
   corpusSelectionSearched = corpusSelection.pick(corpusSelection.getIds())
   withinSearched = store.within
   const attrs = attributesSelected.value
-  const cqpValue = cqp.value
   const ignoreCase = !!attrs.insensitive.length
   progress.value = 0
+
+  // Statistics does not support parallel queries
+  const cqpValue = settings.parallel ? cqp.value.replace(/\:LINKED_CORPUS.*/, "") : cqp.value
 
   let counts
   try {
