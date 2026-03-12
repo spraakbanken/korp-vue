@@ -80,6 +80,7 @@ watch(page, () => doSearch(true))
     </OptionsBar>
 
     <KwicResultsContent
+      :corpora="task.corpora"
       :distribution
       :hitsCount
       :hpp

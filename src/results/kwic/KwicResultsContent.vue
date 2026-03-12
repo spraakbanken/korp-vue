@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
 import { isKwic, type Row, type SelectedToken } from "@/core/kwic/kwic"
@@ -11,11 +10,13 @@ import KwicList from "./KwicList.vue"
 import { watchImmediate } from "@vueuse/core"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 import HitsDistributionBar from "./HitsDistributionBar.vue"
+import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { formatDecimals } from "@/core/i18n"
 
 const page = defineModel<number>({ default: 1 })
 
 const props = defineProps<{
+  corpora?: CorpusSet
   distribution?: HitsDistribution[]
   hitsCount: number
   hpp: number
@@ -24,10 +25,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-// TODO Use corpus selection of the search, may have been changed
-const corpusSelection = useReactiveCorpusSelection()
-
-const tokensTotal = computed(() => corpusSelection.getTokenCount())
+const tokensTotal = computed(() => props.corpora?.getTokenCount())
 const hitsRelative = computed(() =>
   tokensTotal.value ? (1e6 * props.hitsCount) / tokensTotal.value : 0,
 )

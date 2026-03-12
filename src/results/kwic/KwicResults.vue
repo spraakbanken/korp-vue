@@ -19,6 +19,7 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
+import type { CorpusSet } from "@/core/corpora/CorpusSet"
 
 const UPDATE_DELAY_MS = 500
 
@@ -32,6 +33,7 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 const { activeSearch, page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
+const corporaSearched = ref<CorpusSet>()
 const distribution = ref<HitsDistribution[]>()
 const exportType = ref<ExportType>("kwic")
 const hitsCount = ref(0)
@@ -71,6 +73,7 @@ async function doSearch(isPaging = false) {
   if (!activeSearch.value) return
   proxy.abort()
   clearError()
+  corporaSearched.value = corpusSelection.clone()
   progress.value = 0
   loading.value = !isPaging
   // Remember options affecting result display in case they are changed while the request is ongoing
@@ -176,6 +179,7 @@ function createExport() {
 
     <KwicResultsContent
       v-else
+      :corpora="corporaSearched"
       :distribution
       :hitsCount
       :hpp

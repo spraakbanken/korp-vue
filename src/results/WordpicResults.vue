@@ -7,7 +7,7 @@ import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
 import { storeToRefs } from "pinia"
-import { RelationsProxy, type RelationsQuery } from "@/core/backend/proxy/RelationsProxy"
+import { RelationsProxy } from "@/core/backend/proxy/RelationsProxy"
 import type { RelationsSort } from "@/core/backend/types/relations"
 import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
@@ -20,6 +20,7 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
+import type { CorpusSet } from "@/core/corpora/CorpusSet"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -32,6 +33,7 @@ const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 
 const containerEl = useTemplateRef("container")
+const corporaSearched = ref<CorpusSet>()
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<WordPicture>()
 const { activeSearch } = storeToRefs(store)
@@ -62,6 +64,7 @@ whenever(
 async function doSearch() {
   proxy.abort()
   clearError()
+  corporaSearched.value = corpusSelection.clone()
   progress.value = 0
 
   try {
@@ -86,7 +89,7 @@ const onOptionsChange = debounce(() => {
 }, UPDATE_DELAY_MS)
 
 function onClickRow(row: MatchedRelation): void {
-  const task = new WordpicExampleTask(row.source.join())
+  const task = new WordpicExampleTask(corporaSearched.value!, row.source.join())
   createTab(t("result.kwic"), task)
 }
 

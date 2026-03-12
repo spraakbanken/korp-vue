@@ -47,7 +47,7 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: [],
   insensitive: [],
 })
-let corpusSelectionSearched: CorpusSet | null = null
+const corporaSearched = ref<CorpusSet>()
 const containerEl = useTemplateRef("container")
 const cqp = computed(() => store.activeSearch?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
@@ -92,7 +92,7 @@ async function doSearch() {
   if (!store.activeSearch) return
   proxy.abort()
   clearError()
-  corpusSelectionSearched = corpusSelection.pick(corpusSelection.getIds())
+  corporaSearched.value = corpusSelection.clone()
   withinSearched = store.within
   const attrs = attributesSelected.value
   const ignoreCase = !!attrs.insensitive.length
@@ -115,12 +115,12 @@ async function doSearch() {
   }
 
   const stringifiers = fromKeys(attrs.selected, (name) => {
-    const attribute = corpusSelectionSearched?.getReduceAttrs()[name]
+    const attribute = corporaSearched.value?.getReduceAttrs()[name]
     return attribute ? getStringifier(attribute) : String
   })
 
   data.value = await processStatisticsResult(
-    corpusSelectionSearched.stringify(false),
+    corporaSearched.value.stringify(false),
     counts,
     attrs.selected,
     ignoreCase,
@@ -128,8 +128,8 @@ async function doSearch() {
     stringifiers,
   )
 
-  isDated.value = !!corpusSelectionSearched?.getTimeInterval()
-  mapAttributes.value = getGeoAttributes(corpusSelectionSearched.corpora)
+  isDated.value = !!corporaSearched.value?.getTimeInterval()
+  mapAttributes.value = getGeoAttributes(corporaSearched.value.corpora)
 }
 
 const onOptionsChange = debounce(() => {
@@ -158,7 +158,7 @@ function openTrendTab() {
     cqp.value,
     subqueries,
     showTotal,
-    corpusSelectionSearched!,
+    corporaSearched.value!,
     withinSearched!,
   )
   createTab(t("result.trend"), task)
@@ -194,7 +194,7 @@ function getSubqueries() {
 
 function createExport() {
   const corpusTitles = Object.fromEntries(
-    corpusSelectionSearched!.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
+    corporaSearched.value!.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
   )
 
   return createStatisticsCsv(

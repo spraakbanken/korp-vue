@@ -33,6 +33,10 @@ export class CorpusSet {
 
   constructor(public corpora: Corpus[] = []) {}
 
+  clone(): CorpusSet {
+    return this.pick(this.getIds())
+  }
+
   get(key: string): Corpus {
     const corpus = this.corpora.find((corpus) => corpus.id == key.toLowerCase())
     if (!corpus) throw new Error(`No corpus with id ${key}`)
