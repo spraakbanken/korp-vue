@@ -9,7 +9,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
-const { commitSearch } = useSearchStore()
+const { commitCqp } = useSearchStore()
 
 const { in_order, search, simpleCqp, extendedCqp } = storeToRefs(store)
 const cqpLocal = ref("[]")
@@ -24,7 +24,7 @@ watchImmediate(search, () => {
   cqpLocal.value = value
 
   // Trigger search
-  doSearch()
+  commitCqp(cqpLocal.value)
 })
 
 watchEffect(() => (freeOrder.value = !in_order.value))
@@ -34,11 +34,7 @@ function submit() {
   store.in_order = !freeOrder.value
   store.search = `cqp|${cqpLocal.value}`
   store.page = 0
-  doSearch()
-}
-
-function doSearch() {
-  commitSearch(cqpLocal.value)
+  commitCqp(cqpLocal.value)
 }
 </script>
 

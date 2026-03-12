@@ -18,7 +18,7 @@ const store = useAppStore()
 const { search } = storeToRefs(store)
 /** Reactive global filter manager singleton */
 const filterManager = useReactiveFilterManager()
-const { commitSearch } = useSearchStore()
+const { commitQuery } = useSearchStore()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
@@ -38,7 +38,7 @@ watchImmediate(search, () => {
   tokens.value = parse<CqpQuery>(store.cqp)
 
   // Trigger search
-  doSearch()
+  commitQuery(tokens.value)
 })
 
 /** Handle clicking the Search button */
@@ -47,13 +47,7 @@ function submit() {
   store.cqp = stringify(tokens.value)
   store.search = "cqp"
   store.page = 0
-  doSearch()
-}
-
-/** Declare query as the active search */
-async function doSearch() {
-  const cqp = stringify(filterManager.mergeToCqp(tokens.value))
-  commitSearch(cqp)
+  commitQuery(tokens.value)
 }
 
 // Sync from store to local state

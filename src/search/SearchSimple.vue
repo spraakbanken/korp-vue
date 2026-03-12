@@ -3,7 +3,7 @@ import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
-import { syncRefs, watchImmediate } from "@vueuse/core"
+import { watchImmediate } from "@vueuse/core"
 import { stringify, supportsInOrder } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
@@ -18,7 +18,7 @@ import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
-const { commitSearch } = useSearchStore()
+const { commitQuery } = useSearchStore()
 const filterManager = useReactiveFilterManager()
 const { t } = useI18n()
 
@@ -52,7 +52,7 @@ const query = computed(() => {
 /** Reactive CQP representation of the query */
 const cqp = computed(() => stringify(filterManager.mergeToCqp(query.value)))
 
-syncRefs(cqp, simpleCqp)
+watchEffect(() => (simpleCqp.value = cqp.value))
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
@@ -68,7 +68,7 @@ watchImmediate(search, () => {
   lemgram.value = { type, value }
 
   // Trigger search
-  doSearch()
+  commitQuery(query.value)
 })
 
 function onMidfixChange() {
@@ -77,24 +77,19 @@ function onMidfixChange() {
 }
 
 function submit() {
+  const { type, value } = input.value
+  // Refuse empty search
+  if (!value) return
+
   // Sync from form to store when submitting.
   store.prefix = prefixLocal.value
   store.suffix = suffixLocal.value
   store.in_order = !freeOrder.value || !supportsInOrder(query.value)
   store.isCaseInsensitive = ignoreCase.value
 
-  const { type, value } = input.value
   store.search = `${type}|${value}`
   store.page = 0
-  doSearch()
-}
-
-/** Declare query as the active search */
-async function doSearch() {
-  // TODO Type would be used for Related Words. Implement? Skip?
-  const { type, value } = input.value
-  if (!value) return
-  commitSearch(cqp.value)
+  commitQuery(query.value)
 }
 </script>
 

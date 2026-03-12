@@ -18,7 +18,7 @@ import useSearchStore from "./useSearchStore"
 /** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
 const store = useAppStore()
-const { activeSearch, commitSearch } = useSearchStore()
+const { activeSearch, commitCqp } = useSearchStore()
 const { search } = storeToRefs(store)
 
 /** Creates a new query */
@@ -75,9 +75,9 @@ function submit() {
 /** Execute search if new */
 function doSearch(force = false) {
   const cqp = getParallelCqp(queries.value)
-  // TODO Move eq check into commitSearch
+  // TODO Move eq check into commitCqp
   const isNew = cqp != activeSearch?.cqp
-  if (force || isNew) commitSearch(cqp)
+  if (force || isNew) commitCqp(cqp)
 }
 </script>
 
