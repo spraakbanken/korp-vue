@@ -3,12 +3,10 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import settings, { getDefaultWithin } from "@/core/config"
 import { setLang } from "@/core/i18n"
-import type { ActiveSearch, Store } from "@/core/model/store"
+import type { Store } from "@/core/model/store"
 import { type NormalizeOptional } from "./util"
 
 export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", () => {
-  /** Last executed search query. */
-  const activeSearch = ref<ActiveSearch>()
   const corpus = ref<string[]>([])
   const cqp = ref("[]")
   const cqpParallel = ref({})
@@ -38,7 +36,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   watchImmediate(lang, (langNew) => setLang(langNew))
 
   return {
-    activeSearch,
     corpus,
     cqp,
     cqpParallel,

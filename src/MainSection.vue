@@ -5,13 +5,15 @@ import ResultsPanel from "./results/ResultsPanel.vue"
 import { useDynamicTabs } from "./results/useDynamicTabs"
 import { useAppStore } from "./store/useAppStore"
 import { storeToRefs } from "pinia"
+import useSearch from "./search/useSearch"
 
 const store = useAppStore()
 const { dynamicTabs } = useDynamicTabs()
-const { activeSearch, search } = storeToRefs(store)
+const { activeSearch, clearSearch } = useSearch()
+const { search } = storeToRefs(store)
 
 watch(search, () => {
-  if (!search.value) activeSearch.value = undefined
+  if (!search.value) clearSearch()
 })
 </script>
 

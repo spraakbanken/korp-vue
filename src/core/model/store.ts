@@ -2,8 +2,6 @@ import type { QueryParamSort } from "@/core/backend/types/query"
 
 /** Stored state. */
 export type Store = {
-  /** Last executed search query. */
-  activeSearch?: ActiveSearch
   /** Selected corpus ids in lowercase */
   corpus: string[]
   /** CQP query for Extended search, possibly with frontend-specific operators */
@@ -58,9 +56,4 @@ export type Store = {
   suffix: boolean
   /** Chunk size to evaluate search query within, e.g. "sentence" or "paragraph" */
   within?: string
-}
-
-export type ActiveSearch = {
-  type?: "word" | "lemgram"
-  cqp: string
 }

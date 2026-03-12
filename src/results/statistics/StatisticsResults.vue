@@ -48,7 +48,7 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   insensitive: [],
 })
 const containerEl = useTemplateRef("container")
-const cqp = computed(() => store.activeSearch?.cqp || "[]")
+const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
 const isDated = ref(false)
@@ -83,7 +83,7 @@ watchEffect(() => {
 
 async function doSearch() {
   // Empty search is possible when doing comparison first
-  if (!store.activeSearch) return
+  if (!activeSearch.value) return
   proxy.abort()
   clearError()
   withinSearched = store.within
