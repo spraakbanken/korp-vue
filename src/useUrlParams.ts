@@ -3,6 +3,7 @@ import type { HashParams } from "./core/url"
 import { useAppStore } from "./store/useAppStore"
 import settings, { getDefaultWithin } from "./core/config"
 import type { Store } from "./core/model/store"
+import { isEqual, mapKeys, pickBy } from "lodash-es"
 
 export function useUrlParams() {
   const url = useUrlSearchParams<HashParams>("hash-params", {
@@ -46,8 +47,16 @@ export function useUrlParams() {
   watchUrl("suffix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("within", (value) => value || getDefaultWithin())
 
-  // TODO Special handling of cqpParallel: multiple URL params but one store variable.
-  // watchDeep?
+  // Special handling of cqpParallel: multiple URL params but one store variable.
+  watchImmediate(url, (urlNew, urlOld) => {
+    /** Get only the "cqp_<lang>" params */
+    const pickParams = (params: Record<string, string>) =>
+      pickBy(params, (value, key) => key.startsWith("cqp_"))
+    // Skip if no change
+    if (isEqual(pickParams(urlNew), pickParams(urlOld || {}))) return
+    // Translate keys to just "<lang>" so that it matches `store.cqpParallel`
+    store.cqpParallel = mapKeys(pickParams(urlNew), (cqp, key) => key.slice(4))
+  })
 
   // `mid_comp` is deprecated; use prefix/suffix instead
   url.mid_comp = undefined
@@ -77,6 +86,14 @@ export function useUrlParams() {
     url.stats_reduce_insensitive = store.stats_reduce_insensitive || undefined
     url.suffix = store.suffix ? "" : undefined
     url.within = store.within == getDefaultWithin() ? undefined : store.within
+
+    // Special handling of cqpParallel: split object over multiple params
+    // Unset removed params
+    for (const key of Object.keys(url))
+      if (key.startsWith("cqp_") && !(key.slice(4) in store.cqpParallel))
+        delete url[key as `cqp_${string}`]
+    // Set new params
+    Object.entries(store.cqpParallel).forEach(([lang, cqp]) => (url[`cqp_${lang}`] = cqp))
   })
 
   // Trigger a URL -> store -> URL sync round.

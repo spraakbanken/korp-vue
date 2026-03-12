@@ -3,17 +3,21 @@
 import settings from "@/core/config"
 import { computed, ref, watchEffect } from "vue"
 import QueryBuilder from "./extended/QueryBuilder.vue"
-import { createCondition } from "@/core/cqp/cqp"
+import { createCondition, parse, stringify } from "@/core/cqp/cqp"
 import { getAvailableLangs, getParallelCqp, type ParallelQuery } from "@/core/search/parallel"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { CorpusSetParallel } from "@/core/corpora/CorpusSetParallel"
 import { useAppStore } from "@/store/useAppStore"
 import { uniq } from "lodash-es"
 import { corpusListing } from "@/core/corpora/corpusListing"
+import { storeToRefs } from "pinia"
+import { watchImmediate } from "@vueuse/core"
+import type { CqpQuery } from "@/core/cqp/cqp.types"
 
 /** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
 const store = useAppStore()
+const { search } = storeToRefs(store)
 
 /** Creates a new query */
 const newQuery = (lang: string): ParallelQuery => ({
@@ -38,6 +42,18 @@ const availableLangs = computed(() => {
 /** Unused languages available for a new query */
 const unusedLangs = computed(() => availableLangs.value[availableLangs.value.length - 1]!)
 
+// React to the `search` param being changed, at first load or later
+watchImmediate(search, () => {
+  if (!store.search) return
+
+  // Restore input
+  const cqpParallel = Object.entries(store.cqpParallel)
+  if (cqpParallel.length)
+    queries.value = cqpParallel.map(([lang, cqp]) => ({ lang, query: parse<CqpQuery>(cqp) }))
+
+  commitSearch()
+})
+
 /** Sync language choices to corpus listings */
 watchEffect(() => {
   ;(corpusListing as CorpusSetParallel).setLangs(langs.value)
@@ -46,8 +62,19 @@ watchEffect(() => {
 
 /** Handle submitting the search form */
 function submit() {
+  store.cqpParallel = Object.fromEntries(
+    queries.value.map((query) => [query.lang, stringify(query.query)]),
+  )
+  store.search = `cqp|${getParallelCqp(queries.value)}`
+  store.page = 0
+  commitSearch(true)
+}
+
+/** Execute search if new */
+function commitSearch(force = false) {
   const cqp = getParallelCqp(queries.value)
-  store.activeSearch = { cqp }
+  const isNew = cqp != store.activeSearch?.cqp
+  if (force || isNew) store.activeSearch = { cqp }
 }
 </script>
 
