@@ -18,7 +18,8 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
-import useSearch from "@/search/useSearch"
+import useSearchStore from "@/search/useSearchStore"
+import { storeToRefs } from "pinia"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -28,7 +29,7 @@ const progress = defineModel<number>("progress")
 const { setError, clearError, errorMessage } = useError()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
-const { activeSearch, activeCorpora } = useSearch()
+const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
 
 const containerEl = useTemplateRef("container")
 const cqp = computed(() => activeSearch.value?.cqp || "[]")

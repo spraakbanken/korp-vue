@@ -19,14 +19,14 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
-import useSearch from "@/search/useSearch"
+import useSearchStore from "@/search/useSearchStore"
 
 const UPDATE_DELAY_MS = 500
 
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
-const { activeSearch, activeCorpora } = useSearch()
+const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
 const { setError, clearError, errorMessage } = useError()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]

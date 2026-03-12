@@ -6,10 +6,10 @@ import { storeToRefs } from "pinia"
 import { ref, watchEffect } from "vue"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
-import useSearch from "./useSearch"
+import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
-const { commitSearch } = useSearch()
+const { commitSearch } = useSearchStore()
 
 const { in_order, search, simpleCqp, extendedCqp } = storeToRefs(store)
 const cqpLocal = ref("[]")

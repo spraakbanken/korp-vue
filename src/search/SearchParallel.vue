@@ -13,12 +13,12 @@ import { corpusListing } from "@/core/corpora/corpusListing"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
-import useSearch from "./useSearch"
+import useSearchStore from "./useSearchStore"
 
 /** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
 const store = useAppStore()
-const { activeSearch, commitSearch } = useSearch()
+const { activeSearch, commitSearch } = useSearchStore()
 const { search } = storeToRefs(store)
 
 /** Creates a new query */
@@ -76,7 +76,7 @@ function submit() {
 function doSearch(force = false) {
   const cqp = getParallelCqp(queries.value)
   // TODO Move eq check into commitSearch
-  const isNew = cqp != activeSearch.value?.cqp
+  const isNew = cqp != activeSearch?.cqp
   if (force || isNew) commitSearch({ cqp })
 }
 </script>

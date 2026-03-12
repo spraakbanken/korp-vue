@@ -12,13 +12,13 @@ import QueryBuilder from "./QueryBuilder.vue"
 import { useReactiveFilterManager } from "../useReactiveFilterManager"
 import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
-import useSearch from "../useSearch"
+import useSearchStore from "../useSearchStore"
 
 const store = useAppStore()
 const { search } = storeToRefs(store)
 /** Reactive global filter manager singleton */
 const filterManager = useReactiveFilterManager()
-const { commitSearch } = useSearch()
+const { commitSearch } = useSearchStore()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
-import { syncRefs, until, watchImmediate } from "@vueuse/core"
+import { syncRefs, watchImmediate } from "@vueuse/core"
 import { stringify, supportsInOrder } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
@@ -14,11 +14,11 @@ import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
-import useSearch from "./useSearch"
+import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
-const { commitSearch } = useSearch()
+const { commitSearch } = useSearchStore()
 const filterManager = useReactiveFilterManager()
 const { t } = useI18n()
 

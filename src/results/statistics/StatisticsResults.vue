@@ -30,7 +30,7 @@ import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
 import type { CountsMerged } from "@/core/backend/types/count"
-import useSearch from "@/search/useSearch"
+import useSearchStore from "@/search/useSearchStore"
 
 const UPDATE_DELAY_MS = 500
 
@@ -40,7 +40,7 @@ const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { setError, clearError, errorMessage } = useError()
-const { activeSearch, activeCorpora } = useSearch()
+const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({

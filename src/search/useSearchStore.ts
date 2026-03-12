@@ -1,6 +1,7 @@
-import { readonly, ref, watch } from "vue"
-import { useReactiveFilterManager } from "./useReactiveFilterManager"
+import { ref, watch } from "vue"
+import { defineStore } from "pinia"
 import { until } from "@vueuse/core"
+import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
@@ -10,14 +11,13 @@ export type ActiveSearch = {
   cqp: string
 }
 
-const activeCorpora = ref<CorpusSet>()
-const activeSearch = ref<ActiveSearch>()
-
-/** Service for managing main search query */
-export default function useSearch() {
+/** Store for main search query */
+export default defineStore("search", () => {
   const filterManager = useReactiveFilterManager()
   const corpusSelection = useReactiveCorpusSelection()
 
+  const activeCorpora = ref<CorpusSet>()
+  const activeSearch = ref<ActiveSearch>()
   const isFilterReady = ref(false)
 
   async function commitSearch(search: ActiveSearch) {
@@ -42,8 +42,8 @@ export default function useSearch() {
 
   return {
     activeCorpora,
-    activeSearch: readonly(activeSearch),
+    activeSearch,
     clearSearch,
     commitSearch,
   }
-}
+})
