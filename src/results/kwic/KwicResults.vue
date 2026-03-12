@@ -14,7 +14,7 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import { massageData, type Row } from "@/core/kwic/kwic"
-import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
+import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
@@ -76,7 +76,7 @@ async function doSearch(isPaging = false) {
   // Remember options affecting result display in case they are changed while the request is ongoing
   isCurrentRequestReading = context.value || !store.in_order
 
-  let response
+  let response: QueryData
   try {
     response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
     progress.value = 100

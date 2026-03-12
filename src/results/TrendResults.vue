@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Series, TrendTask } from "@/core/task/TrendTask"
+import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
 import { findOptimalLevel, getTimeCqp, spliceGraphData, type Level } from "@/core/trend/util"
 import type { Moment } from "moment"
 import { computed, onMounted, ref } from "vue"
@@ -38,7 +38,7 @@ async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
   progress.value = 0
 
-  let data
+  let data: TrendResult
   try {
     data = await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
     progress.value = 100

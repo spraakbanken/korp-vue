@@ -8,8 +8,8 @@ import { debounce } from "lodash-es"
 import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
-import type { Row } from "@/core/kwic/kwic"
-import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
+import { massageData, type Row } from "@/core/kwic/kwic"
+import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 
@@ -38,7 +38,7 @@ async function doSearch(isPaging = false) {
   props.task.abort()
   progress.value = 0
 
-  let response
+  let response: QueryData
   try {
     response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
     progress.value = 100
@@ -52,7 +52,7 @@ async function doSearch(isPaging = false) {
 
   distribution.value = response.distribution
   hitsCount.value = response.hits
-  kwic.value = response.kwic
+  kwic.value = massageData(response.kwic)
   isReading.value = willBeReading
 }
 

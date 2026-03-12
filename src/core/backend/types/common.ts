@@ -61,7 +61,7 @@ export type ApiKwic = {
   /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
   match: KwicMatch | KwicMatch[]
   /** Hits from aligned corpora if available, otherwise omitted */
-  aligned: {
+  aligned?: {
     [linkedCorpusId: `${string}-${string}`]: Token[]
   }
 }

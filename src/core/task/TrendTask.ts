@@ -41,7 +41,12 @@ export class TrendTask extends TaskBase<TrendResult> {
     super()
   }
 
-  async send(level: Level, from: Moment, to: Moment, onProgress: ProgressHandler<"count_time">) {
+  async send(
+    level: Level,
+    from: Moment,
+    to: Moment,
+    onProgress: ProgressHandler<"count_time">,
+  ): Promise<TrendResult> {
     this.abort()
 
     const formatDate = (d: Moment) => d.format("YYYYMMDDHHmmss") as NumericString

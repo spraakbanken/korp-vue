@@ -31,6 +31,7 @@ import { fromKeys } from "@/core/util"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
+import type { CountsMerged } from "@/core/backend/types/count"
 
 const UPDATE_DELAY_MS = 500
 
@@ -98,7 +99,7 @@ async function doSearch() {
   // Statistics does not support parallel queries
   const cqpValue = settings.parallel ? cqp.value.replace(/\:LINKED_CORPUS.*/, "") : cqp.value
 
-  let counts
+  let counts: CountsMerged
   try {
     counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
     progress.value = 100

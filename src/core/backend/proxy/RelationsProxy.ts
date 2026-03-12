@@ -16,7 +16,7 @@ export class RelationsProxy extends ProxyBase<"relations"> {
 
   /** Parse and check if a query can be used for word picture. */
   static parseCqp(cqp: string): RelationsQuery {
-    let tokens
+    let tokens: CqpQuery
     try {
       tokens = parse<CqpQuery>(cqp)
     } catch (error) {

@@ -163,7 +163,7 @@ export class CorpusSet {
     )
   }
 
-  stringify(): string {
+  stringify(onlyMain?: boolean): string {
     return this.map((corpus) => corpus.id.toUpperCase()).join()
   }
 
