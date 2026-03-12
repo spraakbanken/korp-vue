@@ -11,6 +11,7 @@ import KwicList from "./KwicList.vue"
 import { watchImmediate } from "@vueuse/core"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 import HitsDistributionBar from "./HitsDistributionBar.vue"
+import { formatDecimals } from "@/core/i18n"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -27,7 +28,9 @@ const props = defineProps<{
 const corpusSelection = useReactiveCorpusSelection()
 
 const tokensTotal = computed(() => corpusSelection.getTokenCount())
-const hitsRelative = computed(() => (tokensTotal.value ? props.hitsCount / tokensTotal.value : 0))
+const hitsRelative = computed(() =>
+  tokensTotal.value ? (1e6 * props.hitsCount) / tokensTotal.value : 0,
+)
 const selectedToken = ref<SelectedToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
@@ -58,7 +61,7 @@ watchImmediate(
     <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
       <div>{{ $t("result.kwic.hits_count") }}: {{ $n(hitsCount) }}</div>
       <div>
-        {{ $t("result.kwic.hits_relative") }}: {{ $n(hitsRelative) }}
+        {{ $t("result.kwic.hits_relative") }}: {{ formatDecimals(hitsRelative, 1) }}
         <HelpBadge :text="$t('result.kwic.hits_relative.help')" />
       </div>
     </div>
