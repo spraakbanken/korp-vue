@@ -91,9 +91,10 @@ function submit() {
 
 /** Declare query as the active search */
 async function doSearch() {
+  // TODO Type would be used for Related Words. Implement? Skip?
   const { type, value } = input.value
   if (!value) return
-  commitSearch({ type, cqp: cqp.value })
+  commitSearch(cqp.value)
 }
 </script>
 

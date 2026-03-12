@@ -53,7 +53,7 @@ function submit() {
 /** Declare query as the active search */
 async function doSearch() {
   const cqp = stringify(filterManager.mergeToCqp(tokens.value))
-  commitSearch({ cqp })
+  commitSearch(cqp)
 }
 
 // Sync from store to local state

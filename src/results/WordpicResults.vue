@@ -29,7 +29,7 @@ const progress = defineModel<number>("progress")
 const { setError, clearError, errorMessage } = useError()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
-const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
+const { activeSearch } = storeToRefs(useSearchStore())
 
 const containerEl = useTemplateRef("container")
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
@@ -85,7 +85,7 @@ const onOptionsChange = debounce(() => {
 }, UPDATE_DELAY_MS)
 
 function onClickRow(row: MatchedRelation): void {
-  const task = new WordpicExampleTask(activeCorpora.value!, row.source.join())
+  const task = new WordpicExampleTask(activeSearch.value!.corpora, row.source.join())
   createTab(t("result.kwic"), task)
 }
 

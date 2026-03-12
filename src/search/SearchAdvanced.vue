@@ -38,7 +38,7 @@ function submit() {
 }
 
 function doSearch() {
-  commitSearch({ cqp: cqpLocal.value })
+  commitSearch(cqpLocal.value)
 }
 </script>
 

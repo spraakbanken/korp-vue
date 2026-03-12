@@ -5,9 +5,8 @@ import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
-// TODO Replace `{type, cqp}` with just `cqp`? Type used for Related Word.
 export type ActiveSearch = {
-  type?: "word" | "lemgram"
+  corpora: CorpusSet
   cqp: string
 }
 
@@ -16,11 +15,10 @@ export default defineStore("search", () => {
   const filterManager = useReactiveFilterManager()
   const corpusSelection = useReactiveCorpusSelection()
 
-  const activeCorpora = ref<CorpusSet>()
   const activeSearch = ref<ActiveSearch>()
   const isFilterReady = ref(false)
 
-  async function commitSearch(search: ActiveSearch) {
+  async function commitSearch(cqp: string) {
     // Let filter manager finish settling, so that any filter selection can be included in the initial search query.
     await until(isFilterReady).toBe(true)
 
@@ -29,8 +27,9 @@ export default defineStore("search", () => {
       return
     }
 
-    activeSearch.value = search
-    activeCorpora.value = corpusSelection.pick(corpusSelection.getIds())
+    const corpora = corpusSelection.pick(corpusSelection.getIds())
+
+    activeSearch.value = { corpora, cqp }
   }
 
   function clearSearch() {
@@ -41,7 +40,6 @@ export default defineStore("search", () => {
   watch(filterManager, () => (isFilterReady.value = true))
 
   return {
-    activeCorpora,
     activeSearch,
     clearSearch,
     commitSearch,

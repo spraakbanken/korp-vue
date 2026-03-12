@@ -77,7 +77,7 @@ function doSearch(force = false) {
   const cqp = getParallelCqp(queries.value)
   // TODO Move eq check into commitSearch
   const isNew = cqp != activeSearch?.cqp
-  if (force || isNew) commitSearch({ cqp })
+  if (force || isNew) commitSearch(cqp)
 }
 </script>
 

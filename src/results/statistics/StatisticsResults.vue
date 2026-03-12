@@ -40,7 +40,7 @@ const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { setError, clearError, errorMessage } = useError()
-const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
+const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
@@ -84,6 +84,7 @@ watchEffect(() => {
 async function doSearch() {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
+  const corpora = activeSearch.value.corpora
   proxy.abort()
   clearError()
   withinSearched = store.within
@@ -108,12 +109,12 @@ async function doSearch() {
   }
 
   const stringifiers = fromKeys(attrs.selected, (name) => {
-    const attribute = activeCorpora.value?.getReduceAttrs()[name]
+    const attribute = corpora.getReduceAttrs()[name]
     return attribute ? getStringifier(attribute) : String
   })
 
   data.value = await processStatisticsResult(
-    activeCorpora.value!.stringify(false),
+    corpora.stringify(false),
     counts,
     attrs.selected,
     ignoreCase,
@@ -121,8 +122,8 @@ async function doSearch() {
     stringifiers,
   )
 
-  isDated.value = !!activeCorpora.value?.getTimeInterval()
-  mapAttributes.value = getGeoAttributes(activeCorpora.value!.corpora)
+  isDated.value = !!corpora.getTimeInterval()
+  mapAttributes.value = getGeoAttributes(corpora.corpora)
 }
 
 const onOptionsChange = debounce(() => {
@@ -151,7 +152,7 @@ function openTrendTab() {
     cqp.value,
     subqueries,
     showTotal,
-    activeCorpora.value!,
+    activeSearch.value!.corpora,
     withinSearched!,
   )
   createTab(t("result.trend"), task)
@@ -187,7 +188,7 @@ function getSubqueries() {
 
 function createExport() {
   const corpusTitles = Object.fromEntries(
-    activeCorpora.value!.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
+    activeSearch.value!.corpora.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
   )
 
   return createStatisticsCsv(

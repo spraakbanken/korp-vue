@@ -26,7 +26,7 @@ const UPDATE_DELAY_MS = 500
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
-const { activeSearch, activeCorpora } = storeToRefs(useSearchStore())
+const { activeSearch } = storeToRefs(useSearchStore())
 const { setError, clearError, errorMessage } = useError()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
@@ -178,7 +178,7 @@ function createExport() {
 
     <KwicResultsContent
       v-else
-      :corpora="activeCorpora"
+      :corpora="activeSearch.corpora"
       :distribution
       :hitsCount
       :hpp
