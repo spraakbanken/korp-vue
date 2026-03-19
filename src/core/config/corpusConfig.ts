@@ -77,7 +77,7 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
       transformAttributes2<CustomAttribute>("custom_attributes")
 
     return {
-      ...omit(corpus, "pos_attributes"),
+      ...omit(corpus, ["pos_attributes", "limited_access"]),
       attributes,
       struct_attributes,
       custom_attributes,
@@ -88,6 +88,7 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
       within: contextWithinFix(corpus["within"]),
       info: infos[corpus.id].info,
       private_struct_attributes: infos[corpus.id].private_struct_attributes,
+      protected: infos[corpus.id]?.info.Protected === "true",
     }
   }
 

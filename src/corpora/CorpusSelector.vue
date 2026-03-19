@@ -55,7 +55,7 @@ watchEffect(() => (selection.value = store.corpus))
           v-for="corpus of corpusListing.corpora"
           :key="corpus.id"
           :value="corpus.id"
-          :disabled="corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())"
+          :disabled="corpus?.protected && !auth.hasCredential(corpus.id.toUpperCase())"
         >
           {{ locObj(corpus.title) }}
         </option>

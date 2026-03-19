@@ -32,6 +32,7 @@ export type Corpus<T extends CorpusRaw = CorpusRaw> = Omit<
   within: Record<string, string>
   context: Record<string, string>
   info: CorpusInfoInfo
+  protected?: boolean
   common_attributes?: Record<string, true>
   time?: Record<number, number>
   non_time?: number

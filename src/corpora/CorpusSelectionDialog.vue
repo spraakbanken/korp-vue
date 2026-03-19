@@ -26,7 +26,7 @@ onMounted(async () => {
 /** Interactively check that the corpus selection in the store is valid. */
 async function validateCorpusSelection(ids: string[], skipLogin = false): Promise<string[]> {
   const isDenied = (corpus?: Corpus) =>
-    corpus?.limited_access && !auth.hasCredential(corpus.id.toUpperCase())
+    corpus?.protected && !auth.hasCredential(corpus.id.toUpperCase())
 
   // If no id is given, use default
   if (!ids.length) {

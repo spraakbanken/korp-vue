@@ -37,7 +37,6 @@ export type CorpusRaw = {
   id: string
   /** Must be present in parallel corpus */
   lang?: string
-  limited_access?: boolean
   linked_to?: string[]
   pivot?: boolean
   pos_attributes: string[]
