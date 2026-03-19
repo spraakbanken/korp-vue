@@ -1,4 +1,4 @@
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
 import { defineStore } from "pinia"
 import { until } from "@vueuse/core"
 import { useReactiveFilterManager } from "./useReactiveFilterManager"
@@ -18,17 +18,17 @@ export default defineStore("search", () => {
   const corpusSelection = useReactiveCorpusSelection()
 
   const activeSearch = ref<ActiveSearch>()
-  const isFilterReady = ref(false)
   const queryExtended = ref<CqpQuery>()
   const querySimple = ref<CqpQuery>()
 
   const cqpExtended = computed(() => toCqp(queryExtended.value))
   const cqpSimple = computed(() => toCqp(querySimple.value))
 
+  const corpusSelectionDone = until(() => !!corpusSelection.corpora.length).toBe(true)
+
   async function commitCqp(cqp: string) {
-    // Let filter manager finish settling, so that any filter selection can be included in the initial search query.
-    // TODO Weird, Advanced doesn't use filters, find a better way to check for corpus selection
-    await until(isFilterReady).toBe(true)
+    // Let corpus selection finish settling
+    await corpusSelectionDone
 
     if (!corpusSelection.corpora.length) {
       console.warn("Aborting search: no corpora selected")
@@ -39,8 +39,9 @@ export default defineStore("search", () => {
   }
 
   async function commitQuery(query: CqpQuery) {
-    // Let filter manager finish settling, so that any filter selection can be included in the initial search query.
-    await until(isFilterReady).toBe(true)
+    // Let corpus selection finish settling
+    // This also allows any filter selection to be included in the initial search query
+    await corpusSelectionDone
 
     commitCqp(toCqp(query))
   }
@@ -52,9 +53,6 @@ export default defineStore("search", () => {
   /** Serialize query to CQP including any global filters */
   const toCqp = (query?: CqpQuery) =>
     query ? stringify(filterManager.mergeToCqp(query), true) : "[]"
-
-  // Flag when the filter manager has been updated, which is after corpus selection has settled
-  watch(filterManager, () => (isFilterReady.value = true))
 
   return {
     activeSearch,
