@@ -32,8 +32,8 @@ const isSub = (folder: ChooserFolder): folder is ChooserFolderSub => !isRoot(fol
 export const isFolder = (object: ChooserFolder | Corpus): object is ChooserFolderSub =>
   "numberOfChildren" in object
 
-export const initCorpusStructure = (collection: Record<string, Corpus>): ChooserFolderRoot => {
-  for (const corpus of Object.values(collection)) {
+export const initCorpusStructure = (allCorpora: Corpus[]): ChooserFolderRoot => {
+  for (let corpus of allCorpora) {
     const tokens = parseInt(corpus.info.Size || "0")
     corpus.tokens = tokens
     corpus.sentences = parseInt(corpus.info.Sentences || "0")
@@ -51,7 +51,7 @@ export const initCorpusStructure = (collection: Record<string, Corpus>): Chooser
 
     const folders: ChooserFolderSub[] = Object.entries(foldersRaw).map(([id, folder]) => {
       ids.push(...(folder.corpora || []))
-      const corpora = (folder.corpora || []).map((corpusId) => collection[corpusId])
+      const corpora = (folder.corpora || []).map((corpusId): Corpus => allCorpora.find(cp => cp.id === corpusId)!);
 
       // this is needed for folder identity checks in chooser
       let nCorpora = corpora.length
@@ -92,7 +92,7 @@ export const initCorpusStructure = (collection: Record<string, Corpus>): Chooser
   }
 
   const { folders, ids, tokens, sentences } = initFolders(settings["folders"])
-  const topLevelCorpora = Object.values(collection).filter((corpus) => !ids.includes(corpus.id))
+  const topLevelCorpora = Object.values(allCorpora).filter((corpus) => !ids.includes(corpus.id))
   const topLevelTokens = sum(topLevelCorpora.map((corpus) => corpus.tokens || 0))
   const topLevelSentences = sum(topLevelCorpora.map((corpus) => corpus.sentences || 0))
 
