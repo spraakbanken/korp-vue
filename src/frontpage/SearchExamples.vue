@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SearchExample } from "@/core/config/instanceConfig.types"
-import type { Store } from "@/core/model/store"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { shuffle } from "lodash-es"
@@ -15,15 +14,9 @@ const { locObj } = useLocale()
 // Pick 3 random examples
 const examples = shuffle(props.items).slice(0, 3)
 
+/** Apply selected search example to app state */
 function select(example: SearchExample) {
-  for (const key in example.params) {
-    // @ts-expect-error Not sure why store[key] is "never"...
-    store[key] = (example.params as Store)[key]
-  }
-  // TODO Replace with store.$patch. But:
-  // The store only propagates to URL when using individual assignments
-  // (and only triggers reactivity when URL value changes?)
-  // So use $watch for URL updates?
+  store.$patch(example.params)
 }
 </script>
 

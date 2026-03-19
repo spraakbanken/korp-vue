@@ -4,24 +4,6 @@ import type { Granularity } from "../backend/types"
 import moment from "moment"
 import type { Point, Series } from "../task/TrendTask"
 
-// TODO Remove unused things after Vue port is done
-
-// export type Series = {
-//   data: SeriesPoint[]
-//   abs_data: SeriesPoint[]
-//   color: string
-//   name: string
-//   cqp: string
-//   emptyIntervals?: SeriesPoint[][]
-// }
-
-// export type SeriesPoint = {
-//   /** Unix timestamp */
-//   x: number
-//   y: number
-//   zoom: Level
-// }
-
 export type Level = "year" | "month" | "day" | "hour" | "minute" | "second"
 
 /**
@@ -60,20 +42,6 @@ const PARSE_FORMATS: Record<Level, string> = {
   month: "YYYYMM",
   year: "YYYY",
 }
-
-export const PALETTE = [
-  "#ca472f",
-  "#0b84a5",
-  "#f6c85f",
-  "#9dd866",
-  "#ffa056",
-  "#8dddd0",
-  "#df9eaa",
-  "#6f4e7c",
-  "#544e4d",
-  "#0e6e16",
-  "#975686",
-]
 
 /** Find a date granularity level that gives a good number of time units in a given range. */
 export function findOptimalLevel(from: Moment, to: Moment): Level {
@@ -118,35 +86,6 @@ export function fillMissingDate(data: Point[], level: Level): Point[] {
   return [...data, ...newPoints].sort((a, b) => a.x.diff(b.x))
 }
 
-/** Find intervals within the full timespan where no material is dated. */
-export function getEmptyIntervals(data: SeriesPoint[]): SeriesPoint[][] {
-  const intervals: SeriesPoint[][] = []
-  let i = 0
-
-  // TODO Last point is always (?) null, so we'll get a pointless empty interval at the end. Shouldn't we remove the empty last point?
-  while (i < data.length) {
-    let item = data[i]
-
-    if (item.y === null) {
-      const interval = [{ ...item }]
-      let breaker = true
-      while (breaker) {
-        i++
-        item = data[i]
-        if ((item != null ? item.y : undefined) === null) {
-          interval.push({ ...item })
-        } else {
-          intervals.push(interval)
-          breaker = false
-        }
-      }
-    }
-    i++
-  }
-
-  return intervals
-}
-
 export function getTimeCqp(m: Moment, zoom: Level) {
   let timecqp: string
 
@@ -181,12 +120,6 @@ export function getTimeCqp(m: Moment, zoom: Level) {
 
 export function parseDate(zoom: Level, time: string) {
   return moment(time, PARSE_FORMATS[zoom])
-}
-
-export function formatUnixDate(zoom: Level, time: number) {
-  // TODO this should respect locale and could present whole months as August 2020 instead of 2020-08
-  const m = moment.unix(time)
-  return m.format(FORMATS[zoom])
 }
 
 /** Replace a part of the graph with new data (of a higher/lower resolution) */

@@ -68,7 +68,6 @@ export class PromiseStarter<T = void> {
   protected starter?: () => Promise<T>
 
   onStart(starter: () => Promise<T>) {
-    // TODO Handle hot module reloading
     if (this.starter) return
     this.starter = starter
   }

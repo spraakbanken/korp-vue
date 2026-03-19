@@ -4,8 +4,8 @@ import { getLemgrams, type LemgramCount } from "@/core/backend/lexicons"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { Lemgram } from "@/core/lemgram"
 import { debounceAsync } from "@/core/util"
-import { memoize } from "lodash-es"
-import { ref, watchEffect } from "vue"
+import { isEqual, memoize } from "lodash-es"
+import { ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
 export type LemgramAutocompleteModel = { type: "lemgram" | "word"; value: string }
@@ -32,8 +32,15 @@ const valueToString = (value: string | LemgramCount) => {
   return Lemgram.parse(str)?.toString(t) || str
 }
 
+// Update inner model if outer model is changed
+watch(model, () => {
+  const newValue =
+    model.value.type == "lemgram" ? { lemgram: model.value.value, count: -1 } : model.value.value
+  if (!isEqual(input.value, newValue)) input.value = newValue
+})
+
 // Emit raw or lemgram value
-watchEffect(() => {
+watch(input, () => {
   model.value =
     typeof input.value == "string"
       ? { type: "word", value: input.value }
