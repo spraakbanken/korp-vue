@@ -1,23 +1,20 @@
 <script setup lang="ts">
 import { useStringifiers } from "@/attributes/useStringifiers"
-import type { ApiKwic, Token } from "@/core/backend/types"
-import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import { isKwicRowToken } from "@/core/kwic/kwic"
 import { compact, template } from "lodash-es"
+import { type FormatterProps } from "../formatter"
+import { computed } from "vue"
 
-const props = defineProps<{
-  attribute: Attribute
-  isCustom?: boolean
-  row: ApiKwic
-  token: Token
-  value?: string
-}>()
+const props = defineProps<FormatterProps>()
 
 const stringify = useStringifiers()(props.attribute)
 
-const isEmpty =
-  props.value == undefined ||
-  props.value == "" ||
-  (props.attribute.type == "set" && props.value == "|")
+const isEmpty = computed(
+  () =>
+    props.value == undefined ||
+    props.value == "" ||
+    (props.attribute.type == "set" && props.value == "|"),
+)
 
 /** Enhanced stringification for sidebar */
 function formatValue(value: string) {
@@ -30,8 +27,8 @@ function formatValue(value: string) {
     value = template(props.attribute.pattern)({
       key: props.attribute.name,
       val: value,
-      pos_attrs: props.token,
-      struct_attrs: props.row.structs,
+      pos_attrs: props.rowToken.token,
+      struct_attrs: isKwicRowToken(props.rowToken) ? props.rowToken.row : {},
     })
 
   return value

@@ -12,6 +12,7 @@ export default function useError() {
   /** Interpret and store an error */
   function setError(error: unknown) {
     errorMessage.value = interpretError(error)
+    console.error(error)
   }
 
   /** Interpret an error into a format suitable for `ErrorBox` */

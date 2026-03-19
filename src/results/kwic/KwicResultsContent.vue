@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, provide, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
-import { isKwic, type Row, type SelectedToken } from "@/core/kwic/kwic"
+import { isKwic, type Row, type RowToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "./PaginationBar.vue"
 import KwicSidebar, { SIDEBAR_WIDTH_REM } from "../sidebar/KwicSidebar.vue"
@@ -29,7 +29,7 @@ const tokensTotal = computed(() => props.corpora?.getTokenCount())
 const hitsRelative = computed(() =>
   tokensTotal.value ? (1e6 * props.hitsCount) / tokensTotal.value : 0,
 )
-const selectedToken = ref<SelectedToken>()
+const selectedToken = ref<RowToken>()
 
 provide(injectionKeys.selectedToken, selectedToken)
 

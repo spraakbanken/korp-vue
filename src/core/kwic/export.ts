@@ -1,6 +1,5 @@
 import { fill } from "lodash-es"
-import type { ApiKwic } from "../backend/types"
-import { isCorpusHeading, isKwic, type CorpusHeading, type Row } from "./kwic"
+import { isCorpusHeading, isKwic, type CorpusHeading, type KwicRow, type Row } from "./kwic"
 import type { QueryParams } from "../backend/types/query"
 import type { RelationsSentencesParams } from "../backend/types/relations-sentences"
 import { locObj } from "../i18n"
@@ -8,7 +7,7 @@ import { locObj } from "../i18n"
 export type ExportType = "kwic" | "annotations"
 
 // The annotations option is not available for parallel
-type AnnotationsRow = ApiKwic | CorpusHeading
+type AnnotationsRow = KwicRow | CorpusHeading
 
 type TableRow = (string | number)[]
 

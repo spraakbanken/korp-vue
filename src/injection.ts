@@ -1,7 +1,7 @@
 import { defineAsyncComponent, inject, type Component, type InjectionKey, type Ref } from "vue"
 import { mapValues } from "lodash-es"
 import type { AuthModule } from "./core/auth"
-import type { SelectedToken } from "./core/kwic/kwic"
+import type { RowToken } from "./core/kwic/kwic"
 import type { Stringifier } from "./attributes/attributes.types"
 import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
@@ -32,5 +32,5 @@ export const injectionKeys = {
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
   resultProgress: Symbol() as InjectionKey<Ref<number>>,
-  selectedToken: Symbol() as InjectionKey<Ref<SelectedToken | undefined>>,
+  selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
 }

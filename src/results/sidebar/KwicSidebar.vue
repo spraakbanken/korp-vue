@@ -4,13 +4,18 @@ import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
-import { pickBy, sortBy } from "lodash-es"
+import { omit, pickBy, sortBy } from "lodash-es"
 
 const { locObj } = useLocale()
 
 const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
   selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
+)
+
+/** Attribute values picked from the token object */
+const tokenAttrs = computed<Record<string, string | null>>(() =>
+  omit(selectedToken?.value?.token || {}, "structs"),
 )
 
 const structAttributes = computed(() => {
@@ -23,6 +28,7 @@ const structAttributes = computed(() => {
   return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
 
+// TODO Skip ne_* etc if empty
 const posAttributes = computed(() => {
   if (!corpus.value) return []
   const attrs = Object.entries({
@@ -70,8 +76,7 @@ export const SIDEBAR_WIDTH_REM = 20
               :corpus
               :attribute
               :is-custom="'custom_type' in attribute && !!attribute.custom_type"
-              :row="selectedToken.row"
-              :token="selectedToken.token"
+              :row-token="selectedToken"
               :value="selectedToken.row.structs[name]"
             />
           </div>
@@ -87,9 +92,8 @@ export const SIDEBAR_WIDTH_REM = 20
               :corpus
               :attribute
               :is-custom="'custom_type' in attribute && !!attribute.custom_type"
-              :row="selectedToken.row"
-              :token="selectedToken.token"
-              :value="selectedToken.token[name]"
+              :row-token="selectedToken"
+              :value="tokenAttrs[name]"
             />
           </div>
         </details>

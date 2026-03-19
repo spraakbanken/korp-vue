@@ -3,19 +3,18 @@ import type { Corpus } from "@/core/config/corpusConfig.types"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { useLocale } from "@/i18n/useLocale"
 import DefaultFormatter from "./DefaultFormatter.vue"
-import type { ApiKwic, Token } from "@/core/backend/types"
 import { computed, inject } from "vue"
 import { injectionKeys } from "@/injection"
 import { getConfigurable } from "@/core/config"
 import type { Formatter } from "../formatter"
+import type { RowToken } from "@/core/kwic/kwic"
 
 const props = defineProps<{
   corpus: Corpus
   attribute: Attribute
   isCustom?: boolean
-  row: ApiKwic
-  token: Token
-  value?: string
+  rowToken: RowToken
+  value: string | null | undefined
 }>()
 
 const { locObj } = useLocale()
@@ -35,8 +34,7 @@ const formatter = computed<Formatter>(() => {
       :is="formatter.component"
       :attribute
       :isCustom
-      :row
-      :token
+      :rowToken
       :value
       :options="formatter.options"
     />

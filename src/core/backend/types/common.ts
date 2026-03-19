@@ -62,12 +62,12 @@ export type ApiKwic = {
   match: KwicMatch | KwicMatch[]
   /** Hits from aligned corpora if available, otherwise omitted */
   aligned?: {
-    [linkedCorpusId: `${string}-${string}`]: Token[]
+    [linkedCorpusId: `${string}-${string}`]: LinkedToken[]
   }
 }
 
 /** Specifies the position of a match in a context */
-type KwicMatch = {
+export type KwicMatch = {
   /** Start position of the match within the context */
   start: number
   /** End position of the match within the context */
@@ -87,4 +87,9 @@ export type Token = {
     }[]
     close?: string[]
   }
-} & Record<string, string | undefined>
+  // Additionally contains unknown set of string keys with `string | null` values
+}
+
+export type LinkedToken = Token & {
+  linkref: `${number}`
+}

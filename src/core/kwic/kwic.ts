@@ -1,20 +1,30 @@
-import { sum } from "lodash-es"
-import type { ApiKwic, Token } from "../backend/types"
+import { clone, mapKeys, omit, pickBy, sum } from "lodash-es"
+import type { ApiKwic, KwicMatch, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"
 import { corpusListing } from "../corpora/corpusListing"
 
-export type Row = ApiKwic | LinkedKwic | CorpusHeading
+export type Row = KwicRow | LinkedKwicRow | CorpusHeading
 
-export type SelectedToken = {
-  row: ApiKwic | LinkedKwic
-  token: Token
+/** Row with search hits */
+export type KwicRow = {
+  corpus: string
+  /** An object for each token in the context, with attribute values for that token */
+  tokens: KwicToken[]
+  /** Attribute values for the context (e.g. sentence) */
+  structs: Record<string, string | undefined>
+  /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
+  match: KwicMatch[]
+  /** Hits from aligned corpora if available, otherwise omitted */
+  aligned?: {
+    [linkedCorpusId: `${string}-${string}`]: Token[]
+  }
 }
 
 /** Row from a secondary language in parallel mode. */
-export type LinkedKwic = {
-  tokens: ApiKwic["tokens"]
+export type LinkedKwicRow = {
+  tokens: LinkedKwicToken[]
   isLinked: true
   corpus: string
 }
@@ -26,9 +36,34 @@ export type CorpusHeading = {
   noContext?: boolean
 }
 
-export const isKwic = (row: Row): row is ApiKwic => "tokens" in row && !isLinkedKwic(row)
-export const isLinkedKwic = (row: Row): row is LinkedKwic => "isLinked" in row
+export type KwicToken = {
+  word: string
+  position: number
+  _match: boolean
+  _matchSentence: boolean
+  _open_sentence: boolean
+  _punct: boolean
+} & {
+  // [attr: string]: string | null
+}
+
+export type LinkedKwicToken = Token & {
+  linkref: `${number}`
+  _open_sentence?: boolean
+}
+
+/** A token and its context */
+export type RowToken = KwicRowToken | LinkedKwicRowToken
+export type KwicRowToken = { row: KwicRow; token: KwicToken }
+export type LinkedKwicRowToken = { row: LinkedKwicRow; token: LinkedKwicToken }
+
+export const isKwic = (row: Row): row is KwicRow => "structs" in row
+export const isLinkedKwic = (row: Row): row is LinkedKwicRow => "isLinked" in row
 export const isCorpusHeading = (row: Row): row is CorpusHeading => "newCorpus" in row
+
+export const isKwicRowToken = (rowToken: RowToken): rowToken is KwicRowToken => isKwic(rowToken.row)
+export const isLinkedKwicRowToken = (rowToken: RowToken): rowToken is LinkedKwicRowToken =>
+  isLinkedKwic(rowToken.row)
 
 export type HitsPictureItem = {
   page: number
@@ -37,105 +72,108 @@ export type HitsPictureItem = {
   rtitle: LangString
 }
 
-// TODO Create new tokens instead of modifying the existing ones
-export function massageData(hitArray: ApiKwic[]): Row[] {
+/** Transform backend KWIC data to be easier to use in frontend code */
+export function massageData(rows: ApiKwic[]): Row[] {
   const punctArray = [",", ".", ";", ":", "!", "?", "..."]
 
+  // Track what corpus the previous row belonged to, in order to add a heading row when it changes
   let prevCorpus = ""
   const output: Row[] = []
 
-  for (const hitContext of hitArray) {
-    const mainCorpusId = settings.parallel
-      ? splitFirst("|", hitContext.corpus)[0].toLowerCase()
-      : hitContext.corpus.toLowerCase()
+  for (const row of rows) {
+    const corpusId = row.corpus.toLowerCase()
+    const [mainCorpusId, id] = settings.parallel ? splitFirst("|", corpusId) : [corpusId, corpusId]
 
-    const id =
-      (settings.parallel && splitFirst("|", hitContext.corpus)[1].toLowerCase()) || mainCorpusId
+    const corpus = settings.corpora[id]!
 
-    const [matchSentenceStart, matchSentenceEnd] = findMatchSentence(hitContext)
-    const isMatchSentence = (i: number) =>
+    // At the start of each new corpus, add a row with the corpus title
+    if (id != prevCorpus) {
+      const heading: CorpusHeading = {
+        corpus: id,
+        newCorpus: corpus.title,
+        noContext: Object.keys(corpus.context).length === 1,
+      }
+      output.push(heading)
+    }
+
+    const [matchSentenceStart, matchSentenceEnd] = findMatchSentence(row)
+    const isMatchSentence = (i: number): boolean =>
       matchSentenceStart != undefined &&
-      matchSentenceEnd &&
+      !!matchSentenceEnd &&
       matchSentenceStart <= i &&
       i <= matchSentenceEnd
 
     // When using `in_order=false`, there are multiple matches
     // Otherwise, cast single match to array for consistency
-    const matches = !(hitContext.match instanceof Array) ? [hitContext.match] : hitContext.match
+    const matches = !(row.match instanceof Array) ? [row.match] : row.match
     const isMatch = (i: number) => matches.some(({ start, end }) => start <= i && i < end)
 
     // Copy struct attributes to tokens
     /** Currently open structural elements (e.g. `<ne>`) */
     const currentStruct: Record<string, Record<string, string>> = {}
-    for (const [i, wd] of hitContext.tokens.entries()) {
-      wd.position = i
 
-      if (isMatch(i)) wd._match = true
-      if (isMatchSentence(i)) wd._matchSentence = true
-      if (punctArray.includes(wd.word)) wd._punct = true
-
-      wd.structs ??= {}
+    // Process the tokens of this row
+    const tokens: KwicToken[] = row.tokens.map((token, i) => {
+      let openSentence = false
 
       // For each new structural element this token opens, add it to currentStruct
-      for (const structItem of wd.structs.open || []) {
+      for (const structItem of token.structs?.open || []) {
         // structItem is an object with a single key
         const structKey = Object.keys(structItem)[0]!
-        if (structKey == "sentence") wd._open_sentence = true
+        if (structKey == "sentence") openSentence = true
 
         // Store structural attributes with a qualified name e.g. "ne_type"
-        // Also set a dummy value for the struct itself, e.g. `"ne": ""`
-        currentStruct[structKey] = {}
-        const attrs = Object.entries(structItem[structKey]!).map(([key, val]) => [
-          structKey + "_" + key,
-          val,
-        ])
-        for (const [key, val] of [[structKey, ""], ...attrs]) {
-          if (key && val && key in settings.corpora[id]!.attributes) {
-            currentStruct[structKey][key] = val
-          }
-        }
+        const rekeyed = mapKeys(structItem[structKey], (val, key) => `${structKey}_${key}`)
+        currentStruct[structKey] = pickBy(rekeyed, (val, key) => key in corpus.attributes)
       }
 
-      // Copy structural attributes to token
+      // Copy structural attributes
       // The keys of currentStruct are included in the names of each attribute
-      Object.values(currentStruct).forEach((attrs) => Object.assign(wd, attrs))
+      const structAttrs: Record<string, string> = Object.assign({}, ...Object.values(currentStruct))
 
       // For each struct this token closes, remove it from currentStruct
-      for (const structItem of wd.structs.close || []) delete currentStruct[structItem]
-    }
+      for (const structItem of token.structs?.close || []) delete currentStruct[structItem]
 
-    // At the start of each new corpus, add a row with the corpus title
-    if (prevCorpus !== id) {
-      const corpus = settings.corpora[id]!
-      const newSent = {
-        corpus: id,
-        newCorpus: corpus.title,
-        noContext: Object.keys(corpus.context).length === 1,
+      // Output token
+      const tokenOut: KwicToken = {
+        // Copy positional attributes
+        ...omit(token, ["structs"]),
+        ...structAttrs,
+        position: i,
+        _match: isMatch(i),
+        _matchSentence: isMatchSentence(i),
+        _open_sentence: openSentence,
+        _punct: punctArray.includes(token.word),
       }
-      output.push(newSent)
-    }
+      return tokenOut
+    })
 
-    hitContext.corpus = mainCorpusId
+    // Add normal KWIC row
+    output.push({
+      corpus: mainCorpusId,
+      tokens,
+      structs: { ...row.structs },
+      match: matches,
+      aligned: row.aligned ? clone(row.aligned) : undefined,
+    })
 
-    output.push(hitContext)
-    if (hitContext.aligned) {
+    if (row.aligned) {
+      const [corpus, tokensAligned] = Object.entries(row.aligned)[0]!
+
       // just check for sentence opened, no other structs
-      const alignedTokens = Object.values(hitContext.aligned)[0]!
-      for (const wd of alignedTokens) {
-        if (wd.structs && wd.structs.open) {
-          for (const structItem of wd.structs.open) {
-            if (Object.keys(structItem)[0] == "sentence") {
-              wd._open_sentence = true
-            }
-          }
+      const tokens = tokensAligned.map((token) => {
+        const opens = token.structs?.open?.map((item) => Object.keys(item)[0]!)
+        return {
+          ...token,
+          _open_sentence: opens?.includes("sentence"),
         }
-      }
+      })
 
-      const [corpus_aligned, tokens] = Object.entries(hitContext.aligned)[0]!
+      // Add linked KWIC row
       output.push({
+        corpus,
         tokens,
         isLinked: true,
-        corpus: corpus_aligned,
       })
     }
 

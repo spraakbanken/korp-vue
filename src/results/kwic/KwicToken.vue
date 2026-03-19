@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { ApiKwic, Token } from "@/core/backend/types"
-import { isKwic, isLinkedKwic, type LinkedKwic } from "@/core/kwic/kwic"
+import { isKwicRowToken, isLinkedKwicRowToken, type RowToken } from "@/core/kwic/kwic"
 import { injectionKeys } from "@/injection"
 import { isEqual } from "lodash-es"
 import { computed, inject } from "vue"
 
 const props = defineProps<{
-  row: ApiKwic | LinkedKwic
-  token: Token
+  rowToken: RowToken
 }>()
 
 const selectedToken = inject(injectionKeys.selectedToken)
@@ -16,30 +14,33 @@ const isSelected = computed(() => {
   const selected = selectedToken?.value
   if (!selected) return
 
-  if (isKwic(props.row) && isKwic(selected.row))
+  if (isKwicRowToken(props.rowToken) && isKwicRowToken(selected))
     return (
-      selected.token.position == props.token.position &&
-      isEqual(selected.row.match, props.row.match)
+      selected.token.position == props.rowToken.token.position &&
+      isEqual(selected.row.match, props.rowToken.row.match)
     )
 
-  if (isLinkedKwic(props.row) && isLinkedKwic(selected.row))
-    return selected.token.linkref == props.token.linkref && isEqual(selected.row, props.row)
+  if (isLinkedKwicRowToken(props.rowToken) && isLinkedKwicRowToken(selected))
+    return (
+      selected.token.linkref == props.rowToken.token.linkref &&
+      isEqual(selected.row, props.rowToken.row)
+    )
 
   return false
 })
 </script>
 
 <template>
-  {{ token._punct ? "" : " "
+  {{ isKwicRowToken(rowToken) && rowToken.token._punct ? "" : " "
   }}<span
     class="kwic-token rounded-3"
     :class="{
-      'fw-bold': token._match,
+      'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'kwic-token-selected': isSelected,
     }"
-    @click.stop="selectedToken = { token, row }"
+    @click.stop="selectedToken = rowToken"
   >
-    {{ token.word }}
+    {{ rowToken.token.word }}
   </span>
 </template>
 
