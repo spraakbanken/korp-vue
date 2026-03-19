@@ -6,9 +6,13 @@ import { useAppStore } from "@/store/useAppStore"
 import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
 import { useLocale } from "@/i18n/useLocale"
 import ModalDialog from "@/components/ModalDialog.vue"
-import { ref, watchEffect } from "vue"
+import { ref, reactive, watchEffect } from "vue"
 import { useAuth } from "@/auth/useAuth"
 import { getTimeData } from "@/core/backend/timedata"
+import { initCorpusStructure } from "@/core/corpora/corpora"
+import CorpusSelectorTree from "./CorpusSelectorTree.vue"
+
+const root = reactive(initCorpusStructure(corpusListing.corpora))
 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
@@ -32,7 +36,20 @@ function resolveValidation(ids: string[]) {
   getTimeData().then(() => corpusSelection.updateAttributes())
 }
 
+
+
+function selectAll() {
+  store.corpus = corpusListing.corpora.filter((corpus) => {
+    return ! corpus.protected || auth.hasCredential(corpus.id.toUpperCase())
+  }).map((corpus) => corpus.id)
+}
+
+function selectNone() {
+  store.corpus = []
+}
+
 watchEffect(() => (selection.value = store.corpus))
+
 </script>
 
 <template>
@@ -49,17 +66,16 @@ watchEffect(() => (selection.value = store.corpus))
       </button>
     </div>
 
-    <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="store.corpus = selection">
-      <select multiple v-model="selection" size="8">
-        <option
-          v-for="corpus of corpusListing.corpora"
-          :key="corpus.id"
-          :value="corpus.id"
-          :disabled="corpus?.protected && !auth.hasCredential(corpus.id.toUpperCase())"
-        >
-          {{ locObj(corpus.title) }}
-        </option>
-      </select>
+    <ModalDialog id="corpus-selector" :title="$t('corpora')">
+      <div class="mb-3">
+        <button type="button" class="btn btn-sm btn-secondary me-2" @click="selectAll()">
+          {{ $t("corpus.selection.select_all") }}
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" @click="selectNone()">
+          {{ $t("corpus.selection.select_none") }}
+        </button>
+      </div>
+      <CorpusSelectorTree :node="root" />
     </ModalDialog>
   </div>
 </template>

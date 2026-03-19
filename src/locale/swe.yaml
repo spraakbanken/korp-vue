@@ -33,6 +33,8 @@ auth.password.forgotten: Glömt lösenordet?
 auth.remember: Kom ihåg mig
 
 corpus.selection.validation.dialog.title: Korpusurval
+corpus.selection.select_all: Markera alla
+corpus.selection.select_none: Avmarkera
 
 frontpage.examples: Exempelsökningar
 frontpage.news: Nyheter

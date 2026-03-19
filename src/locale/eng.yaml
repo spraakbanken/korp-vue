@@ -33,6 +33,8 @@ auth.password.forgotten: Forgot password?
 auth.remember: Remember me
 
 corpus.selection.validation.dialog.title: Corpus selection
+corpus.selection.select_all: Select all
+corpus.selection.select_none: Select none
 
 frontpage.examples: Search examples
 frontpage.news: News
