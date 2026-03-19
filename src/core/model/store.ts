@@ -2,8 +2,6 @@ import type { QueryParamSort } from "@/core/backend/types/query"
 
 /** Stored state. */
 export type Store = {
-  /** Last executed search query. */
-  activeSearch?: ActiveSearch
   /** Selected corpus ids in lowercase */
   corpus: string[]
   /** CQP query for Extended search, possibly with frontend-specific operators */
@@ -12,8 +10,6 @@ export type Store = {
   cqpParallel: Record<string, string>
   /** What modal to show */
   display?: "about"
-  /** The current Extended search query as CQP */
-  extendedCqp?: string
   /** A simple attribute–values structure of selected filters. */
   global_filter: Record<string, string[]>
   /** Hits per page */
@@ -44,8 +40,6 @@ export type Store = {
   search?: `${string}|${string}` | "cqp"
   /** Active search tab */
   search_tab: number
-  /** The current Simple search query as CQP */
-  simpleCqp?: string
   /** Search result order */
   sort: QueryParamSort
   /** Attributes on which to aggregate counts in statistics query */
@@ -58,9 +52,4 @@ export type Store = {
   suffix: boolean
   /** Chunk size to evaluate search query within, e.g. "sentence" or "paragraph" */
   within?: string
-}
-
-export type ActiveSearch = {
-  type?: "word" | "lemgram"
-  cqp: string
 }

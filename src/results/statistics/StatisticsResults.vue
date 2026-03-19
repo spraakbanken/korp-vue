@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
-import { corpusSelection } from "@/core/corpora/corpusListing"
 import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/statistics/statistics"
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
@@ -17,7 +16,6 @@ import StatisticsAttributeSelector, {
 import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { TrendTask } from "@/core/task/TrendTask"
-import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { MapTask } from "@/core/task/MapTask"
 import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import MapButton from "./MapButton.vue"
@@ -32,6 +30,7 @@ import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
 import type { CountsMerged } from "@/core/backend/types/count"
+import useSearchStore from "@/search/useSearchStore"
 
 const UPDATE_DELAY_MS = 500
 
@@ -41,15 +40,15 @@ const store = useAppStore()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { setError, clearError, errorMessage } = useError()
+const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: [],
   insensitive: [],
 })
-const corporaSearched = ref<CorpusSet>()
 const containerEl = useTemplateRef("container")
-const cqp = computed(() => store.activeSearch?.cqp || "[]")
+const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
 const isDated = ref(false)
@@ -58,7 +57,7 @@ const isVisible = useElementVisibility(containerEl)
 const mapAttributes = ref<MapAttributeOption[]>([])
 const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
-const { activeSearch, statsRelative } = storeToRefs(store)
+const { statsRelative } = storeToRefs(store)
 
 const proxy = new StatsProxy().setProgressHandler((report) => {
   progress.value = report.percent
@@ -69,12 +68,7 @@ whenever(
   isVisible,
   () => {
     // Start watching search query
-    watchImmediate(activeSearch, () => {
-      // Initial corpus selection may not have settled yet.
-      if (corpusSelection.corpora.length) doSearch()
-      else setTimeout(() => doSearch())
-    })
-
+    watchImmediate(activeSearch, () => doSearch())
     watchDeep(attributesSelected, () => onOptionsChange())
   },
   { once: true, immediate: true },
@@ -89,10 +83,10 @@ watchEffect(() => {
 
 async function doSearch() {
   // Empty search is possible when doing comparison first
-  if (!store.activeSearch) return
+  if (!activeSearch.value) return
+  const corpora = activeSearch.value.corpora
   proxy.abort()
   clearError()
-  corporaSearched.value = corpusSelection.clone()
   withinSearched = store.within
   const attrs = attributesSelected.value
   const ignoreCase = !!attrs.insensitive.length
@@ -115,12 +109,12 @@ async function doSearch() {
   }
 
   const stringifiers = fromKeys(attrs.selected, (name) => {
-    const attribute = corporaSearched.value?.getReduceAttrs()[name]
+    const attribute = corpora.getReduceAttrs()[name]
     return attribute ? getStringifier(attribute) : String
   })
 
   data.value = await processStatisticsResult(
-    corporaSearched.value.stringify(false),
+    corpora.stringify(false),
     counts,
     attrs.selected,
     ignoreCase,
@@ -128,8 +122,8 @@ async function doSearch() {
     stringifiers,
   )
 
-  isDated.value = !!corporaSearched.value?.getTimeInterval()
-  mapAttributes.value = getGeoAttributes(corporaSearched.value.corpora)
+  isDated.value = !!corpora.getTimeInterval()
+  mapAttributes.value = getGeoAttributes(corpora.corpora)
 }
 
 const onOptionsChange = debounce(() => {
@@ -158,7 +152,7 @@ function openTrendTab() {
     cqp.value,
     subqueries,
     showTotal,
-    corporaSearched.value!,
+    activeSearch.value!.corpora,
     withinSearched!,
   )
   createTab(t("result.trend"), task)
@@ -194,7 +188,7 @@ function getSubqueries() {
 
 function createExport() {
   const corpusTitles = Object.fromEntries(
-    corporaSearched.value!.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
+    activeSearch.value!.corpora.corpora.map((corpus) => [corpus.id, locObj(corpus.title)]),
   )
 
   return createStatisticsCsv(

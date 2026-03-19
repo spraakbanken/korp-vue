@@ -3,17 +3,14 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import settings, { getDefaultWithin } from "@/core/config"
 import { setLang } from "@/core/i18n"
-import type { ActiveSearch, Store } from "@/core/model/store"
+import type { Store } from "@/core/model/store"
 import { type NormalizeOptional } from "./util"
 
 export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", () => {
-  /** Last executed search query. */
-  const activeSearch = ref<ActiveSearch>()
   const corpus = ref<string[]>([])
   const cqp = ref("[]")
   const cqpParallel = ref({})
   const display = ref("")
-  const extendedCqp = ref<string>()
   const global_filter = ref({})
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
@@ -26,7 +23,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const result_tab = ref(1)
   const search = ref("")
   const search_tab = ref(0)
-  const simpleCqp = ref<string>()
   const sort = ref("")
   const statsRelative = ref(false)
   const stats_reduce = ref("word")
@@ -38,12 +34,10 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   watchImmediate(lang, (langNew) => setLang(langNew))
 
   return {
-    activeSearch,
     corpus,
     cqp,
     cqpParallel,
     display,
-    extendedCqp,
     global_filter,
     hpp,
     isCaseInsensitive,
@@ -56,7 +50,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     result_tab,
     search,
     search_tab,
-    simpleCqp,
     sort,
     stats_reduce,
     stats_reduce_insensitive,

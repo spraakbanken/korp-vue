@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { splitFirst } from "@/core/util"
 import { storeToRefs } from "pinia"
-import { syncRefs, until, watchImmediate } from "@vueuse/core"
-import { stringify, supportsInOrder } from "@/core/cqp/cqp"
+import { watchImmediate } from "@vueuse/core"
+import { supportsInOrder } from "@/core/cqp/cqp"
 import { buildSimpleLemgramCqp, buildSimpleWordCqp } from "@/core/search/simple"
 import LemgramAutocomplete, { type LemgramAutocompleteModel } from "./LemgramAutocomplete.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import GlobalFilters from "./GlobalFilters.vue"
-import { useReactiveFilterManager } from "./useReactiveFilterManager"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
+import useSearchStore from "./useSearchStore"
 
 const store = useAppStore()
-const { search, prefix, suffix, in_order, isCaseInsensitive, simpleCqp } = storeToRefs(store)
-const filterManager = useReactiveFilterManager()
+const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
+const searchStore = useSearchStore()
 const { t } = useI18n()
 
 const corpusSelection = useReactiveCorpusSelection()
@@ -27,7 +27,6 @@ const suffixLocal = ref(suffix.value)
 const freeOrder = ref(!in_order.value)
 const ignoreCase = ref(isCaseInsensitive.value)
 const lemgram = ref<LemgramAutocompleteModel>({ type: "word", value: "" })
-const isFilterReady = ref(false)
 
 /** Trimmed autocomplete input */
 const input = computed<LemgramAutocompleteModel>(() => ({
@@ -48,13 +47,7 @@ const query = computed(() => {
     : buildSimpleWordCqp(value, prefixLocal.value, suffixLocal.value, ignoreCase.value)
 })
 
-/** Reactive CQP representation of the query */
-const cqp = computed(() => stringify(filterManager.mergeToCqp(query.value)))
-
-syncRefs(cqp, simpleCqp)
-
-// Flag when the filter manager is ready, so that the initial search can include the filter selection.
-watch(filterManager, () => (isFilterReady.value = true))
+watchEffect(() => (searchStore.querySimple = query.value))
 
 // Sync continually from store to form.
 watchEffect(() => (prefixLocal.value = prefix.value))
@@ -70,7 +63,7 @@ watchImmediate(search, () => {
   lemgram.value = { type, value }
 
   // Trigger search
-  commitSearch()
+  searchStore.commitQuery(query.value)
 })
 
 function onMidfixChange() {
@@ -79,27 +72,19 @@ function onMidfixChange() {
 }
 
 function submit() {
+  const { type, value } = input.value
+  // Refuse empty search
+  if (!value) return
+
   // Sync from form to store when submitting.
   store.prefix = prefixLocal.value
   store.suffix = suffixLocal.value
   store.in_order = !freeOrder.value || !supportsInOrder(query.value)
   store.isCaseInsensitive = ignoreCase.value
 
-  const { type, value } = input.value
   store.search = `${type}|${value}`
   store.page = 0
-  commitSearch()
-}
-
-/** Declare query as the active search */
-async function commitSearch() {
-  const { type, value } = input.value
-  if (!value) return
-
-  // Let filter manager finish settling, so that the filter selection can be included in the initial search query.
-  await until(isFilterReady).toBe(true, { timeout: 1000 })
-
-  store.activeSearch = { type, cqp: cqp.value }
+  searchStore.commitQuery(query.value)
 }
 </script>
 
@@ -121,7 +106,7 @@ async function commitSearch() {
       <!-- Search/save buttons -->
       <div class="btn-group">
         <input type="submit" :value="$t('search')" class="btn btn-primary" />
-        <SaveSearchButton :cqp :suggested-label="inputFormatted" />
+        <SaveSearchButton :query :suggested-label="inputFormatted" />
       </div>
     </div>
 

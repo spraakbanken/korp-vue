@@ -1,27 +1,37 @@
 <script setup lang="ts">
 import { useSearchStorage } from "./useSearchStorage"
-import { ref, useTemplateRef, watchEffect } from "vue"
+import { computed, ref, useTemplateRef, watchEffect } from "vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { Dropdown } from "bootstrap"
+import type { CqpQuery } from "@/core/cqp/cqp.types"
+import { stringify } from "@/core/cqp/cqp"
+import { useReactiveFilterManager } from "./useReactiveFilterManager"
 
 const props = defineProps<{
-  cqp: string
+  query: CqpQuery | string
   suggestedLabel?: string
 }>()
 
 const { saveSearch } = useSearchStorage()
 const corpusSelection = useReactiveCorpusSelection()
+const filterManager = useReactiveFilterManager()
 
 const dropdownEl = useTemplateRef("dropdown")
 // TODO Prevent duplicate labels
 const label = ref("")
 
+const cqp = computed(() =>
+  typeof props.query == "string"
+    ? props.query
+    : stringify(filterManager.mergeToCqp(props.query!), true),
+)
+
 // Update label if suggestedLabel prop changes
-watchEffect(() => (label.value = props.suggestedLabel || label.value))
+watchEffect(() => (label.value = props.suggestedLabel || cqp.value || label.value))
 
 // Save and close dropdown
 function save() {
-  saveSearch(props.cqp, label.value, corpusSelection.getIds())
+  saveSearch(cqp.value, label.value, corpusSelection.getIds())
   Dropdown.getOrCreateInstance(dropdownEl.value!).hide()
 }
 </script>
