@@ -1,4 +1,4 @@
-import { clone, mapKeys, omit, pickBy, sum } from "lodash-es"
+import { clone, isEqual, mapKeys, omit, pickBy, sum } from "lodash-es"
 import type { ApiKwic, KwicMatch, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
@@ -236,4 +236,17 @@ export function calculateHitsPicture(
   })
 
   return items
+}
+
+/** Check if two row-token tuples are equal */
+export function isRowTokenEqual(a?: RowToken, b?: RowToken): boolean {
+  if (!a || !b) return false
+
+  if (isKwicRowToken(a) && isKwicRowToken(b))
+    return b.token.position == a.token.position && isEqual(b.row.match, a.row.match)
+
+  if (isLinkedKwicRowToken(a) && isLinkedKwicRowToken(b))
+    return b.token.linkref == a.token.linkref && isEqual(b.row, a.row)
+
+  return false
 }
