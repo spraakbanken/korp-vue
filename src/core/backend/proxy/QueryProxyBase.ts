@@ -7,7 +7,8 @@ import { expandCqp } from "@/core/cqp/cqp"
 import type { ApiKwic } from "../types"
 
 export type QueryParamOptions = {
-  isPaging?: boolean
+  /** Enable to reuse the `query_data` from the last request, causing backend to skip counting hits per corpora. */
+  reuseCounts?: boolean
   page?: number
   isReading?: boolean
   defaultWithin?: string
@@ -35,7 +36,7 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     hpp: number,
     options: QueryParamOptions,
   ): QueryParams {
-    if (!options.isPaging) this.queryData = undefined
+    if (!options.reuseCounts) this.queryData = undefined
     const cl = corpusListing.pick(corpusIds)
     const defaultWithin = options.defaultWithin || getDefaultWithin()
 

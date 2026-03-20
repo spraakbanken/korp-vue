@@ -23,7 +23,7 @@ export class ExampleTask extends TaskBase<QueryData> {
     this.proxy.abort()
   }
 
-  send(page: number, hpp: number, isPaging: boolean, isReading: boolean): Promise<QueryData> {
-    return this.proxy.makeRequest(page, hpp, isPaging, isReading)
+  send(page: number, hpp: number, reuseCounts: boolean, isReading: boolean): Promise<QueryData> {
+    return this.proxy.makeRequest(page, hpp, reuseCounts, isReading)
   }
 }

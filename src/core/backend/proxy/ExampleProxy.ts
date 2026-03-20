@@ -13,20 +13,19 @@ export class ExampleProxy extends QueryProxyBase {
   protected buildParams(
     page: number,
     hpp: number,
-    isPaging = false,
+    reuseCounts = false,
     isReading = false,
   ): QueryParams {
     // Split the cqp list to a primary `cqp` and subsequent `cqp2` etc.
     const cqp = this.cqps[0]
     const cqpN = Object.fromEntries(this.cqps.map((cqp, i) => [`cqp${i + 1}`, cqp]).slice(1))
 
-    const options = {
+    const params = this.buildParamsBase(this.corpusIds, cqp, hpp, {
       defaultWithin: this.defaultWithin,
-      isPaging,
+      reuseCounts,
       isReading,
       page,
-    }
-    const params = this.buildParamsBase(this.corpusIds, cqp, hpp, options)
+    })
 
     return {
       ...params,
@@ -38,10 +37,10 @@ export class ExampleProxy extends QueryProxyBase {
   async makeRequest(
     page: number,
     hpp: number,
-    isPaging = false,
+    reuseCounts = false,
     isReading = false,
   ): Promise<QueryData> {
-    const params = this.buildParams(page, hpp, isPaging, isReading)
+    const params = this.buildParams(page, hpp, reuseCounts, isReading)
     const data = await this.send(params)
     return QueryProxyBase.processData(data)
   }

@@ -32,15 +32,15 @@ const page = ref(1)
 
 onMounted(() => doSearch())
 
-async function doSearch(isPaging = false) {
-  loading.value = !isPaging
+async function doSearch(reuseCounts = false) {
+  loading.value = !reuseCounts
   const willBeReading = context.value
   props.task.abort()
   progress.value = 0
 
   let response: QueryData
   try {
-    response = await props.task.send(page.value - 1, hpp.value, isPaging, context.value)
+    response = await props.task.send(page.value - 1, hpp.value, reuseCounts, context.value)
     progress.value = 100
   } catch (error) {
     progress.value = undefined
@@ -58,7 +58,7 @@ async function doSearch(isPaging = false) {
 
 /** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
 const onOptionsChange = debounce(() => {
-  doSearch()
+  doSearch(true)
 }, UPDATE_DELAY_MS)
 
 watch(page, () => doSearch(true))

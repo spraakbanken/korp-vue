@@ -8,15 +8,14 @@ export class KwicProxy extends QueryProxyBase {
     super()
   }
 
-  protected buildParams(cqp: string, isPaging = false): QueryParams {
+  protected buildParams(cqp: string, reuseCounts = false): QueryParams {
     const corpusIds = corpusSelection.getIds()
-    const options = {
-      isPaging,
+    const params = this.buildParamsBase(corpusIds, cqp, this.store.hpp, {
+      reuseCounts,
       isReading: this.store.reading_mode,
       defaultWithin: this.store.within,
       page: this.store.page,
-    }
-    const params = this.buildParamsBase(corpusIds, cqp, this.store.hpp, options)
+    })
 
     return {
       ...params,
@@ -27,8 +26,8 @@ export class KwicProxy extends QueryProxyBase {
     }
   }
 
-  async makeRequest(cqp: string, isPaging = false): Promise<QueryData> {
-    const params = this.buildParams(cqp, isPaging)
+  async makeRequest(cqp: string, reuseCounts = false): Promise<QueryData> {
+    const params = this.buildParams(cqp, reuseCounts)
     const data = await this.send(params)
     return QueryProxyBase.processData(data)
   }

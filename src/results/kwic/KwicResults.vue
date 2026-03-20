@@ -68,19 +68,19 @@ watchImmediate(activeSearch, () => {
   else setTimeout(() => doSearch())
 })
 
-async function doSearch(isPaging = false) {
+async function doSearch(reuseCounts = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
   proxy.abort()
   clearError()
   progress.value = 0
-  loading.value = !isPaging
+  loading.value = !reuseCounts
   // Remember options affecting result display in case they are changed while the request is ongoing
   isCurrentRequestReading = context.value || !store.in_order
 
   let response: QueryData
   try {
-    response = await proxy.makeRequest(activeSearch.value.cqp, isPaging)
+    response = await proxy.makeRequest(activeSearch.value.cqp, reuseCounts)
     progress.value = 100
   } catch (error) {
     progress.value = undefined
@@ -101,7 +101,7 @@ const onOptionsChange = debounce(() => {
   store.hpp = hpp.value
   store.sort = sort.value
   store.reading_mode = context.value
-  doSearch()
+  doSearch(true)
 }, UPDATE_DELAY_MS)
 
 watch(pageLocal, () => doSearch(true))
