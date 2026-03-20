@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
-import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
 import { syncRef, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
@@ -62,11 +61,8 @@ const proxy = new KwicProxy(store).setProgressHandler((report) => {
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
 
-watchImmediate(activeSearch, () => {
-  // Initial corpus selection may not have settled yet.
-  if (corpusSelection.corpora.length) doSearch()
-  else setTimeout(() => doSearch())
-})
+// Watch the active search query
+watchImmediate(activeSearch, () => doSearch())
 
 async function doSearch(reuseCounts = false) {
   // Empty search is possible when doing comparison first

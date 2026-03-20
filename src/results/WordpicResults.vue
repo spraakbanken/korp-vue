@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { corpusSelection } from "@/core/corpora/corpusListing"
 import { useElementVisibility, watchImmediate, whenever } from "@vueuse/core"
 import { computed, ref, useTemplateRef } from "vue"
 import { useI18n } from "vue-i18n"
@@ -49,11 +48,7 @@ whenever(
   isVisible,
   () => {
     // Start watching the active search query
-    watchImmediate(activeSearch, () => {
-      // Initial corpus selection may not have settled yet.
-      if (corpusSelection.corpora.length) doSearch()
-      else setTimeout(() => doSearch())
-    })
+    watchImmediate(activeSearch, () => doSearch())
   },
   { once: true, immediate: true },
 )
