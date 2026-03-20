@@ -62,7 +62,10 @@ const proxy = new KwicProxy(store).setProgressHandler((report) => {
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
 
 // Watch the active search query
-watchImmediate(activeSearch, () => doSearch())
+watchImmediate(activeSearch, () => {
+  updateRandomSeed()
+  doSearch()
+})
 
 async function doSearch(reuseCounts = false) {
   // Empty search is possible when doing comparison first
@@ -92,8 +95,24 @@ async function doSearch(reuseCounts = false) {
   hitsCount.value = response.hits
 }
 
+/** Update the sort randomization seed if needed */
+function updateRandomSeed() {
+  // Unset seed if sorting is not random
+  if (sort.value != "random") {
+    store.random_seed = undefined
+    return
+  }
+
+  // On the initial search, do nothing, use the unchanged seed from the URL/store
+  // On subsequent searches, generate a new seed
+  if (kwic.value) {
+    store.random_seed = Math.ceil(Math.random() * 10e6)
+  }
+}
+
 /** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
 const onOptionsChange = debounce(() => {
+  if (store.sort != sort.value) updateRandomSeed()
   store.hpp = hpp.value
   store.sort = sort.value
   store.reading_mode = context.value
