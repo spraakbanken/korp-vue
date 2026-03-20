@@ -4,7 +4,8 @@ import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
-import { omit, pickBy, sortBy } from "lodash-es"
+import { pickBy, sortBy } from "lodash-es"
+import { isKwicRowToken } from "@/core/kwic/kwic"
 
 const { locObj } = useLocale()
 
@@ -13,28 +14,30 @@ const corpus = computed(() =>
   selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
 )
 
-/** Attribute values picked from the token object */
-const tokenAttrs = computed<Record<string, string | null>>(() =>
-  omit(selectedToken?.value?.token || {}, "structs"),
-)
-
 const structAttributes = computed(() => {
   if (!corpus.value) return []
+  if (!selectedToken?.value || !isKwicRowToken(selectedToken?.value)) return []
+  const row = selectedToken.value.row
   const attrs = Object.entries({
     ...corpus.value.struct_attributes,
     ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type == "struct"),
-  }).filter(([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar)
+  }).filter(
+    ([name, attr]) => name in row.structs && attr.display_type != "hidden" && !attr.hide_sidebar,
+  )
   const ordering = corpus.value?._struct_attributes_order || []
   return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
 
-// TODO Skip ne_* etc if empty
 const posAttributes = computed(() => {
   if (!corpus.value) return []
+  const token = selectedToken?.value?.token
+  if (!token) return []
   const attrs = Object.entries({
     ...corpus.value.attributes,
     ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type != "struct"),
-  }).filter(([_, attr]) => attr.display_type != "hidden" && !attr.hide_sidebar)
+  }).filter(
+    ([name, attr]) => name in token.attrs && attr.display_type != "hidden" && !attr.hide_sidebar,
+  )
   const ordering = corpus.value?._attributes_order || []
   return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
@@ -93,7 +96,7 @@ export const SIDEBAR_WIDTH_REM = 20
               :attribute
               :is-custom="'custom_type' in attribute && !!attribute.custom_type"
               :row-token="selectedToken"
-              :value="tokenAttrs[name]"
+              :value="selectedToken.token.attrs[name]"
             />
           </div>
         </details>

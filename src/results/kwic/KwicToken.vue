@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { isKwicRowToken, isRowTokenEqual, type RowToken } from "@/core/kwic/kwic"
 import { injectionKeys } from "@/injection"
-import { isEqual } from "lodash-es"
 import { computed, inject } from "vue"
 
 const props = defineProps<{
@@ -11,9 +10,10 @@ const props = defineProps<{
 const selectedToken = inject(injectionKeys.selectedToken)
 
 const isDepheadToSelected = computed(() => {
-  const selected = selectedToken?.value
-  if (!isKwicRowToken(props.rowToken) || !selected || !isKwicRowToken(selected)) return false
-  if (!isEqual(props.rowToken.row, selected.row)) return false
+  if (!selectedToken?.value) return false
+  const selected = selectedToken.value
+  if (props.rowToken.row.id != selected.row.id) return false
+
   const token = props.rowToken.token
   if (!("dephead" in selected.token) || !(typeof selected.token.dephead == "string")) return false
   const head = selected.token.dephead

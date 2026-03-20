@@ -1,4 +1,4 @@
-import { clone, isEqual, mapKeys, omit, pickBy, sum } from "lodash-es"
+import { clone, mapKeys, omit, pickBy, sum } from "lodash-es"
 import type { ApiKwic, KwicMatch, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
@@ -9,6 +9,8 @@ export type Row = KwicRow | LinkedKwicRow | CorpusHeading
 
 /** Row with search hits */
 export type KwicRow = {
+  /** Unique within this KWIC page */
+  id: string
   corpus: string
   /** An object for each token in the context, with attribute values for that token */
   tokens: KwicToken[]
@@ -24,6 +26,8 @@ export type KwicRow = {
 
 /** Row from a secondary language in parallel mode. */
 export type LinkedKwicRow = {
+  /** Unique within this KWIC page */
+  id: string
   tokens: LinkedKwicToken[]
   isLinked: true
   corpus: string
@@ -37,18 +41,22 @@ export type CorpusHeading = {
 }
 
 export type KwicToken = {
+  /** Unique within this KWIC page */
+  id: string
   word: string
   position: number
+  attrs: Record<string, string | null>
   _match: boolean
   _matchSentence: boolean
   _open_sentence: boolean
   _punct: boolean
-} & {
-  // [attr: string]: string | null
 }
 
 export type LinkedKwicToken = Token & {
-  linkref: `${number}`
+  /** Unique within this KWIC page */
+  id: string
+  word: string
+  attrs: Record<string, string | null>
   _open_sentence?: boolean
 }
 
@@ -75,6 +83,9 @@ export type HitsPictureItem = {
 /** Transform backend KWIC data to be easier to use in frontend code */
 export function massageData(rows: ApiKwic[]): Row[] {
   const punctArray = [",", ".", ";", ":", "!", "?", "..."]
+
+  let counter = 1
+  const getId = () => `kwic${counter++}`
 
   // Track what corpus the previous row belonged to, in order to add a heading row when it changes
   let prevCorpus = ""
@@ -136,10 +147,14 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
       // Output token
       const tokenOut: KwicToken = {
-        // Copy positional attributes
-        ...omit(token, ["structs"]),
-        ...structAttrs,
+        id: getId(),
+        word: token.word,
         position: i,
+        // Copy positional attributes
+        attrs: {
+          ...omit(token, ["structs"]),
+          ...structAttrs,
+        },
         _match: isMatch(i),
         _matchSentence: isMatchSentence(i),
         _open_sentence: openSentence,
@@ -150,6 +165,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
     // Add normal KWIC row
     output.push({
+      id: getId(),
       corpus: mainCorpusId,
       tokens,
       structs: { ...row.structs },
@@ -160,17 +176,15 @@ export function massageData(rows: ApiKwic[]): Row[] {
     if (row.aligned) {
       const [corpus, tokensAligned] = Object.entries(row.aligned)[0]!
 
-      // just check for sentence opened, no other structs
-      const tokens = tokensAligned.map((token) => {
-        const opens = token.structs?.open?.map((item) => Object.keys(item)[0]!)
-        return {
-          ...token,
-          _open_sentence: opens?.includes("sentence"),
-        }
-      })
+      const tokens = tokensAligned.map((token) => ({
+        id: getId(),
+        word: token.word,
+        attrs: omit(token, ["structs"]),
+      }))
 
       // Add linked KWIC row
       output.push({
+        id: getId(),
         corpus,
         tokens,
         isLinked: true,
@@ -241,12 +255,11 @@ export function calculateHitsPicture(
 /** Check if two row-token tuples are equal */
 export function isRowTokenEqual(a?: RowToken, b?: RowToken): boolean {
   if (!a || !b) return false
+  return a.row.id == b.row.id && a.token.id == b.token.id
+}
 
-  if (isKwicRowToken(a) && isKwicRowToken(b))
-    return b.token.position == a.token.position && isEqual(b.row.match, a.row.match)
-
-  if (isLinkedKwicRowToken(a) && isLinkedKwicRowToken(b))
-    return b.token.linkref == a.token.linkref && isEqual(b.row, a.row)
-
-  return false
+export function getAttr(rowToken: RowToken | undefined, attr: string): string | null | undefined {
+  const token = rowToken?.token
+  if (!token || !(attr in token)) return undefined
+  return token[attr]
 }
