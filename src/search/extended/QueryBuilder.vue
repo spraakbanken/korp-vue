@@ -113,7 +113,8 @@ function addBoundary(start: boolean) {
                 class="btn btn-link text-decoration-none btn-sm"
                 @click="addCondition(i, j)"
               >
-                + {{ $t("search.or") }}…
+                <fa-icon icon="fa-solid fa-plus" />
+                {{ $t("search.or") }}…
               </button>
             </div>
           </div>
@@ -125,7 +126,8 @@ function addBoundary(start: boolean) {
             class="btn btn-link text-decoration-none btn-sm"
             @click="addDisjunction(i)"
           >
-            + {{ $t("search.and") }}…
+            <fa-icon icon="fa-solid fa-plus" />
+            {{ $t("search.and") }}…
           </button>
         </div>
       </div>
@@ -184,7 +186,8 @@ function addBoundary(start: boolean) {
 
     <div class="d-flex flex-column gap-2">
       <button type="button" class="btn btn-secondary text-nowrap" @click="addToken()">
-        + {{ $t("search.extended.token_add") }}
+        <fa-icon icon="fa-solid fa-plus" />
+        {{ $t("search.extended.token_add") }}
       </button>
 
       <button
@@ -193,7 +196,8 @@ function addBoundary(start: boolean) {
         class="btn btn-secondary text-nowrap"
         @click="toggleAddingBoundary(true)"
       >
-        + {{ $t("search.extended.boundary_add") }}
+        <fa-icon icon="fa-solid fa-plus" />
+        {{ $t("search.extended.boundary_add") }}
       </button>
 
       <div
@@ -204,11 +208,11 @@ function addBoundary(start: boolean) {
         :aria-label="$t('search.extended.boundary_add')"
       >
         <button type="button" class="btn btn-primary" @click="addBoundary(true)">
-          ←
+          <fa-icon icon="fa-solid fa-arrow-left" />
           {{ $t("search.extended.boundary_add.start") }}
         </button>
         <button type="button" class="btn btn-primary" @click="addBoundary(false)">
-          →
+          <fa-icon icon="fa-solid fa-arrow-right" />
           {{ $t("search.extended.boundary_add.end") }}
         </button>
       </div>

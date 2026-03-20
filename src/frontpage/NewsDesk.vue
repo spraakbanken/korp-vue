@@ -39,6 +39,7 @@ const itemsFiltered = computed(() =>
         class="btn btn-outline-secondary"
         @click="toggle()"
       >
+        <fa-icon :icon="`fa-solid ${expanded ? 'fa-angles-up' : 'fa-angles-down'}`" />
         {{ expanded ? $t("show_less") : $t("show_more") }}
       </button>
     </div>

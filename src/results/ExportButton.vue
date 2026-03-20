@@ -34,7 +34,11 @@ function onSubmit() {
     </button>
 
     <!-- Dropdown form -->
-    <div class="dropdown-menu card p-0" :aria-labelledby="`export-button-${id}`">
+    <div
+      class="dropdown-menu card p-0"
+      :aria-labelledby="`export-button-${id}`"
+      style="width: 20em"
+    >
       <form @submit.prevent="onSubmit()">
         <div class="card-body p-2 vstack gap-2">
           <div class="text-muted">{{ $t("result.export.help") }}</div>
@@ -62,6 +66,7 @@ function onSubmit() {
 
           <!-- Submit button -->
           <button type="submit" class="btn btn-primary btn-sm">
+            <fa-icon icon="fa-solid fa-download" />
             {{ $t("result.export.action") }}
           </button>
         </div>

@@ -15,6 +15,6 @@ defineProps<{
     :data-bs-content="text"
     style="cursor: default"
   >
-    🛈
+    <fa-icon icon="fa-regular fa-circle-question" />
   </span>
 </template>

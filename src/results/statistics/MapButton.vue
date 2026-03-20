@@ -39,6 +39,7 @@ function confirm() {
     aria-expanded="false"
     :disabled="!attributes.length"
   >
+    <fa-icon icon="fa-solid fa-earth-africa" />
     {{ $t("result.map") }}
   </button>
 

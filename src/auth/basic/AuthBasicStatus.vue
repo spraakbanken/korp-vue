@@ -37,9 +37,11 @@ async function send() {
     data-bs-toggle="modal"
     data-bs-target="#auth-basic-modal"
   >
+    <fa-icon icon="fa-solid fa-arrow-right-to-bracket" />
     {{ $t("auth.login") }}
   </button>
   <button v-else class="nav-link" @click="auth.logout()">
+    <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
     {{ $t("auth.logout", { name: auth.getUsername() }) }}
   </button>
 
@@ -93,7 +95,10 @@ async function send() {
     <div v-if="errorMessage">{{ errorMessage }}</div>
 
     <template #footer>
-      <button type="submit" class="btn btn-primary">{{ $t("auth.login") }}</button>
+      <button type="submit" class="btn btn-primary">
+        <fa-icon icon="fa-solid fa-arrow-right-to-bracket" />
+        {{ $t("auth.login") }}
+      </button>
     </template>
   </ModalDialog>
 </template>

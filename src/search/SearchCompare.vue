@@ -27,8 +27,7 @@ const attributes = computed(() => {
 watchImmediate(searches, () => {
   // Update default selected searches when adding new searches.
   if (!queryLeft.value) queryLeft.value = searches.value[0] || null
-  if (!queryRight.value)
-    queryRight.value = searches.value[1] || searches.value[0] || null
+  if (!queryRight.value) queryRight.value = searches.value[1] || searches.value[0] || null
 })
 
 watchImmediate(attributes, () => {
@@ -95,6 +94,7 @@ function removeSearchLocal(search: SavedSearch) {
           :class="{ invisible: !queryLeft }"
           @click="removeSearchLocal(queryLeft!)"
         >
+          <fa-icon icon="fa-regular fa-trash-can" />
           {{ $t("remove") }}
         </button>
       </div>
@@ -122,6 +122,7 @@ function removeSearchLocal(search: SavedSearch) {
           :class="{ invisible: !queryRight }"
           @click="removeSearchLocal(queryRight!)"
         >
+          <fa-icon icon="fa-regular fa-trash-can" />
           {{ $t("remove") }}
         </button>
       </div>

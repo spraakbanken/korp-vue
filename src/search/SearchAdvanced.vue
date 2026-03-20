@@ -71,13 +71,20 @@ function submit() {
             <a
               href="https://www.gu.se/sites/default/files/2021-03/Att%20so%CC%88ka%20i%20Korp%20med%20CQP%20och%20Regexp.pdf"
               target="_blank"
+              class="icon-link"
             >
-              🗎 {{ $t("search.advanced.help.guide") }}
+              <fa-icon icon="fa-regular fa-file-pdf" />
+              {{ $t("search.advanced.help.guide") }}
             </a>
           </li>
           <li>
-            <a href="https://cwb.sourceforge.io/files/CQP_Manual.pdf" target="_blank">
-              🗎 {{ $t("search.advanced.help.manual") }}
+            <a
+              href="https://cwb.sourceforge.io/files/CQP_Manual.pdf"
+              target="_blank"
+              class="icon-link"
+            >
+              <fa-icon icon="fa-regular fa-file-pdf" />
+              {{ $t("search.advanced.help.manual") }}
             </a>
           </li>
         </ul>

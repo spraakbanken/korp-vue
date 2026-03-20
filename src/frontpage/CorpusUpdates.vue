@@ -57,6 +57,7 @@ function select(corpusId: string) {
         class="btn btn-outline-secondary"
         @click="toggle()"
       >
+        <fa-icon :icon="`fa-solid ${isExpanded ? 'fa-angles-up' : 'fa-angles-down'}`" />
         {{ isExpanded ? $t("show_less") : $t("show_more") }}
       </button>
     </div>

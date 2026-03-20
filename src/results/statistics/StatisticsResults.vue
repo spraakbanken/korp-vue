@@ -228,6 +228,7 @@ function createExport() {
         :disabled="!data || !isDated"
         @click="openTrendTab()"
       >
+        <fa-icon icon="fa-solid fa-chart-line" />
         {{ $t("result.statistics.trend") }}
       </button>
 
