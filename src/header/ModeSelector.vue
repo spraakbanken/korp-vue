@@ -7,17 +7,18 @@ import { computed } from "vue"
 
 const { locObj } = useLocale()
 
-const N_VISIBLE = settings["visible_modes"] || 5
-const modes = settings["modes"].filter((mode) => {
-  if (!mode) return false
-  if (import.meta.env.PROD && mode.labOnly) return false
-  return true
-})
-
 const lists = computed(() => {
+  const modes = (settings["modes"] || []).filter((mode) => {
+    if (!mode) return false
+    if (import.meta.env.PROD && mode.labOnly) return false
+    return true
+  })
+
+  const limit = settings["visible_modes"] || 5
+
   // Keep always-visible modes ordered by config, but sort the ones in the menu alphabetically
-  const primary = modes.slice(0, N_VISIBLE)
-  const secondary = sortBy(modes.slice(N_VISIBLE), (mode) => locObj(mode.label))
+  const primary = modes.slice(0, limit)
+  const secondary = sortBy(modes.slice(limit), (mode) => locObj(mode.label))
 
   // Move current secondary mode up as an extra primary
   const currentModeInSecondary = remove(secondary, (mode) => mode.mode == currentMode)

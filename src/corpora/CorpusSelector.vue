@@ -4,7 +4,6 @@ import { corpusListing } from "@/core/corpora/corpusListing"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
-import { useLocale } from "@/i18n/useLocale"
 import ModalDialog from "@/components/ModalDialog.vue"
 import { ref, reactive, watchEffect } from "vue"
 import { useAuth } from "@/auth/useAuth"
@@ -17,7 +16,6 @@ const root = reactive(initCorpusStructure(corpusListing.corpora))
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
 const auth = useAuth()
-const { locObj } = useLocale()
 
 const selection = ref<string[]>([])
 
@@ -36,12 +34,12 @@ function resolveValidation(ids: string[]) {
   getTimeData().then(() => corpusSelection.updateAttributes())
 }
 
-
-
 function selectAll() {
-  store.corpus = corpusListing.corpora.filter((corpus) => {
-    return ! corpus.protected || auth.hasCredential(corpus.id.toUpperCase())
-  }).map((corpus) => corpus.id)
+  store.corpus = corpusListing.corpora
+    .filter((corpus) => {
+      return !corpus.protected || auth.hasCredential(corpus.id.toUpperCase())
+    })
+    .map((corpus) => corpus.id)
 }
 
 function selectNone() {
@@ -49,7 +47,6 @@ function selectNone() {
 }
 
 watchEffect(() => (selection.value = store.corpus))
-
 </script>
 
 <template>
