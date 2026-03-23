@@ -12,12 +12,16 @@ $font-family-base: "Source Sans Pro", Helvetica, Arial, Verdana, sans-serif;
 $min-contrast-ratio: 3;
 
 // Replace some default colors
+$pink: #bb3693;
+$red: #d42225;
 $orange: #f0581a;
-$teal: #1e989f;
+$yellow: #e2b812;
+$green: #61ad19;
+$cyan: #1e989f;
 $light: #e4e4e7; // Should match logo color
 
 $primary: $orange;
-$secondary: $teal;
+$secondary: $cyan;
 
 $link-color: #212529; // = $gray-900 = $body-color, default: $primary
 $link-hover-color: $orange;
