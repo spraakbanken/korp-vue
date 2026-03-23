@@ -4,8 +4,8 @@ import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/sta
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { useElementVisibility, watchDeep, watchImmediate, whenever } from "@vueuse/core"
-import { computed, ref, useTemplateRef, watchEffect } from "vue"
+import { watchDeep, watchImmediate } from "@vueuse/core"
+import { computed, ref, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
@@ -47,12 +47,10 @@ const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: [],
   insensitive: [],
 })
-const containerEl = useTemplateRef("container")
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
 const isDated = ref(false)
-const isVisible = useElementVisibility(containerEl)
 /** List of map-compatible attributes in the searched corpus set */
 const mapAttributes = ref<MapAttributeOption[]>([])
 const rowsSelected = ref<Row[]>([])
@@ -63,16 +61,10 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
   progress.value = report.percent
 })
 
-// Enable statistics when opening tab first time
-whenever(
-  isVisible,
-  () => {
-    // Start watching search query
-    watchImmediate(activeSearch, () => doSearch())
-    watchDeep(attributesSelected, () => onOptionsChange())
-  },
-  { once: true, immediate: true },
-)
+// Start watching search query
+watchImmediate(activeSearch, () => doSearch())
+
+watchDeep(attributesSelected, () => onOptionsChange())
 
 watchEffect(() => {
   attributesSelected.value = {
@@ -202,7 +194,7 @@ function createExport() {
 </script>
 
 <template>
-  <div class="vstack gap-2" ref="container">
+  <div class="vstack gap-2">
     <OptionsBar>
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:

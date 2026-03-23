@@ -35,6 +35,8 @@ const FIXED_TABS = [
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
 const { locObj } = useLocale()
+const isStatisticsAwake = ref(false)
+const isWordpicAwake = ref(false)
 
 const { result_tab } = storeToRefs(store)
 const currentTab = ref<TabId>(result_tab.value)
@@ -43,9 +45,12 @@ const currentTab = ref<TabId>(result_tab.value)
 const progressMap = ref<Record<TabId, number | undefined>>({})
 
 // Sync active tab to the store.
-watch(currentTab, () => {
+watchImmediate(currentTab, () => {
   // Only sync main tab selection. At initial load from URL, dynamic tabs are not yet created.
   if (typeof currentTab.value == "number") result_tab.value = currentTab.value
+
+  if (currentTab.value == 2) isStatisticsAwake.value = true
+  if (currentTab.value == 3) isWordpicAwake.value = true
 })
 
 // Sync tab selection from store
@@ -151,7 +156,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-statistics"
         tabindex="0"
       >
-        <StatisticsResults v-model:progress="progressMap[2]" />
+        <StatisticsResults v-if="isStatisticsAwake" v-model:progress="progressMap[2]" />
       </div>
 
       <div
@@ -162,7 +167,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         aria-labelledby="result-tabs-tab-wordpic"
         tabindex="0"
       >
-        <WordpicResults v-model:progress="progressMap[3]" />
+        <WordpicResults v-if="isWordpicAwake" v-model:progress="progressMap[3]" />
       </div>
 
       <div

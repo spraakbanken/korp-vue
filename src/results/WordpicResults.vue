@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useElementVisibility, watchImmediate, whenever } from "@vueuse/core"
-import { computed, ref, useTemplateRef } from "vue"
+import { watchImmediate } from "@vueuse/core"
+import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
@@ -30,10 +30,8 @@ const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
 
-const containerEl = useTemplateRef("container")
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<WordPicture>()
-const isVisible = useElementVisibility(containerEl)
 const limit = ref(LIMITS[0])
 const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
@@ -43,15 +41,8 @@ const proxy = new RelationsProxy().setProgressHandler((report) => {
   progress.value = report.percent
 })
 
-// Activate when opening tab first time
-whenever(
-  isVisible,
-  () => {
-    // Start watching the active search query
-    watchImmediate(activeSearch, () => doSearch())
-  },
-  { once: true, immediate: true },
-)
+// Start watching the active search query
+watchImmediate(activeSearch, () => doSearch())
 
 async function doSearch() {
   proxy.abort()
@@ -90,7 +81,7 @@ function createExport() {
 </script>
 
 <template>
-  <div class="vstack align-items-center gap-2" ref="container">
+  <div class="vstack align-items-center gap-2">
     <!-- Options bar -->
     <OptionsBar>
       <label class="d-flex gap-2 align-items-baseline">
