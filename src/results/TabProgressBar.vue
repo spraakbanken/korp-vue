@@ -6,16 +6,14 @@ defineProps<{
 
 <template>
   <Transition>
-    <div
+    <span
       v-show="progress != null && progress < 100"
       role="progressbar"
       :aria-valuenow="progress"
       aria-valuemin="0"
       aria-valuemax="100"
-      style="display: inline"
     >
-      <!-- TODO Spinner -->
-      <span>(%)</span>
+      <fa-icon icon="fa-solid fa-spinner" spin-pulse />
 
       <!-- Bar -->
       <div
@@ -24,7 +22,7 @@ defineProps<{
       >
         <div class="progress-bar" :style="{ width: progress + '%' }"></div>
       </div>
-    </div>
+    </span>
   </Transition>
 </template>
 

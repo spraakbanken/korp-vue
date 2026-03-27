@@ -13,6 +13,8 @@ import settings from "../config"
 import { formatFrequency, locObj } from "../i18n"
 import type { Store } from "../model/store"
 import type { LangString } from "../model/locale"
+import { icon } from "@fortawesome/fontawesome-svg-core"
+import { faChartPie } from "@fortawesome/free-solid-svg-icons"
 
 export class StatisticsGrid extends SlickGrid<Row> {
   constructor(
@@ -141,12 +143,15 @@ function createColumns(
     })
   }
 
+  /** SVG string of pie-chart icon */
+  const chartIconHtml = icon(faChartPie).html.join("")
+
   columns.push({
     id: "pieChart",
     name: "",
     field: "hit_value",
     sortable: false,
-    formatter: () => `📊`,
+    formatter: () => chartIconHtml,
     maxWidth: 25,
     minWidth: 25,
     cssClass: "total-column distribution-cell",

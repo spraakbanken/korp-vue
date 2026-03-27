@@ -17,6 +17,7 @@ import {
   faLock,
   faLockOpen,
   faPlus,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons"
 import { faCircleQuestion, faFilePdf, faTrashCan } from "@fortawesome/free-regular-svg-icons"
 
@@ -39,6 +40,7 @@ library.add(
   faLock,
   faLockOpen,
   faPlus,
+  faSpinner,
   faTrashCan,
 )
 
