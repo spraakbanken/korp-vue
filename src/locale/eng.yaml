@@ -20,6 +20,8 @@ time.from: From
 time.to: Until
 close: Close
 
+attribute.empty: No value
+
 attribute_type.word: Word
 attribute_type.pos: Positional attributes
 attribute_type.struct: Structural attributes

@@ -20,6 +20,8 @@ time.from: Från
 time.to: Till
 close: Stäng
 
+attribute.empty: Värde saknas
+
 attribute_type.word: Ord
 attribute_type.pos: Ordattribut
 attribute_type.struct: Strukturella attribut

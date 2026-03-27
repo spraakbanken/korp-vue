@@ -7,6 +7,7 @@ import { createKeyValueHtml } from "@/core/util"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { computed } from "vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import { getEmptyValueHtml } from "./formatter"
 
 const props = defineProps<{
   item: CompareItem
@@ -18,7 +19,7 @@ defineEmits<{
   (e: "select", item: CompareItem): void
 }>()
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const getStringifier = useStringifiers()
 
 const valuesHtml = computed(() =>
@@ -28,11 +29,7 @@ const valuesHtml = computed(() =>
 )
 
 const formatToken = (token: string, attribute?: Attribute) =>
-  token
-    ? attribute
-      ? getStringifier(attribute)(token)
-      : token
-    : "<span class='text-muted'>∅</span>"
+  token ? (attribute ? getStringifier(attribute)(token) : token) : getEmptyValueHtml(t)
 </script>
 
 <template>

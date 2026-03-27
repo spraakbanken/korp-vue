@@ -135,7 +135,7 @@ function createColumns(
       sortable: true,
       formatter: (row, cell, value, columnDef, data: Row) => {
         if (isTotalRow(data)) return "Σ"
-        const output = data.formattedValue[reduceVal!] || `<span class="opacity-50">&empty;</span>`
+        const output = data.formattedValue[reduceVal!] || `<span class="opacity-50">—</span>`
         return `<div data-row="${data.rowId}" ${dir}>${output}</div>`
       },
       minWidth,

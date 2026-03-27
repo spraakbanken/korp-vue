@@ -16,3 +16,6 @@ export type FormatterProps<O = Record<string, unknown>> = {
   rowToken: RowToken
   value: string | null | undefined
 }
+
+export const getEmptyValueHtml = (t: (key: string) => string) =>
+  `<span class="opacity-50" title="${t("attribute.empty")}" aria-label="${t("attribute.empty")}">—</span>`

@@ -4,6 +4,7 @@ import { isKwicRowToken } from "@/core/kwic/kwic"
 import { compact, template } from "lodash-es"
 import { type FormatterProps } from "../formatter"
 import { computed } from "vue"
+import EmptyValue from "../EmptyValue.vue"
 
 const props = defineProps<FormatterProps>()
 
@@ -37,7 +38,7 @@ function formatValue(value: string) {
 
 <template>
   <!-- No value -->
-  <span v-if="isEmpty && !isCustom" class="text-muted">∅</span>
+  <EmptyValue v-if="isEmpty && !isCustom" />
 
   <!-- Multi-value attribute -->
   <ul v-else-if="attribute.type == 'set' && value" class="list-unstyled my-0">
