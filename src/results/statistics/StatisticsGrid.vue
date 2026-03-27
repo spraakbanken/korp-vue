@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { getCqp } from "@/core/statistics/statistics"
 import {
@@ -12,8 +13,9 @@ import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, useWindowSize, watchImmediate } from "@vueuse/core"
 import { throttle } from "lodash-es"
 import { storeToRefs } from "pinia"
-import { onMounted, reactive, useTemplateRef, watch } from "vue"
+import { onMounted, reactive, shallowRef, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
+import CorpusDistributionChart from "./CorpusDistributionChart.vue"
 
 const props = defineProps<{
   attributes: string[]
@@ -34,6 +36,8 @@ let grid: StatisticsGrid | undefined
 const gridEl = useTemplateRef("gridEl")
 const isVisible = useElementVisibility(gridEl)
 const { statsRelative } = storeToRefs(store)
+let distributionDialog: ConfirmDialog | undefined
+const distributionRow = shallowRef<Row>()
 
 // Wait for the grid element ref to be set
 onMounted(() => {
@@ -61,7 +65,7 @@ async function renderGrid() {
     props.attributes,
     store,
     t("result.statistics.total"),
-    () => {}, // TODO Corpus distribution chart
+    onDistributionClick,
     onValueClick,
   )
   grid.render()
@@ -69,6 +73,9 @@ async function renderGrid() {
   grid.onSelectedRowsChanged.subscribe((event, args) => {
     rowsSelected.value = args.rows.map((i) => grid!.getDataItem(i))
   })
+
+  // Make sure previous chart instance isn't reused.
+  distributionRow.value = undefined
 }
 
 watch(statsRelative, () => grid?.refreshColumns())
@@ -102,10 +109,24 @@ function buildExampleCqp(row: SingleRow) {
   // Normal case
   return getCqp(row.statsValues, props.params.ignoreCase)
 }
+
+function onDistributionClick(row: Row): void {
+  distributionRow.value = row
+  distributionDialog?.reveal()
+}
 </script>
 
 <template>
-  <div ref="gridEl" />
+  <div>
+    <div ref="gridEl" />
+    <ModalDialog
+      :title="t('result.statistics.distributions.title')"
+      :size="params.corpora.length > 10 ? 'lg' : 'md'"
+      @setup="distributionDialog = $event"
+    >
+      <CorpusDistributionChart v-if="distributionRow" :row="distributionRow" />
+    </ModalDialog>
+  </div>
 </template>
 
 <style scoped>

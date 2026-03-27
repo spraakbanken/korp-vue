@@ -11,6 +11,8 @@ defineProps<{
   id?: string
   /** Modal title. */
   title?: string
+  /** Width of dialog */
+  size?: "sm" | "md" | "lg"
 }>()
 
 const emit = defineEmits<{
@@ -53,7 +55,8 @@ function close(confirmed: boolean) {
 <template>
   <teleport to="body">
     <div
-      class="modal modal-lg"
+      class="modal"
+      :class="`modal-${size || 'lg'}`"
       :id
       ref="modalRef"
       tabindex="-1"

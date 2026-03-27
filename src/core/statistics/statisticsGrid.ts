@@ -146,16 +146,17 @@ function createColumns(
   /** SVG string of pie-chart icon */
   const chartIconHtml = icon(faChartPie).html.join("")
 
-  columns.push({
-    id: "pieChart",
-    name: "",
-    field: "hit_value",
-    sortable: false,
-    formatter: () => chartIconHtml,
-    maxWidth: 25,
-    minWidth: 25,
-    cssClass: "total-column distribution-cell",
-  })
+  if (corpora.length > 1)
+    columns.push({
+      id: "pieChart",
+      name: "",
+      field: "hit_value",
+      sortable: false,
+      formatter: () => chartIconHtml,
+      maxWidth: 25,
+      minWidth: 25,
+      cssClass: "total-column distribution-cell",
+    })
 
   columns.push({
     id: "total",

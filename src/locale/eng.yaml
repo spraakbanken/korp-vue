@@ -219,6 +219,7 @@ result.pagination.label: "Page:"
 result.pagination.goto: Go to {input} of {total}
 
 result.statistics: Statistics
+result.statistics.distributions.title: Distribution across corpora
 result.statistics.group_by: Group by
 result.statistics.relative: Show relative frequencies
 result.statistics.relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
