@@ -108,11 +108,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
     }
 
     const [matchSentenceStart, matchSentenceEnd] = findMatchSentence(row)
-    const isMatchSentence = (i: number): boolean =>
-      matchSentenceStart != undefined &&
-      !!matchSentenceEnd &&
-      matchSentenceStart <= i &&
-      i <= matchSentenceEnd
+    const isMatchSentence = (i: number): boolean => matchSentenceStart <= i && i <= matchSentenceEnd
 
     // When using `in_order=false`, there are multiple matches
     // Otherwise, cast single match to array for consistency
@@ -198,33 +194,25 @@ export function massageData(rows: ApiKwic[]): Row[] {
 }
 
 /** Find span of sentence containing the match */
-// This is used in reading mode (when free order is not used) to highlight the sentence.
-function findMatchSentence(hitContext: ApiKwic): [number?, number?] {
-  if (Array.isArray(hitContext.match)) return []
-  const span: [number?, number?] = []
-  const { start, end } = hitContext.match
-  let decr = start
-  let incr = end
-  while (decr >= 0) {
-    const token = hitContext.tokens[decr]
-    const sentenceOpen = (token?.structs?.open || []).filter((attr) => attr.sentence)
-    if (sentenceOpen.length > 0) {
-      span[0] = decr
-      break
-    }
-    decr--
-  }
-  while (incr < hitContext.tokens.length) {
-    const token = hitContext.tokens[incr]
-    const closed = token?.structs?.close || []
-    if (closed.includes("sentence")) {
-      span[1] = incr
-      break
-    }
-    incr++
+// This is used in reading mode to highlight the sentence.
+function findMatchSentence(row: ApiKwic): [number, number] {
+  const matches = Array.isArray(row.match) ? row.match : [row.match]
+  let start = matches[0]!.start
+  let end = matches[matches.length - 1]!.end
+
+  for (; start >= 0; start--) {
+    const token = row.tokens[start]
+    const sentenceOpen = (token?.structs?.open || []).some((attr) => attr.sentence)
+    if (sentenceOpen) break
   }
 
-  return span
+  for (; end < row.tokens.length; end++) {
+    const token = row.tokens[end]
+    const closed = token?.structs?.close || []
+    if (closed.includes("sentence")) break
+  }
+
+  return [start, end]
 }
 
 export function calculateHitsPicture(

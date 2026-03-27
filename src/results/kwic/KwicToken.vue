@@ -30,6 +30,7 @@ const isDepheadToSelected = computed(() => {
       'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'bg-success-subtle text-success-emphasis': isRowTokenEqual(selectedToken, rowToken),
       'bg-info-subtle text-info-emphasis': isDepheadToSelected,
+      'text-muted': isKwicRowToken(rowToken) && !rowToken.token._matchSentence,
     }"
     @click.stop="selectedToken = rowToken"
   >
