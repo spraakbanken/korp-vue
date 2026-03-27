@@ -41,7 +41,7 @@ const items = computed(() => {
   <div class="position-relative overflow-hidden">
     <!-- Current-page marker-->
     <div
-      class="position-absolute top-0 bottom-0 bg-primary-subtle"
+      class="position-absolute top-0 bottom-0 bg-secondary-subtle"
       :style="{
         width: `${(hpp / total) * 100}%`,
         minWidth: '2px',
