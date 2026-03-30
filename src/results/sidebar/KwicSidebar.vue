@@ -51,10 +51,10 @@ export const SIDEBAR_WIDTH_REM = 20
   <Transition appear>
     <aside
       v-if="selectedToken && corpus"
-      class="position-absolute top-0 end-0 h-100 overflow-y-auto card shadow"
+      class="position-absolute top-0 end-0 h-100 overflow-y-auto card"
       :style="{ width: `${SIDEBAR_WIDTH_REM}rem` }"
     >
-      <div class="card-body d-flex flex-column gap-3">
+      <div class="card-body d-flex flex-column gap-3 flex-grow-0">
         <header class="d-flex gap-2 justify-content-between">
           <div>
             <div class="text-muted small text-uppercase">{{ $t("corpus") }}</div>
@@ -68,38 +68,66 @@ export const SIDEBAR_WIDTH_REM = 20
             @click="selectedToken = undefined"
           />
         </header>
+      </div>
 
-        <details v-if="'structs' in selectedToken.row" open class="bg-body-tertiary rounded">
-          <summary class="bg-body-tertiary p-1">{{ $t("attribute_type.struct") }}</summary>
+      <div class="accordion accordion-flush border-top border-bottom">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebar-accordion-struct"
+              aria-expanded="true"
+              aria-controls="sidebar-accordion-struct"
+            >
+              {{ $t("attribute_type.struct") }}
+            </button>
+          </h2>
 
-          <div class="p-2">
-            <KwicSidebarAttribute
-              v-for="[name, attribute] in structAttributes"
-              :key="name"
-              :corpus
-              :attribute
-              :is-custom="'custom_type' in attribute && !!attribute.custom_type"
-              :row-token="selectedToken"
-              :value="selectedToken.row.structs[name]"
-            />
+          <div id="sidebar-accordion-struct" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+              <KwicSidebarAttribute
+                v-for="[name, attribute] in structAttributes"
+                :key="name"
+                :corpus
+                :attribute
+                :is-custom="'custom_type' in attribute && !!attribute.custom_type"
+                :row-token="selectedToken"
+                :value="selectedToken.row.structs[name]"
+              />
+            </div>
           </div>
-        </details>
+        </div>
 
-        <details open class="bg-body-tertiary rounded">
-          <summary class="bg-body-tertiary p-1">{{ $t("attribute_type.pos") }}</summary>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#sidebar-accordion-pos"
+              aria-expanded="true"
+              aria-controls="sidebar-accordion-pos"
+            >
+              {{ $t("attribute_type.pos") }}
+            </button>
+          </h2>
 
-          <div class="p-2">
-            <KwicSidebarAttribute
-              v-for="[name, attribute] in posAttributes"
-              :key="name"
-              :corpus
-              :attribute
-              :is-custom="'custom_type' in attribute && !!attribute.custom_type"
-              :row-token="selectedToken"
-              :value="selectedToken.token.attrs[name]"
-            />
+          <div id="sidebar-accordion-pos" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+              <KwicSidebarAttribute
+                v-for="[name, attribute] in posAttributes"
+                :key="name"
+                :corpus
+                :attribute
+                :is-custom="'custom_type' in attribute && !!attribute.custom_type"
+                :row-token="selectedToken"
+                :value="selectedToken.token.attrs[name]"
+              />
+            </div>
           </div>
-        </details>
+        </div>
       </div>
     </aside>
   </Transition>
@@ -114,5 +142,12 @@ export const SIDEBAR_WIDTH_REM = 20
 .v-enter-from,
 .v-leave-to {
   transform: translateX(100%);
+}
+
+.accordion {
+  --bs-accordion-active-color: var(--bs-secondary-text-emphasis);
+  --bs-accordion-active-bg: var(--bs-secondary-bg-subtle);
+  --bs-accordion-btn-padding-x: var(--bs-card-spacer-x);
+  --bs-accordion-body-padding-x: var(--bs-card-spacer-x);
 }
 </style>

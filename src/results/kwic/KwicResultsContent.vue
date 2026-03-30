@@ -53,7 +53,7 @@ watchImmediate(
       // Make sure sidebar isn't too short if KWIC page is short
       minHeight: '50rem',
       // Make room for sidebar
-      paddingRight: selectedToken ? `${SIDEBAR_WIDTH_REM + 0.5}rem` : undefined,
+      paddingRight: selectedToken ? `${SIDEBAR_WIDTH_REM + 1}rem` : undefined,
     }"
   >
     <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
