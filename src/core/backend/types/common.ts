@@ -57,7 +57,7 @@ export type ApiKwic = {
   /** An object for each token in the context, with attribute values for that token */
   tokens: Token[]
   /** Attribute values for the context (e.g. sentence) */
-  structs: Record<string, string | undefined>
+  structs?: Record<string, string | undefined>
   /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
   match: KwicMatch | KwicMatch[]
   /** Hits from aligned corpora if available, otherwise omitted */

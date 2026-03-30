@@ -39,10 +39,7 @@ function* createSearchInfo(requestInfo: KwicParams, totalHits: number) {
 function transformDataToAnnotations(data: AnnotationsRow[], searchInfo: string[]) {
   const firstTokensRow = data.find((row) => isKwic(row))!
 
-  const headers = Object.keys(firstTokensRow.tokens[0]!).filter(
-    (val) =>
-      val.indexOf("_") !== 0 && val !== "structs" && val !== "$$hashKey" && val !== "position",
-  )
+  const headers = Object.keys(firstTokensRow.tokens[0]!.attrs)
 
   const columnCount = headers.length + 1
   let corpus
@@ -69,7 +66,7 @@ function transformDataToAnnotations(data: AnnotationsRow[], searchInfo: string[]
         }
         const newRow = [match]
         for (const field of headers) {
-          newRow.push(token[field])
+          newRow.push(token.attrs[field]!)
         }
         res.push(newRow)
       }
@@ -89,27 +86,14 @@ function transformDataToKWIC(data: Row[], searchInfo: string[]) {
     if (isCorpusHeading(row)) {
       corpus = locObj(row.newCorpus)
     } else if (isKwic(row)) {
-      const leftContext: string[] = []
-      const match: string[] = []
-      const rightContext: string[] = []
+      // Sort tokens into left context, match and right context
+      // If multiple matches (free-order search) put everything in left context
+      const { start, end } =
+        row.match.length == 1 ? row.match[0]! : { start: row.tokens.length, end: row.tokens.length }
 
-      if (row.match instanceof Array) {
-        // the user has searched "not-in-order" and we cannot have a left, match and right context for the download
-        // put all data in leftContext
-        for (const token of row.tokens) {
-          leftContext.push(token.word)
-        }
-      } else {
-        for (const token of row.tokens.slice(0, row.match.start)) {
-          leftContext.push(token.word)
-        }
-        for (const token of row.tokens.slice(row.match.start, row.match.end)) {
-          match.push(token.word)
-        }
-        for (const token of row.tokens.slice(row.match.end, row.tokens.length)) {
-          rightContext.push(token.word)
-        }
-      }
+      const leftContext = row.tokens.slice(0, start).map((token) => token.word)
+      const match = row.tokens.slice(start, end).map((token) => token.word)
+      const rightContext = row.tokens.slice(end).map((token) => token.word)
 
       const structs: string[] = []
       for (const attrName in row.structs) {
@@ -118,21 +102,16 @@ function transformDataToKWIC(data: Row[], searchInfo: string[]) {
         }
       }
       for (const attrName of structHeaders) {
-        if (row.structs && attrName in row.structs) {
-          structs.push(row.structs[attrName])
-        } else {
-          structs.push("")
-        }
+        structs.push(row.structs[attrName] || "")
       }
       const newRow: TableRow = [
         corpus,
-        row.match instanceof Array
-          ? row.match.map((match) => match.position).join(", ")
-          : row.match.position,
+        row.match.map((match) => match.position).join(", "),
         leftContext.join(" "),
         match.join(" "),
         rightContext.join(" "),
-      ].concat(structs)
+        ...structs,
+      ]
       res.push(newRow)
     } else {
       // parallell mode does not have matches or structs for the linked sentences
@@ -141,16 +120,16 @@ function transformDataToKWIC(data: Row[], searchInfo: string[]) {
     }
   }
 
-  const headers = ["corpus", "match_position", "left context", "match", "right_context"].concat(
-    structHeaders,
-  )
+  const headers = [
+    "corpus",
+    "match_position",
+    "left_context",
+    "match",
+    "right_context",
+    ...structHeaders,
+  ]
   res.unshift(headers)
-
-  res.push(emptyRow(headers.length))
-  for (const row of padRows(searchInfo, headers.length)) {
-    res.push(row)
-  }
-
+  res.push(emptyRow(headers.length), ...padRows(searchInfo, headers.length))
   return res
 }
 

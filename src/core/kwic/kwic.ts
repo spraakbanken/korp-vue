@@ -245,9 +245,3 @@ export function isRowTokenEqual(a?: RowToken, b?: RowToken): boolean {
   if (!a || !b) return false
   return a.row.id == b.row.id && a.token.id == b.token.id
 }
-
-export function getAttr(rowToken: RowToken | undefined, attr: string): string | null | undefined {
-  const token = rowToken?.token
-  if (!token || !(attr in token)) return undefined
-  return token[attr]
-}

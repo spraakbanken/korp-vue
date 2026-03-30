@@ -9,16 +9,15 @@ const props = defineProps<{
 
 const selectedToken = inject(injectionKeys.selectedToken)
 
+/** Check if this token is the dependency head of the selected token */
 const isDepheadToSelected = computed(() => {
   if (!selectedToken?.value) return false
   const selected = selectedToken.value
   if (props.rowToken.row.id != selected.row.id) return false
 
-  const token = props.rowToken.token
-  if (!("dephead" in selected.token) || !(typeof selected.token.dephead == "string")) return false
-  const head = selected.token.dephead
-  if (!("ref" in token) || !(typeof token.ref == "string")) return false
-  return token.ref == head
+  const dephead = selected.token.attrs.dephead
+  const ref = props.rowToken.token.attrs.ref
+  return dephead != undefined && ref != undefined && dephead == ref
 })
 </script>
 
