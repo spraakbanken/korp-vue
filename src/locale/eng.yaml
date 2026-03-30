@@ -37,6 +37,10 @@ auth.remember: Remember me
 corpus.selection.validation.dialog.title: Corpus selection
 corpus.selection.select_all: Select all
 corpus.selection.select_none: Select none
+corpus.selection.summary.selected: No corpora selected | 1 corpus selected | {n} corpora selected
+corpus.selection.summary.total: of 1 corpus | of {n} corpora
+corpus.selection.summary.tokens: ({0} tokens)
+corpus.selection.label: Choose...
 
 frontpage.examples: Search examples
 frontpage.news: News

@@ -50,16 +50,36 @@ watchEffect(() => (selection.value = store.corpus))
 </script>
 
 <template>
-  <div>
+  <div class="d-flex justify-content-center">
     <CorpusSelectionDialog @resolve="resolveValidation" />
 
-    <div class="d-grid">
+    <div class="card p-2 flex-row align-items-center gap-2">
+      <fa-icon icon="fa-solid fa-book" />
+      <div>
+        <div>
+          {{ $t("corpus.selection.summary.selected", store.corpus.length) }}
+          {{
+            $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
+              list: [$n(corpusSelection.getTokenCount(), { notation: "compact" })],
+            })
+          }}
+        </div>
+        <div class="text-muted">
+          {{ $t("corpus.selection.summary.total", root.numberOfChildren) }}
+          {{
+            $t("corpus.selection.summary.tokens", root.tokens, {
+              list: [$n(root.tokens, { notation: "compact" })],
+            })
+          }}
+        </div>
+      </div>
+
       <button
-        class="btn btn-outline-secondary"
+        class="btn btn-primary btn-sm stretched-link"
         data-bs-toggle="modal"
         data-bs-target="#corpus-selector"
       >
-        {{ store.corpus.length }} {{ $t("corpora") }}
+        {{ $t("corpus.selection.label") }}
       </button>
     </div>
 

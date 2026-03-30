@@ -37,6 +37,10 @@ auth.remember: Kom ihåg mig
 corpus.selection.validation.dialog.title: Korpusurval
 corpus.selection.select_all: Markera alla
 corpus.selection.select_none: Avmarkera
+corpus.selection.summary.selected: Inga korpusar valda | 1 korpus vald | {n} korpusar valda
+corpus.selection.summary.total: av 1 korpus | av {n} korpusar
+corpus.selection.summary.tokens: ({0} token)
+corpus.selection.label: Ändra...
 
 frontpage.examples: Exempelsökningar
 frontpage.news: Nyheter
