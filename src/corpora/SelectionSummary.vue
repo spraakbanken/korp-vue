@@ -14,19 +14,23 @@ const store = useAppStore()
 
 <template>
   <div>
-    <div>
-      {{ $t("corpus.selection.summary.selected", store.corpus.length) }}
+    <div :class="{ 'text-danger': !store.corpus.length }">
       {{
-        $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
-          list: [abbreviateNumber(corpusSelection.getTokenCount())],
+        $t("corpus.selection.summary", store.corpus.length, {
+          named: {
+            selected: $n(store.corpus.length),
+            total: $n(totalCorpora),
+          },
         })
       }}
     </div>
     <div class="text-muted">
-      {{ $t("corpus.selection.summary.total", totalCorpora) }}
       {{
-        $t("corpus.selection.summary.tokens", totalTokens, {
-          list: [abbreviateNumber(totalTokens)],
+        $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
+          named: {
+            selected: abbreviateNumber(corpusSelection.getTokenCount()),
+            total: abbreviateNumber(totalTokens),
+          },
         })
       }}
     </div>
