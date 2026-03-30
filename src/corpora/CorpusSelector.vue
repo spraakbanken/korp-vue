@@ -10,6 +10,7 @@ import { useAuth } from "@/auth/useAuth"
 import { getTimeData } from "@/core/backend/timedata"
 import { initCorpusStructure } from "@/core/corpora/corpora"
 import CorpusSelectorTree from "./CorpusSelectorTree.vue"
+import SelectionSummary from "./SelectionSummary.vue"
 
 const root = reactive(initCorpusStructure(corpusListing.corpora))
 
@@ -55,25 +56,7 @@ watchEffect(() => (selection.value = store.corpus))
 
     <div class="card p-2 flex-row align-items-center gap-2">
       <fa-icon icon="fa-solid fa-book" />
-      <div>
-        <div>
-          {{ $t("corpus.selection.summary.selected", store.corpus.length) }}
-          {{
-            $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
-              list: [$n(corpusSelection.getTokenCount(), { notation: "compact" })],
-            })
-          }}
-        </div>
-        <div class="text-muted">
-          {{ $t("corpus.selection.summary.total", root.numberOfChildren) }}
-          {{
-            $t("corpus.selection.summary.tokens", root.tokens, {
-              list: [$n(root.tokens, { notation: "compact" })],
-            })
-          }}
-        </div>
-      </div>
-
+      <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
       <button
         class="btn btn-primary btn-sm stretched-link"
         data-bs-toggle="modal"
@@ -84,13 +67,17 @@ watchEffect(() => (selection.value = store.corpus))
     </div>
 
     <ModalDialog id="corpus-selector" :title="$t('corpora')">
-      <div class="mb-3">
-        <button type="button" class="btn btn-sm btn-secondary me-2" @click="selectAll()">
-          {{ $t("corpus.selection.select_all") }}
-        </button>
-        <button type="button" class="btn btn-sm btn-secondary" @click="selectNone()">
-          {{ $t("corpus.selection.select_none") }}
-        </button>
+      <div class="mb-3 hstack gap-2">
+        <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
+        <div class="flex-grow-1"></div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-secondary" @click="selectAll()">
+            {{ $t("corpus.selection.select_all") }}
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" @click="selectNone()">
+            {{ $t("corpus.selection.select_none") }}
+          </button>
+        </div>
       </div>
       <CorpusSelectorTree :node="root" />
     </ModalDialog>
