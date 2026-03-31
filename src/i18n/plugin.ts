@@ -9,25 +9,26 @@ type LocalesByLang = Record<string, Locale>
 /** Localized messages by key */
 type Locale = Record<string, string>
 
-/** Standard locales */
-const messages: LocalesByLang = { eng, swe }
-
 export default async function setupI18n(locale: string) {
   // Load instance locales.
-  const instanceLocales = await loadInstanceLocales()
+  const messages = await loadInstanceLocales()
+
+  // Add default messages
+  messages.eng = { ...eng, ...messages.eng }
+  messages.swe = { ...swe, ...messages.swe }
 
   // Passing `false` as type arg helps to infer the return type as a non-legacy I18n instance.
   return createI18n<false>({
     legacy: false,
     locale,
     fallbackLocale: "eng",
-    messages: { eng, swe, ...instanceLocales },
+    messages,
   })
 }
 
 /** Load named locales */
 async function loadInstanceLocales(): Promise<LocalesByLang> {
-  const langs = settings.languages.map((item) => item.value).filter((lang) => !(lang in messages))
+  const langs = settings.languages.map((item) => item.value)
   const locales = await Promise.all(
     langs.map(async (lang) => (await import(`@instance/locale/${lang}.yaml`)).default),
   )
