@@ -8,6 +8,7 @@ import {
   faArrowRight,
   faArrowRightFromBracket,
   faArrowRightToBracket,
+  faArrowUpRightFromSquare,
   faBook,
   faCaretDown,
   faCaretRight,
@@ -21,6 +22,7 @@ import {
   faLock,
   faLockOpen,
   faPlus,
+  faUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons"
 import { faCircleQuestion, faFilePdf, faTrashCan } from "@fortawesome/free-regular-svg-icons"
 
@@ -32,6 +34,7 @@ library.add(
   faArrowRight,
   faArrowRightToBracket,
   faArrowRightFromBracket,
+  faArrowUpRightFromSquare,
   faBook,
   faCaretDown,
   faCaretRight,
@@ -48,6 +51,7 @@ library.add(
   faLockOpen,
   faPlus,
   faTrashCan,
+  faUpRightFromSquare,
 )
 
 const install: Plugin = (app) => {

@@ -4,11 +4,20 @@ corpora: Korpusar
 error.backend: Servern gav felet {type}
 error.heading: Ett fel har uppstått.
 error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna sb-info{'@'}svenska.gu.se.
-gui.about: Om Korp
 gui.language: Gränssnittsspråk
-gui.modes: Lägen
 loading: Laddar…
 more: Fler
+nav.help: Hjälp
+nav.help.about: Om Korp
+nav.help.about.url: https://spraakbanken.gu.se/verktyg/korp
+nav.help.citation: Hur citerar jag Korp?
+nav.help.citation.url: https://spraakbanken.gu.se/om/referera#Korp
+nav.help.manual: Användarhandledning
+nav.help.manual.url: https://spraakbanken.gu.se/verktyg/korp/anvandarhandledning
+nav.lab: Korplabb
+nav.lab.url: https://spraakbanken.gu.se/korplabb/
+nav.modes: Lägen
+nav.toggle: Visa/göm navigation
 search: Sök
 save: Spara
 ok: OK

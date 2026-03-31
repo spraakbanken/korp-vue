@@ -33,7 +33,7 @@ async function send() {
 <template>
   <button
     v-if="!auth?.isLoggedIn()"
-    class="nav-link"
+    class="nav-link text-start"
     data-bs-toggle="modal"
     data-bs-target="#auth-basic-modal"
   >

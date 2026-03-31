@@ -24,6 +24,7 @@ const selfUrl = window.location.href.replace(/#.*/, "")
     <!-- Top row -->
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
+        <!-- Button to toggle collapsed menu -->
         <button
           type="button"
           class="navbar-toggler order-1"
@@ -31,47 +32,84 @@ const selfUrl = window.location.href.replace(/#.*/, "")
           data-bs-target="#collapsible-navigation"
           aria-controls="collapsible-navigation"
           aria-expanded="false"
-          aria-label="Toggle navigation"
+          :aria-label="$t('nav.toggle')"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Menu content, collapsed on small screen -->
         <div class="collapse navbar-collapse" id="collapsible-navigation">
-          <ModeSelector />
-        </div>
+          <div class="navbar-nav flex-grow-1">
+            <ModeSelector class="me-auto" />
 
-        <div class="navbar-text hstack gap-3">
-          <component :is="auth?.statusComponent" />
+            <!-- Korplabb -->
+            <a :href="$t('nav.lab.url')" class="nav-link">
+              {{ $t("nav.lab") }}
+            </a>
 
-          <LanguageSelector />
+            <!-- Spacer -->
+            <div class="flex-grow-1" />
 
-          <div class="dropdown">
-            <button
-              type="button"
-              class="nav-link dropdown-toggle"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              {{ $t("gui.about") }}
-            </button>
+            <!-- Login/logout -->
+            <component :is="auth?.statusComponent" />
 
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item" href="https://spraakbanken.gu.se/verktyg/korp">Om Korp</a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="https://spraakbanken.gu.se/verktyg/korp/anvandarhandledning"
-                >
-                  {{ $t("gui.about.documentation") }}
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="https://spraakbanken.gu.se/korplabb/">
-                  {{ $t("gui.about.lab") }}
-                </a>
-              </li>
-            </ul>
+            <LanguageSelector />
+
+            <!-- Help menu -->
+            <div class="dropdown">
+              <button
+                id="help-dropdown"
+                type="button"
+                class="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-labelledby="gui-help-label"
+              >
+                <fa-icon icon="fa-regular fa-circle-question" />
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="help-dropdown">
+                <li>
+                  <h6 id="gui-help-label" class="dropdown-header">{{ $t("nav.help") }}</h6>
+                </li>
+
+                <!-- Link: About -->
+                <li>
+                  <a
+                    :href="$t('nav.help.about.url')"
+                    target="_blank"
+                    class="dropdown-item hstack justify-content-between"
+                  >
+                    {{ $t("nav.help.about") }}
+                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
+                  </a>
+                </li>
+
+                <!-- Link: Manual -->
+                <li>
+                  <a
+                    :href="$t('nav.help.manual.url')"
+                    target="_blank"
+                    class="dropdown-item hstack justify-content-between"
+                  >
+                    {{ $t("nav.help.manual") }}
+                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
+                  </a>
+                </li>
+
+                <!-- Link: Citation -->
+                <li>
+                  <a
+                    :href="$t('nav.help.citation.url')"
+                    target="_blank"
+                    class="dropdown-item hstack justify-content-between"
+                  >
+                    {{ $t("nav.help.citation") }}
+                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -79,12 +117,12 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row mt-2 mb-3 px-2 align-items-center">
-        <a :href="selfUrl" class="col-6 col-xl-3">
+      <div class="row gap-2 mt-2 mb-3 px-2 align-items-center">
+        <a :href="selfUrl" class="col-6 col-lg-3">
           <BrandPrimary />
         </a>
-        <BrandSecondary class="col-6 col-xl-3 order-xl-1" />
-        <CorpusSelector class="col-12 col-xl-6" />
+        <BrandSecondary class="col-6 col-lg-3 order-lg-1" />
+        <CorpusSelector class="col-12 col-lg-6" />
       </div>
 
       <SearchParallel v-if="isParallel" />

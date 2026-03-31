@@ -45,7 +45,7 @@ const currentModeLabel = computed(() =>
     "
     >
       <li>
-        <h6 class="dropdown-header">{{ $t("gui.modes") }}</h6>
+        <h6 class="dropdown-header">{{ $t("nav.modes") }}</h6>
       </li>
       <li v-for="{ mode, label } in lists.primary" :key="mode" role="menuitemradio">
         <a class="dropdown-item" :href="`?mode=${mode}`" :class="{ active: mode == currentMode }">
