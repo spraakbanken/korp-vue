@@ -26,9 +26,10 @@ const selfUrl = window.location.href.replace(/#.*/, "")
       <div class="container-fluid">
         <ModeSelector />
 
-        <LanguageSelector />
-
-        <component :is="auth?.statusComponent" />
+        <div class="hstack gap-3">
+          <component :is="auth?.statusComponent" />
+          <LanguageSelector />
+        </div>
       </div>
     </nav>
 

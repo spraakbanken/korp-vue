@@ -11,12 +11,24 @@ const { lang } = storeToRefs(store)
 </script>
 
 <template>
-  <fieldset>
-    <legend class="visually-hidden">{{ $t("language") }}:</legend>
-    <ul class="navbar-nav">
-      <li v-for="{ value, label } in settings.languages" :key="value" class="nav-item">
+  <div class="dropdown">
+    <button
+      class="nav-link dropdown-toggle"
+      type="button"
+      id="language-dropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      aria-labelledby="gui-language-label"
+    >
+      <fa-icon icon="fa-solid fa-globe" />
+    </button>
+    <ul role="menu" class="dropdown-menu dropdown-menu-end" aria-labelledby="language-dropdown">
+      <li>
+        <h6 id="gui-language-label" class="dropdown-header">{{ $t("gui.language") }}</h6>
+      </li>
+      <li v-for="{ value, label } in settings.languages" :key="value" role="menuitemradio">
         <a
-          class="nav-link"
+          class="dropdown-item"
           href="#"
           @click.prevent="lang = value"
           :class="{ active: value == lang }"
@@ -25,5 +37,5 @@ const { lang } = storeToRefs(store)
         </a>
       </li>
     </ul>
-  </fieldset>
+  </div>
 </template>
