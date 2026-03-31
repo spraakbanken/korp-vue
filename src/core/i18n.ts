@@ -40,3 +40,13 @@ export function formatDecimals(x: number | string, fractionDigits: number) {
     maximumFractionDigits: fractionDigits,
   })
 }
+
+/** Format a large number with magnitude abbreviations K, M, G, T */
+export function abbreviateNumber(n: number) {
+  // Find the appropriate abbreviation
+  const abbr = n < 1e3 ? "" : n < 1e6 ? "K" : n < 1e9 ? "M" : n < 1e12 ? "G" : n < 1e15 ? "T" : "P?"
+  // Utilize native locale-aware formatting, but replace the compact notation part with our custom abbreviation
+  // Otherwise, the compact notation for Swedish is "tn", "mn" etc, which is not wrong but we prefer this
+  const parts = new Intl.NumberFormat(getLang(), { notation: "compact" }).formatToParts(n)
+  return parts.map((part) => (part.type == "compact" ? abbr : part.value)).join("")
+}

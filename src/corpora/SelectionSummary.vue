@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { abbreviateNumber } from "@/core/i18n"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 
@@ -17,7 +18,7 @@ const store = useAppStore()
       {{ $t("corpus.selection.summary.selected", store.corpus.length) }}
       {{
         $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
-          list: [$n(corpusSelection.getTokenCount(), { notation: "compact" })],
+          list: [abbreviateNumber(corpusSelection.getTokenCount())],
         })
       }}
     </div>
@@ -25,7 +26,7 @@ const store = useAppStore()
       {{ $t("corpus.selection.summary.total", totalCorpora) }}
       {{
         $t("corpus.selection.summary.tokens", totalTokens, {
-          list: [$n(totalTokens, { notation: "compact" })],
+          list: [abbreviateNumber(totalTokens)],
         })
       }}
     </div>
