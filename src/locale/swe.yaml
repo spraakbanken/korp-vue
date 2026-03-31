@@ -4,6 +4,7 @@ corpora: Korpusar
 error.backend: Servern gav felet {type}
 error.heading: Ett fel har uppstått.
 error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna sb-info{'@'}svenska.gu.se.
+gui.about: Om Korp
 gui.language: Gränssnittsspråk
 loading: Laddar…
 modes: Lägen

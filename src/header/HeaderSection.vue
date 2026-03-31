@@ -41,19 +41,50 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 
         <div class="navbar-text hstack gap-3">
           <component :is="auth?.statusComponent" />
+
           <LanguageSelector />
+
+          <div class="dropdown">
+            <button
+              type="button"
+              class="nav-link dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {{ $t("gui.about") }}
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="https://spraakbanken.gu.se/verktyg/korp">Om Korp</a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="https://spraakbanken.gu.se/verktyg/korp/anvandarhandledning"
+                >
+                  {{ $t("gui.about.documentation") }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="https://spraakbanken.gu.se/korplabb/">
+                  {{ $t("gui.about.lab") }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row my-2 px-2 align-items-center">
+      <div class="row mt-2 mb-3 px-2 align-items-center">
         <a :href="selfUrl" class="col-6 col-xl-3">
           <BrandPrimary />
         </a>
         <BrandSecondary class="col-6 col-xl-3 order-xl-1" />
-        <CorpusSelector class="col-12 col-xl-6 mt-2" />
+        <CorpusSelector class="col-12 col-xl-6" />
       </div>
 
       <SearchParallel v-if="isParallel" />
