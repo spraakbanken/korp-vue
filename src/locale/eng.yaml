@@ -6,8 +6,8 @@ error.heading: An error has occurred.
 error.footer: If you have questions, or you want to report a bug, please contact sb-info{'@'}svenska.gu.se.
 gui.about: About Korp
 gui.language: User interface language
+gui.modes: Modes
 loading: Loading…
-modes: Modes
 more: More
 search: Search
 save: Save

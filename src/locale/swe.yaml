@@ -6,8 +6,8 @@ error.heading: Ett fel har uppstått.
 error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna sb-info{'@'}svenska.gu.se.
 gui.about: Om Korp
 gui.language: Gränssnittsspråk
+gui.modes: Lägen
 loading: Laddar…
-modes: Lägen
 more: Fler
 search: Sök
 save: Spara
