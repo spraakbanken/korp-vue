@@ -8,14 +8,6 @@ gui.language: User interface language
 loading: Loading…
 more: More
 nav.help: Help
-nav.help.about: About Korp
-nav.help.about.url: https://spraakbanken.gu.se/en/tools/korp
-nav.help.citation: How to cite Korp
-nav.help.citation.url: https://spraakbanken.gu.se/en/about/howtocite#Korp
-nav.help.manual: User manual
-nav.help.manual.url: https://spraakbanken.gu.se/en/tools/korp/user-manual
-nav.lab: Korp lab
-nav.lab.url: https://spraakbanken.gu.se/korplabb/#?lang=eng
 nav.modes: Modes
 nav.toggle: Toggle navigation
 search: Search

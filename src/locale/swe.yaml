@@ -8,14 +8,6 @@ gui.language: Gränssnittsspråk
 loading: Laddar…
 more: Fler
 nav.help: Hjälp
-nav.help.about: Om Korp
-nav.help.about.url: https://spraakbanken.gu.se/verktyg/korp
-nav.help.citation: Hur citerar jag Korp?
-nav.help.citation.url: https://spraakbanken.gu.se/om/referera#Korp
-nav.help.manual: Användarhandledning
-nav.help.manual.url: https://spraakbanken.gu.se/verktyg/korp/anvandarhandledning
-nav.lab: Korplabb
-nav.lab.url: https://spraakbanken.gu.se/korplabb/
 nav.modes: Lägen
 nav.toggle: Visa/göm navigation
 search: Sök
