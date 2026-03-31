@@ -34,19 +34,9 @@ const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): 
   })
 }
 
-const sortedFolders = computed(() => {
-  return sortOnTitle(props.node.subFolders)
-})
-
-const sortedCorpora = computed(() => {
-  return sortOnTitle(props.node.corpora)
-})
-
 watch(
   () => store.corpus,
-  () => {
-    updateCheckboxes()
-  },
+  () => updateCheckboxes(),
   { deep: true },
 )
 updateCheckboxes()
@@ -57,36 +47,22 @@ function updateCheckboxes() {
     // 1. get the list of all corpora for each subfolder
     const corporaIds = getAllCorpora(folder)
     // 2. check the status of each corpora in the app store for each folder
-    const selectedCorporaIds = corporaIds.filter((corpusId) => {
-      return store.corpus.indexOf(corpusId) !== -1
-    })
+    const selectedCorporaIds = corporaIds.filter((corpusId) => store.corpus.includes(corpusId))
     if (corporaIds.length === selectedCorporaIds.length) {
       folder.selected = "all"
     } else if (selectedCorporaIds.length > 0) {
       folder.selected = "some"
-      // Temp. hack for making sure the intermediate folders are
-      // opened when the app starts, but not each time a checkbox
-      // change happens, which right now is when the store.corpus
-      // update happens for the SECOND time (unclear why):
-      if (updateCounter === 1) extendedFolders.value.add(folder.id)
     } else {
       folder.selected = "none"
     }
+    // Set expanded status on first run, when it's still undefined, so partially selected folders are expanded by default
+    if (folder.expanded === undefined) folder.expanded = folder.selected == "some"
   })
   // Then the corpora
   props.node.corpora.forEach((corpus) => {
     corpus.selected = store.corpus.indexOf(corpus.id) !== -1
   })
   updateCounter++
-}
-
-// Extened/collapsed
-function toggleFolder(id: string) {
-  if (extendedFolders.value.has(id)) {
-    extendedFolders.value.delete(id)
-  } else {
-    extendedFolders.value.add(id)
-  }
 }
 
 function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
@@ -125,42 +101,53 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
 <template>
   <div>
     <!-- List of folders -->
-    <div v-for="subFolder in sortedFolders" :key="subFolder.id">
-      <div>
-        <div class="flex">
-          <fa-icon
-            :icon="`fa-solid ${extendedFolders.has(subFolder.id) ? 'fa-caret-down' : 'fa-caret-right'}`"
-            @click="toggleFolder(subFolder.id)"
+    <details
+      v-for="folder in sortOnTitle(props.node.subFolders)"
+      :key="folder.id"
+      :open="folder.expanded"
+      class="ps-1"
+      :class="{ 'bg-primary-subtle': folder.selected == 'all' }"
+      @toggle="folder.expanded = ($event.target as any).open"
+    >
+      <!-- Folder row -->
+      <summary class="d-block">
+        <label
+          @click.prevent="toggleFolderSelection(folder, $event.altKey || $event.ctrlKey)"
+          @keydown.space.prevent="toggleFolderSelection(folder, $event.altKey || $event.ctrlKey)"
+        >
+          <input
+            type="checkbox"
+            :checked="folder.selected !== 'none'"
+            :indeterminate="folder.selected === 'some'"
+            class="form-check-input me-1 pe-none"
           />
-          <label
-            style="user-select: none"
-            @click.prevent="toggleFolderSelection(subFolder, $event.altKey || $event.ctrlKey)"
-            @keydown.space.prevent="
-              toggleFolderSelection(subFolder, $event.altKey || $event.ctrlKey)
-            "
-            @keydown.enter.shift.prevent="toggleFolder(subFolder.id)"
-          >
-            <input
-              type="checkbox"
-              style="pointer-events: none"
-              :checked="subFolder.selected !== 'none'"
-              :indeterminate="subFolder.selected === 'some'"
-              class="me-1"
-            />{{ locObj(subFolder.title) }}
-            <span style="color: gray">({{ subFolder.numberOfChildren }})</span>
-          </label>
-        </div>
-      </div>
-      <CorpusSelectorTree v-if="extendedFolders.has(subFolder.id)" :node="subFolder" class="ms-3" />
-    </div>
+        </label>
+        <fa-icon
+          :icon="`fa-solid ${folder.expanded ? 'fa-folder-open' : 'fa-folder'}`"
+          class="me-1 text-warning"
+        />
+        {{ locObj(folder.title) }}
+        <span class="text-muted">({{ folder.numberOfChildren }})</span>
+      </summary>
+
+      <!-- Folder contents -->
+      <CorpusSelectorTree
+        :node="folder"
+        class="ms-2 border-start rounded-bottom"
+        style="padding-inline-start: 0.9rem"
+      />
+    </details>
+
     <!-- List of corpora -->
     <div
-      v-for="corpus in sortedCorpora"
-      class="d-flex bg-secondary-subtle mb-1 ps-1"
-      style="margin-left: 16px"
+      v-for="corpus in sortOnTitle(props.node.corpora)"
+      :key="corpus.id"
+      class="corpus d-flex px-1"
+      :class="{ 'bg-primary-subtle': corpus.selected }"
     >
       <label
-        style="flex: 1 1 0%"
+        class="flex-grow-1"
+        style="cursor: pointer"
         @click.prevent="toggleCorpusSelection(corpus, $event.altKey || $event.ctrlKey)"
         @keydown.space.prevent="toggleCorpusSelection(corpus, false)"
       >
@@ -168,12 +155,12 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
           v-if="corpus.protected && !auth.hasCredential(corpus.id)"
           icon="fa-solid fa-lock"
           size="sm"
+          class="me-2 text-danger"
         />
         <input
           v-else
           type="checkbox"
-          style="pointer-events: none"
-          class="me-1"
+          class="form-check-input me-2 pe-none"
           :checked="corpus.selected"
         />{{ locObj(corpus.title) }}
       </label>
@@ -182,7 +169,18 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
         icon="fa-solid fa-lock-open"
         class="m-1"
       />
-      <fa-icon icon="fa-solid fa-circle-info" class="m-1" />
+      <fa-icon icon="fa-solid fa-circle-info" class="my-1 text-info" />
     </div>
   </div>
 </template>
+
+<style scoped>
+details:not(.bg-primary-subtle) > summary:hover,
+.corpus:not(.bg-primary-subtle):hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.text-bg-primary * {
+  color: #fff !important;
+}
+</style>

@@ -20,7 +20,7 @@ export type ChooserFolderSub = ChooserFolder & {
   title: LangString
   description?: LangString
   selected: "none" | "some" | "all"
-  extended?: boolean
+  expanded?: boolean
 }
 
 export type ChooserFolderRoot = ChooserFolder & {
@@ -33,7 +33,7 @@ export const isFolder = (object: ChooserFolder | Corpus): object is ChooserFolde
   "numberOfChildren" in object
 
 export const initCorpusStructure = (allCorpora: Corpus[]): ChooserFolderRoot => {
-  for (let corpus of allCorpora) {
+  for (const corpus of allCorpora) {
     const tokens = parseInt(corpus.info.Size || "0")
     corpus.tokens = tokens
     corpus.sentences = parseInt(corpus.info.Sentences || "0")
@@ -51,7 +51,9 @@ export const initCorpusStructure = (allCorpora: Corpus[]): ChooserFolderRoot => 
 
     const folders: ChooserFolderSub[] = Object.entries(foldersRaw).map(([id, folder]) => {
       ids.push(...(folder.corpora || []))
-      const corpora = (folder.corpora || []).map((corpusId): Corpus => allCorpora.find(cp => cp.id === corpusId)!);
+      const corpora = (folder.corpora || []).map(
+        (corpusId): Corpus => allCorpora.find((cp) => cp.id === corpusId)!,
+      )
 
       // this is needed for folder identity checks in chooser
       let nCorpora = corpora.length
