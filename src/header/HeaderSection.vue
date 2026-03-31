@@ -22,11 +22,24 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 <template>
   <header class="bg-body-secondary pb-3 mb-2">
     <!-- Top row -->
-    <nav class="navbar navbar-expand">
+    <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
-        <ModeSelector />
+        <button
+          type="button"
+          class="navbar-toggler order-1"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapsible-navigation"
+          aria-controls="collapsible-navigation"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsible-navigation">
+          <ModeSelector />
+        </div>
 
-        <div class="hstack gap-3">
+        <div class="navbar-text hstack gap-3">
           <component :is="auth?.statusComponent" />
           <LanguageSelector />
         </div>

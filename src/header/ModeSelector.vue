@@ -33,7 +33,12 @@ const lists = computed(() => {
     <span class="visually-hidden">{{ $t("modes") }}:</span>
     <ul class="navbar-nav">
       <li v-for="{ label, mode } of lists.primary" :key="mode" class="nav-item">
-        <a :href="`?mode=${mode}`" class="nav-link" :class="{ active: mode == currentMode }">
+        <a
+          :href="`?mode=${mode}`"
+          class="nav-link"
+          :class="{ active: mode == currentMode }"
+          :aria-current="mode == currentMode ? 'page' : undefined"
+        >
           {{ locObj(label) }}
         </a>
       </li>
