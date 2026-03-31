@@ -7,11 +7,17 @@ import SearchPanel from "@/search/SearchPanel.vue"
 import { injectComponent } from "@/injection"
 import settings from "@/core/config"
 import SearchParallel from "@/search/SearchParallel.vue"
+import { computed } from "vue"
+import { useLocale } from "@/i18n/useLocale"
 
 const auth = useAuth()
+const { locObj } = useLocale()
 
 const BrandPrimary = injectComponent("BrandPrimary")
 const BrandSecondary = injectComponent("BrandSecondary")
+
+const helpLinks = computed(() => settings.navigation?.help_links || [])
+const links = computed(() => settings.navigation?.links || [])
 
 /** Whether the mode is parallel */
 const isParallel = !!settings["parallel"]
@@ -43,8 +49,8 @@ const selfUrl = window.location.href.replace(/#.*/, "")
             <ModeSelector class="me-auto" />
 
             <!-- Korplabb -->
-            <a :href="$t('nav.lab.url')" class="nav-link">
-              {{ $t("nav.lab") }}
+            <a v-for="({ url, label }, i) in links" :key="i" :href="locObj(url)" class="nav-link">
+              {{ locObj(label) }}
             </a>
 
             <!-- Spacer -->
@@ -56,7 +62,7 @@ const selfUrl = window.location.href.replace(/#.*/, "")
             <LanguageSelector />
 
             <!-- Help menu -->
-            <div class="dropdown">
+            <div v-if="helpLinks.length" class="dropdown">
               <button
                 id="help-dropdown"
                 type="button"
@@ -73,38 +79,13 @@ const selfUrl = window.location.href.replace(/#.*/, "")
                   <h6 id="gui-help-label" class="dropdown-header">{{ $t("nav.help") }}</h6>
                 </li>
 
-                <!-- Link: About -->
-                <li>
+                <li v-for="({ url, label }, i) in helpLinks" :key="i">
                   <a
-                    :href="$t('nav.help.about.url')"
+                    :href="locObj(url)"
                     target="_blank"
                     class="dropdown-item hstack justify-content-between"
                   >
-                    {{ $t("nav.help.about") }}
-                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
-                  </a>
-                </li>
-
-                <!-- Link: Manual -->
-                <li>
-                  <a
-                    :href="$t('nav.help.manual.url')"
-                    target="_blank"
-                    class="dropdown-item hstack justify-content-between"
-                  >
-                    {{ $t("nav.help.manual") }}
-                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
-                  </a>
-                </li>
-
-                <!-- Link: Citation -->
-                <li>
-                  <a
-                    :href="$t('nav.help.citation.url')"
-                    target="_blank"
-                    class="dropdown-item hstack justify-content-between"
-                  >
-                    {{ $t("nav.help.citation") }}
+                    {{ locObj(label) }}
                     <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
                   </a>
                 </li>
