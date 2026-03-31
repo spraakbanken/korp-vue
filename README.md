@@ -11,8 +11,8 @@ git clone git@github.com:spraakbanken/korp-vue
 git clone git@github.com:spraakbanken/korp-vue-sb
 mv korp-vue-sb korp-vue/instance
 cd korp-vue
-yarn install
-yarn dev
+npm install
+npm run dev
 ```
 
 ## Setup details
@@ -47,5 +47,5 @@ To activate SSL (e.g. for `?mode=mink` which uses SB-Auth):
 
 ## Development
 
-- Install deps by running `yarn` (v1)
-- Run with `yarn dev`
+- Install deps by running `npm install`
+- Run with `npm run dev`
