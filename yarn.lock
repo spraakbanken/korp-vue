@@ -456,6 +456,11 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
+"@fontsource-variable/jost@^5.2.8":
+  version "5.2.8"
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/jost/-/jost-5.2.8.tgz#abe44dfc4cb4f28660117233d027bd3732769aae"
+  integrity sha512-+VDDHpbhgZ9A8KeHb7/LUMRR1LILVKIscNhVRSDzn3tFXoi1mFA/OhO8CZL/u2OujoGjZANjOdUZIgaxclxyjw==
+
 "@fontsource/source-sans-pro@^5.2.5":
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/@fontsource/source-sans-pro/-/source-sans-pro-5.2.5.tgz#938c5fc438f9e9a7af5b7f6d92b91af70ecddd92"

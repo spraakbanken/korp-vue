@@ -9,6 +9,7 @@ import fontawesome from "./fontawesome"
 import "@/assets/styles.scss"
 import "@fontsource/source-sans-pro/400.css"
 import "@fontsource/source-sans-pro/600.css"
+import "@fontsource-variable/jost"
 
 // Get URL parameters
 const params = new URLSearchParams(location.search)

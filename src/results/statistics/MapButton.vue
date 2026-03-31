@@ -45,9 +45,9 @@ function confirm() {
 
   <div class="dropdown-menu card p-0">
     <form @submit.prevent="confirm()">
-      <div class="card-header">
+      <h6 class="card-header">
         {{ $t("result.map.attribute") }}
-      </div>
+      </h6>
 
       <div class="card-body">
         <!-- Attribute options -->
