@@ -1,0 +1,4 @@
+RewriteEngine on
+
+# This file was in the old frontend, but was moved to the Språkbanken website
+RewriteRule ^markup/msdtags.html https://spraakbanken.gu.se/verktyg/korp/msdtags [R=301]
