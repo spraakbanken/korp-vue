@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import { useTemplateRef } from "vue"
 import { useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
+import { useSortable } from "@vueuse/integrations/useSortable"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
   isCqpStruct,
@@ -16,6 +18,13 @@ import QueryStruct from "./QueryStruct.vue"
 const tokens = defineModel<CqpQuery>({ required: true })
 
 const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
+const rowEl = useTemplateRef("row")
+useSortable(rowEl, tokens, {
+  animation: 200,
+  draggable: ".card",
+  filter: ".card .card",
+  preventOnFilter: false,
+})
 
 const createToken = (): CqpToken => ({ and_block: [[createCondition("")]] })
 
@@ -45,7 +54,7 @@ function addBoundary(start: boolean) {
 </script>
 
 <template>
-  <div class="d-flex gap-4 align-items-center overflow-x-auto overflow-y-hidden">
+  <div ref="row" class="d-flex gap-4 align-items-center overflow-x-auto overflow-y-hidden">
     <!-- TODO Dropdowns in *AutocompleteWidget are clipped -->
     <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2">
       <QueryToken
