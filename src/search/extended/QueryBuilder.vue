@@ -10,47 +10,16 @@ import {
   type CqpToken,
 } from "@/core/cqp/cqp.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import { computed } from "vue"
-import QueryBuilderCondition from "./QueryBuilderCondition.vue"
+import QueryToken from "./QueryToken.vue"
 
 const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
 
 const tokens = defineModel<CqpQuery>({ required: true })
 
-const canRemoveCondition = computed(() => hasMultipleTokenConditions(tokens.value))
-
 const createToken = (): CqpToken => ({ and_block: [[createCondition("")]] })
 
 function addToken() {
   tokens.value.push(createToken())
-}
-
-function addDisjunction(tokenIndex: number) {
-  if (!isCqpToken(tokens.value[tokenIndex]))
-    throw new Error("Cannot modify non-existing or struct token")
-  tokens.value[tokenIndex].and_block.push([createCondition()])
-}
-
-function addCondition(tokenIndex: number, disjunctionIndex: number) {
-  if (!isCqpToken(tokens.value[tokenIndex]))
-    throw new Error("Cannot modify non-existing or struct token")
-  tokens.value[tokenIndex].and_block[disjunctionIndex]!.push(createCondition())
-}
-
-function removeCondition(tokenIndex: number, disjunctionIndex: number, conditionIndex: number) {
-  if (!isCqpToken(tokens.value[tokenIndex]))
-    throw new Error("Cannot modify non-existing or struct token")
-  tokens.value[tokenIndex].and_block[disjunctionIndex]!.splice(conditionIndex, 1)
-
-  // If the disjunction is empty, remove it
-  if (tokens.value[tokenIndex].and_block[disjunctionIndex]!.length == 0) {
-    tokens.value[tokenIndex].and_block.splice(disjunctionIndex, 1)
-  }
-
-  // If the token is empty, remove it
-  if (tokens.value[tokenIndex].and_block.length == 0) {
-    removeItem(tokenIndex)
-  }
 }
 
 function removeItem(index: number) {
@@ -78,59 +47,12 @@ function addBoundary(start: boolean) {
   <div class="d-flex gap-4 align-items-center overflow-x-auto overflow-y-hidden">
     <!-- TODO Dropdowns in *AutocompleteWidget are clipped -->
     <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2">
-      <!-- 2-dimensional repetition: an AND of OR's-->
-      <div v-if="isCqpToken(token)" class="vstack gap-2">
-        <template v-for="(disjunction, j) in token.and_block" :key="j">
-          <div v-if="j > 0">{{ $t("search.and") }}</div>
-
-          <div class="card bg-body-tertiary p-2 vstack gap-2">
-            <template v-for="(condition, k) in disjunction" :key="k">
-              <div v-if="k > 0">{{ $t("search.or") }}</div>
-
-              <!-- Each condition (attribute-operator-value) -->
-              <div class="hstack gap-2">
-                <QueryBuilderCondition
-                  v-model:attribute="condition.type"
-                  v-model:operator="condition.op"
-                  v-model:value="condition.val"
-                  v-model:flags="condition.flags"
-                />
-
-                <button
-                  type="button"
-                  class="btn-close"
-                  :aria-label="$t('search.extended.condition_remove')"
-                  @click="removeCondition(i, j, k)"
-                  :class="{ invisible: !canRemoveCondition }"
-                  style="width: 0.2rem; background-size: contain"
-                ></button>
-              </div>
-            </template>
-
-            <div>
-              <button
-                type="button"
-                class="btn btn-link text-decoration-none btn-sm"
-                @click="addCondition(i, j)"
-              >
-                <fa-icon icon="fa-solid fa-plus" />
-                {{ $t("search.or") }}…
-              </button>
-            </div>
-          </div>
-        </template>
-
-        <div>
-          <button
-            type="button"
-            class="btn btn-link text-decoration-none btn-sm"
-            @click="addDisjunction(i)"
-          >
-            <fa-icon icon="fa-solid fa-plus" />
-            {{ $t("search.and") }}…
-          </button>
-        </div>
-      </div>
+      <QueryToken
+        v-if="isCqpToken(token)"
+        v-model="token.and_block"
+        :can-remove="hasMultipleTokenConditions(tokens)"
+        @remove="removeItem(i)"
+      />
 
       <div v-else-if="isCqpStruct(token)" class="hstack gap-2">
         <div class="vstack gap-2">
