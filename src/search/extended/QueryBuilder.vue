@@ -11,10 +11,11 @@ import {
 } from "@/core/cqp/cqp.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import QueryToken from "./QueryToken.vue"
-
-const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
+import QueryStruct from "./QueryStruct.vue"
 
 const tokens = defineModel<CqpQuery>({ required: true })
+
+const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
 
 const createToken = (): CqpToken => ({ and_block: [[createCondition("")]] })
 
@@ -54,54 +55,12 @@ function addBoundary(start: boolean) {
         @remove="removeItem(i)"
       />
 
-      <div v-else-if="isCqpStruct(token)" class="hstack gap-2">
-        <div class="vstack gap-2">
-          <select class="form-select">
-            <option
-              v-for="(label, tag) in corpusSelection.getCommonWithins()"
-              :key="tag"
-              :value="tag"
-            >
-              {{ $t(`tag.${label}`) }}
-            </option>
-          </select>
-
-          <div>
-            <div class="form-check">
-              <label class="form-check-label">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  :name="`boundary-${i}-start`"
-                  :checked="token.start"
-                  @change="token.start = true"
-                />
-                {{ $t("search.extended.boundary.start") }}
-              </label>
-            </div>
-            <div class="form-check">
-              <label class="form-check-label">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  :name="`boundary-${i}-start`"
-                  :checked="!token.start"
-                  @change="token.start = false"
-                />
-                {{ $t("search.extended.boundary.end") }}
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="btn-close"
-          :aria-label="$t('search.extended.boundary_remove')"
-          @click="removeItem(i)"
-          style="width: 0.2rem; background-size: contain"
-        ></button>
-      </div>
+      <QueryStruct
+        v-else-if="isCqpStruct(token)"
+        v-model:struct="token.struct"
+        v-model:start="token.start"
+        @remove="removeItem(i)"
+      />
 
       <div v-else>TODO Bound? {{ token }}</div>
     </div>
