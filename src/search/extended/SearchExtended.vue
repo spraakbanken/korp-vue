@@ -13,17 +13,21 @@ import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "../useSearchStore"
 import useMessageStore from "@/store/useMessageStore"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 
 const store = useAppStore()
 const { search } = storeToRefs(store)
 const searchStore = useSearchStore()
 const { addMessage } = useMessageStore()
+const corpusSelection = useReactiveCorpusSelection()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
 
 /** Model for the free order option */
 const freeOrder = ref(!store.in_order)
+/** Model for the within option */
+const within = ref(store.within)
 
 // React to the `search` param being changed, at first load or later
 watchImmediate(search, () => {
@@ -48,11 +52,13 @@ function submit() {
   store.cqp = stringify(tokens.value)
   store.search = "cqp"
   store.page = 0
+  store.within = within.value
   searchStore.commitQuery(tokens.value)
 }
 
 // Sync from store to local state
 watchEffect(() => (freeOrder.value = !store.in_order))
+watchEffect(() => (within.value = store.within))
 // Sync from local state to store
 watchEffect(() => (searchStore.queryExtended = tokens.value))
 </script>
@@ -70,7 +76,7 @@ watchEffect(() => (searchStore.queryExtended = tokens.value))
       {{ $t("search.extended.instructions") }}
     </div>
 
-    <div class="hstack justify-content-center gap-2">
+    <div class="hstack justify-content-center gap-2 align-items-baseline">
       <!-- "Free order" option -->
       <div class="form-check">
         <input
@@ -83,6 +89,18 @@ watchEffect(() => (searchStore.queryExtended = tokens.value))
           {{ $t("search.free_order") }}
           <HelpBadge :text="$t('search.free_order.help')" />
         </label>
+      </div>
+
+      <!-- Within option -->
+      <div class="hstack gap-1">
+        <label for="search-extended-within" class="form-check-label">
+          {{ $t("search.within") }}
+        </label>
+        <select id="search-extended-within" v-model="within" class="form-select">
+          <option v-for="key in corpusSelection.getWithinKeys()" :key :value="key">
+            {{ $t(`search.within.key.${key}`) }}
+          </option>
+        </select>
       </div>
 
       <!-- Search/save buttons -->

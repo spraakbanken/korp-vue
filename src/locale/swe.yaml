@@ -189,6 +189,11 @@ search.or: eller
 search.filters: Filter
 search.filters.add: Lägg till {0}…
 
+search.within: inom
+search.within.key.sentence: mening
+search.within.key.paragraph: stycke
+search.within.key.link: länk
+
 result.compare.column_heading: Utmärkande för {label}
 
 result.export.action: Exportera

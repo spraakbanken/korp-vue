@@ -189,6 +189,11 @@ search.or: or
 search.filters: Filters
 search.filters.add: Add {0}…
 
+search.within: within
+search.within.key.sentence: sentence
+search.within.key.paragraph: paragraph
+search.within.key.link: link
+
 result.compare.column_heading: Prominent in {label}
 
 result.export.action: Export
