@@ -60,6 +60,7 @@ function addBoundary(start: boolean) {
       <QueryToken
         v-if="isCqpToken(token)"
         v-model="token.and_block"
+        v-model:repeat="token.repeat"
         :can-remove="hasMultipleTokenConditions(tokens)"
         @remove="removeItem(i)"
       />

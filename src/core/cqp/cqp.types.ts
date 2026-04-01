@@ -4,8 +4,8 @@ export type CqpItem = CqpToken | CqpStruct | CqpBound
 
 export type CqpToken = {
   and_block: Condition[][]
-  /** `[min]` or `[min, max]` */
-  repeat?: [number] | [number, number]
+  /** `[min, max]` */
+  repeat?: [number, number]
 }
 
 /** Represents a start/end boundary of a structural element, typically a sentence. */

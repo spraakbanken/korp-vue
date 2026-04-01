@@ -12,10 +12,12 @@ import QueryBuilder from "./QueryBuilder.vue"
 import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "../useSearchStore"
+import useMessageStore from "@/store/useMessageStore"
 
 const store = useAppStore()
 const { search } = storeToRefs(store)
 const searchStore = useSearchStore()
+const { addMessage } = useMessageStore()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
@@ -30,7 +32,11 @@ watchImmediate(search, () => {
   if (type != "cqp" || value) return
 
   // Replace query under construction
-  tokens.value = parse<CqpQuery>(store.cqp)
+  try {
+    tokens.value = parse<CqpQuery>(store.cqp)
+  } catch (e) {
+    addMessage("error", e instanceof Error ? e.message : String(e))
+  }
 
   // Trigger search
   searchStore.commitQuery(tokens.value)

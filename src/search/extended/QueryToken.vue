@@ -3,8 +3,10 @@
 import { createCondition } from "@/core/cqp/cqp"
 import { type Condition } from "@/core/cqp/cqp.types"
 import QueryBuilderCondition from "./QueryBuilderCondition.vue"
+import QueryTokenRepeat from "./QueryTokenRepeat.vue"
 
 const conditions = defineModel<Condition[][]>({ required: true })
+const repeat = defineModel<[number, number] | undefined>("repeat")
 
 defineProps<{
   /** Whether conditions can be removed */
@@ -62,6 +64,7 @@ function removeCondition(disjunctionIndex: number, conditionIndex: number) {
         </template>
 
         <div>
+          <!-- Button for adding to OR -->
           <button
             type="button"
             class="btn btn-link text-decoration-none btn-sm"
@@ -74,15 +77,20 @@ function removeCondition(disjunctionIndex: number, conditionIndex: number) {
       </div>
     </template>
 
-    <div>
+    <!-- Bottom row -->
+    <div class="hstack gap-2 pe-2">
+      <!-- Button for adding to AND -->
       <button
         type="button"
-        class="btn btn-link text-decoration-none btn-sm"
+        class="btn btn-link text-decoration-none btn-sm me-auto"
         @click="conditions.push([createCondition()])"
       >
         <fa-icon icon="fa-solid fa-plus" />
         {{ $t("search.and") }}…
       </button>
+
+      <!-- Repetition -->
+      <QueryTokenRepeat v-model="repeat" />
     </div>
   </div>
 </template>

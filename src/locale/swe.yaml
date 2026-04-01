@@ -126,6 +126,10 @@ search.extended.boundary.type: Gränsenhet
 search.extended.boundary.start: börjar
 search.extended.boundary.end: slutar
 search.extended.free_order_invalid: Alternativet {free_order} fungerar bara om sökfrågan har flera tokens samt inga repetitioner, gränser eller tomma token.
+search.extended.repeat: Upprepa
+search.extended.repeat.help: Matcha flera token som uppfyller samma villkor
+search.extended.repeat.min: Minst
+search.extended.repeat.max: Högst
 
 search.advanced: Avancerad
 search.advanced.current_query: "Aktuell sökfråga i {0}:"

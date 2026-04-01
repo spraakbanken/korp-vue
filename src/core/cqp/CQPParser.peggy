@@ -50,12 +50,9 @@ token
   }
 
 repeat
-   = "{" from:[0-9]+ "," to:[0-9]* "}"
+   = "{" from:[0-9]+ "," to:[0-9]+ "}"
     {
-      var output = [Number(from.join(""))]
-      if(to.length)
-        output.push(Number(to.join("")))
-      return output
+      return [Number(from.join("")), Number(to.join(""))]
     }
 
 

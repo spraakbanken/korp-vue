@@ -125,6 +125,10 @@ search.extended.boundary.type: Boundary unit
 search.extended.boundary.start: starts
 search.extended.boundary.end: ends
 search.extended.free_order_invalid: The {free_order} option requires multiple tokens, no repetition, no boundaries and no wildcards.
+search.extended.repeat: Repeat
+search.extended.repeat.help: Match multiple tokens meeting the same conditions
+search.extended.repeat.min: At least
+search.extended.repeat.max: At most
 
 search.advanced: Advanced
 search.advanced.current_query: "Current search query in {0}:"

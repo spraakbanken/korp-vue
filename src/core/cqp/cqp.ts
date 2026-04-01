@@ -154,7 +154,7 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
 
     let out_token = `[${or_out.join(" & ")}]`
     if (isCqpToken(token) && token.repeat) {
-      out_token += `{${token.repeat.length > 1 ? token.repeat.join(",") : token.repeat + ","}}`
+      out_token += `{${token.repeat.join(",")}}`
     }
 
     output.push(out_token)
