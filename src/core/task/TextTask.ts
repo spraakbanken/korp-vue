@@ -1,9 +1,10 @@
-import { korpRequest } from "../common"
-import type { ApiKwic, Token } from "../../backend/types"
 import { omit } from "lodash-es"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { Corpus } from "@/core/config/corpusConfig.types"
+import type { KwicRow } from "../kwic/kwic"
+import type { ApiKwic, Token } from "../backend/types"
+import { korpRequest } from "../backend/common"
 
 export type TextReaderDataContainer = {
   corpus: string
@@ -28,11 +29,11 @@ export class TextTask extends TaskBase<TextReaderData> {
   textId: string
   constructor(
     readonly corpusId: string,
-    readonly sentenceData: Record<string, string>,
+    readonly sentenceData: KwicRow["structs"],
   ) {
     super()
     this.corpus = corpusListing.get(this.corpusId)
-    this.textId = this.sentenceData["text__id"]
+    this.textId = this.sentenceData["text__id"]!
     if (!this.textId) throw new RangeError("Sentence has no text__id")
   }
 

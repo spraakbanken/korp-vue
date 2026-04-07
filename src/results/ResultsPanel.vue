@@ -13,12 +13,14 @@ import { watchImmediate } from "@vueuse/core"
 import { TrendTask } from "@/core/task/TrendTask"
 import { MapTask } from "@/core/task/MapTask"
 import TabProgressBar from "./TabProgressBar.vue"
+import { TextTask } from "@/core/task/TextTask"
 
 const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
 const ExampleResults = defineAsyncComponent(() => import("./kwic/ExampleResults.vue"))
 const KwicResults = defineAsyncComponent(() => import("./kwic/KwicResults.vue"))
 const MapResults = defineAsyncComponent(() => import("./MapResults.vue"))
 const StatisticsResults = defineAsyncComponent(() => import("./statistics/StatisticsResults.vue"))
+const TextResults = defineAsyncComponent(() => import("./text/TextResults.vue"))
 const TrendResults = defineAsyncComponent(() => import("./TrendResults.vue"))
 const WordpicResults = defineAsyncComponent(() => import("./WordpicResults.vue"))
 
@@ -90,6 +92,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
   if (task instanceof WordpicExampleTask) return ExampleResults
   if (task instanceof CompareTask) return CompareResults
   if (task instanceof MapTask) return MapResults
+  if (task instanceof TextTask) return TextResults
   if (task instanceof TrendTask) return TrendResults
   return null
 }

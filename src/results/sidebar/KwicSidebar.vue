@@ -5,9 +5,14 @@ import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
 import { pickBy, sortBy } from "lodash-es"
-import { isKwicRowToken } from "@/core/kwic/kwic"
+import { isKwic, isKwicRowToken } from "@/core/kwic/kwic"
+import { useDynamicTabs } from "../useDynamicTabs"
+import { useI18n } from "vue-i18n"
+import { TextTask } from "@/core/task/TextTask"
 
 const { locObj } = useLocale()
+const { createTab } = useDynamicTabs()
+const { t } = useI18n()
 
 const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
@@ -41,6 +46,13 @@ const posAttributes = computed(() => {
   const ordering = corpus.value?._attributes_order || []
   return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
 })
+
+function openReadingMode() {
+  const row = selectedToken?.value?.row
+  if (row && isKwic(row)) {
+    createTab(t("result.reader"), new TextTask(corpus.value!.id, row.structs))
+  }
+}
 </script>
 
 <script lang="ts">
@@ -68,6 +80,16 @@ export const SIDEBAR_WIDTH_REM = 20
             @click="selectedToken = undefined"
           />
         </header>
+
+        <button
+          v-if="corpus.reading_mode"
+          type="button"
+          class="btn btn-secondary"
+          @click="openReadingMode()"
+        >
+          <fa-icon icon="fa-solid fa-book-open" />
+          {{ $t("result.kwic.reading_mode.open") }}
+        </button>
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">
