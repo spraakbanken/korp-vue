@@ -1,30 +1,20 @@
 <script setup lang="ts">
-import {
-  getAllCorpora,
-  type ChooserFolder,
-  type ChooserFolderRoot,
-  type ChooserFolderSub,
-} from "@/core/corpora/corpora"
+import { getAllCorpora, type ChooserFolder, type ChooserFolderSub } from "@/core/corpora/corpora"
 import { useAuth } from "@/auth/useAuth"
-import { computed, ref, watch } from "vue"
+import { watch } from "vue"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { LangString } from "@/core/model/locale"
 
-const { locObj } = useLocale()
+const props = defineProps<{
+  node: ChooserFolder
+}>()
 
+const { locObj } = useLocale()
 const auth = useAuth()
 const store = useAppStore()
-
-let updateCounter = 0
-
-const extendedFolders = ref(new Set())
-
-const props = defineProps<{
-  node: ChooserFolderRoot | ChooserFolderSub | ChooserFolder
-}>()
 
 const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): T[] => {
   return [...items].sort((a, b) => {
@@ -62,7 +52,6 @@ function updateCheckboxes() {
   props.node.corpora.forEach((corpus) => {
     corpus.selected = store.corpus.indexOf(corpus.id) !== -1
   })
-  updateCounter++
 }
 
 function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
