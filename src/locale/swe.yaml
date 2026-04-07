@@ -36,6 +36,13 @@ auth.password: Lösenord
 auth.password.forgotten: Glömt lösenordet?
 auth.remember: Kom ihåg mig
 
+corpus.info.sentences: Antal meningar
+corpus.info.size: Antal token
+corpus.info.timespan: Tidsutsträckning
+corpus.info.updated: Senast uppdaterad
+corpus.protected: Skyddad
+corpus.protected_access: Åtkomst beviljad
+
 corpus.selection.validation.dialog.title: Korpusurval
 corpus.selection.select_all: Markera alla
 corpus.selection.select_none: Avmarkera

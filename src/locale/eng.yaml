@@ -36,6 +36,13 @@ auth.password: Password
 auth.password.forgotten: Forgot password?
 auth.remember: Remember me
 
+corpus.info.sentences: Sentences
+corpus.info.size: Tokens
+corpus.info.timespan: Time span
+corpus.info.updated: Last updated
+corpus.protected: Protected
+corpus.protected_access: Access granted
+
 corpus.selection.validation.dialog.title: Corpus selection
 corpus.selection.select_all: Select all
 corpus.selection.select_none: Select none

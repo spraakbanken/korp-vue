@@ -12,6 +12,10 @@ const props = defineProps<{
   node: ChooserFolder
 }>()
 
+defineEmits<{
+  (e: "inspect", corpus: Corpus): void
+}>()
+
 const { locObj } = useLocale()
 const auth = useAuth()
 const store = useAppStore()
@@ -124,6 +128,7 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
         :node="folder"
         class="ms-2 border-start rounded-bottom"
         style="padding-inline-start: 0.9rem"
+        @inspect="$emit('inspect', $event)"
       />
     </details>
 
@@ -156,9 +161,14 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
       <fa-icon
         v-if="corpus.protected && auth.hasCredential(corpus.id)"
         icon="fa-solid fa-lock-open"
-        class="m-1"
+        class="m-1 text-success"
       />
-      <fa-icon icon="fa-solid fa-circle-info" class="my-1 text-info" />
+      <fa-icon
+        icon="fa-solid fa-circle-info"
+        class="my-1 text-info"
+        style="cursor: pointer"
+        @click="$emit('inspect', corpus)"
+      />
     </div>
   </div>
 </template>

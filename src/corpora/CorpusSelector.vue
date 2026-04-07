@@ -11,12 +11,16 @@ import { getTimeData } from "@/core/backend/timedata"
 import { initCorpusStructure } from "@/core/corpora/corpora"
 import CorpusSelectorTree from "./CorpusSelectorTree.vue"
 import SelectionSummary from "./SelectionSummary.vue"
+import type { Corpus } from "@/core/config/corpusConfig.types"
+import CorpusDetails from "./CorpusDetails.vue"
 
 const root = reactive(initCorpusStructure(corpusListing.corpora))
 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
 const auth = useAuth()
+/** Corpus to show details for, if any */
+const corpus = ref<Corpus>()
 
 const selection = ref<string[]>([])
 
@@ -66,7 +70,7 @@ watchEffect(() => (selection.value = store.corpus))
       </button>
     </div>
 
-    <ModalDialog id="corpus-selector" :title="$t('corpora')">
+    <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="corpus = undefined">
       <div class="mb-3 hstack gap-2">
         <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
         <div class="flex-grow-1"></div>
@@ -79,7 +83,9 @@ watchEffect(() => (selection.value = store.corpus))
           </button>
         </div>
       </div>
-      <CorpusSelectorTree :node="root" />
+
+      <CorpusDetails v-if="corpus" :corpus @close="corpus = undefined" />
+      <CorpusSelectorTree v-else :node="root" @inspect="corpus = $event" />
     </ModalDialog>
   </div>
 </template>
