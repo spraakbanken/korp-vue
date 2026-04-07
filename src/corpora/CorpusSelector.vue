@@ -14,7 +14,7 @@ import SelectionSummary from "./SelectionSummary.vue"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import CorpusDetails from "./CorpusDetails.vue"
 
-const root = reactive(initCorpusStructure(corpusListing.corpora))
+const root = reactive(initCorpusStructure(corpusListing.corpora.filter((corpus) => !corpus.hide)))
 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
