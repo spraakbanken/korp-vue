@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="align-self-stretch bg-body-secondary p-2 d-flex flex-wrap gap-1 col-gap-4 align-items-baseline rounded"
-  >
+  <div class="align-self-stretch p-2 hstack flex-wrap gap-1 column-gap-2 bg-body-secondary rounded">
     <!-- Primary content -->
     <slot />
 

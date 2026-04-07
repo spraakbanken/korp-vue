@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
 import { RelationsProxy } from "@/core/backend/proxy/RelationsProxy"
-import type { RelationsSort } from "@/core/backend/types/relations"
+import { RelationsResponse, type RelationsSort } from "@/core/backend/types/relations"
 import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
@@ -19,6 +19,7 @@ import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
+import JsonButton from "./JsonButton.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -33,6 +34,7 @@ const { activeSearch } = storeToRefs(useSearchStore())
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<WordPicture>()
 const limit = ref(LIMITS[0])
+const rawResponse = ref<RelationsResponse>()
 const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
 const sortLocal = ref<RelationsSort>("mi")
@@ -61,6 +63,7 @@ async function doSearch() {
     return
   }
 
+  rawResponse.value = proxy.getResponse()
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
   sort.value = sortLocal.value
 }
@@ -110,7 +113,10 @@ function createExport() {
       </label>
 
       <template #end>
-        <ExportButton :disabled="!data" name="wordpic" :get-rows="createExport" />
+        <div class="btn-group">
+          <JsonButton :data="rawResponse" endpoint="relations" />
+          <ExportButton :disabled="!data" name="wordpic" :get-rows="createExport" />
+        </div>
       </template>
     </OptionsBar>
 

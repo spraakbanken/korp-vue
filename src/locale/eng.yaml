@@ -203,6 +203,8 @@ result.export.separator.comma: comma
 result.export.separator.semi: semicolon
 result.export.separator.tab: tab
 
+result.json: JSON
+
 result.kwic: KWIC
 result.kwic.show_context: Show context
 result.kwic.show_context.help: By default, search hits are listed in a keywords-in-context layout (KWIC). Enabling this option will instead show them with wrapped lines, suitable for reading. For some corpora, this also retrieves more of the context, such as a full paragraph.

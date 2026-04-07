@@ -6,7 +6,7 @@ import { storeToRefs } from "pinia"
 import { ref, watch } from "vue"
 import settings from "@/core/config"
 import { debounce } from "lodash-es"
-import type { QueryParamSort } from "@/core/backend/types/query"
+import { QueryResponse, type QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
@@ -19,6 +19,7 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import useSearchStore from "@/search/useSearchStore"
+import JsonButton from "../JsonButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -42,6 +43,7 @@ const hpp = ref(store.hpp)
 const kwic = ref<Row[]>()
 const loading = ref(false)
 const pageLocal = ref(1)
+const rawResponse = ref<QueryResponse>()
 const sort = ref<QueryParamSort>(store.sort)
 /** Flags if the current running request will be shown in reading mode */
 let isCurrentRequestReading = false
@@ -90,6 +92,7 @@ async function doSearch(reuseCounts = false) {
 
   // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
   loading.value = false
+  rawResponse.value = proxy.getResponse()
   distribution.value = response.distribution
   // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
   hitsCount.value = response.hits
@@ -170,22 +173,26 @@ function createExport() {
       </label>
 
       <template #end>
-        <ExportButton :disabled="!kwic" name="kwic" :get-rows="createExport">
-          <div class="text-nowrap">
-            <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
-              <input
-                type="radio"
-                class="form-check-input"
-                :id="`export-type-${option}`"
-                :value="option"
-                v-model="exportType"
-              />
-              <label :for="`export-type-${option}`" class="form-check-label">
-                {{ $t(`result.kwic.export.type.${option}`) }}
-              </label>
+        <div class="btn-group">
+          <JsonButton :data="rawResponse" endpoint="query" />
+
+          <ExportButton :disabled="!kwic" name="kwic" :get-rows="createExport">
+            <div class="text-nowrap">
+              <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
+                <input
+                  type="radio"
+                  class="form-check-input"
+                  :id="`export-type-${option}`"
+                  :value="option"
+                  v-model="exportType"
+                />
+                <label :for="`export-type-${option}`" class="form-check-label">
+                  {{ $t(`result.kwic.export.type.${option}`) }}
+                </label>
+              </div>
             </div>
-          </div>
-        </ExportButton>
+          </ExportButton>
+        </div>
       </template>
     </OptionsBar>
 

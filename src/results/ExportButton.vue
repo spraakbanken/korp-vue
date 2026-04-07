@@ -18,7 +18,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <div class="dropdown open">
+  <div class="dropdown btn-group">
     <!-- Dropdown trigger button -->
     <button
       class="btn btn-secondary dropdown-toggle"

@@ -29,8 +29,9 @@ import { fromKeys } from "@/core/util"
 import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
-import type { CountsMerged } from "@/core/backend/types/count"
+import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
+import JsonButton from "../JsonButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -53,6 +54,7 @@ const data = ref<StatisticsProcessed>()
 const isDated = ref(false)
 /** List of map-compatible attributes in the searched corpus set */
 const mapAttributes = ref<MapAttributeOption[]>([])
+const rawResponse = ref<CountResponse>()
 const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
 const { statsRelative } = storeToRefs(store)
@@ -114,6 +116,7 @@ async function doSearch() {
     stringifiers,
   )
 
+  rawResponse.value = proxy.getResponse()
   isDated.value = !!corpora.getTimeInterval()
   mapAttributes.value = getGeoAttributes(corpora.corpora)
 }
@@ -208,7 +211,10 @@ function createExport() {
       </label>
 
       <template #end>
-        <ExportButton :disabled="!data" name="statistics" :get-rows="createExport" />
+        <div class="btn-group">
+          <JsonButton :data="rawResponse" endpoint="count" />
+          <ExportButton :disabled="!data" name="statistics" :get-rows="createExport" />
+        </div>
       </template>
     </OptionsBar>
 
