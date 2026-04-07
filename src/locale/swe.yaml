@@ -43,6 +43,10 @@ corpus.info.updated: Senast uppdaterad
 corpus.protected: Skyddad
 corpus.protected_access: Åtkomst beviljad
 
+corpus.selection.graph.available: Tillgängligt
+corpus.selection.graph.selected: Valt
+corpus.selection.graph.year: År {year}
+corpus.selection.graph.undated: Odaterat
 corpus.selection.validation.dialog.title: Korpusurval
 corpus.selection.select_all: Markera alla
 corpus.selection.select_none: Avmarkera
@@ -200,6 +204,7 @@ search.within: inom
 search.within.key.sentence: mening
 search.within.key.paragraph: stycke
 search.within.key.link: länk
+search.within.key.text: text
 
 result.compare.column_heading: Utmärkande för {label}
 

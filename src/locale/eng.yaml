@@ -43,6 +43,10 @@ corpus.info.updated: Last updated
 corpus.protected: Protected
 corpus.protected_access: Access granted
 
+corpus.selection.graph.available: Available
+corpus.selection.graph.selected: Selected
+corpus.selection.graph.year: Year {year}
+corpus.selection.graph.undated: Undated
 corpus.selection.validation.dialog.title: Corpus selection
 corpus.selection.select_all: Select all
 corpus.selection.select_none: Select none
@@ -200,6 +204,7 @@ search.within: within
 search.within.key.sentence: sentence
 search.within.key.paragraph: paragraph
 search.within.key.link: link
+search.within.key.text: text
 
 result.compare.column_heading: Prominent in {label}
 

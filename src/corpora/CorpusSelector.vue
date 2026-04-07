@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { watchImmediate } from "@vueuse/core"
+import { computedAsync, watchImmediate } from "@vueuse/core"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
-import { ref, reactive, watchEffect } from "vue"
+import { ref, reactive, defineAsyncComponent } from "vue"
 import { useAuth } from "@/auth/useAuth"
 import { getTimeData } from "@/core/backend/timedata"
 import { initCorpusStructure } from "@/core/corpora/corpora"
@@ -19,10 +19,12 @@ const root = reactive(initCorpusStructure(corpusListing.corpora.filter((corpus) 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
 const auth = useAuth()
+
+const CorpusTimeGraph = defineAsyncComponent(() => import("./CorpusTimeGraph.vue"))
+
 /** Corpus to show details for, if any */
 const corpus = ref<Corpus>()
-
-const selection = ref<string[]>([])
+const timeData = computedAsync(() => getTimeData())
 
 /** Runs after corpus selection has been checked for access etc. */
 function resolveValidation(ids: string[]) {
@@ -50,8 +52,6 @@ function selectAll() {
 function selectNone() {
   store.corpus = []
 }
-
-watchEffect(() => (selection.value = store.corpus))
 </script>
 
 <template>
@@ -71,9 +71,11 @@ watchEffect(() => (selection.value = store.corpus))
     </div>
 
     <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="corpus = undefined">
-      <div class="mb-3 hstack gap-2">
+      <div class="mb-3 hstack gap-2 justify-content-between">
         <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
-        <div class="flex-grow-1"></div>
+
+        <CorpusTimeGraph v-if="timeData?.byYear?.length" :data="timeData" />
+
         <div class="btn-group">
           <button type="button" class="btn btn-sm btn-secondary" @click="selectAll()">
             {{ $t("corpus.selection.select_all") }}

@@ -4,42 +4,45 @@ import { korpRequest } from "./common"
 import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
 
+export type TimeData = {
+  byYear: [number, number][]
+  undated: number
+}
+
 /**
  * Time data, if available.
  *
  * This gets set in `getTimeData()`, so make sure to await that before using this.
  */
-export let timeData: [[number, number][], number] | undefined
+export let timeData: TimeData | undefined
 
 /** Fetch and process time data for all corpora in the mode. */
-export const getTimeData: () => Promise<[[number, number][], number] | undefined> = memoize(
-  async () => {
-    if (!settings.has_timespan) return undefined
+export const getTimeData: () => Promise<TimeData | undefined> = memoize(async () => {
+  if (!settings.has_timespan) return undefined
 
-    const corpus = corpusListing.stringify()
-    if (!corpus) return undefined
+  const corpus = corpusListing.stringify()
+  if (!corpus) return undefined
 
-    const data = await korpRequest("timespan", { granularity: "y", corpus })
+  const data = await korpRequest("timespan", { granularity: "y", corpus })
 
-    const rest = data.combined[""] || 0
-    delete data.combined[""]
+  const rest = data.combined[""] || 0
+  delete data.combined[""]
 
-    expandTimeStruct(data.combined)
+  expandTimeStruct(data.combined)
 
-    // Re-structure the combined counts as year-count tuples for plotting
-    const combined: [number, number][] = Object.entries(data.combined)
-      .filter(([key, val]) => key && val)
-      .map(([key, val]) => [parseInt(key), val])
-    combined.sort((a, b) => a[0] - b[0])
-    if (combined.length == 0) return [[], 0]
+  // Re-structure the combined counts as year-count tuples for plotting
+  const combined: [number, number][] = Object.entries(data.combined)
+    .filter(([key, val]) => key && val)
+    .map(([key, val]) => [parseInt(key), val])
+  combined.sort((a, b) => a[0] - b[0])
+  if (combined.length == 0) return { byYear: [], undated: 0 }
 
-    addToCorpora(data.corpora)
+  addToCorpora(data.corpora)
 
-    // Store time data for non-async use
-    timeData = [combined, rest]
-    return timeData
-  },
-)
+  // Store time data for non-async use
+  timeData = { byYear: combined, undated: rest }
+  return timeData
+})
 
 /** Add each missing year with the previous year's value */
 function expandTimeStruct(struct: Histogram): void {
@@ -82,10 +85,10 @@ function addToCorpora(dataByCorpus: Record<string, Histogram>) {
 }
 
 /** Data size per year of all corpora. */
-export const getTimeDataPairs = (): [number, number][] => timeData![0]
+export const getTimeDataPairs = (): [number, number][] => timeData!.byYear
 
 /** Data size of unknown year in all corpora. */
-export const getCountUndated = (): number => timeData![1]
+export const getCountUndated = (): number => timeData!.undated
 
 /** Get data size per year of all corpora. */
 export const getSeries = () => Object.fromEntries(getTimeDataPairs()) as YearSeries
