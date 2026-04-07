@@ -14,12 +14,14 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "../useSearchStore"
 import useMessageStore from "@/store/useMessageStore"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
+import { useI18n } from "vue-i18n"
 
 const store = useAppStore()
 const { search } = storeToRefs(store)
 const searchStore = useSearchStore()
 const { addMessage } = useMessageStore()
 const corpusSelection = useReactiveCorpusSelection()
+const { t, te } = useI18n()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
@@ -61,6 +63,22 @@ watchEffect(() => (freeOrder.value = !store.in_order))
 watchEffect(() => (within.value = store.within))
 // Sync from local state to store
 watchEffect(() => (searchStore.queryExtended = tokens.value))
+
+/** Translate a within key */
+function formatWithin(key: string) {
+  // Interpret numbered key like `5 sentence`
+  let count = parseInt(key)
+  if (isNaN(count)) count = 1
+
+  // Remove number from key
+  key = key.replace(/\d+\s+/, "")
+
+  // Translate if possible
+  if (te(`search.within.key.${key}`)) return t(`search.within.key.${key}`, { count })
+
+  // Fall back to raw key
+  return key
+}
 </script>
 
 <template>
@@ -98,7 +116,7 @@ watchEffect(() => (searchStore.queryExtended = tokens.value))
         </label>
         <select id="search-extended-within" v-model="within" class="form-select">
           <option v-for="key in corpusSelection.getWithinKeys()" :key :value="key">
-            {{ $t(`search.within.key.${key}`) }}
+            {{ formatWithin(key) }}
           </option>
         </select>
       </div>

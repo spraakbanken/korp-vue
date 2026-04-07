@@ -201,10 +201,10 @@ search.filters: Filters
 search.filters.add: Add {0}…
 
 search.within: within
-search.within.key.sentence: sentence
-search.within.key.paragraph: paragraph
-search.within.key.link: link
-search.within.key.text: text
+search.within.key.sentence: sentence | {count} sentences
+search.within.key.paragraph: paragraph | {count} paragraphs
+search.within.key.link: link | {count} links
+search.within.key.text: text | {count} texts
 
 result.compare.column_heading: Prominent in {label}
 
