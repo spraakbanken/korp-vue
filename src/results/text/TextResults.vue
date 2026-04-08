@@ -4,12 +4,16 @@ import type { TextTask } from "@/core/task/TextTask"
 import { onMounted, shallowRef } from "vue"
 import DefaultReader from "./DefaultReader.vue"
 import type { KwicRow } from "@/core/kwic/kwic"
+import { useLocale } from "@/i18n/useLocale"
+import SidebarProvider from "../sidebar/SidebarProvider.vue"
 
 const props = defineProps<{
   task: TextTask
 }>()
 
 const progress = defineModel<number>("progress")
+
+const { locObj } = useLocale()
 
 const document = shallowRef<KwicRow>()
 
@@ -30,5 +34,12 @@ async function doSearch() {
 </script>
 
 <template>
-  <DefaultReader v-if="document" :corpus="task.corpus" :document :text-id="task.textId" />
+  <h2>
+    {{ locObj(task.corpus.title) }} –
+    {{ $t("result.reader.id", { id: task.textId }) }}
+  </h2>
+
+  <SidebarProvider>
+    <DefaultReader v-if="document" :corpus="task.corpus" :document :text-id="task.textId" />
+  </SidebarProvider>
 </template>

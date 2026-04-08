@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { computed, provide, ref } from "vue"
+import { computed, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
 import { isKwic, type Row, type RowToken } from "@/core/kwic/kwic"
 import HelpBadge from "@/components/HelpBadge.vue"
 import PaginationBar from "./PaginationBar.vue"
-import KwicSidebar, { SIDEBAR_WIDTH_REM } from "../sidebar/KwicSidebar.vue"
-import { injectionKeys } from "@/injection"
 import KwicList from "./KwicList.vue"
 import { watchImmediate } from "@vueuse/core"
 import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
 import HitsDistributionBar from "./HitsDistributionBar.vue"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { formatDecimals } from "@/core/i18n"
+import SidebarProvider from "../sidebar/SidebarProvider.vue"
 
 const page = defineModel<number>({ default: 1 })
 
@@ -31,8 +30,6 @@ const hitsRelative = computed(() =>
 )
 const selectedToken = ref<RowToken>()
 
-provide(injectionKeys.selectedToken, selectedToken)
-
 watchImmediate(
   () => props.kwic,
   () => {
@@ -47,15 +44,7 @@ watchImmediate(
 </script>
 
 <template>
-  <div
-    class="position-relative vstack gap-2"
-    :style="{
-      // Make sure sidebar isn't too short if KWIC page is short
-      minHeight: '50rem',
-      // Make room for sidebar
-      paddingRight: selectedToken ? `${SIDEBAR_WIDTH_REM + 1}rem` : undefined,
-    }"
-  >
+  <SidebarProvider class="vstack gap-2" v-model="selectedToken">
     <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
       <div>{{ $t("result.kwic.hits_count") }}: {{ $n(hitsCount) }}</div>
       <div>
@@ -87,7 +76,5 @@ watchImmediate(
 
       <PaginationBar v-if="hitsCount > hpp" v-model="page" :max="Math.ceil(hitsCount / hpp)" />
     </template>
-
-    <KwicSidebar @click.stop />
-  </div>
+  </SidebarProvider>
 </template>

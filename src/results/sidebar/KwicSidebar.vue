@@ -57,16 +57,11 @@ function openReadingMode() {
 }
 </script>
 
-<script lang="ts">
-export const SIDEBAR_WIDTH_REM = 20
-</script>
-
 <template>
   <Transition appear>
     <aside
       v-if="selectedToken && corpus"
       class="position-absolute top-0 end-0 h-100 overflow-y-auto card"
-      :style="{ width: `${SIDEBAR_WIDTH_REM}rem` }"
     >
       <div class="card-body d-flex flex-column gap-3 flex-grow-0">
         <header class="d-flex gap-2 justify-content-between">
