@@ -50,7 +50,9 @@ const posAttributes = computed(() => {
 function openReadingMode() {
   const row = selectedToken?.value?.row
   if (row && isKwic(row)) {
-    createTab(t("result.reader"), new TextTask(corpus.value!.id, row.structs))
+    const textId = row.structs.text__id
+    if (!textId) throw new Error("Selected row has no text__id")
+    createTab(t("result.reader"), new TextTask(corpus.value!, textId))
   }
 }
 </script>
@@ -93,7 +95,7 @@ export const SIDEBAR_WIDTH_REM = 20
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">
-        <div class="accordion-item">
+        <div v-if="isKwic(selectedToken.row)" class="accordion-item">
           <h2 class="accordion-header">
             <button
               class="accordion-button"

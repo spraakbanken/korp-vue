@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
-import type { TextReaderData, TextTask } from "@/core/task/TextTask"
+import type { TextTask } from "@/core/task/TextTask"
 import { onMounted, shallowRef } from "vue"
 import DefaultReader from "./DefaultReader.vue"
+import type { KwicRow } from "@/core/kwic/kwic"
 
 const props = defineProps<{
   task: TextTask
@@ -10,7 +11,7 @@ const props = defineProps<{
 
 const progress = defineModel<number>("progress")
 
-const document = shallowRef<TextReaderData>()
+const document = shallowRef<KwicRow>()
 
 onMounted(() => doSearch())
 
@@ -29,5 +30,5 @@ async function doSearch() {
 </script>
 
 <template>
-  <DefaultReader v-if="document" :corpus="task.corpus" :document :sentence="task.sentenceData" />
+  <DefaultReader v-if="document" :corpus="task.corpus" :document :text-id="task.textId" />
 </template>

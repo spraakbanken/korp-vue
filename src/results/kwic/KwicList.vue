@@ -15,7 +15,7 @@ const { locObj } = useLocale()
         <li v-if="isCorpusHeading(row)" class="list-group-item p-4 bg-body-tertiary">
           <h3 class="fs-5 m-0">{{ locObj(row.newCorpus) }}</h3>
         </li>
-        <li v-if="isKwic(row)" class="list-group-item p-4">
+        <li v-if="isKwic(row)" class="list-group-item p-4" style="white-space: pre-wrap">
           <KwicToken v-for="(token, i) in row.tokens" :key="i" :row-token="{ row, token }" />
         </li>
       </template>

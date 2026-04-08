@@ -48,8 +48,6 @@ export type KwicToken = {
   attrs: Record<string, string | null>
   _match: boolean
   _matchSentence: boolean
-  _open_sentence: boolean
-  _punct: boolean
 }
 
 export type LinkedKwicToken = Token & {
@@ -57,7 +55,6 @@ export type LinkedKwicToken = Token & {
   id: string
   word: string
   attrs: Record<string, string | null>
-  _open_sentence?: boolean
 }
 
 /** A token and its context */
@@ -82,8 +79,6 @@ export type HitsPictureItem = {
 
 /** Transform backend KWIC data to be easier to use in frontend code */
 export function massageData(rows: ApiKwic[]): Row[] {
-  const punctArray = [",", ".", ";", ":", "!", "?", "..."]
-
   let counter = 1
   const getId = () => `kwic${counter++}`
 
@@ -121,17 +116,16 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
     // Process the tokens of this row
     const tokens: KwicToken[] = row.tokens.map((token, i) => {
-      let openSentence = false
-
       // For each new structural element this token opens, add it to currentStruct
       for (const structItem of token.structs?.open || []) {
         // structItem is an object with a single key
-        const structKey = Object.keys(structItem)[0]!
-        if (structKey == "sentence") openSentence = true
+        const [key, struct] = Object.entries(structItem)[0]!
 
         // Store structural attributes with a qualified name e.g. "ne_type"
-        const rekeyed = mapKeys(structItem[structKey], (val, key) => `${structKey}_${key}`)
-        currentStruct[structKey] = pickBy(rekeyed, (val, key) => key in corpus.attributes)
+        currentStruct[key] = mapKeys(struct, (val, subkey) => `${key}_${subkey}`)
+
+        // Add a fallback id, perhaps primarily useful for identifying sentences
+        currentStruct[key][`${key}_id`] ??= getId()
       }
 
       // Copy structural attributes
@@ -153,8 +147,6 @@ export function massageData(rows: ApiKwic[]): Row[] {
         },
         _match: isMatch(i),
         _matchSentence: isMatchSentence(i),
-        _open_sentence: openSentence,
-        _punct: punctArray.includes(token.word),
       }
       return tokenOut
     })
@@ -215,33 +207,18 @@ function findMatchSentence(row: ApiKwic): [number, number] {
   return [start, end]
 }
 
-export function calculateHitsPicture(
-  corpusOrder: string[],
-  corpusHits: Record<string, number>,
-  pageSize: number,
-): HitsPictureItem[] {
-  const total = sum(Object.values(corpusHits))
-  const items: HitsPictureItem[] = corpusOrder
-    .map((id) => ({
-      rtitle: corpusListing.get(id).title,
-      relative: (corpusHits[id] || 0) / total,
-      abs: corpusHits[id] || 0,
-      page: -1, // this is properly set below
-    }))
-    .filter((item) => item.abs > 0)
-
-  // calculate which is the first page of hits for each item
-  let index = 0
-  items.forEach((item) => {
-    item.page = Math.floor(index / pageSize)
-    index += item.abs
-  })
-
-  return items
-}
-
 /** Check if two row-token tuples are equal */
 export function isRowTokenEqual(a?: RowToken, b?: RowToken): boolean {
   if (!a || !b) return false
   return a.row.id == b.row.id && a.token.id == b.token.id
 }
+
+/** Identify tokens that should not be preceded by space */
+export const isPunctuation = (word: string): boolean => {
+  const punct = [",", ".", ";", ":", "!", "?", "..."]
+  return punct.includes(word)
+}
+
+/** Convert escaped whitespaces "\s", "\n" and "\t" */
+export const parseWhitespace = (str?: string): string =>
+  str?.replace(/\\s/g, " ").replace(/\\n/g, "\n").replace(/\\t/g, "\t") || ""
