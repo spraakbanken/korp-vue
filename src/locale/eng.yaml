@@ -253,6 +253,7 @@ result.reader: Reader
 result.reader.id: Text {id}
 
 result.sidebar.rank_score: Confidence
+result.sidebar.search_karp: Search in Karp
 
 result.statistics: Statistics
 result.statistics.distributions.title: Distribution across corpora

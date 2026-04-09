@@ -34,12 +34,24 @@ const itemHtml = computed(() => {
 </script>
 
 <template>
-  <DetailsDropdown v-if="attribute.ranked">
+  <DetailsDropdown v-if="attribute.ranked || attribute.external_search">
     <table class="table table-sm m-0">
       <tbody>
-        <tr>
+        <tr v-if="attribute.ranked">
           <th>{{ $t("result.sidebar.rank_score") }}</th>
           <td>{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
+        </tr>
+        <tr v-if="attribute.external_search">
+          <td colspan="2">
+            <a
+              :href="template(attribute.external_search)({ val: stringify(item) })"
+              target="_blank"
+              class="icon-link"
+            >
+              <img src="@/assets/karp_icon.svg" alt="Karp icon" style="height: 1em" />
+              {{ $t("result.sidebar.search_karp") }}
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>
