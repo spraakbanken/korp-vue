@@ -17,7 +17,7 @@ import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection
 import { useI18n } from "vue-i18n"
 
 const store = useAppStore()
-const { search } = storeToRefs(store)
+const { search, cqp } = storeToRefs(store)
 const searchStore = useSearchStore()
 const { addMessage } = useMessageStore()
 const corpusSelection = useReactiveCorpusSelection()
@@ -32,7 +32,7 @@ const freeOrder = ref(!store.in_order)
 const within = ref(store.within)
 
 // React to the `search` param being changed, at first load or later
-watchImmediate(search, () => {
+watchImmediate([search, cqp], () => {
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
   const [type, value] = splitFirst("|", store.search || "")
   if (type != "cqp" || value) return

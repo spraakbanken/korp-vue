@@ -1,13 +1,12 @@
 import { cloneDeep, isEqual, mapValues, pickBy } from "lodash-es"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { regescape } from "@/core/util"
 import type { RecursiveRecord } from "@/core/backend/types/attrValues"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
-import type { Condition, CqpQuery } from "@/core/cqp/cqp.types"
+import type { CqpQuery } from "@/core/cqp/cqp.types"
 import { getLang } from "../i18n"
 import { mergeCqpExprs } from "../cqp/cqp"
-import { prefixAttr } from "../config"
+import { createAttrCondition } from "../corpora/attribute"
 
 export type FilterData = {
   attribute: Attribute
@@ -151,7 +150,7 @@ export class GlobalFilterManager {
     // Create a token with an AND of each attribute, and an OR of the selected values of each attribute.
     const and_block = Object.entries(this.filters)
       .map(([, filter]) =>
-        filter.value.map((value) => this.createCondition(filter.attribute, value)),
+        filter.value.map((value) => createAttrCondition(filter.attribute, value)),
       )
       .filter((conds) => conds.length > 0)
     return and_block.length ? [{ and_block }] : undefined
@@ -163,10 +162,5 @@ export class GlobalFilterManager {
     const filterCqp = this.getCqp()
     if (filterCqp) mergeCqpExprs(out, filterCqp)
     return out
-  }
-
-  private createCondition(attr: Attribute, value: string): Condition {
-    const op = attr.type === "set" ? "contains" : "="
-    return { type: prefixAttr(attr), op, val: regescape(value) }
   }
 }

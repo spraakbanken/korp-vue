@@ -253,6 +253,7 @@ result.reader: Läsläge
 result.reader.id: Text {id}
 
 result.sidebar.rank_score: Konfidens
+result.sidebar.search: Sök på detta
 result.sidebar.search_karp: Sök i Karp
 
 result.statistics: Statistik
