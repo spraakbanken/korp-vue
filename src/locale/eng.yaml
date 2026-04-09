@@ -1,6 +1,7 @@
 tagline: Språkbanken's word research platform
 corpus: Corpus
 corpora: Corpora
+details: Details
 error.backend: Server returned {type}
 error.heading: An error has occurred.
 error.footer: If you have questions, or you want to report a bug, please contact sb-info{'@'}svenska.gu.se.
@@ -250,6 +251,8 @@ result.pagination.goto: Go to {input} of {total}
 
 result.reader: Reader
 result.reader.id: Text {id}
+
+result.sidebar.rank_score: Confidence
 
 result.statistics: Statistics
 result.statistics.distributions.title: Distribution across corpora
