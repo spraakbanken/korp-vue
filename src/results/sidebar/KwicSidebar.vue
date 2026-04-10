@@ -9,6 +9,7 @@ import { isKwic, isKwicRowToken } from "@/core/kwic/kwic"
 import { useDynamicTabs } from "../useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import { TextTask } from "@/core/task/TextTask"
+import DependencyTree from "./DependencyTree.vue"
 
 const { locObj } = useLocale()
 const { createTab } = useDynamicTabs()
@@ -87,6 +88,8 @@ function openReadingMode() {
           <fa-icon icon="fa-solid fa-book-open" />
           {{ $t("result.kwic.reading_mode.open") }}
         </button>
+
+        <DependencyTree v-if="isKwicRowToken(selectedToken)" :tokens="selectedToken.row.tokens" />
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">
