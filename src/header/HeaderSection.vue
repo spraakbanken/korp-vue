@@ -21,8 +21,6 @@ const links = computed(() => settings.navigation?.links || [])
 
 /** Whether the mode is parallel */
 const isParallel = !!settings["parallel"]
-
-const selfUrl = window.location.href.replace(/#.*/, "")
 </script>
 
 <template>
@@ -98,12 +96,10 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row gap-2 mt-2 mb-3 px-2 align-items-center">
-        <a :href="selfUrl" class="col-6 col-lg-3">
-          <BrandPrimary />
-        </a>
-        <BrandSecondary class="col-6 col-lg-3 order-lg-1" />
-        <CorpusSelector class="col-12 col-lg-6" />
+      <div class="row mt-2 mb-3 px-2 align-items-center">
+        <BrandPrimary class="col-6 col-lg-4" />
+        <BrandSecondary class="col-6 col-lg-4 order-lg-1 text-end" />
+        <CorpusSelector class="col-12 col-lg-4" />
       </div>
 
       <SearchParallel v-if="isParallel" />

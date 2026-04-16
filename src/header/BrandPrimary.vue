@@ -2,8 +2,12 @@
 import ColorSchemeImg from "@/components/ColorSchemeImg.vue"
 import korpLogo from "@/assets/korp.svg"
 import korpLogoLight from "@/assets/korp-light.svg"
+
+const selfUrl = window.location.href.replace(/#.*/, "")
 </script>
 
 <template>
-  <ColorSchemeImg :dark-src="korpLogoLight" :light-src="korpLogo" alt="Korp Logo" />
+  <a :href="selfUrl">
+    <ColorSchemeImg :dark-src="korpLogoLight" :light-src="korpLogo" alt="Korp Logo" />
+  </a>
 </template>
