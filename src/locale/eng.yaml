@@ -229,6 +229,8 @@ result.kwic.hits_relative: Relative frequency
 result.kwic.hits_relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
 result.kwic.page_size.label: "Hits per page: {0}"
 result.kwic.reading_mode.open: Read in Korp
+result.kwic.deptree: Dependency tree
+result.kwic.deptree.open: Show dependency tree
 result.kwic.sort.label: "Sort each corpus by: {0}"
 result.kwic.sort.default: not sorted
 result.kwic.sort.keyword: matched word(s)

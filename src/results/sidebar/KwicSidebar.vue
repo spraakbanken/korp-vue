@@ -9,7 +9,8 @@ import { isKwic, isKwicRowToken } from "@/core/kwic/kwic"
 import { useDynamicTabs } from "../useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import { TextTask } from "@/core/task/TextTask"
-import DependencyTree from "./DependencyTree.vue"
+import DeptreeDiagram from "./DeptreeDiagram.vue"
+import ModalDialog from "@/components/ModalDialog.vue"
 
 const { locObj } = useLocale()
 const { createTab } = useDynamicTabs()
@@ -89,11 +90,20 @@ function openReadingMode() {
           {{ $t("result.kwic.reading_mode.open") }}
         </button>
 
-        <DependencyTree
-          v-if="isKwicRowToken(selectedToken)"
-          :corpus
-          :tokens="selectedToken.row.tokens"
-        />
+        <template v-if="!corpus.deptree?.hidden && isKwicRowToken(selectedToken)">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#deptree-modal"
+          >
+            <fa-icon icon="fa-solid fa-sitemap" />
+            {{ $t("result.kwic.deptree.open") }}
+          </button>
+          <ModalDialog id="deptree-modal" :title="$t('result.kwic.deptree')" size="xl">
+            <DeptreeDiagram :corpus :tokens="selectedToken.row.tokens" />
+          </ModalDialog>
+        </template>
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">

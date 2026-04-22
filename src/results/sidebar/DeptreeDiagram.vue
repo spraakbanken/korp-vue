@@ -6,6 +6,7 @@ import type { SentenceSVGOptions } from "dependencytreejs/lib/SentenceSVG"
 import type { KwicToken } from "@/core/kwic/kwic"
 import { getDeptreeAttrMapping } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
+import { useElementVisibility } from "@vueuse/core"
 
 const { defaultSentenceSVGOptions, ReactiveSentence, SentenceSVG } = DependencyTreeJs
 
@@ -15,6 +16,7 @@ const props = defineProps<{
 }>()
 
 const svgEl = useTemplateRef<SVGElement>("svg")
+const isVisible = useElementVisibility(svgEl)
 
 /** The input sentence in CoNLL format */
 const conll = computed(() => props.tokens.map(tokenConll).join("\n"))
@@ -33,11 +35,12 @@ function tokenConll(token: KwicToken): string {
 }
 
 watchEffect(() => {
-  if (!svgEl.value) return
+  if (!svgEl.value || !isVisible.value) return
   const sentence = new ReactiveSentence()
   sentence.fromSentenceConll(conll.value)
 
   // TODO Explain rel/pos abbreviations (on hover?)
+  // TODO Override colors
   const options: SentenceSVGOptions = {
     ...defaultSentenceSVGOptions(),
     shownFeatures: ["UPOS"],

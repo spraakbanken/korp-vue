@@ -12,7 +12,7 @@ defineProps<{
   /** Modal title. */
   title?: string
   /** Width of dialog */
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "xl"
 }>()
 
 const emit = defineEmits<{

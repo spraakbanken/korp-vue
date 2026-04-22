@@ -229,6 +229,8 @@ result.kwic.hits_relative: Relativ frekvens
 result.kwic.hits_relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.kwic.page_size.label: "Träffar per sida: {0}"
 result.kwic.reading_mode.open: Läs i Korp
+result.kwic.deptree: Dependensträd
+result.kwic.deptree.open: Visa dependensträd
 result.kwic.sort.label: "Sortera varje korpus efter: {0}"
 result.kwic.sort.default: förekomst
 result.kwic.sort.keyword: träff
