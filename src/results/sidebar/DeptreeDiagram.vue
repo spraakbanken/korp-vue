@@ -40,7 +40,6 @@ watchEffect(() => {
   sentence.fromSentenceConll(conll.value)
 
   // TODO Explain rel/pos abbreviations (on hover?)
-  // TODO Override colors
   const options: SentenceSVGOptions = {
     ...defaultSentenceSVGOptions(),
     shownFeatures: ["UPOS"],
@@ -53,7 +52,20 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto text-center fs-6">
     <svg id="svgWrapper" ref="svg" width="400" height="220"></svg>
   </div>
 </template>
+
+<style scoped>
+svg:deep(*) {
+  font-size: inherit;
+}
+svg:deep(.UPOS),
+svg:deep(.DEPREL) {
+  font-family: var(--font-family-heading);
+  font-weight: bold;
+  fill: var(--bs-info);
+  font-size: 0.8em;
+}
+</style>

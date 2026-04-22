@@ -1,3 +1,11 @@
+:root {
+  --font-family-heading: "Jost Variable", var(--bs-body-font-family);
+}
+
+.font-family-heading {
+  font-family: var(--font-family-heading);
+}
+
 // Link-like text
 .link {
   &:hover {
