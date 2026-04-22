@@ -1,5 +1,5 @@
 import type { InstanceConfig, WordPictureDef } from "./instanceConfig.types"
-import type { Attribute } from "./corpusConfigRaw.types"
+import type { Attribute, DeptreeAttrMap } from "./corpusConfigRaw.types"
 import type { MaybeConfigurable, MaybeWithOptions } from "./config.types"
 import type { Corpus, CorpusConfig } from "./corpusConfig.types"
 import { isFunction } from "lodash-es"
@@ -53,8 +53,8 @@ export const getDefaultCorpusSelection = (): string[] =>
   )
 
 /** Identify deptree attribute names */
-export function getDeptreeAttrMapping(corpus: Corpus): Record<string, string> {
-  const defaultMapping = {
+export function getDeptreeAttrMapping(corpus: Corpus): DeptreeAttrMap {
+  const defaultMapping: DeptreeAttrMap = {
     ref: "ref",
     pos: "pos",
     head: "dephead",

@@ -100,16 +100,17 @@ export type CustomAttribute = Attribute & {
 }
 
 export type DeptreeConfig = {
-  attrs?: {
-    /** Attribute name for the token position (default: "ref") */
-    ref?: string
-    /** Attribute name for the part of speech (default: "pos") */
-    pos?: string
-    /** Attribute name for the head token position (default: "dephead") */
-    head?: string
-    /** Attribute name for the syntactic relation (default: "deprel") */
-    rel?: string
-  }
-  /** Disable deptree visualization */
+  attrs?: Partial<DeptreeAttrMap>
   hidden?: boolean
+}
+
+export type DeptreeAttrMap = {
+  /** Attribute name for the token position (default: "ref") */
+  ref: string
+  /** Attribute name for the part of speech (default: "pos") */
+  pos: string
+  /** Attribute name for the head token position (default: "dephead") */
+  head: string
+  /** Attribute name for the syntactic relation (default: "deprel") */
+  rel: string
 }

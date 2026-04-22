@@ -89,7 +89,11 @@ function openReadingMode() {
           {{ $t("result.kwic.reading_mode.open") }}
         </button>
 
-        <DependencyTree v-if="isKwicRowToken(selectedToken)" :tokens="selectedToken.row.tokens" />
+        <DependencyTree
+          v-if="isKwicRowToken(selectedToken)"
+          :corpus
+          :tokens="selectedToken.row.tokens"
+        />
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">
