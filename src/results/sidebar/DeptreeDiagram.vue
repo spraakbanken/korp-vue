@@ -1,18 +1,13 @@
 <script lang="ts" setup>
 /** Dependency tree visualization using the DependencyTreeJS library */
 import { computed, ref, useTemplateRef, watch, watchEffect } from "vue"
-import DependencyTreeJs from "dependencytreejs/lib"
-import type { SentenceSVGOptions } from "dependencytreejs/lib/SentenceSVG"
 import type { KwicToken } from "@/core/kwic/kwic"
-import { getDeptreeAttrMapping } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { useElementVisibility } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
-import type { Attribute, DeptreeAttrMap } from "@/core/config/corpusConfigRaw.types"
-import { mapValues } from "lodash-es"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { useStringifiers } from "@/attributes/useStringifiers"
-
-const { defaultSentenceSVGOptions, ReactiveSentence, SentenceSVG } = DependencyTreeJs
+import { createConll, drawDeptree, getDeptreeAttributes } from "./deptree"
 
 const props = defineProps<{
   corpus: Corpus
@@ -27,53 +22,24 @@ const { locObj } = useLocale()
 /** Selected (hovered) tag to show legend/translation for */
 const selection = ref<{ attr: Attribute; key: string }>()
 
-/** The input sentence in CoNLL format */
-const conll = computed(() => props.tokens.map(tokenConll).join("\n"))
-
 /** Cached deptree attribute mapping */
-const attrMap = computed(() =>
-  mapValues(getDeptreeAttrMapping(props.corpus), (attr) => props.corpus.attributes[attr]),
-)
+const attrMap = computed(() => getDeptreeAttributes(props.corpus))
 
-/** Build a token line for the CoNLL format */
-function tokenConll(token: KwicToken): string {
-  const ref = token.attrs[attrMap.value.ref.name]
-  const pos = token.attrs[attrMap.value.pos.name]
-  const head = token.attrs[attrMap.value.head.name] || "0"
-  const rel = token.attrs[attrMap.value.rel.name]
-  return [ref, token.word, "_", pos, "_", "_", head, rel, "_", "_"].join("\t")
-}
+/** The input sentence in CoNLL format */
+const conll = computed(() => createConll(props.tokens, attrMap.value))
 
+// Reactively redraw deptree SVG
 watchEffect(() => {
   if (!svgEl.value || !isVisible.value) return
-  const sentence = new ReactiveSentence()
-  sentence.fromSentenceConll(conll.value)
-
-  const options: SentenceSVGOptions = {
-    ...defaultSentenceSVGOptions(),
-    shownFeatures: ["UPOS"],
-    arcHeight: 35,
-    tokenSpacing: 20,
-  }
-
-  new SentenceSVG(svgEl.value, sentence, options)
-  attachHoverHandler(".UPOS", "pos")
-  attachHoverHandler(".DEPREL", "rel")
+  drawDeptree(svgEl.value, conll.value, (attr, key) => {
+    selection.value = { attr: attrMap.value[attr], key }
+  })
 })
 
+// Reset selection when diagram is hidden
 watch(isVisible, () => {
   if (!isVisible.value) selection.value = undefined
 })
-
-function attachHoverHandler(selector: string, name: keyof DeptreeAttrMap) {
-  for (const el of svgEl.value?.querySelectorAll(selector) || []) {
-    el.addEventListener("mouseover", () => {
-      const attr = attrMap.value[name]
-      const key = el.textContent
-      selection.value = { attr, key }
-    })
-  }
-}
 </script>
 
 <template>
