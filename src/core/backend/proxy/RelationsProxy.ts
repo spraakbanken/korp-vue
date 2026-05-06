@@ -65,5 +65,4 @@ export class RelationsProxy extends ProxyBase<"relations"> {
   }
 }
 
-export class RelationsEmptyError extends Error {}
 export class RelationsParseError extends Error {}

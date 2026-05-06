@@ -136,7 +136,7 @@ search.extended.boundary: Boundary
 search.extended.boundary.type: Boundary unit
 search.extended.boundary.start: starts
 search.extended.boundary.end: ends
-search.extended.free_order_invalid: The {free_order} option requires multiple tokens, no repetition, no boundaries and no wildcards.
+search.extended.free_order_invalid: The {free_order} option requires multiple tokens, no repetition, boundaries or wildcards, and a single "within" element.
 search.extended.repeat: Repeat
 search.extended.repeat.help: Match multiple tokens meeting the same conditions
 search.extended.repeat.min: At least

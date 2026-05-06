@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /** Content for the Extended search tab with a query builder GUI */
-import { ref, watchEffect } from "vue"
+import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createCondition, parse, stringify, supportsInOrder } from "@/core/cqp/cqp"
 import { type CqpQuery } from "@/core/cqp/cqp.types"
@@ -31,6 +31,11 @@ const freeOrder = ref(!store.in_order)
 /** Model for the within option */
 const within = ref(store.within)
 
+const isFreeOrderCompatible = computed(() => {
+  const withinMultiple = (parseInt(within.value) || 1) > 1
+  return !withinMultiple && supportsInOrder(tokens.value)
+})
+
 // React to the `search` param being changed, at first load or later
 watchImmediate([search, cqp], () => {
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
@@ -50,7 +55,7 @@ watchImmediate([search, cqp], () => {
 
 /** Handle clicking the Search button */
 function submit() {
-  store.in_order = !freeOrder.value || !supportsInOrder(tokens.value)
+  store.in_order = !freeOrder.value || !isFreeOrderCompatible.value
   store.cqp = stringify(tokens.value)
   store.search = "cqp"
   store.page = 0
@@ -128,7 +133,7 @@ function formatWithin(key: string) {
       </div>
     </div>
 
-    <div class="text-danger text-center" v-if="freeOrder && !supportsInOrder(tokens)">
+    <div class="text-danger text-center" v-if="freeOrder && !isFreeOrderCompatible">
       <i18n-t scope="global" keypath="search.extended.free_order_invalid">
         <template #free_order>
           <em>{{ $t("search.free_order") }}</em>
