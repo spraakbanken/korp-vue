@@ -93,9 +93,9 @@ export function combineDateTime(date: Date, time: Date): Moment {
 export const isRecent = (date: Date, days = 30): boolean =>
   Math.abs(new Date().getTime() - date.getTime()) <= days * DAY_MS
 
-/** FooBar -> foo-bar */
-export const kebabize = (str: string): string =>
-  [...str].map((x, i) => (x == x.toUpperCase() ? (i ? "-" : "") + x.toLowerCase() : x)).join("")
+/** Truncate a string to a maximum length, adding an ellipsis if it was truncated. */
+export const truncateStr = (s: string, max: number) =>
+  s.length > max ? s.slice(0, max - 1) + "…" : s
 
 /** Replace HTML special chars */
 export const escapeHtml = (str: string): string =>

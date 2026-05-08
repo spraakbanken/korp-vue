@@ -41,6 +41,14 @@ export function formatDecimals(x: number | string, fractionDigits: number) {
   })
 }
 
+/** Format a number as a percentage, including % sign */
+export const percentage = (value: unknown) =>
+  Number(value).toLocaleString(getLang(), {
+    style: "percent",
+    minimumSignificantDigits: 1,
+    maximumSignificantDigits: 2,
+  })
+
 /** Format a large number with magnitude abbreviations K, M, G, T */
 export function abbreviateNumber(n: number) {
   // Find the appropriate abbreviation

@@ -266,7 +266,11 @@ result.statistics.relative.help: Relative frequency shows the number of hits per
 result.statistics.total: Total
 result.statistics.map: Map
 result.statistics.trend: Trend graph
-
+result.statistics.unsupported_attribute: "This attribute is not used by some corpora: {corpora}"
+result.statistics.unsupported_attributes.warning: |
+  {ratio} of selected material is missing the attribute {attributes} and therefore is not included in the statistics. |
+  {ratio} of selected material is missing the attributes {attributes} and therefore is not included in the statistics.
+result.statistics.no_supported_corpora: None of the selected corpora supports all chosen attributes. Try deselecting some attribute.
 result.trend: Trend graph
 
 result.wordpic: Word picture

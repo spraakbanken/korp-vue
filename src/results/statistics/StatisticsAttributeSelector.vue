@@ -5,6 +5,9 @@ import { useLocale } from "@/i18n/useLocale"
 import { watchImmediate } from "@vueuse/core"
 import { compact, groupBy, isEqual, sortBy } from "lodash-es"
 import { computed, reactive, unref } from "vue"
+import { corpusListing } from "@/core/corpora/corpusListing"
+import { vPopover } from "@/bootstrap"
+import { truncateStr } from "@/core/util"
 
 export type StatisticsAttributeSelectorModel = {
   selected: string[]
@@ -68,6 +71,13 @@ function commit(selected: Set<string>, insensitive: Set<string>) {
   if (!isEqual(value, unref(model))) model.value = value
 }
 
+function getCorpusTitles(ids: string[]) {
+  return corpusListing
+    .pick(ids)
+    .map((corpus) => locObj(corpus.title))
+    .join(", ")
+}
+
 // Sort attribute names to match options as shown
 function sortNames(names: string[]) {
   return sortBy(names, (name) => attributes.value.findIndex((attr) => attr.name === name))
@@ -110,11 +120,27 @@ function sortNames(names: string[]) {
         <li v-for="option in options" :key="option.name">
           <a
             href="#"
-            class="dropdown-item d-flex justify-content-between align-items-baseline"
+            class="dropdown-item d-flex justify-content-between align-items-center gap-1"
             :class="{ active: selectedLocal.has(option.name) }"
             @click.prevent="toggle(option.name)"
           >
             {{ locObj(option.label) }}
+            <fa-icon
+              v-if="option.unsupported.length"
+              icon="fa-solid fa-ban"
+              size="sm"
+              :class="{ 'text-warning': !selectedLocal.has(option.name) }"
+              v-popover
+              data-bs-toggle="popover"
+              data-bs-trigger="focus hover"
+              :data-bs-content="
+                $t('result.statistics.unsupported_attribute', {
+                  corpora: truncateStr(getCorpusTitles(option.unsupported), 200),
+                })
+              "
+              style="cursor: default"
+              @click.stop.prevent
+            />
           </a>
         </li>
       </template>

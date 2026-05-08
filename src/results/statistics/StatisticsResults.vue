@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StatsProxy } from "@/core/backend/proxy/StatsProxy"
+import { NoSupportedCorporaError, StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/statistics/statistics"
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
@@ -21,7 +21,7 @@ import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map
 import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
-import { locObj } from "@/core/i18n"
+import { locObj, percentage } from "@/core/i18n"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
@@ -32,6 +32,7 @@ import settings from "@/core/config"
 import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
 import JsonButton from "../JsonButton.vue"
+import type { AttributeOption } from "@/core/corpora/CorpusSet"
 
 const UPDATE_DELAY_MS = 500
 
@@ -54,6 +55,8 @@ const data = ref<StatisticsProcessed>()
 const isDated = ref(false)
 /** List of map-compatible attributes in the searched corpus set */
 const mapAttributes = ref<MapAttributeOption[]>([])
+const unsupportedRatio = ref(0)
+const unsupportedAttributes = ref<AttributeOption[]>([])
 const rawResponse = ref<CountResponse>()
 const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
@@ -96,7 +99,11 @@ async function doSearch() {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    setError(error)
+    if (error instanceof NoSupportedCorporaError) {
+      setError(t("result.statistics.no_supported_corpora"))
+    } else {
+      setError(error)
+    }
     data.value = undefined
     mapAttributes.value = []
     return
@@ -119,6 +126,8 @@ async function doSearch() {
   rawResponse.value = proxy.getResponse()
   isDated.value = !!corpora.getTimeInterval()
   mapAttributes.value = getGeoAttributes(corpora.corpora)
+  unsupportedRatio.value = proxy.unsupportedRatio
+  unsupportedAttributes.value = proxy.unsupportedAttributes
 }
 
 const onOptionsChange = debounce(() => {
@@ -232,6 +241,19 @@ function createExport() {
 
       <!-- Map button -->
       <MapButton :attributes="mapAttributes" @open="openMapTab" />
+    </div>
+
+    <div v-if="unsupportedRatio" class="alert alert-warning my-0">
+      <i18n-t
+        scope="global"
+        keypath="result.statistics.unsupported_attributes.warning"
+        :plural="unsupportedAttributes.length"
+      >
+        <template #ratio>{{ percentage(unsupportedRatio) }}</template>
+        <template #attributes>
+          <em>{{ unsupportedAttributes.map((attr) => locObj(attr.label)).join(", ") }}</em>
+        </template>
+      </i18n-t>
     </div>
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />

@@ -22,6 +22,8 @@ import { objectIntersection, objectUnion } from "@/core/util"
 
 export type AttributeOption = Attribute & {
   group: "word" | "pos" | "struct"
+  /** Corpora that do not support this attribute */
+  unsupported: string[]
 }
 
 /** How to join attribute lists of different corpora */
@@ -73,7 +75,7 @@ export class CorpusSet {
   getAttributes(lang?: string) {
     // lang not used here, only in parallel mode
     const attrs = this.map((corpus) => corpus.attributes)
-    return this._invalidateAttrs(attrs)
+    return objectUnion(attrs)
   }
 
   getAttributesIntersection() {
@@ -105,7 +107,7 @@ export class CorpusSet {
       const posAttrs = pickBy(corpus.attributes, (val, key) => val["is_struct_attr"])
       return { ...posAttrs, ...corpus["struct_attributes"] }
     })
-    const rest = this._invalidateAttrs(attrs)
+    const rest = objectUnion(attrs)
 
     // Merge datasets from attributes with the same name across all corpora
     for (const name in rest) {
@@ -144,19 +146,6 @@ export class CorpusSet {
     // Collect filters common to all corpora
     const attrs = intersection(...this.map((corpus) => corpus["attribute_filters"] || []))
     return compact(attrs.map((name) => this.structAttributes[name]))
-  }
-
-  _invalidateAttrs(attrs: Record<string, Attribute>[]) {
-    const union = objectUnion(attrs)
-    const intersection = objectIntersection(attrs)
-
-    // Mark attributes as disabled if not common to all attribute sets.
-    Object.entries(union).forEach(([key, value]) => {
-      if (!intersection[key]) value["disabled"] = true
-      else delete value["disabled"]
-    })
-
-    return union
   }
 
   /** Whether the given corpus has all given attributes. */
@@ -294,10 +283,12 @@ export class CorpusSet {
       setOperator === "union" ? this.getAttributes(lang) : this.getAttributesIntersection()
 
     const attrs: AttributeOption[] = []
-    for (const key in allAttrs) {
-      const obj = allAttrs[key]
-      if (obj["display_type"] !== "hidden") {
-        attrs.push({ group: "pos", ...obj })
+    for (const attr of Object.values(allAttrs)) {
+      if (attr["display_type"] !== "hidden") {
+        const unsupported = this.corpora
+          .filter((corpus) => !corpus.attributes[attr.name])
+          .map((corpus) => corpus.id)
+        attrs.push({ group: "pos", ...attr, unsupported })
       }
     }
 
@@ -316,14 +307,15 @@ export class CorpusSet {
     const common = this.commonAttributes
 
     let sentAttrs: AttributeOption[] = []
-    const object = { ...common, ...allAttrs }
-    for (const key in object) {
-      const obj = object[key]
-      if (obj["display_type"] !== "hidden") {
-        sentAttrs.push({ group: "struct", ...obj })
+
+    for (const attr of Object.values({ ...common, ...allAttrs })) {
+      if (attr["display_type"] !== "hidden") {
+        const unsupported = this.corpora
+          .filter((corpus) => !corpus.struct_attributes[attr.name])
+          .map((corpus) => corpus.id)
+        sentAttrs.push({ group: "struct", ...attr, unsupported })
       }
     }
-
     sentAttrs = sortBy(sentAttrs, (item) => locObj(item.label))
 
     return sentAttrs
@@ -334,6 +326,7 @@ export class CorpusSet {
       group: "word",
       name: "word",
       label: settings["word_label"],
+      unsupported: [],
     }
     const attrs = this.getWordAttributeGroups(wordOp, lang)
     const sentAttrs = this.getStructAttributeGroups(structOp, lang)

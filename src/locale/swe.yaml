@@ -266,7 +266,11 @@ result.statistics.relative.help: Relativ frekvens visar hur många träffar det 
 result.statistics.total: Total
 result.statistics.map: Karta
 result.statistics.trend: Trenddiagram
-
+result.statistics.unsupported_attribute: "Detta attribut används inte i vissa korpusar: {corpora}"
+result.statistics.unsupported_attributes.warning: |
+  {ratio} av valt material saknar attributet {attributes} och ingår därför inte i sammanställningen. |
+  {ratio} av valt material saknar attributen {attributes} och ingår därför inte i sammanställningen.
+result.statistics.no_supported_corpora: Inga av de valda korpusarna stödjer alla valda attribut. Prova att avmarkera något attribut.
 result.trend: Trenddiagram
 
 result.wordpic: Ordbild
