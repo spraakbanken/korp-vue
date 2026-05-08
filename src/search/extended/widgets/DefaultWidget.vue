@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, onUnmounted, useId, watchEffect } from "vue"
 import type { WidgetProps } from "./widget"
+import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 
 export type DefaultWidgetOptions = {
   /** Set to true to skip the case-sensitivity toggle */
@@ -38,17 +39,6 @@ onUnmounted(() => {
     <input type="text" v-model="model" size="10" class="form-control" />
 
     <!-- Case-insensitive toggle button-->
-    <template v-if="!options.case_sensitive">
-      <input
-        type="checkbox"
-        :id="`${id}-ignorecase`"
-        autocomplete="off"
-        v-model="ignoreCase"
-        class="btn-check"
-      />
-      <label class="btn btn-sm" :for="`${id}-ignorecase`">
-        <abbr :title="$t('search.simple.ignore_case')">Aa</abbr>
-      </label>
-    </template>
+    <CaseInsensitivityToggle v-if="!options.case_sensitive" v-model="ignoreCase" />
   </div>
 </template>

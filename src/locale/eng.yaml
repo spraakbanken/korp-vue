@@ -110,6 +110,7 @@ links.platforms.url: https://spraakbanken.gu.se/en/tools
 
 search.free_order: free order
 search.free_order.help: The search words can occur in any order, and not necessarily in sequence.
+search.ignore_case: case-insensitive
 
 search.history: History
 search.history.clear: Clear history
@@ -122,7 +123,6 @@ search.simple.midfix: medial part
 search.simple.midfix.help: Allow words that contain the search words.
 search.simple.suffix: final part
 search.simple.suffix.help: Allow words that end with the search words.
-search.simple.ignore_case: case-insensitive
 
 search.extended: Extended
 search.extended.instructions: Build your own search query by adding boxes for tokens (words) and their match conditions.

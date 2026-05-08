@@ -9,6 +9,7 @@ import { computed, reactive, unref } from "vue"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { vPopover } from "@/bootstrap"
 import { truncateStr } from "@/core/util"
+import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 
 export type StatisticsAttributeSelectorModel = {
   selected: string[]
@@ -152,22 +153,12 @@ function sortNames(names: string[]) {
               @click.stop.prevent
             />
 
-            <div v-if="option.name == 'word'">
-              <input
-                type="checkbox"
-                :id="`${option.name}-ignorecase`"
-                :checked="insensitiveLocal.has(option.name)"
-                autocomplete="off"
-                class="btn-check"
-              />
-              <label
-                class="btn btn-sm p-0 px-1"
-                :for="`${option.name}-ignorecase`"
-                @click.stop.prevent="toggleInsensitive(option.name)"
-              >
-                <abbr :title="$t('search.simple.ignore_case')">Aa</abbr>
-              </label>
-            </div>
+            <CaseInsensitivityToggle
+              v-if="option.name == 'word'"
+              @click.stop
+              :modelValue="insensitiveLocal.has('word')"
+              @update:modelValue="toggleInsensitive('word')"
+            />
           </a>
         </li>
       </template>

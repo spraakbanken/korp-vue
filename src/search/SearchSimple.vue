@@ -178,7 +178,7 @@ function submit() {
             v-model="ignoreCase"
           />
           <label class="form-check-label" for="search-simple-ignore-case">
-            {{ $t("search.simple.ignore_case") }}
+            {{ $t("search.ignore_case") }}
           </label>
         </div>
       </div>

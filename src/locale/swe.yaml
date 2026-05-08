@@ -110,6 +110,7 @@ links.platforms.url: https://spraakbanken.gu.se/verktyg
 
 search.free_order: fri följd
 search.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
+search.ignore_case: skiftlägesokänsligt
 
 search.history: Historik
 search.history.clear: Töm historik
@@ -122,7 +123,6 @@ search.simple.midfix: mellanled
 search.simple.midfix.help: Tillåt ord som innehåller sökorden.
 search.simple.suffix: efterled
 search.simple.suffix.help: Tillåt ord som slutar med sökorden.
-search.simple.ignore_case: skiftlägesokänsligt
 
 search.extended: Utökad
 search.extended.instructions: Bygg en egen sökfråga genom att lägga till lådor för token (ord) och deras matchningsvillkor.
