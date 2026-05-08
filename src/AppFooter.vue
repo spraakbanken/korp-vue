@@ -40,10 +40,18 @@ const { locale } = useI18n()
 
       <!-- Center -->
       <div class="col-lg-4">
+        <p>
+          {{ $t("footer.contact.intro") }}
+        </p>
         <ul class="list-unstyled">
           <li>
             <a :href="$t('links.contact.url')" target="_blank">
               {{ $t("links.contact.label") }}
+            </a>
+          </li>
+          <li>
+            <a :href="$t('links.cite.url')" target="_blank">
+              {{ $t("links.cite.label") }}
             </a>
           </li>
         </ul>

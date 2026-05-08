@@ -56,6 +56,8 @@ corpus.selection.summary.total: av 1 korpus | av {n} korpusar
 corpus.selection.summary.tokens: ({0} token)
 corpus.selection.label: Ändra...
 
+footer.contact.intro: Använder du våra plattformar, datamängder eller analyser i ditt arbete? Då vill vi gärna höra från dig!
+
 frontpage.examples: Exempelsökningar
 frontpage.news: Nyheter
 frontpage.updates: Korpusuppdateringar
@@ -95,6 +97,8 @@ lang.svm: moliseslaviska
 links.sbx.url: https://spraakbanken.gu.se/
 links.gu.label: Göteborgs universitet
 links.gu.url: https://gu.se/
+links.cite.label: Referera till oss
+links.cite.url: https://spraakbanken.gu.se/om/referera#Korp
 links.contact.label: Kontakta oss
 links.contact.url: https://spraakbanken.gu.se/kontakt
 links.about.label: Om oss
