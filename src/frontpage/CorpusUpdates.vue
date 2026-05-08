@@ -9,7 +9,7 @@ const COLLAPSED_MAX = 5
 const LIMIT_DAYS = 180
 
 const [isExpanded, toggle] = useToggle()
-const { locObj } = useLocale()
+const { locObj, locDate } = useLocale()
 const store = useAppStore()
 
 const recentUpdates = corpusListing.corpora
@@ -37,14 +37,15 @@ function select(corpusId: string) {
                 <strong>{{ locObj(corpus.title) }}</strong>
               </template>
             </i18n-t>
-            <button class="btn btn-outline-secondary btn-sm ms-1" @click="select(corpus.id)">
+            <button class="btn btn-link icon-link btn-sm ms-1" @click="select(corpus.id)">
+              <fa-icon icon="fa-regular fa-square-check" />
               {{ $t("frontpage.updates.select") }}
             </button>
           </div>
 
           <small class="text-nowrap">
             <time datetime="{{ corpus.info.Updated }}">
-              {{ corpus.info.Updated }}
+              {{ locDate(String(corpus.info.Updated)) }}
             </time>
           </small>
         </div>

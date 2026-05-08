@@ -6,7 +6,7 @@ import { computed } from "vue"
 const COLLAPSED_MAX = 3
 
 const [expanded, toggle] = useToggle()
-const { locObj } = useLocale()
+const { locObj, locDate } = useLocale()
 
 const items = computedAsync(async () => {
   const news = await import("@/core/services/news")
@@ -26,7 +26,7 @@ const itemsFiltered = computed(() =>
         <h5 class="card-title">{{ locObj(item.title) }}</h5>
         <div class="card-subtitle mb-2 text-muted">
           <time :datetime="item.created">
-            {{ item.created }}
+            {{ locDate(item.created) }}
           </time>
         </div>
         <div class="card-text" v-html="locObj(item.body)" />

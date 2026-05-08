@@ -2,6 +2,10 @@
   --font-family-heading: "Jost Variable", var(--bs-body-font-family);
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .font-family-heading {
   font-family: var(--font-family-heading);
 }

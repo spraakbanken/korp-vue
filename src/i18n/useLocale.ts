@@ -11,7 +11,11 @@ export function useLocale() {
    */
   const locObj_ = (map?: LangString) => locObj(map, locale.value)
 
+  const locDate = (date: string | Date) =>
+    new Date(date).toLocaleDateString(locale.value, { dateStyle: "long" })
+
   return {
     locObj: locObj_,
+    locDate,
   }
 }

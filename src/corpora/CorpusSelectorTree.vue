@@ -140,8 +140,7 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
       :class="{ 'bg-primary-subtle': corpus.selected }"
     >
       <label
-        class="flex-grow-1"
-        style="cursor: pointer"
+        class="flex-grow-1 cursor-pointer"
         @click.prevent="toggleCorpusSelection(corpus, $event.altKey || $event.ctrlKey)"
         @keydown.space.prevent="toggleCorpusSelection(corpus, false)"
       >
@@ -165,8 +164,7 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
       />
       <fa-icon
         icon="fa-solid fa-circle-info"
-        class="my-1 text-info"
-        style="cursor: pointer"
+        class="my-1 text-info cursor-pointer"
         @click="$emit('inspect', corpus)"
       />
     </div>

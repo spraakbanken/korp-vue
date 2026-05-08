@@ -44,7 +44,7 @@ const isDepheadToSelected = computed(() => {
 <template>
   {{ spaceBefore
   }}<span
-    class="kwic-token rounded-3"
+    class="kwic-token rounded-3 cursor-pointer"
     :class="{
       'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'bg-success-subtle text-success-emphasis': isRowTokenEqual(selectedToken, rowToken),
@@ -58,7 +58,6 @@ const isDepheadToSelected = computed(() => {
 
 <style lang="scss">
 .kwic-token {
-  cursor: pointer;
   transition: all 100ms ease-in-out;
 
   &:hover {

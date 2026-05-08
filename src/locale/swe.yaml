@@ -203,7 +203,7 @@ search.and: och
 search.or: eller
 
 search.filters: Filter
-search.filters.add: Lägg till {0}…
+search.filters.add: Välj {0}…
 
 search.within: inom
 search.within.key.sentence: mening | {count} meningar
