@@ -24,7 +24,7 @@ const isParallel = !!settings["parallel"]
 </script>
 
 <template>
-  <header class="bg-body-secondary pb-3 mb-2">
+  <header class="bg-body-tertiary pb-3 mb-2">
     <!-- Top row -->
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">

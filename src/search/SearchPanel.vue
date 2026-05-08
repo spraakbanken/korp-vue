@@ -22,106 +22,108 @@ function selectTab(key: number) {
 </script>
 
 <template>
-  <section class="d-flex flex-column align-items-center">
-    <!-- Tab bar -->
-    <nav
-      v-show="tabOptions.length > 1"
-      class="nav nav-tabs justify-content-center"
-      id="search-tabs-list"
-    >
-      <button
-        v-for="(name, key) in tabOptions"
-        :key
-        class="nav-link"
-        :class="{ active: search_tab == key }"
-        :id="`search-tabs-tab-${name}`"
-        v-tab
-        :aria-controls="`search-tabs-pane-${name}`"
-        :aria-selected="search_tab == key"
-        @click="selectTab(key)"
+  <section class="d-flex justify-content-center">
+    <div>
+      <!-- Tab bar -->
+      <nav
+        v-show="tabOptions.length > 1"
+        class="nav nav-tabs justify-content-center"
+        id="search-tabs-list"
       >
-        {{ $t(`search.${name}`) }}
-      </button>
-
-      <!-- Search history dropdown -->
-      <div class="nav-item dropdown">
-        <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          {{ $t("search.history") }}
+        <button
+          v-for="(name, key) in tabOptions"
+          :key
+          class="nav-link"
+          :class="{ active: search_tab == key }"
+          :id="`search-tabs-tab-${name}`"
+          v-tab
+          :aria-controls="`search-tabs-pane-${name}`"
+          :aria-selected="search_tab == key"
+          @click="selectTab(key)"
+        >
+          {{ $t(`search.${name}`) }}
         </button>
-        <ul class="dropdown-menu dropdown-menu-end overflow-auto" style="max-height: 20rem">
-          <template v-if="historyOptions.length">
-            <li>
-              <a href="#" class="dropdown-item link-danger" @click.prevent="clearHistory()">
-                {{ $t("search.history.clear") }}
+
+        <!-- Search history dropdown -->
+        <div class="nav-item dropdown">
+          <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ $t("search.history") }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end overflow-auto" style="max-height: 20rem">
+            <template v-if="historyOptions.length">
+              <li>
+                <a href="#" class="dropdown-item link-danger" @click.prevent="clearHistory()">
+                  {{ $t("search.history.clear") }}
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+            </template>
+            <li v-else>
+              <a href="#" class="dropdown-item disabled">{{ $t("search.history.empty") }}</a>
+            </li>
+            <li v-for="option in historyOptions" :key="option.id">
+              <a
+                href="#"
+                class="dropdown-item"
+                @click.prevent="restoreFromHistory(option.state)"
+                :class="{ active: isCurrentSearch(option.state) }"
+              >
+                {{ option.label }}
               </a>
             </li>
-            <li><hr class="dropdown-divider" /></li>
-          </template>
-          <li v-else>
-            <a href="#" class="dropdown-item disabled">{{ $t("search.history.empty") }}</a>
-          </li>
-          <li v-for="option in historyOptions" :key="option.id">
-            <a
-              href="#"
-              class="dropdown-item"
-              @click.prevent="restoreFromHistory(option.state)"
-              :class="{ active: isCurrentSearch(option.state) }"
-            >
-              {{ option.label }}
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+          </ul>
+        </div>
+      </nav>
 
-    <!-- Tab content -->
-    <div
-      id="search-tabs-content"
-      class="tab-content border p-4 bg-body"
-      :class="{ 'border-top-0': tabOptions.length > 1 }"
-    >
+      <!-- Tab content -->
       <div
-        class="tab-pane"
-        :class="{ 'show active': search_tab == tabOptions.indexOf('simple') }"
-        id="search-tabs-pane-simple"
-        role="tabpanel"
-        aria-labelledby="search-tabs-tab-simple"
-        tabindex="0"
+        id="search-tabs-content"
+        class="tab-content border p-4 bg-body"
+        :class="{ 'border-top-0': tabOptions.length > 1 }"
       >
-        <SearchSimple />
-      </div>
+        <div
+          class="tab-pane"
+          :class="{ 'show active': search_tab == tabOptions.indexOf('simple') }"
+          id="search-tabs-pane-simple"
+          role="tabpanel"
+          aria-labelledby="search-tabs-tab-simple"
+          tabindex="0"
+        >
+          <SearchSimple />
+        </div>
 
-      <div
-        class="tab-pane"
-        :class="{ 'show active': search_tab == tabOptions.indexOf('extended') }"
-        id="search-tabs-pane-extended"
-        role="tabpanel"
-        aria-labelledby="search-tabs-tab-extended"
-        tabindex="0"
-      >
-        <SearchExtended />
-      </div>
+        <div
+          class="tab-pane"
+          :class="{ 'show active': search_tab == tabOptions.indexOf('extended') }"
+          id="search-tabs-pane-extended"
+          role="tabpanel"
+          aria-labelledby="search-tabs-tab-extended"
+          tabindex="0"
+        >
+          <SearchExtended />
+        </div>
 
-      <div
-        class="tab-pane"
-        :class="{ 'show active': search_tab == tabOptions.indexOf('advanced') }"
-        id="search-tabs-pane-advanced"
-        role="tabpanel"
-        aria-labelledby="search-tabs-tab-advanced"
-        tabindex="0"
-      >
-        <SearchAdvanced />
-      </div>
+        <div
+          class="tab-pane"
+          :class="{ 'show active': search_tab == tabOptions.indexOf('advanced') }"
+          id="search-tabs-pane-advanced"
+          role="tabpanel"
+          aria-labelledby="search-tabs-tab-advanced"
+          tabindex="0"
+        >
+          <SearchAdvanced />
+        </div>
 
-      <div
-        class="tab-pane"
-        :class="{ 'show active': search_tab == tabOptions.indexOf('compare') }"
-        id="search-tabs-pane-compare"
-        role="tabpanel"
-        aria-labelledby="search-tabs-tab-compare"
-        tabindex="0"
-      >
-        <SearchCompare />
+        <div
+          class="tab-pane"
+          :class="{ 'show active': search_tab == tabOptions.indexOf('compare') }"
+          id="search-tabs-pane-compare"
+          role="tabpanel"
+          aria-labelledby="search-tabs-tab-compare"
+          tabindex="0"
+        >
+          <SearchCompare />
+        </div>
       </div>
     </div>
   </section>

@@ -181,8 +181,8 @@ function openReadingMode() {
 }
 
 .accordion {
-  --bs-accordion-active-color: var(--bs-secondary-text-emphasis);
-  --bs-accordion-active-bg: var(--bs-secondary-bg-subtle);
+  --bs-accordion-active-color: var(--bs-body-color);
+  --bs-accordion-active-bg: var(--bs-tertiary-bg);
   --bs-accordion-btn-padding-x: var(--bs-card-spacer-x);
   --bs-accordion-body-padding-x: var(--bs-card-spacer-x);
 }
