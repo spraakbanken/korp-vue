@@ -14,6 +14,7 @@ import { groupBy } from "lodash-es"
 import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   task: MapTask
@@ -23,6 +24,7 @@ const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
+const matomo = useMatomo()
 
 const id = useId()
 const mapEl = useTemplateRef("map")
@@ -48,6 +50,7 @@ onMounted(() => {
   )
 
   model.setCenter(settings["map_center"])
+  matomo.value?.trackEvent("Map", "New")
 })
 
 async function doSearch() {
@@ -78,6 +81,7 @@ function onMarkerClick(marker: MarkerData) {
   const readingMode = queryData.label === "paragraph__geocontext"
   const task = new ExampleTask(queryData.corpora, cqps, queryData.within, readingMode)
   createTab(t("result.kwic"), task)
+  matomo.value?.trackEvent("Map", "Subsearch")
 }
 
 onBeforeUnmount(() => {

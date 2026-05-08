@@ -3,6 +3,7 @@ import type { SearchExample } from "@/core/config/instanceConfig.types"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { shuffle } from "lodash-es"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   items: SearchExample[]
@@ -10,12 +11,14 @@ const props = defineProps<{
 
 const store = useAppStore()
 const { locObj } = useLocale()
+const matomo = useMatomo()
 
 // Pick 3 random examples
 const examples = shuffle(props.items).slice(0, 3)
 
 /** Apply selected search example to app state */
 function select(example: SearchExample) {
+  matomo.value?.trackEvent("Search", "Select example", locObj(example.label))
   store.$patch(example.params)
 }
 </script>

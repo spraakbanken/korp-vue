@@ -11,6 +11,7 @@ import { useI18n } from "vue-i18n"
 import moment from "moment"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   task: TrendTask
@@ -20,6 +21,7 @@ const progress = defineModel<number>("progress")
 
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
+const matomo = useMatomo()
 
 /** What time span to show in main chart */
 const range = ref<{ from: Date; to: Date }>()
@@ -32,6 +34,7 @@ onMounted(() => {
   if (!interval) throw new Error("Time interval missing")
   const [from, to] = interval
   doSearch(from, to)
+  matomo.value?.trackEvent("Trend", "New")
 })
 
 async function doSearch(from: Moment, to: Moment) {
@@ -76,11 +79,13 @@ function onClickPoint(series: Series[], time: Moment) {
   const cqps = compact([props.task.cqp, seriesCqp, timeCqp])
   const task = new ExampleTask(props.task.corpusSet.getIds(), cqps, props.task.defaultWithin)
   createTab(t("result.kwic"), task)
+  matomo.value?.trackEvent("Trend", "Subsearch")
 }
 
 function onSelectRange(from: Date, to: Date) {
   range.value = { from, to }
   doSearch(moment(from), moment(to))
+  matomo.value?.trackEvent("Trend", "Select range")
 }
 </script>
 

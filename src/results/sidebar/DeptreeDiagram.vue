@@ -8,6 +8,7 @@ import { useLocale } from "@/i18n/useLocale"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { createConll, drawDeptree, getDeptreeAttributes } from "./deptree"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   corpus: Corpus
@@ -18,6 +19,7 @@ const svgEl = useTemplateRef<SVGElement>("svg")
 const isVisible = useElementVisibility(svgEl)
 const getStringifier = useStringifiers()
 const { locObj } = useLocale()
+const matomo = useMatomo()
 
 /** Selected (hovered) tag to show legend/translation for */
 const selection = ref<{ attr: Attribute; key: string }>()
@@ -38,7 +40,8 @@ watchEffect(() => {
 
 // Reset selection when diagram is hidden
 watch(isVisible, () => {
-  if (!isVisible.value) selection.value = undefined
+  if (isVisible.value) matomo.value?.trackEvent("KWIC", "Show deptree")
+  else selection.value = undefined
 })
 </script>
 

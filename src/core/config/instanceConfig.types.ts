@@ -54,9 +54,8 @@ export type InstanceConfig = {
   matomo?: {
     url?: string
     site?: number
-    development?: { url?: string; site?: number }
-    staging?: { url?: string; site?: number }
-    production?: { url?: string; site?: number }
+  } & {
+    [mode: string]: { url?: string; site?: number }
   }
   navigation?: {
     help_links?: { label: LangString; url: LangString }[]

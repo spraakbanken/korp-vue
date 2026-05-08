@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watchImmediate } from "@vueuse/core"
-import { computed, ref } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
@@ -20,6 +20,7 @@ import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
 import JsonButton from "./JsonButton.vue"
+import { useMatomo } from "vue3-matomo"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -30,6 +31,7 @@ const { setError, clearError, errorMessage } = useError()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
+const matomo = useMatomo()
 
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<WordPicture>()
@@ -42,6 +44,8 @@ const sortLocal = ref<RelationsSort>("mi")
 const proxy = new RelationsProxy().setProgressHandler((report) => {
   progress.value = report.percent
 })
+
+onMounted(() => matomo.value?.trackEvent("Wordpic", "Activate"))
 
 // Start watching the active search query
 watchImmediate(activeSearch, () => doSearch())
@@ -76,11 +80,20 @@ const onOptionsChange = debounce(() => {
 function onClickRow(row: MatchedRelation): void {
   const task = new WordpicExampleTask(activeSearch.value!.corpora, row.source.join())
   createTab(t("result.kwic"), task)
+  matomo.value?.trackEvent("Wordpic", "Subsearch")
 }
 
 function createExport() {
   return data.value!.generateCsv()
 }
+
+watch(sortLocal, () => matomo.value?.trackEvent("Wordpic", "Change sort", sortLocal.value))
+
+watch(limit, () => matomo.value?.trackEvent("Wordpic", "Change limit", String(limit.value)))
+
+watch(showPos, () =>
+  matomo.value?.trackEvent("Wordpic", "Toggle show POS", showPos.value ? "on" : "off"),
+)
 </script>
 
 <template>

@@ -14,12 +14,14 @@ import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
 import useSearchStore from "./useSearchStore"
+import { useMatomo } from "vue3-matomo"
 
 /** Reactive corpus selection instance */
 const corpusSelection = useReactiveCorpusSelection() as CorpusSetParallel
 const store = useAppStore()
 const { activeSearch, commitCqp } = useSearchStore()
 const { search } = storeToRefs(store)
+const matomo = useMatomo()
 
 /** Creates a new query */
 const newQuery = (lang: string): ParallelQuery => ({
@@ -77,6 +79,7 @@ function doSearch(force = false) {
   const cqp = getParallelCqp(queries.value)
   // TODO Move eq check into commitCqp
   const isNew = cqp != activeSearch?.cqp
+  matomo.value?.trackEvent("Search", "Submit search", "Parallel")
   if (force || isNew) commitCqp(cqp)
 }
 </script>

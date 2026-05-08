@@ -8,6 +8,7 @@ import { computed } from "vue"
 import { useAppStore } from "@/store/useAppStore"
 import { createAttrCondition } from "@/core/corpora/attribute"
 import { stringify as stringifyCqp } from "@/core/cqp/cqp"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   attribute: Attribute
@@ -17,6 +18,7 @@ const props = defineProps<{
 
 const store = useAppStore()
 const stringify = useStringifiers()(props.attribute)
+const matomo = useMatomo()
 
 /** Enhanced stringification for sidebar */
 const itemHtml = computed(() => {
@@ -44,6 +46,7 @@ function search() {
   store.search = "cqp"
   store.search_tab = 1
   store.cqp = stringifyCqp(query)
+  matomo.value?.trackEvent("Sidebar", "Search")
 }
 </script>
 
@@ -69,7 +72,7 @@ function search() {
         <tr v-if="attribute.external_search">
           <td colspan="2">
             <a
-              :href="template(attribute.external_search)({ val: stringify(item) })"
+              :href="template(attribute.external_search)({ val: item.replace(/:.*/, '') })"
               target="_blank"
               class="icon-link"
             >

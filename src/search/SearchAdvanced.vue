@@ -7,9 +7,11 @@ import { ref, watchEffect } from "vue"
 import SaveSearchButton from "./SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "./useSearchStore"
+import { useMatomo } from "vue3-matomo"
 
 const store = useAppStore()
 const searchStore = useSearchStore()
+const matomo = useMatomo()
 
 const { in_order, search } = storeToRefs(store)
 const cqpLocal = ref("[]")
@@ -34,6 +36,7 @@ function submit() {
   store.in_order = !freeOrder.value
   store.search = `cqp|${cqpLocal.value}`
   store.page = 0
+  matomo.value?.trackEvent("Search", "Submit search", "Advanced")
   searchStore.commitCqp(cqpLocal.value)
 }
 </script>

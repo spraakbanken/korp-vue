@@ -14,11 +14,13 @@ import { Lemgram } from "@/core/lemgram"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import useSearchStore from "./useSearchStore"
+import { useMatomo } from "vue3-matomo"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
 const searchStore = useSearchStore()
 const { t } = useI18n()
+const matomo = useMatomo()
 
 const corpusSelection = useReactiveCorpusSelection()
 const prefixLocal = ref(prefix.value)
@@ -84,6 +86,7 @@ function submit() {
 
   store.search = `${type}|${value}`
   store.page = 0
+  matomo.value?.trackEvent("Search", "Submit search", "Simple")
   searchStore.commitQuery(query.value)
 }
 </script>

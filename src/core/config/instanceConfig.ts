@@ -34,5 +34,8 @@ export function getInstanceConfig(): InstanceConfig {
     throw new Error('Setting "korp_backend_url" must start with http(s)')
   }
 
+  // Merge in mode-specific matomo settings
+  Object.assign(settings.matomo || {}, settings.matomo?.[import.meta.env.MODE])
+
   return settings
 }

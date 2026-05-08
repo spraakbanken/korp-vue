@@ -15,6 +15,7 @@ import useSearchStore from "../useSearchStore"
 import useMessageStore from "@/store/useMessageStore"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { useI18n } from "vue-i18n"
+import { useMatomo } from "vue3-matomo"
 
 const store = useAppStore()
 const { search, cqp } = storeToRefs(store)
@@ -22,6 +23,7 @@ const searchStore = useSearchStore()
 const { addMessage } = useMessageStore()
 const corpusSelection = useReactiveCorpusSelection()
 const { t, te } = useI18n()
+const matomo = useMatomo()
 
 /** Query structure being edited */
 const tokens = ref<CqpQuery>([{ and_block: [[createCondition("")]] }])
@@ -50,6 +52,7 @@ watchImmediate([search, cqp], () => {
   }
 
   // Trigger search
+  matomo.value?.trackEvent("Search", "Submit search", "Extended")
   searchStore.commitQuery(tokens.value)
 })
 
@@ -60,6 +63,7 @@ function submit() {
   store.search = "cqp"
   store.page = 0
   store.within = within.value
+  matomo.value?.trackEvent("Search", "Submit search", "Extended")
   searchStore.commitQuery(tokens.value)
 }
 

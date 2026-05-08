@@ -8,6 +8,7 @@ import { isEqual, pick } from "lodash-es"
 import { computed, readonly } from "vue"
 import useSearchStore from "./useSearchStore"
 import { storeToRefs } from "pinia"
+import { useMatomo } from "vue3-matomo"
 
 type SearchState = Pick<Store, SearchParamNames>
 
@@ -21,6 +22,7 @@ export default function useSearchHistory() {
   const storage = useLocalStorage<SearchState[]>(`korp.history.${currentMode}`, [])
   const store = useAppStore()
   const { activeSearch } = storeToRefs(useSearchStore())
+  const matomo = useMatomo()
 
   // Save every new search to history
   // TODO Will include params for non-active search modes (e.g. `prefix` from Simple when the active search is from Extended)
@@ -42,6 +44,7 @@ export default function useSearchHistory() {
   /** Restore selected search state to the store */
   function restoreFromHistory(state: SearchState) {
     store.$patch(state)
+    matomo.value?.trackEvent("History", "Restore")
   }
 
   /** History items reshaped for UI */

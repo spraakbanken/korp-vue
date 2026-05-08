@@ -4,6 +4,7 @@ import { computedAsync } from "@vueuse/core"
 import type { CompareItem, CompareResult, CompareTask } from "@/core/task/CompareTask"
 import CompareRow from "./CompareRow.vue"
 import { useDynamicTabs } from "./useDynamicTabs"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{ task: CompareTask }>()
 
@@ -11,6 +12,7 @@ const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
+const matomo = useMatomo()
 
 const result = computedAsync<CompareResult>(async () => {
   progress.value = 0
@@ -22,6 +24,7 @@ const result = computedAsync<CompareResult>(async () => {
 function clickItem(side: 0 | 1, item: CompareItem) {
   const exampleTask = props.task.createExampleTask(side, item)
   createTab(t("result.kwic"), exampleTask)
+  matomo.value?.trackEvent("Compare", "Subsearch")
 }
 </script>
 

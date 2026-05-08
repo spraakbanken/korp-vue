@@ -8,10 +8,12 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { CompareTask, type SavedSearch } from "@/core/task/CompareTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
+import { useMatomo } from "vue3-matomo"
 
 const { removeSearch, searches } = useSearchStorage()
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
+const matomo = useMatomo()
 
 const id = useId()
 const attribute = ref<Attribute>()
@@ -44,6 +46,7 @@ function submit() {
   )
     return
   const task = new CompareTask(queryLeft.value, queryRight.value, [attribute.value.name])
+  matomo.value?.trackEvent("Search", "Submit search", "Compare")
   createTab(t("search.compare"), task)
 }
 

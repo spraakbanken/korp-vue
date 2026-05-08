@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CSV_TYPES, downloadCsvFile, type CsvType } from "@/core/services/csv"
 import { ref, useId } from "vue"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   disabled?: boolean
@@ -8,12 +9,15 @@ const props = defineProps<{
   getRows: () => Iterable<(string | number)[]>
 }>()
 
+const matomo = useMatomo()
+
 const id = useId()
 const separator = ref<CsvType>("tab")
 
 function onSubmit() {
   const rows = props.getRows()
   downloadCsvFile(props.name, rows, separator.value)
+  matomo.value?.trackEvent("Result", "Download export", `${props.name} ${separator.value}`)
 }
 </script>
 

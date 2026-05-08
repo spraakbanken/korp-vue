@@ -5,7 +5,7 @@ import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistic
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { watchDeep, watchImmediate } from "@vueuse/core"
-import { computed, ref, watchEffect } from "vue"
+import { computed, onMounted, ref, watch, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
@@ -33,6 +33,7 @@ import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
 import JsonButton from "../JsonButton.vue"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
+import { useMatomo } from "vue3-matomo"
 
 const UPDATE_DELAY_MS = 500
 
@@ -44,6 +45,7 @@ const { createTab } = useDynamicTabs()
 const { setError, clearError, errorMessage } = useError()
 const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
+const matomo = useMatomo()
 
 const attributesSelected = ref<StatisticsAttributeSelectorModel>({
   selected: [],
@@ -65,6 +67,8 @@ const { statsRelative } = storeToRefs(store)
 const proxy = new StatsProxy().setProgressHandler((report) => {
   progress.value = report.percent
 })
+
+onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())
@@ -146,6 +150,7 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
   const within = proxy.getParams().default_within
   const task = new ExampleTask(corpusIds, cqps, within)
   createTab(t("result.kwic"), task)
+  matomo.value?.trackEvent("Statistics", "Subsearch")
 }
 
 function openTrendTab() {
@@ -203,6 +208,8 @@ function createExport() {
     t("result.statistics.total"),
   )
 }
+
+watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row selection"))
 </script>
 
 <template>

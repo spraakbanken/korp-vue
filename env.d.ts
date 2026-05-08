@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnvCustom
 }
 
 // Declares vars available in `process.env`
-interface ImportMetaEnv {
+interface ImportMetaEnvCustom extends ImportMetaEnv {
   readonly KORP_HOST: string
 }

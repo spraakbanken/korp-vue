@@ -1,3 +1,5 @@
+declare module "@fontsource-variable/jost" {}
+
 interface Window {
   // Matomo queue
   _paq?: unknown[][]

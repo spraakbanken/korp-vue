@@ -6,6 +6,7 @@ import DefaultReader from "./DefaultReader.vue"
 import type { KwicRow } from "@/core/kwic/kwic"
 import { useLocale } from "@/i18n/useLocale"
 import SidebarProvider from "../sidebar/SidebarProvider.vue"
+import { useMatomo } from "vue3-matomo"
 
 const props = defineProps<{
   task: TextTask
@@ -14,10 +15,14 @@ const props = defineProps<{
 const progress = defineModel<number>("progress")
 
 const { locObj } = useLocale()
+const matomo = useMatomo()
 
 const document = shallowRef<KwicRow>()
 
-onMounted(() => doSearch())
+onMounted(() => {
+  doSearch()
+  matomo.value?.trackEvent("Text", "New")
+})
 
 async function doSearch() {
   props.task.abort()

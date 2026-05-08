@@ -1,11 +1,16 @@
 <script lang="ts" setup>
+import { useMatomo } from "vue3-matomo"
+
 export type ErrorMessage = {
   message: string
   details?: string
   code?: string
 }
 
-defineProps<ErrorMessage>()
+const props = defineProps<ErrorMessage>()
+
+const matomo = useMatomo()
+matomo.value?.trackEvent("Error", "Shown", `${props.message} ${props.details} ${props.code}`)
 </script>
 
 <template>

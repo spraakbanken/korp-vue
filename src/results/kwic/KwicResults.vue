@@ -20,6 +20,7 @@ import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import useSearchStore from "@/search/useSearchStore"
 import JsonButton from "../JsonButton.vue"
+import { useMatomo } from "vue3-matomo"
 
 const UPDATE_DELAY_MS = 500
 
@@ -28,6 +29,7 @@ const progress = defineModel<number>("progress")
 const store = useAppStore()
 const { activeSearch } = storeToRefs(useSearchStore())
 const { setError, clearError, errorMessage } = useError()
+const matomo = useMatomo()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 
@@ -122,7 +124,16 @@ const onOptionsChange = debounce(() => {
   doSearch(true)
 }, UPDATE_DELAY_MS)
 
-watch(pageLocal, () => doSearch(true))
+watch(pageLocal, () => {
+  matomo.value?.trackEvent("KWIC", "Change page")
+  doSearch(true)
+})
+
+watch(context, () =>
+  matomo.value?.trackEvent("KWIC", "Toggle context", context.value ? "Show" : "Hide"),
+)
+
+watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || "default"))
 
 function createExport() {
   const params = proxy.getParams()

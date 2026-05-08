@@ -3,11 +3,18 @@ import settings from "@/core/config"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
+import { watch } from "vue"
+import { useMatomo } from "vue3-matomo"
 
 const store = useAppStore()
 const { locObj } = useLocale()
+const matomo = useMatomo()
 
 const { lang } = storeToRefs(store)
+
+matomo.value?.trackEvent("UI", "Locale init", lang.value)
+
+watch(lang, () => matomo.value?.trackEvent("UI", "Locale change", lang.value))
 </script>
 
 <template>
