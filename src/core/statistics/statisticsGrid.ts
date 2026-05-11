@@ -74,7 +74,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
   refreshColumns() {
     const columns = this.getColumns() as SlickgridColumn[]
     columns.forEach((column) => {
-      if (column.getName) column.name = column.getName(this.store.lang)
+      if (column.getName) column.name = column.toolTip = column.getName(this.store.lang)
     })
     this.setColumns(columns as Column<Row>[])
   }

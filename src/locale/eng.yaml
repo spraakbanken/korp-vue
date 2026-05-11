@@ -117,11 +117,11 @@ search.history.clear: Clear history
 search.history.empty: No searches made yet
 
 search.simple: Simple
-search.simple.prefix: initial part
+search.simple.prefix: starts with
 search.simple.prefix.help: Allow words that begin with the search words.
-search.simple.midfix: medial part
+search.simple.midfix: contains
 search.simple.midfix.help: Allow words that contain the search words.
-search.simple.suffix: final part
+search.simple.suffix: ends with
 search.simple.suffix.help: Allow words that end with the search words.
 
 search.extended: Extended

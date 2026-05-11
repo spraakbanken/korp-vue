@@ -100,12 +100,10 @@ export class CorpusSet {
   }
 
   _getStructAttrs(): Record<string, Attribute> {
-    const attrs = this.map(function (corpus) {
+    const attrs = this.map((corpus) => {
       // Set the is_struct_attr flag for all struct attributes
       Object.values(corpus["struct_attributes"]).forEach((attr) => (attr["is_struct_attr"] = true))
-      // if a position attribute is declared as structural, include here
-      const posAttrs = pickBy(corpus.attributes, (val, key) => val["is_struct_attr"])
-      return { ...posAttrs, ...corpus["struct_attributes"] }
+      return corpus["struct_attributes"]
     })
     const rest = objectUnion(attrs)
 

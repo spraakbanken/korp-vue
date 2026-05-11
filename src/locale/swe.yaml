@@ -117,11 +117,11 @@ search.history.clear: Töm historik
 search.history.empty: Inga sökningar har gjorts än
 
 search.simple: Enkel
-search.simple.prefix: förled
+search.simple.prefix: börjar med
 search.simple.prefix.help: Tillåt ord som börjar med sökorden.
-search.simple.midfix: mellanled
+search.simple.midfix: innehåller
 search.simple.midfix.help: Tillåt ord som innehåller sökorden.
-search.simple.suffix: efterled
+search.simple.suffix: slutar med
 search.simple.suffix.help: Tillåt ord som slutar med sökorden.
 
 search.extended: Utökad
