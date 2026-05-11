@@ -1,4 +1,4 @@
-import { memoize } from "lodash-es"
+import { memoize, uniq } from "lodash-es"
 import type {
   AttrValuesResponseDeep,
   AttrValuesResponseFlat,
@@ -35,15 +35,19 @@ export const getAttrValues: (
   attr: string,
   /** Whether values should be split by "|" */
   split?: boolean,
+  ranked?: boolean,
 ) => Promise<string[]> = memoize(
-  async (corpora, attr, split) => {
+  async (corpora, attr, split, ranked) => {
     const data = (await korpRequest("attr_values", {
       corpus: corpora.join(","),
       attr: attr,
       per_corpus: false,
       split: split ? attr : undefined,
     })) as AttrValuesResponseFlat
-    return data.combined[attr]!
+    const values = data.combined[attr]!
+    // If attribute is ranked, strip ":<rank>" suffix
+    if (ranked) return uniq(values.map((value) => value.replace(/:.*$/, "")))
+    return values
   },
   // Memoize based on the values of all arguments
   (...args) => JSON.stringify(args),

@@ -17,6 +17,7 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
   async function loadValues(attribute: Attribute) {
     const name = attribute.name
     const split = attribute.type == "set"
+    const ranked = attribute.ranked
 
     // check which corpora support attributes
     const corpora = corpusSelection.corpora
@@ -24,7 +25,7 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
       .map((corpus) => corpus.id)
 
     if (!corpora.length) return []
-    return getAttrValues(corpora, name, split)
+    return getAttrValues(corpora, name, split, ranked)
   }
 
   function formatOptions(attribute: Attribute, values: string[]) {
@@ -39,6 +40,7 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
   watchImmediate([corpusSelection, getAttribute, locale], async () => {
     const attribute = getAttribute()
     // Temporarily empty the selection to show the loading label
+    // TODO This breaks internal search
     const prevValue = model.value
     model.value = ""
 
