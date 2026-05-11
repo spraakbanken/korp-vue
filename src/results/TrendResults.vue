@@ -12,6 +12,7 @@ import moment from "moment"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
+import { percentage } from "@/core/i18n"
 
 const props = defineProps<{
   task: TrendTask
@@ -28,6 +29,7 @@ const range = ref<{ from: Date; to: Date }>()
 const series = ref<Series[]>([])
 const level = ref<Level>("year")
 const labels = computed(() => Object.fromEntries(props.task.subqueries))
+const undatedRatio = ref(0)
 
 onMounted(() => {
   const interval = props.task.corpusSet.getMomentInterval()
@@ -40,6 +42,7 @@ onMounted(() => {
 async function doSearch(from: Moment, to: Moment) {
   const levelNew = findOptimalLevel(from, to)
   progress.value = 0
+  undatedRatio.value = props.task.corpusSet.getUndatedRatio()
 
   let data: TrendResult
   try {
@@ -90,14 +93,22 @@ function onSelectRange(from: Date, to: Date) {
 </script>
 
 <template>
-  <TrendGraph
-    v-if="series.length && level"
-    :series
-    :labels
-    :level
-    :range
-    v-fade-if-loading="progress"
-    @clickPoint="onClickPoint"
-    @selectRange="onSelectRange"
-  />
+  <div>
+    <!-- Undated ratio info -->
+    <div v-if="undatedRatio > 0" class="alert alert-info">
+      <fa-icon icon="fa-solid fa-info-circle" class="me-1" />
+      {{ t("result.trend.undated", { ratio: percentage(undatedRatio) }) }}
+    </div>
+
+    <TrendGraph
+      v-if="series.length && level"
+      :series
+      :labels
+      :level
+      :range
+      v-fade-if-loading="progress"
+      @clickPoint="onClickPoint"
+      @selectRange="onSelectRange"
+    />
+  </div>
 </template>

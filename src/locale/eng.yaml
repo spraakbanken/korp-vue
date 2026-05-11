@@ -272,10 +272,11 @@ result.statistics.map: Map
 result.statistics.trend: Trend graph
 result.statistics.unsupported_attribute: "This attribute is not used by some corpora: {corpora}"
 result.statistics.unsupported_attributes.warning: |
-  {ratio} of selected material is missing the attribute {attributes} and therefore is not included in the statistics. |
-  {ratio} of selected material is missing the attributes {attributes} and therefore is not included in the statistics.
+  {ratio} of selected material is excluded because it does not use the attribute {attributes}. |
+  {ratio} of selected material is excluded because it does not use the attributes {attributes}.
 result.statistics.no_supported_corpora: None of the selected corpora supports all chosen attributes. Try deselecting some attribute.
 result.trend: Trend graph
+result.trend.undated: "{ratio} of selected material is excluded because it has no time markup."
 
 result.wordpic: Word picture
 result.wordpic.description: The Word picture shows words that tend to co-occur in syntactic relations with the search word.
@@ -285,7 +286,7 @@ result.wordpic.limit: Rows
 result.wordpic.show_pos: Show parts of speech
 result.wordpic.sort: Sort by
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, an adaptation of the Mutual Information association measure prioritizing typical items over infrequent ones
-result.wordpic.query.incompatible: Ogiltig sökfråga
+result.wordpic.query.incompatible: Incompatible search query
 result.wordpic.query.incompatible.help: The search query for a word picture must be exactly one word or lemgram.
 
 pos.nn: noun

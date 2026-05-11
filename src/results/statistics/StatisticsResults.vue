@@ -250,7 +250,8 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       <MapButton :attributes="mapAttributes" @open="openMapTab" />
     </div>
 
-    <div v-if="unsupportedRatio" class="alert alert-warning my-0">
+    <div v-if="unsupportedRatio" class="alert alert-info my-0">
+      <fa-icon icon="fa-solid fa-info-circle" class="me-1" />
       <i18n-t
         scope="global"
         keypath="result.statistics.unsupported_attributes.warning"

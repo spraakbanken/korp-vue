@@ -153,7 +153,7 @@ type SelectDragEvent = {
     <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
     <div
       class="position-relative w-100"
-      style="height: 90svh; max-height: 66vw"
+      style="height: 60svh; max-height: 66vw"
       :key="isDark ? 'dark' : 'light'"
     >
       <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
