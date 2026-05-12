@@ -3,7 +3,7 @@ import settings from "../config"
 import type { Corpus } from "../config/corpusConfig.types"
 import type { Attribute, CorpusParallel } from "../config/corpusConfigRaw.types"
 import { objectIntersection } from "../util"
-import { CorpusSet } from "./CorpusSet"
+import { CorpusSet, type AttributeOption } from "./CorpusSet"
 
 type PCorpus = Corpus<CorpusParallel>
 
@@ -170,5 +170,13 @@ export class CorpusSetParallel extends CorpusSet {
   get(corpusID: string): PCorpus {
     // Remove first part if on the form "<a>|<b>"
     return super.get(corpusID.replace(/.*\|/, "")) as PCorpus
+  }
+
+  getUnsupportedCorpora(options: AttributeOption[]): CorpusSetParallel {
+    const unsupported = options.flatMap((option) => option.unsupported)
+    const linked = unsupported.flatMap((id) =>
+      this.getLinked(this.get(id)).map((corpus) => corpus.id),
+    )
+    return this.pick([...unsupported, ...linked])
   }
 }

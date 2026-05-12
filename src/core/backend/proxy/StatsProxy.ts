@@ -1,4 +1,3 @@
-import { pick } from "lodash-es"
 import ProxyBase from "./ProxyBase"
 import type { CountParams, CountsMerged } from "../types/count"
 import { corpusSelection } from "@/core/corpora/corpusListing"
@@ -34,9 +33,9 @@ export class StatsProxy extends ProxyBase<"count"> {
       throw new Error(`Trying to reduce by missing attribute ${missingAttrs}`)
 
     // Calculate size of selected corpora that do not support all attributes
-    const unsupportedCorpora = [...new Set(options.flatMap((option) => option.unsupported))]
-    this.unsupportedRatio = unsupportedCorpora.length
-      ? corpusSelection.pick(unsupportedCorpora).getTokenCount() / corpusSelection.getTokenCount()
+    const unsupportedCorpora = corpusSelection.getUnsupportedCorpora(options)
+    this.unsupportedRatio = unsupportedCorpora.corpora.length
+      ? unsupportedCorpora.getTokenCount() / corpusSelection.getTokenCount()
       : 0
 
     // Get names of not-fully-supported attributes
@@ -45,7 +44,7 @@ export class StatsProxy extends ProxyBase<"count"> {
     // Use only corpora that support all attributes
     const supportedCorpora = corpusSelection
       .getIds()
-      .filter((id) => !unsupportedCorpora.includes(id))
+      .filter((id) => !unsupportedCorpora.getIds().includes(id))
     if (!supportedCorpora.length) throw new NoSupportedCorporaError()
     const corpora = corpusSelection.pick(supportedCorpora)
 
