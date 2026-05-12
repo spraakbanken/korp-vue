@@ -68,6 +68,11 @@ export class CorpusSet {
     return this.corpora.map(f)
   }
 
+  /** In normal mode: get all corpora; in parallel mode: get corpora of main language */
+  getMainCorpora(): Corpus[] {
+    return this.corpora
+  }
+
   getTokenCount(): number {
     return sum(this.map((corpus) => parseInt(corpus.info.Size || "0")))
   }
@@ -283,7 +288,7 @@ export class CorpusSet {
     const attrs: AttributeOption[] = []
     for (const attr of Object.values(allAttrs)) {
       if (attr["display_type"] !== "hidden") {
-        const unsupported = this.corpora
+        const unsupported = this.getMainCorpora()
           .filter((corpus) => !corpus.attributes[attr.name])
           .map((corpus) => corpus.id)
         attrs.push({ group: "pos", ...attr, unsupported })
@@ -291,11 +296,6 @@ export class CorpusSet {
     }
 
     return attrs
-  }
-
-  getWordAttribute(attribute: string, lang?: string): Attribute {
-    const attributes = this.getAttributes(lang)
-    return attributes[attribute]
   }
 
   getStructAttributeGroups(setOperator: SetOperator, lang?: string): AttributeOption[] {
@@ -308,7 +308,7 @@ export class CorpusSet {
 
     for (const attr of Object.values({ ...common, ...allAttrs })) {
       if (attr["display_type"] !== "hidden") {
-        const unsupported = this.corpora
+        const unsupported = this.getMainCorpora()
           .filter((corpus) => !corpus.struct_attributes[attr.name])
           .map((corpus) => corpus.id)
         sentAttrs.push({ group: "struct", ...attr, unsupported })
