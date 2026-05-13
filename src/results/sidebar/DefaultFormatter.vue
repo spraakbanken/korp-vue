@@ -4,6 +4,7 @@ import { type FormatterProps } from "../formatter"
 import { computed } from "vue"
 import EmptyValue from "../EmptyValue.vue"
 import DefaultFormatterItem from "./DefaultFormatterItem.vue"
+import ExpandableList from "./ShortenedList.vue"
 
 const props = defineProps<FormatterProps>()
 
@@ -13,6 +14,11 @@ const isEmpty = computed(
     props.value == "" ||
     (props.attribute.type == "set" && props.value == "|"),
 )
+
+/** If the attribute is a set, this contains the value split by "|"; otherwise undefined */
+const items = computed<string[] | undefined>(() =>
+  props.attribute.type == "set" && props.value ? compact(props.value.split("|")) : undefined,
+)
 </script>
 
 <template>
@@ -20,11 +26,11 @@ const isEmpty = computed(
   <EmptyValue v-if="isEmpty && !isCustom" />
 
   <!-- Multi-value attribute -->
-  <ul v-else-if="attribute.type == 'set' && value" class="list-unstyled my-0">
-    <li v-for="(item, i) in compact(value.split('|'))" :key="i">
+  <ExpandableList v-else-if="items" :items class="list-unstyled my-0">
+    <template v-slot="{ item }">
       <DefaultFormatterItem :attribute :item :rowToken />
-    </li>
-  </ul>
+    </template>
+  </ExpandableList>
 
   <!-- Single-value attribute -->
   <DefaultFormatterItem v-else :attribute :item="value!" :rowToken />

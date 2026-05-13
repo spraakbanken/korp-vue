@@ -58,7 +58,7 @@ function search() {
       <tbody>
         <tr v-if="attribute.ranked">
           <th>{{ $t("result.sidebar.rank_score") }}</th>
-          <td>{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
+          <td style="text-wrap: nowrap">{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
         </tr>
 
         <tr v-if="attribute.internal_search">

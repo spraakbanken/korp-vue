@@ -156,7 +156,7 @@ export const splitFirst = (sep: string, s: string): [string, string] => {
 
 /** Escape special characters in a string so it can be safely inserted in a regular expression. */
 export const regescape = (s: string): string =>
-  s.replace(/[.|?|+|*||'|()^$\\]/g, "\\$&").replace(/"/g, '""')
+  s.replace(/[.|?+*(){}^$[\]]/g, "\\$&").replace(/"/g, '""')
 
 /** Unescape special characters in a regular expression – remove single backslashes and replace double with single. */
 export const unregescape = (s: string): string =>

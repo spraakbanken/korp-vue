@@ -42,14 +42,14 @@ const formatter = computed<Formatter>(() => {
 </template>
 
 <style scoped lang="scss">
-.sidebar-attribute {
-  // Hanging indent
+// Hanging indent for the whole element as well as sub items
+.sidebar-attribute,
+.sidebar-attribute :deep(li) {
   text-indent: -1em;
   margin-inline-start: 1em;
+  // Reset in children
   * {
-    // Undo hanging indent for block/inline-block children
     text-indent: 0;
-    margin-inline-start: 0;
   }
 }
 </style>
