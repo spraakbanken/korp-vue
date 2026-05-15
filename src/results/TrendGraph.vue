@@ -12,17 +12,15 @@ import {
   TimeScale,
   Tooltip,
   type ChartDataset,
-  type ChartOptions,
 } from "chart.js"
 import "chartjs-adapter-moment"
 import SelectDragPlugin from "@01coder/chartjs-plugin-selectdrag"
 import { type Moment } from "moment"
-import { computed, useId } from "vue"
+import { computed, reactive, useId, watchEffect } from "vue"
 import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { merge } from "lodash-es"
-import { GoldenAnglePaletteHsl } from "@/core/color"
 import { useDark, watchImmediate } from "@vueuse/core"
+import { TrendChart } from "./TrendChart"
 
 const props = defineProps<{
   series: Series[]
@@ -41,6 +39,14 @@ const { t } = useI18n()
 const id = useId()
 const isDark = useDark()
 
+const trendChart = reactive(new TrendChart(props.type, props.level, props.series))
+
+// Sync props to chart model
+watchEffect(() => (trendChart.type = props.type))
+watchEffect(() => (trendChart.level = props.level))
+watchEffect(() => (trendChart.series = props.series))
+watchEffect(() => (trendChart.range = props.range))
+
 watchImmediate(isDark, () => {
   // Copy --bs-body-color
   // TODO Use useCssVar()?
@@ -49,115 +55,28 @@ watchImmediate(isDark, () => {
 
 Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
-/** Chart.js options for both main and overview charts */
-// TODO Localize thousands separators
-const baseOptions: ChartOptions<"line" | "bar"> = {
-  // See https://www.chartjs.org/docs/latest/configuration/responsive.html
-  responsive: true,
-  maintainAspectRatio: false,
-  // See https://www.chartjs.org/docs/latest/axes/cartesian/time.html
-  scales: { x: { type: "time" } },
-  // See https://www.chartjs.org/docs/latest/configuration/elements.html
-  elements: {
-    point: { pointStyle: false },
-  },
-}
+const formatTooltipTitle = (time: Moment) => time.format(FORMATS[props.level])
+
+const formatTooltipItem = (point: Point) => [
+  `${t("stat.freq_relative")}: ${formatDecimals(point.y!, 1)}`,
+  `${t("stat.freq")}: ${point.absolute!}`,
+]
+
+const onClickPoint = (series: Series[], time: Moment) => emit("clickPoint", series, time)
+
+const onSelectRange = (start: Date, end: Date) => emit("selectRange", start, end)
 
 /** Chart.js options for the main chart */
-const mainOptions = computed(() => {
-  const options = merge({}, baseOptions, <ChartOptions<"line" | "bar">>{
-    scales: {
-      x: {
-        min: props.range?.from.getTime(),
-        max: props.range?.to.getTime(),
-      },
-    },
-    // See https://www.chartjs.org/docs/latest/configuration/interactions.html
-    interaction: {
-      // TODO Select nearest single point at nearest X value. I think we need a custom interation mode for that,
-      //   see https://www.chartjs.org/docs/latest/configuration/interactions.html#custom-interaction-modes
-      mode: "nearest",
-      intersect: false,
-    },
-    plugins: {
-      // See https://www.chartjs.org/docs/latest/configuration/tooltip.html
-      tooltip: {
-        callbacks: {
-          // Format date in tooltip
-          title: (items) => (items[0]!.raw as Point).x.format(FORMATS[props.level]),
-          label: (item) => {
-            const point = item.raw as Point
-            return [
-              `${t("stat.freq_relative")}: ${formatDecimals(point.y!, 1)}`,
-              `${t("stat.freq")}: ${point.absolute!}`,
-            ]
-          },
-        },
-      },
-    },
-    // See https://www.chartjs.org/docs/latest/configuration/interactions.html
-    onClick: (e, elements) => {
-      if (!elements.length) return
-      // Look up the series and the time point indicated by the clicked elements
-      const series = elements.map((el) => props.series[el.datasetIndex!]!)
-      const time = series[0]!.points[elements[0]!.index]!.x
-      emit("clickPoint", series, time)
-    },
-  })
-
-  // Bar-specific options
-  if (props.type === "bar")
-    return merge(options, {
-      scales: {
-        x: { stacked: true },
-        y: { stacked: true },
-      },
-    })
-
-  return options
-})
+const mainOptions = computed(() =>
+  trendChart.getOptions(formatTooltipTitle, formatTooltipItem, onClickPoint),
+)
 
 /** Chart.js options for the overview chart */
-const overviewOptions = merge({}, baseOptions, <ChartOptions<"line" | "bar">>{
-  scales: {
-    // Hide y-axis ticks, but take up place to match with main chart
-    y: { ticks: { color: "transparent" } },
-  },
-  plugins: {
-    selectdrag: {
-      enabled: true,
-      output: "value",
-      highlight: false,
-      // Note: Getting uncaught exceptions "TypeError: Cannot read properties of null (reading 'ownerDocument')" – broken destroy handler?
-      // TODO Reset selecting on non-drag click
-      onSelectComplete(event: SelectDragEvent): void {
-        const start = new Date(event.range[0])
-        const end = new Date(event.range[1])
-        emit("selectRange", start, end)
-      },
-    },
-  },
-})
+const overviewOptions = computed(() => trendChart.getOverviewOptions(onSelectRange))
 
-const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() => {
-  const palette = new GoldenAnglePaletteHsl()
-  return props.series.map((series) => {
-    const color = palette.shift()
-    return {
-      // TODO HTML in labels is being escaped
-      label: series.label ?? t("result.statistics.total"),
-      data: series.points,
-      borderColor: color,
-      backgroundColor: color,
-    }
-  })
-})
-
-/** The type of event passed to `onSelectComplete` */
-type SelectDragEvent = {
-  /** Selection start and end points as Unix ms timestamps */
-  range: [number, number]
-}
+const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() =>
+  trendChart.getDatasets(t("result.statistics.total")),
+)
 </script>
 
 <template>
@@ -173,7 +92,7 @@ type SelectDragEvent = {
         v-if="type == 'bar'"
         :id="`${id}-bar`"
         :options="mainOptions"
-        :data="{ datasets: datasets.slice(1) }"
+        :data="{ datasets }"
         :plugins="[Legend, Tooltip]"
       />
       <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
