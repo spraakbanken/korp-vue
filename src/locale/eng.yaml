@@ -280,6 +280,8 @@ result.trend.undated: "{ratio} of selected material is excluded because it has n
 result.trend.view: View
 result.trend.view.line: Line
 result.trend.view.bar: Bar
+result.trend.view.table: Table
+result.trend.table.value: Value
 
 result.wordpic: Word picture
 result.wordpic.description: The Word picture shows words that tend to co-occur in syntactic relations with the search word.

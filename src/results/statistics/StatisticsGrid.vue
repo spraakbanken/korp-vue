@@ -131,22 +131,32 @@ function onDistributionClick(row: Row): void {
   </div>
 </template>
 
+<style>
+.slick-pane {
+  .slick-header {
+    /* div[role="columnheader"] { */
+    background-color: var(--bs-secondary-bg);
+    font-weight: bold;
+  }
+
+  .slick-header-sortable {
+    cursor: pointer;
+  }
+
+  .slick-row:hover {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  .slick-cell:has(input[type="checkbox"]),
+  [role="columnheader"]:has(input[type="checkbox"]) {
+    text-align: center;
+  }
+}
+</style>
+
 <style scoped>
 [role="grid"] {
   height: 90svh;
-}
-
-:deep(div[role="columnheader"]) {
-  background-color: var(--bs-secondary-bg);
-  font-weight: bold;
-}
-
-:deep(.slick-header-sortable) {
-  cursor: pointer;
-}
-
-:deep(.slick-row:hover) {
-  background-color: var(--bs-tertiary-bg);
 }
 
 :deep(.total-column) {
@@ -181,11 +191,6 @@ function onDistributionClick(row: Row): void {
   :deep(.slick-row:hover .parameter-column) {
     background-color: #274e7a;
   }
-}
-
-:deep(.slick-cell):has(input[type="checkbox"]),
-:deep([role="columnheader"]):has(input[type="checkbox"]) {
-  text-align: center;
 }
 
 :deep(.distribution-cell),

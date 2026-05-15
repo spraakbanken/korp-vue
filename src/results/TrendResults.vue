@@ -2,7 +2,7 @@
 import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
 import { findOptimalLevel, getTimeCqp, spliceGraphData, type Level } from "@/core/trend/util"
 import type { Moment } from "moment"
-import { computed, onMounted, ref } from "vue"
+import { onMounted, ref } from "vue"
 import TrendGraph from "./TrendGraph.vue"
 import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
@@ -14,6 +14,7 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
 import OptionsBar from "@/components/OptionsBar.vue"
+import TrendTable from "./TrendTable.vue"
 
 const props = defineProps<{
   task: TrendTask
@@ -29,9 +30,8 @@ const matomo = useMatomo()
 const range = ref<{ from: Date; to: Date }>()
 const series = ref<Series[]>([])
 const level = ref<Level>("year")
-const labels = computed(() => Object.fromEntries(props.task.subqueries))
 const undatedRatio = ref(0)
-const view = ref<"line" | "bar">("line")
+const view = ref<"line" | "bar" | "table">("line")
 
 onMounted(() => {
   const interval = props.task.corpusSet.getMomentInterval()
@@ -95,7 +95,7 @@ function onSelectRange(from: Date, to: Date) {
 </script>
 
 <template>
-  <div>
+  <div class="vstack gap-2">
     <OptionsBar>
       <div class="hstack gap-2">
         <span id="trend-options-view-label">{{ t("result.trend.view") }}</span>
@@ -116,6 +116,14 @@ function onSelectRange(from: Date, to: Date) {
           >
             {{ t("result.trend.view.bar") }}
           </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="view = 'table'"
+            :class="{ active: view === 'table' }"
+          >
+            {{ t("result.trend.view.table") }}
+          </button>
         </div>
       </div>
     </OptionsBar>
@@ -127,9 +135,8 @@ function onSelectRange(from: Date, to: Date) {
     </div>
 
     <TrendGraph
-      v-if="['line', 'bar'].includes(view) && series.length && level"
+      v-if="(view == 'line' || view == 'bar') && series.length && level"
       :series
-      :labels
       :level
       :range
       :type="view"
@@ -137,5 +144,7 @@ function onSelectRange(from: Date, to: Date) {
       @clickPoint="onClickPoint"
       @selectRange="onSelectRange"
     />
+
+    <TrendTable v-if="view == 'table'" :series :level />
   </div>
 </template>

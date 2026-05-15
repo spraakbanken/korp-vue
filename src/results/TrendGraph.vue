@@ -24,7 +24,6 @@ import { TrendChart } from "./TrendChart"
 
 const props = defineProps<{
   series: Series[]
-  labels: Record<string, string>
   level: Level
   range?: { from: Date; to: Date }
   type: "line" | "bar"

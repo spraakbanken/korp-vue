@@ -280,6 +280,8 @@ result.trend.undated: "{ratio} av valt material är uteslutet eftersom det sakna
 result.trend.view: Visa
 result.trend.view.line: Linje
 result.trend.view.bar: Stapel
+result.trend.view.table: Tabell
+result.trend.table.value: Värde
 
 result.wordpic: Ordbild
 result.wordpic.description: I ordbilden visas vilka ord som tenderar att förekomma i syntaktiska relationer med sökordet.
