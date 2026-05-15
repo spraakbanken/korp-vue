@@ -4,22 +4,23 @@ import type { Point, Series } from "@/core/task/TrendTask"
 import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
+  Filler,
   Legend,
   LinearScale,
   LineElement,
   PointElement,
   TimeScale,
   Tooltip,
-  type ChartData,
+  type ChartDataset,
   type ChartOptions,
 } from "chart.js"
 import "chartjs-adapter-moment"
 import SelectDragPlugin from "@01coder/chartjs-plugin-selectdrag"
 import { type Moment } from "moment"
 import { computed, useId } from "vue"
-import { Line } from "vue-chartjs"
+import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { cloneDeep, merge } from "lodash-es"
+import { merge } from "lodash-es"
 import { GoldenAnglePaletteHsl } from "@/core/color"
 import { useDark, watchImmediate } from "@vueuse/core"
 
@@ -28,6 +29,7 @@ const props = defineProps<{
   labels: Record<string, string>
   level: Level
   range?: { from: Date; to: Date }
+  type: "line" | "bar"
 }>()
 
 const emit = defineEmits<{
@@ -41,6 +43,7 @@ const isDark = useDark()
 
 watchImmediate(isDark, () => {
   // Copy --bs-body-color
+  // TODO Use useCssVar()?
   Chart.defaults.color = isDark.value ? "#dee2e6" : "#212529"
 })
 
@@ -48,7 +51,7 @@ Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
 /** Chart.js options for both main and overview charts */
 // TODO Localize thousands separators
-const baseOptions: ChartOptions<"line"> = {
+const baseOptions: ChartOptions<"line" | "bar"> = {
   // See https://www.chartjs.org/docs/latest/configuration/responsive.html
   responsive: true,
   maintainAspectRatio: false,
@@ -61,8 +64,8 @@ const baseOptions: ChartOptions<"line"> = {
 }
 
 /** Chart.js options for the main chart */
-const mainOptions = computed(() =>
-  merge(cloneDeep(baseOptions), <ChartOptions<"line">>{
+const mainOptions = computed(() => {
+  const options = merge({}, baseOptions, <ChartOptions<"line" | "bar">>{
     scales: {
       x: {
         min: props.range?.from.getTime(),
@@ -100,11 +103,22 @@ const mainOptions = computed(() =>
       const time = series[0]!.points[elements[0]!.index]!.x
       emit("clickPoint", series, time)
     },
-  }),
-)
+  })
+
+  // Bar-specific options
+  if (props.type === "bar")
+    return merge(options, {
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true },
+      },
+    })
+
+  return options
+})
 
 /** Chart.js options for the overview chart */
-const overviewOptions = merge(cloneDeep(baseOptions), <ChartOptions<"line">>{
+const overviewOptions = merge({}, baseOptions, <ChartOptions<"line" | "bar">>{
   scales: {
     // Hide y-axis ticks, but take up place to match with main chart
     y: { ticks: { color: "transparent" } },
@@ -125,20 +139,18 @@ const overviewOptions = merge(cloneDeep(baseOptions), <ChartOptions<"line">>{
   },
 })
 
-const data = computed<ChartData<"line", Point[]>>(() => {
+const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() => {
   const palette = new GoldenAnglePaletteHsl()
-  return {
-    datasets: props.series.map((series) => {
-      const color = palette.shift()
-      return {
-        // TODO HTML in labels is being escaped
-        label: series.label ?? t("result.statistics.total"),
-        data: series.points,
-        borderColor: color,
-        backgroundColor: color,
-      }
-    }),
-  }
+  return props.series.map((series) => {
+    const color = palette.shift()
+    return {
+      // TODO HTML in labels is being escaped
+      label: series.label ?? t("result.statistics.total"),
+      data: series.points,
+      borderColor: color,
+      backgroundColor: color,
+    }
+  })
 })
 
 /** The type of event passed to `onSelectComplete` */
@@ -156,14 +168,35 @@ type SelectDragEvent = {
       style="height: 60svh; max-height: 66vw"
       :key="isDark ? 'dark' : 'light'"
     >
+      <!-- @vue-expect-error The Bar component expects only the built-in Point data type. -->
+      <Bar
+        v-if="type == 'bar'"
+        :id="`${id}-bar`"
+        :options="mainOptions"
+        :data="{ datasets: datasets.slice(1) }"
+        :plugins="[Legend, Tooltip]"
+      />
       <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-      <Line :id="`${id}-main`" :options="mainOptions" :data :plugins="[Legend, Tooltip]" />
+      <Line
+        v-else
+        :id="`${id}-line`"
+        :options="mainOptions"
+        :data="{ datasets }"
+        :plugins="[Legend, Tooltip]"
+      />
     </div>
 
     <!-- Full-span overview for zooming -->
     <div class="mt-4 position-relative w-100" style="height: 5rem" :key="isDark ? 'dark' : 'light'">
       <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-      <Line :id="`${id}-overview`" :options="overviewOptions" :data :plugins="[SelectDragPlugin]" />
+      <Line
+        :id="`${id}-overview`"
+        :options="overviewOptions"
+        :data="{
+          datasets: [{ ...datasets[0], fill: true }],
+        }"
+        :plugins="[Filler, SelectDragPlugin]"
+      />
     </div>
   </div>
 </template>

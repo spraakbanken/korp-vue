@@ -277,6 +277,9 @@ result.statistics.unsupported_attributes.warning: |
 result.statistics.no_supported_corpora: Inga av de valda korpusarna stödjer alla valda attribut. Prova att avmarkera något attribut.
 result.trend: Trenddiagram
 result.trend.undated: "{ratio} av valt material är uteslutet eftersom det saknar tidsuppmärkning."
+result.trend.view: Visa
+result.trend.view.line: Linje
+result.trend.view.bar: Stapel
 
 result.wordpic: Ordbild
 result.wordpic.description: I ordbilden visas vilka ord som tenderar att förekomma i syntaktiska relationer med sökordet.

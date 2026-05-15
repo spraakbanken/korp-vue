@@ -41,10 +41,14 @@ const itemHtml = computed(() => {
 function search() {
   let val = props.item
   if (props.attribute.ranked) val = val.replace(/:.*/, "")
+
+  // Create a CQP condition for each part of the value if compound, otherwise for the whole value
+  // TODO Fix for complemgram, compwf
   const query = [{ and_block: [[createAttrCondition(props.attribute, val)]] }]
 
-  store.search = "cqp"
+  // Show extended search and fill with generated query
   store.search_tab = 1
+  store.search = "cqp"
   store.cqp = stringifyCqp(query)
   matomo.value?.trackEvent("Sidebar", "Search")
 }

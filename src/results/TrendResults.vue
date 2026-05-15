@@ -13,6 +13,7 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
+import OptionsBar from "@/components/OptionsBar.vue"
 
 const props = defineProps<{
   task: TrendTask
@@ -30,6 +31,7 @@ const series = ref<Series[]>([])
 const level = ref<Level>("year")
 const labels = computed(() => Object.fromEntries(props.task.subqueries))
 const undatedRatio = ref(0)
+const view = ref<"line" | "bar">("line")
 
 onMounted(() => {
   const interval = props.task.corpusSet.getMomentInterval()
@@ -94,6 +96,30 @@ function onSelectRange(from: Date, to: Date) {
 
 <template>
   <div>
+    <OptionsBar>
+      <div class="hstack gap-2">
+        <span id="trend-options-view-label">{{ t("result.trend.view") }}</span>
+        <div class="btn-group" role="group" aria-labelledby="#trend-options-view-label">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="view = 'line'"
+            :class="{ active: view === 'line' }"
+          >
+            {{ t("result.trend.view.line") }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="view = 'bar'"
+            :class="{ active: view === 'bar' }"
+          >
+            {{ t("result.trend.view.bar") }}
+          </button>
+        </div>
+      </div>
+    </OptionsBar>
+
     <!-- Undated ratio info -->
     <div v-if="undatedRatio > 0" class="alert alert-info">
       <fa-icon icon="fa-solid fa-info-circle" class="me-1" />
@@ -101,11 +127,12 @@ function onSelectRange(from: Date, to: Date) {
     </div>
 
     <TrendGraph
-      v-if="series.length && level"
+      v-if="['line', 'bar'].includes(view) && series.length && level"
       :series
       :labels
       :level
       :range
+      :type="view"
       v-fade-if-loading="progress"
       @clickPoint="onClickPoint"
       @selectRange="onSelectRange"

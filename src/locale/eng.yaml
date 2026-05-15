@@ -277,6 +277,9 @@ result.statistics.unsupported_attributes.warning: |
 result.statistics.no_supported_corpora: None of the selected corpora supports all chosen attributes. Try deselecting some attribute.
 result.trend: Trend graph
 result.trend.undated: "{ratio} of selected material is excluded because it has no time markup."
+result.trend.view: View
+result.trend.view.line: Line
+result.trend.view.bar: Bar
 
 result.wordpic: Word picture
 result.wordpic.description: The Word picture shows words that tend to co-occur in syntactic relations with the search word.
