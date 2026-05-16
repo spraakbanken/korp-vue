@@ -55,35 +55,37 @@ export function findOptimalLevel(from: Moment, to: Moment): Level {
   })!
 }
 
-/** Fill missing time units with the value of the last previous count. */
+/**
+ * Fill missing time units with the value of the last previous count.
+ *
+ * The input can have gaps, and the returned list will cover the whole range.
+ */
 export function fillMissingDate(data: Point[], level: Level): Point[] {
   const dateArray = data.map((point) => point.x)
-  // Round range boundaries, e.g. [June 5, Sep 18] => [June 1, Sep 30]
-  const min = minBy(dateArray)?.startOf(level)
-  const max = maxBy(dateArray)?.endOf(level)
+  // Assume data is ordered and the dates are the same granularity as `level`
+  const min = dateArray[0]
+  const max = dateArray[dateArray.length - 1]
   if (!min || !max) return data
 
   // Convert tuple list to map to enable lookup
   const dataMap: Record<number, Point> = Object.fromEntries(
-    data.map((point) => [point.x.startOf(level).unix(), point]),
+    data.map((point) => [point.x.unix(), point]),
   )
 
   // Step through the range and fill in missing timestamps
   /** Copied counts for unseen timestamps in the range */
   const newPoints: Point[] = []
-  let lastPoint: Point | null = null
-  for (let t = min.clone(); t <= max; t.add(1, level)) {
+  let lastPoint = data[0]
+  for (let t = min.clone(); t < max; t.add(1, level)) {
     // Get point at timestep
     const point = dataMap[t.unix()]
-    // If this timestamp has been counted, don't fill this timestamp but remember the count
-    // Distinguish between null (no text at timestamp) and undefined (timestamp has not been counted)
+    // If this timestamp has been counted, remember the count for subsequent uncounted timesteps
     if (point) lastPoint = point
-    // If there's no count here, fill this timestamp with the last seen count
-    else newPoints.push({ ...lastPoint!, x: t.clone() })
+    // Use either found point or last found point
+    newPoints.push({ ...lastPoint, x: t.clone() })
   }
 
-  // Merge actual counts with filled ones and sort
-  return [...data, ...newPoints].sort((a, b) => a.x.diff(b.x))
+  return newPoints
 }
 
 export function getTimeCqp(m: Moment, zoom: Level) {

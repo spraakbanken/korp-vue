@@ -77,17 +77,13 @@ export class TrendTask extends TaskBase<TrendResult> {
     // Response data is array iff subcqps were used; ensure array for consistency
     const seriesRaw = Array.isArray(response.combined) ? response.combined : [response.combined]
     const series: Series[] = seriesRaw.map((series) => {
+      const points: Point[] = Object.entries(series.relative).map(([timestamp, frequency]) => ({
+        x: parseDate(level, timestamp),
+        y: frequency,
+        absolute: series.absolute[timestamp as `${number}`]!,
+      }))
       return {
-        points: fillMissingDate(
-          Object.entries(series.relative).map(
-            ([timestamp, frequency]): Point => ({
-              x: parseDate(level, timestamp),
-              y: frequency,
-              absolute: series.absolute[timestamp as `${number}`]!,
-            }),
-          ),
-          level,
-        ),
+        points: fillMissingDate(points, level),
         // Label and subcqp only present for subquery rows, not the total row
         label: "cqp" in series ? labels[series.cqp] : undefined,
         subcqp: "cqp" in series ? series.cqp : undefined,

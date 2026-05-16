@@ -35,6 +35,8 @@ watchEffect(() => {
   for (const seriesRow of props.series) {
     const tableRow: TableRow = { label: seriesRow.label || t("result.statistics.total"), data: {} }
     for (const item of seriesRow.points) {
+      // Skip timesteps where none of selected corpora has any data
+      if (item.absolute === null) continue
       const stampformat = FORMATS[props.level]
       const t = item.x.format(stampformat) // this needs to be fixed for other resolutions
       columnsMap[t] = {
@@ -56,7 +58,7 @@ watchEffect(() => {
   const columns: Column<TableRow>[] = [
     {
       id: "hit",
-      name: t('result.trend.table.value'),
+      name: t("result.trend.table.value"),
       field: "label",
       formatter: (row, cell, value) => value || `<span class="opacity-50">—</span>`,
       cssClass: "parameter-column",
@@ -72,6 +74,7 @@ watchEffect(() => {
     enableColumnReorder: false,
     enableTextSelectionOnCells: true,
     forceFitColumns: false,
+    frozenColumn: 0,
   })
   return grid
 })
