@@ -19,6 +19,8 @@ export class TrendChart {
     public level: Level,
     /** Frequency-over-time data */
     public series: Series[],
+    /** Whether to show the totals series by default */
+    public showTotal: boolean,
   ) {}
 
   /** Create Chart.js datasets for the active series. */
@@ -36,7 +38,7 @@ export class TrendChart {
         // Stack totals bars separately
         stack: i > 0 ? "default" : "totals",
         // Hide totals bars by default
-        hidden: i == 0 && hideTotals,
+        hidden: (i == 0 && !this.showTotal) || hideTotals,
       }
     })
   }

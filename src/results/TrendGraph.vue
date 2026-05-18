@@ -26,6 +26,7 @@ const props = defineProps<{
   series: Series[]
   level: Level
   range?: { from: Date; to: Date }
+  showTotal?: boolean
   type: "line" | "bar"
 }>()
 
@@ -38,7 +39,7 @@ const { t } = useI18n()
 const id = useId()
 const isDark = useDark()
 
-const trendChart = reactive(new TrendChart(props.type, props.level, props.series))
+const trendChart = reactive(new TrendChart(props.type, props.level, props.series, props.showTotal))
 
 // Sync props to chart model
 watchEffect(() => (trendChart.type = props.type))

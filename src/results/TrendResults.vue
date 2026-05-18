@@ -139,6 +139,7 @@ function onSelectRange(from: Date, to: Date) {
       :series
       :level
       :range
+      :showTotal="task.showTotal"
       :type="view"
       v-fade-if-loading="progress"
       @clickPoint="onClickPoint"
