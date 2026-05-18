@@ -155,6 +155,7 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 
 function openTrendTab() {
   const subqueries = getSubqueries()
+  // TODO rowsSelected is empty by default, even if the row appears selected
   const showTotal = rowsSelected.value.some(isTotalRow)
 
   const task = new TrendTask(

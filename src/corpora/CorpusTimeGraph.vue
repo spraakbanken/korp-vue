@@ -16,7 +16,7 @@ import { computed } from "vue"
 import { Bar } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
-import { useCssVar } from "@vueuse/core"
+import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
 
 type Data = Record<number, number | undefined>
 
@@ -26,9 +26,9 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 const corpusSelection = useReactiveCorpusSelection()
-const primaryColor = useCssVar("--bs-primary")
-const dangerColor = useCssVar("--bs-danger")
-const neutralColor = useCssVar("--bs-secondary-bg")
+const primaryColor = useBootstrapThemeVar("--bs-primary")
+const dangerColor = useBootstrapThemeVar("--bs-danger")
+const neutralColor = useBootstrapThemeVar("--bs-secondary-bg")
 
 Chart.register(LinearScale, TimeScale, BarElement, CategoryScale, Tooltip)
 

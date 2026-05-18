@@ -21,6 +21,7 @@ import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { useDark, watchImmediate } from "@vueuse/core"
 import { TrendChart } from "./TrendChart"
+import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
 
 const props = defineProps<{
   series: Series[]
@@ -38,6 +39,7 @@ const emit = defineEmits<{
 const { t, locale } = useI18n()
 const id = useId()
 const isDark = useDark()
+const textColor = useBootstrapThemeVar("--bs-body-color")
 
 const trendChart = reactive(new TrendChart(props.type, props.level, props.series, props.showTotal))
 
@@ -48,11 +50,9 @@ watchEffect(() => (trendChart.series = props.series))
 watchEffect(() => (trendChart.range = props.range))
 watchEffect(() => (trendChart.locale = locale.value))
 
-watchImmediate(isDark, () => {
-  // Copy --bs-body-color
-  // TODO Use useCssVar()?
-  Chart.defaults.color = isDark.value ? "#dee2e6" : "#212529"
-})
+// Update text color when theme changes
+// TODO Does not affect legend
+watchEffect(() => (Chart.defaults.color = textColor.value!))
 
 Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
@@ -83,11 +83,7 @@ const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() =>
 <template>
   <div>
     <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
-    <div
-      class="position-relative w-100"
-      style="height: 60svh; max-height: 66vw"
-      :key="isDark ? 'dark' : 'light'"
-    >
+    <div class="position-relative w-100" style="height: 60svh; max-height: 66vw" :key="textColor">
       <!-- @vue-expect-error The Bar component expects only the built-in Point data type. -->
       <Bar
         v-if="type == 'bar'"
