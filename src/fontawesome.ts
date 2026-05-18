@@ -27,6 +27,7 @@ import {
   faPlus,
   faSitemap,
   faUpRightFromSquare,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons"
 import {
   faCircleQuestion,
@@ -66,6 +67,7 @@ library.add(
   faSquareCheck,
   faTrashCan,
   faUpRightFromSquare,
+  faXmark,
 )
 
 const install: Plugin = (app) => {

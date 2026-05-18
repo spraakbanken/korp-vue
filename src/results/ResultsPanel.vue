@@ -117,6 +117,8 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         <TabProgressBar :progress="progressMap[key]" />
       </button>
 
+      <div v-if="dynamicTabs.length" class="navbar-text" style="width: 1em"></div>
+
       <button
         v-for="tab in dynamicTabs"
         :key="tab.id"
@@ -130,11 +132,14 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
       >
         {{ locObj(tab.label) }}
         <TabProgressBar :progress="progressMap[tab.id]" />
-        <span
-          class="btn-close ms-2"
-          style="width: 0.1rem; background-size: contain"
+        <button
+          type="button"
+          :aria-label="$t('close')"
+          class="tab-close btn btn-link btn-sm icon-link p-0 ms-1 align-baseline"
           @click.prevent.stop="closeTabLocal(tab.id)"
-        ></span>
+        >
+          <fa-icon icon="fa-solid fa-xmark" size="sm" width-auto />
+        </button>
       </button>
     </nav>
 
@@ -192,3 +197,9 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
     </div>
   </div>
 </template>
+
+<style scoped>
+.tab-close:hover {
+  color: var(--bs-danger);
+}
+</style>

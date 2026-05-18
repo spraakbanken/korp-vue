@@ -59,7 +59,6 @@ async function doSearch() {
   progress.value = 100
 
   const palette = new GoldenAnglePaletteHsl()
-  palette.shift() // Skip the first color, same as the primary UI color
   seriesAll.value = props.task.getMarkerGroups(() => palette.shift())
   enabledSeries.value = Object.keys(seriesAll.value)
 }
