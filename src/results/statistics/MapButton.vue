@@ -7,6 +7,7 @@ import HelpBadge from "@/components/HelpBadge.vue"
 const props = defineProps<{
   /** Names of map-compatible attributes (private, no config available) */
   attributes: MapAttributeOption[]
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,7 +38,7 @@ function confirm() {
     data-bs-toggle="dropdown"
     data-bs-auto-close="outside"
     aria-expanded="false"
-    :disabled="!attributes.length"
+    :disabled="disabled || !attributes.length"
   >
     <fa-icon icon="fa-solid fa-earth-africa" />
     {{ $t("result.map") }}

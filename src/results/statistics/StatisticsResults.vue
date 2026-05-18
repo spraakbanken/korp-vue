@@ -155,7 +155,6 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 
 function openTrendTab() {
   const subqueries = getSubqueries()
-  // TODO rowsSelected is empty by default, even if the row appears selected
   const showTotal = rowsSelected.value.some(isTotalRow)
 
   const task = new TrendTask(
@@ -240,7 +239,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       <button
         type="button"
         class="btn btn-secondary"
-        :disabled="!data || !isDated"
+        :disabled="!data || !isDated || !rowsSelected.length"
         @click="openTrendTab()"
       >
         <fa-icon icon="fa-solid fa-chart-line" />
@@ -248,7 +247,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </button>
 
       <!-- Map button -->
-      <MapButton :attributes="mapAttributes" @open="openMapTab" />
+      <MapButton :attributes="mapAttributes" :disabled="!rowsSelected.length" @open="openMapTab" />
     </div>
 
     <div v-if="unsupportedRatio" class="alert alert-info my-0">

@@ -39,7 +39,7 @@ export class TrendChart {
         // Stack totals bars separately
         stack: i > 0 ? "default" : "totals",
         // Hide totals bars by default
-        hidden: (i == 0 && !this.showTotal) || hideTotals,
+        hidden: i == 0 && (!this.showTotal || hideTotals),
       }
     })
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
-import { corpusListing, corpusSelection } from "@/core/corpora/corpusListing"
+import { corpusListing } from "@/core/corpora/corpusListing"
 import { getCqp } from "@/core/statistics/statistics"
 import {
   isTotalRow,
@@ -67,14 +67,11 @@ async function renderGrid() {
     props.attributes,
     store,
     t("result.statistics.total"),
+    (rows) => (rowsSelected.value = rows),
     onDistributionClick,
     onValueClick,
   )
   grid.render()
-
-  grid.onSelectedRowsChanged.subscribe((event, args) => {
-    rowsSelected.value = args.rows.map((i) => grid!.getDataItem(i))
-  })
 
   // Make sure previous chart instance isn't reused.
   distributionRow.value = undefined

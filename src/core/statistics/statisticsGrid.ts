@@ -24,6 +24,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     attrs: string[],
     readonly store: Store,
     totalsLabel: LangString,
+    setSelectedRows: (rows: Row[]) => void,
     showPieChart: (row: Row) => void,
     onValueClick: (row: Row, corpusId?: string) => void,
   ) {
@@ -37,6 +38,9 @@ export class StatisticsGrid extends SlickGrid<Row> {
 
     this.setSelectionModel(new SlickRowSelectionModel({ selectActiveRow: false }))
     this.registerPlugin(checkboxSelector)
+    this.onSelectedRowsChanged.subscribe((event, args) =>
+      setSelectedRows(args.rows.map((i) => this.getDataItem(i))),
+    )
     this.setSelectedRows([0])
     this.resize()
     this.refreshColumns()
