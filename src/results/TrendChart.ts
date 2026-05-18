@@ -9,6 +9,7 @@ export type ChartType = "line" | "bar"
 
 /** Prepares trend chart options/data for Chart.js */
 export class TrendChart {
+  locale?: string
   /** Current zoom range */
   range?: { from: Date; to: Date }
 
@@ -45,8 +46,8 @@ export class TrendChart {
 
   /** Get options common to main and overview */
   getBaseOptions(): ChartOptions<ChartType> {
-    // TODO Localize thousands separators
     return {
+      locale: this.locale,
       // See https://www.chartjs.org/docs/latest/configuration/responsive.html
       responsive: true,
       maintainAspectRatio: false,

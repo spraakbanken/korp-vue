@@ -35,7 +35,7 @@ const emit = defineEmits<{
   (e: "selectRange", start: Date, end: Date): void
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const id = useId()
 const isDark = useDark()
 
@@ -46,6 +46,7 @@ watchEffect(() => (trendChart.type = props.type))
 watchEffect(() => (trendChart.level = props.level))
 watchEffect(() => (trendChart.series = props.series))
 watchEffect(() => (trendChart.range = props.range))
+watchEffect(() => (trendChart.locale = locale.value))
 
 watchImmediate(isDark, () => {
   // Copy --bs-body-color
