@@ -111,7 +111,7 @@ const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() =>
         :id="`${id}-overview`"
         :options="overviewOptions"
         :data="{
-          datasets: [{ ...datasets[0], fill: true }],
+          datasets: [{ ...datasets[0], hidden: false, fill: true }],
         }"
         :plugins="[Filler, SelectDragPlugin]"
       />

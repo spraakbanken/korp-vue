@@ -21,26 +21,22 @@ export class TrendChart {
     public series: Series[],
   ) {}
 
-  /** Determine which series to use in the chart */
-  getActiveSeries(): Series[] {
-    // Skip totals series for bar charts, as the bars are stacked so the total is visible anyway
-    if (this.type == "bar") return this.series.slice(1)
-    return this.series
-  }
-
   /** Create Chart.js datasets for the active series. */
   getDatasets(totalLabel = ""): ChartDataset<ChartType, Point[]>[] {
     const palette = new GoldenAnglePaletteHsl()
-    // Skip the color of the totals series, so bar colors align with line colors
-    if (this.type == "bar") palette.shift()
-    return this.getActiveSeries().map((series) => {
+    return this.series.map((series, i) => {
       const color = palette.shift()
+      const hideTotals = this.type == "bar" && this.series.length > 1
       return {
         // TODO HTML in labels is being escaped
         label: series.label ?? totalLabel,
         data: series.points,
         borderColor: color,
         backgroundColor: color,
+        // Stack totals bars separately
+        stack: i > 0 ? "default" : "totals",
+        // Hide totals bars by default
+        hidden: i == 0 && hideTotals,
       }
     })
   }
@@ -124,8 +120,9 @@ export class TrendChart {
       // See https://www.chartjs.org/docs/latest/configuration/interactions.html
       onClick: (e, elements) => {
         if (!elements.length) return
+
         // Look up the series and the time point indicated by the clicked elements
-        const series = elements.map((el) => this.getActiveSeries()[el.datasetIndex!]!)
+        const series = elements.map((el) => this.series[el.datasetIndex!]!)
         const time = series[0]!.points[elements[0]!.index]!.x
         onClickPoint(series, time)
       },
