@@ -56,7 +56,12 @@ export class TrendChart {
       scales: { x: { type: "time" } },
       // See https://www.chartjs.org/docs/latest/configuration/elements.html
       elements: {
-        point: { pointStyle: false },
+        // line: { tension: 0.1 },
+        point: {
+          // Point elements are needed for single timestamps surrounded by missing data,
+          // because lines by themselves are not drawn then.
+          radius: 1,
+        },
       },
     }
   }
