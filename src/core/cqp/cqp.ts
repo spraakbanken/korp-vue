@@ -1,7 +1,6 @@
 import { cloneDeep, compact, sortBy } from "lodash-es"
 import { parse } from "./CQPParser.peggy"
 import {
-  isCqpBound,
   isCqpStruct,
   isCqpToken,
   type Condition,
@@ -145,7 +144,7 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
       x.length > 1 ? `(${x.join(" | ")})` : x.join(" | "),
     )
 
-    if (isCqpBound(token)) {
+    if (token.bound) {
       or_out = compact(or_out)
       for (const bound of Object.keys(token.bound)) {
         or_out.push(`${bound}(sentence)`)

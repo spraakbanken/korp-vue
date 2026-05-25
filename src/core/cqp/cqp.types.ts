@@ -1,9 +1,14 @@
 export type CqpQuery = CqpItem[]
 
-export type CqpItem = CqpToken | CqpStruct | CqpBound
+export type CqpItem = CqpToken | CqpStruct
 
 export type CqpToken = {
   and_block: Condition[][]
+  /** Marks start/end boundary of a sentence. */
+  bound?: {
+    lbound?: true
+    rbound?: true
+  }
   /** `[min, max]` */
   repeat?: [number, number]
 }
@@ -14,17 +19,8 @@ export type CqpStruct = {
   start: boolean
 }
 
-/** Alternative way to represent a start/end boundary of a sentence element. */
-export type CqpBound = {
-  bound: {
-    lbound?: true
-    rbound?: true
-  }
-}
-
 export const isCqpToken = (item?: CqpItem): item is CqpToken => !!item && "and_block" in item
 export const isCqpStruct = (item?: CqpItem): item is CqpStruct => !!item && "struct" in item
-export const isCqpBound = (item?: CqpItem): item is CqpBound => !!item && "bound" in item
 
 export type Condition = {
   type: string

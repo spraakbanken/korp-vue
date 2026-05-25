@@ -70,8 +70,6 @@ function addBoundary(start: boolean) {
         v-model:start="token.start"
         @remove="removeItem(i)"
       />
-
-      <div v-else>TODO Bound? {{ token }}</div>
     </div>
 
     <div class="d-flex flex-column gap-2">
