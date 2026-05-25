@@ -13,7 +13,7 @@
 tokens
   = t1:token t2:(" " t2:token)*
   {
-    return unpack(t1, t2)
+    return unpack(t1, t2).flat()
   }
 
 
@@ -22,34 +22,46 @@ token
     var result = {"and_block":[[{type:"word",op:"=",val:""}]]}
     if(repeat)
       result.repeat = repeat
-    return result
+    return [result]
   }
   / "[" left:and right:(" & " and)* "]" repeat:repeat? {
-    var output = left
+    var token = left
     right.forEach(function(item) {
       var val = item[1]
-      output = mergeWith(output, val, function(a, b) {
+      token = mergeWith(token, val, function(a, b) {
         return Array.isArray(a) ? a.concat(b) : undefined;
       })
     })
 
     if(repeat)
-      output.repeat = repeat
-    return output
+      token.repeat = repeat
+
+    const tokens = [token]
+
+    // Translate lbound/rbound to a struct token before or after
+    if (token.bound?.lbound) {
+      tokens.unshift({struct: token.bound.lbound, start: true})
+    }
+    if (token.bound?.rbound) {
+      tokens.push({struct: token.bound.rbound, start: false})
+    }
+    delete token.bound
+
+    return tokens
   }
-  / "<" end:"/"? tag:[A-Za-z0-9_-]+ ">" {
-    return { struct: tag.join(""), start: end ? false : true }
+  / "<" end:"/"? tag:$[A-Za-z0-9_-]+ ">" {
+    return [{ struct: tag, start: end ? false : true }]
   }
 
 repeat
-   = "{" from:[0-9]+ "," to:[0-9]+ "}"
+   = "{" from:$[0-9]+ "," to:$[0-9]+ "}"
     {
-      return [Number(from.join("")), Number(to.join(""))]
+      return [Number(from), Number(to)]
     }
 
 
-bound = val:("lbound" / "rbound") "(" "sentence" ")" {
-  return val
+bound = val:("lbound" / "rbound") "(" tag:tag ")" {
+  return [val, tag]
 }
 
 
@@ -64,34 +76,34 @@ and
     return {and_block : [unpack(left, right)]}
   }
   / bound:bound_block {
-    bound = Object.fromEntries(bound.map(item => [item, true]))
+    // Creates { lbound?: string, rbound?: string }
+    bound = Object.fromEntries(bound)
     return {bound, and_block: []}
   }
   / "(" and:and ")" {return and}
 
 
 or
-  = lhs:attribute " "? infix_op:infix_op " "? rhs:value_expr flags:(" %"[lcd]+)? {
-    var prefix = ""
-    if(lhs[0])
-      prefix = lhs[0]
-
+  = lhs:$attribute " "? infix_op:infix_op " "? rhs:value_expr flags:(" %"[lcd]+)? {
     if(flags) {
       flags = Object.fromEntries(flags[1].map(flag => [flag, true]))
     }    
-    return makeObj(prefix + lhs[1].join(""), infix_op, rhs, flags)
+    return makeObj(lhs, infix_op, rhs, flags)
   }
   / date
 
 attribute
-  = "_."? [A-Za-z0-9_-]+
+  = "_."? $[A-Za-z0-9_-]+
+
+tag
+  = $[A-Za-z0-9_-]+
 
 value_expr
-    = ["] rhs:('""' / [^"])* ["] {
-        return rhs.join("");
+    = ["] rhs:$('""' / [^"])* ["] {
+        return rhs;
     }
-    / ['] rhs:("\\'" / [^'])* ['] {
-        return rhs.join("");
+    / ['] rhs:$("\\'" / [^'])* ['] {
+        return rhs;
     }
 
 // date_expr

@@ -140,16 +140,9 @@ export function stringify(cqp_obj: CqpQuery, expanded_format?: boolean): string 
       }
     }
 
-    let or_out: string[] = outer_and_array.map((x) =>
+    const or_out: string[] = outer_and_array.map((x) =>
       x.length > 1 ? `(${x.join(" | ")})` : x.join(" | "),
     )
-
-    if (token.bound) {
-      or_out = compact(or_out)
-      for (const bound of Object.keys(token.bound)) {
-        or_out.push(`${bound}(sentence)`)
-      }
-    }
 
     let out_token = `[${or_out.join(" & ")}]`
     if (isCqpToken(token) && token.repeat) {

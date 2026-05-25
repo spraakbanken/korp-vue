@@ -4,11 +4,6 @@ export type CqpItem = CqpToken | CqpStruct
 
 export type CqpToken = {
   and_block: Condition[][]
-  /** Marks start/end boundary of a sentence. */
-  bound?: {
-    lbound?: true
-    rbound?: true
-  }
   /** `[min, max]` */
   repeat?: [number, number]
 }
