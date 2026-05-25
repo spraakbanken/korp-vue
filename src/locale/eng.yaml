@@ -19,6 +19,7 @@ next: Next
 remove: Remove
 show_more: Show more
 show_less: Show less
+splash.maintenance_news: "The loading is taking longer than expected. This notice might be of help:"
 time.from: From
 time.to: Until
 close: Close

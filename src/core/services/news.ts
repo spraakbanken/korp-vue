@@ -2,12 +2,13 @@ import Yaml from "js-yaml"
 import settings from "@/core/config"
 import moment from "moment"
 import type { LangString } from "../model/locale"
+import { once } from "lodash-es"
 
 export function isEnabled(): boolean {
   return !!settings.news_url
 }
 
-export async function fetchNews(): Promise<NewsItem[]> {
+export const fetchNews = once(async (): Promise<NewsItem[]> => {
   if (!settings.news_url) return []
   const response = await fetch(settings.news_url)
   const feedYaml: string = await response.text()
@@ -26,7 +27,7 @@ export async function fetchNews(): Promise<NewsItem[]> {
 
   // Sort newest first
   return items.sort((a, b) => b.created.localeCompare(a.created))
-}
+})
 
 function modifyYear(date: Date, years: number) {
   date.setFullYear(date.getFullYear() + years)
@@ -40,6 +41,7 @@ type NewsItemRaw = {
   expires?: Date
   title: LangString
   body: LangString
+  tags?: string[]
 }
 
 export type NewsItem = {

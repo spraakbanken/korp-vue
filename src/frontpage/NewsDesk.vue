@@ -21,7 +21,14 @@ const itemsFiltered = computed(() =>
   <div v-if="itemsFiltered?.length">
     <h4>{{ $t("frontpage.news") }}</h4>
 
-    <article v-for="(item, i) in itemsFiltered" :key="i" class="card mb-2">
+    <article
+      v-for="(item, i) in itemsFiltered"
+      :key="i"
+      class="card mb-2"
+      :class="{
+        'bg-warning-subtle': item.tags?.includes('maintenance'),
+      }"
+    >
       <div class="card-body">
         <h5 class="card-title">{{ locObj(item.title) }}</h5>
         <div class="card-subtitle mb-2 text-muted">
