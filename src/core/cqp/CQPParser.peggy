@@ -5,23 +5,15 @@
     return {type : type, op : op, val: val, flags: flags}
   }
 
-  function unpack(target, source) {
-    var output = [].concat(target)
-    source.forEach(function(item) {
-      output.push(item[1])
-    })
-    return output
-  }
+  /** Join a list of elements, discarding the separator */
+  const unpack = (head, tail) => [head, ...tail.map(([sep, item]) => item)]
 }}
 
-
-start
-  = tokens
 
 tokens
   = t1:token t2:(" " t2:token)*
   {
-    return unpack([t1], t2)
+    return unpack(t1, t2)
   }
 
 
@@ -64,12 +56,12 @@ bound = val:("lbound" / "rbound") "(" "sentence" ")" {
 bound_block
   = first:bound rest:(" & " bound)*
   {
-    return unpack([first], rest)
+    return unpack(first, rest)
   }
 
 and
   =  left:or right:(" | " or)* {
-    return {and_block : [unpack([left], right)]}
+    return {and_block : [unpack(left, right)]}
   }
   / bound:bound_block {
     bound = Object.fromEntries(bound.map(item => [item, true]))
