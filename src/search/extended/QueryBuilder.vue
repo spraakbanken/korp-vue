@@ -54,8 +54,7 @@ function addBoundary(start: boolean) {
 </script>
 
 <template>
-  <div ref="row" class="d-flex gap-4 align-items-center overflow-x-auto overflow-y-hidden">
-    <!-- TODO Dropdowns in *AutocompleteWidget are clipped -->
+  <div ref="row" class="hstack flex-wrap gap-4 justify-content-center">
     <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2">
       <QueryToken
         v-if="isCqpToken(token)"
