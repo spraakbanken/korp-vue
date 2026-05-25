@@ -7,6 +7,7 @@ import useMessageStore from "./store/useMessageStore"
 import useInit from "./useInit"
 import { useMatomo } from "vue3-matomo"
 import currentMode from "./core/corpora/mode"
+import AppSplash from "./AppSplash.vue"
 
 const messageStore = useMessageStore()
 const matomo = useMatomo()
@@ -33,6 +34,6 @@ window.addEventListener("error", (event) => {
     <MainSection class="flex-grow-1" />
     <AppFooter />
   </template>
-  <div v-else>Loading...</div>
+  <AppSplash v-else />
   <AppMessages />
 </template>

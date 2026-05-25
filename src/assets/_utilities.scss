@@ -31,3 +31,16 @@
     }
   }
 }
+
+.animate-pulse {
+  animation: fade 1s ease-out alternate infinite;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
