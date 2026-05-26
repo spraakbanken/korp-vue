@@ -92,7 +92,9 @@ function download() {
             </button>
           </div>
         </div>
+      </form>
 
+      <form @submit.prevent="download()">
         <!-- JSON section -->
         <template v-if="props.json">
           <h6 class="card-header card-footer p-2">
@@ -101,11 +103,7 @@ function download() {
           <div class="card-body p-2 vstack gap-2">
             <p class="m-0">{{ $t("result.export.json.help") }}</p>
 
-            <button
-              type="button"
-              class="btn btn-primary btn-sm d-block ms-auto"
-              @click="download()"
-            >
+            <button type="submit" class="btn btn-primary btn-sm d-block ms-auto">
               <fa-icon icon="fa-solid fa-download" />
               {{ $t("result.export.action") }}
             </button>

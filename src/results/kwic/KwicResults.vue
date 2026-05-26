@@ -6,12 +6,10 @@ import { storeToRefs } from "pinia"
 import { ref, watch } from "vue"
 import settings from "@/core/config"
 import { debounce } from "lodash-es"
-import type { QueryResponse, QueryParamSort } from "@/core/backend/types/query"
+import type { QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
-import ExportButton from "../ExportButton.vue"
-import { transformData, type ExportType } from "@/core/kwic/export"
 import { massageData, type Row } from "@/core/kwic/kwic"
 import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
@@ -20,6 +18,7 @@ import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import useSearchStore from "@/search/useSearchStore"
 import { useMatomo } from "vue3-matomo"
+import KwicExportButton from "./KwicExportButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -36,7 +35,6 @@ const { page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
 const distribution = ref<HitsDistribution[]>()
-const exportType = ref<ExportType>("kwic")
 const hitsCount = ref(0)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
@@ -44,7 +42,6 @@ const hpp = ref(store.hpp)
 const kwic = ref<Row[]>()
 const loading = ref(false)
 const pageLocal = ref(1)
-const rawResponse = ref<QueryResponse>()
 const sort = ref<QueryParamSort>(store.sort)
 /** Flags if the current running request will be shown in reading mode */
 let isCurrentRequestReading = false
@@ -93,7 +90,6 @@ async function doSearch(reuseCounts = false) {
 
   // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
   loading.value = false
-  rawResponse.value = proxy.getResponse()
   distribution.value = response.distribution
   // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
   hitsCount.value = response.hits
@@ -133,11 +129,6 @@ watch(context, () =>
 )
 
 watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || "default"))
-
-function createExport() {
-  const params = proxy.getParams()
-  return transformData(exportType.value, kwic.value!, params, hitsCount.value)
-}
 </script>
 
 <template>
@@ -183,28 +174,7 @@ function createExport() {
       </label>
 
       <template #end>
-        <ExportButton
-          :disabled="!kwic"
-          name="kwic"
-          :get-rows="createExport"
-          :json="rawResponse"
-          endpoint="query"
-        >
-          <div class="text-nowrap">
-            <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
-              <input
-                type="radio"
-                class="form-check-input"
-                :id="`export-type-${option}`"
-                :value="option"
-                v-model="exportType"
-              />
-              <label :for="`export-type-${option}`" class="form-check-label">
-                {{ $t(`result.kwic.export.type.${option}`) }}
-              </label>
-            </div>
-          </div>
-        </ExportButton>
+        <KwicExportButton :kwic :proxy :totalHits="hitsCount" />
       </template>
     </OptionsBar>
 

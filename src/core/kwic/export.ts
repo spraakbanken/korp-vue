@@ -11,7 +11,7 @@ type AnnotationsRow = KwicRow | CorpusHeading
 
 type TableRow = (string | number)[]
 
-type KwicParams = QueryParams | RelationsSentencesParams
+export type KwicParams = QueryParams | RelationsSentencesParams
 
 const emptyRow = (length: number) => fill(new Array(length), "")
 

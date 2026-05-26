@@ -12,6 +12,7 @@ import { massageData, type Row } from "@/core/kwic/kwic"
 import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
+import KwicExportButton from "./KwicExportButton.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -77,6 +78,10 @@ watch(page, () => doSearch(true))
         {{ $t("result.kwic.show_context") }}
         <HelpBadge :text="$t('result.kwic.show_context.help')" />
       </label>
+
+      <template #end>
+        <KwicExportButton :kwic :proxy="task.proxy" :totalHits="hitsCount" />
+      </template>
     </OptionsBar>
 
     <KwicResultsContent

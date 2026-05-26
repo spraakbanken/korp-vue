@@ -19,13 +19,11 @@ export default abstract class ProxyBase<K extends keyof API = keyof API> {
     return this.abortController.signal
   }
 
-  getParams(): API[K]["params"] {
-    if (!this.params) throw new Error("No params set")
+  getParams(): API[K]["params"] | undefined {
     return this.params
   }
 
-  getResponse(): API[K]["response"] {
-    if (!this.response) throw new Error("No response data available")
+  getResponse(): API[K]["response"] | undefined {
     return this.response
   }
 
