@@ -19,7 +19,6 @@ import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
-import JsonButton from "./JsonButton.vue"
 import { useMatomo } from "vue3-matomo"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
@@ -126,10 +125,13 @@ watch(showPos, () =>
       </label>
 
       <template #end>
-        <div class="btn-group">
-          <JsonButton :data="rawResponse" endpoint="relations" />
-          <ExportButton :disabled="!data" name="wordpic" :get-rows="createExport" />
-        </div>
+        <ExportButton
+          :disabled="!data"
+          name="wordpic"
+          :get-rows="createExport"
+          :json="rawResponse"
+          endpoint="relations"
+        />
       </template>
     </OptionsBar>
 

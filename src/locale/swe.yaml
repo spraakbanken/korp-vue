@@ -214,14 +214,15 @@ search.within.key.text: text | {count} texter
 
 result.compare.column_heading: Utmärkande för {label}
 
-result.export.action: Exportera
-result.export.help: Spara visad data som tabell i en CSV-fil. Filen kan till exempel öppnas som kalkylark.
-result.export.separator: Avskiljare
-result.export.separator.comma: komma
-result.export.separator.semi: semikolon
-result.export.separator.tab: tabb
-
-result.json: JSON
+result.export.action: Spara
+result.export.table: Tabell
+result.export.table.help: Spara visad data som tabell i en CSV-fil. Filen kan till exempel öppnas som kalkylark.
+result.export.table.separator: Avskiljare
+result.export.table.separator.comma: komma
+result.export.table.separator.semi: semikolon
+result.export.table.separator.tab: tabb
+result.export.json: JSON
+result.export.json.help: Spara resultatet från API-frågan som en JSON-fil, som kan användas till programmering eller felsökning.
 
 result.kwic: KWIC
 result.kwic.show_context: Visa kontext

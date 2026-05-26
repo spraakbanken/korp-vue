@@ -214,14 +214,15 @@ search.within.key.text: text | {count} texts
 
 result.compare.column_heading: Prominent in {label}
 
-result.export.action: Export
-result.export.help: Save displayed data as a table in a CSV file, compatible with spreadsheet applications.
-result.export.separator: Separator
-result.export.separator.comma: comma
-result.export.separator.semi: semicolon
-result.export.separator.tab: tab
-
-result.json: JSON
+result.export.action: Save
+result.export.table: Table
+result.export.table.help: Save displayed data as a table in a CSV file, compatible with spreadsheet applications.
+result.export.table.separator: Separator
+result.export.table.separator.comma: comma
+result.export.table.separator.semi: semicolon
+result.export.table.separator.tab: tab
+result.export.json: JSON
+result.export.json.help: Save the API query result as a JSON file, which can be used for programming or debugging.
 
 result.kwic: KWIC
 result.kwic.show_context: Show context

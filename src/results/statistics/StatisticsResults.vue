@@ -31,7 +31,6 @@ import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
 import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
-import JsonButton from "../JsonButton.vue"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
 
@@ -227,10 +226,13 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </label>
 
       <template #end>
-        <div class="btn-group">
-          <JsonButton :data="rawResponse" endpoint="count" />
-          <ExportButton :disabled="!data" name="statistics" :get-rows="createExport" />
-        </div>
+        <ExportButton
+          :disabled="!data"
+          name="statistics"
+          :get-rows="createExport"
+          :json="rawResponse"
+          endpoint="count"
+        />
       </template>
     </OptionsBar>
 

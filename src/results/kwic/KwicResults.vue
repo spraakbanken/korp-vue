@@ -19,7 +19,6 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import useSearchStore from "@/search/useSearchStore"
-import JsonButton from "../JsonButton.vue"
 import { useMatomo } from "vue3-matomo"
 
 const UPDATE_DELAY_MS = 500
@@ -184,26 +183,28 @@ function createExport() {
       </label>
 
       <template #end>
-        <div class="btn-group">
-          <JsonButton :data="rawResponse" endpoint="query" />
-
-          <ExportButton :disabled="!kwic" name="kwic" :get-rows="createExport">
-            <div class="text-nowrap">
-              <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
-                <input
-                  type="radio"
-                  class="form-check-input"
-                  :id="`export-type-${option}`"
-                  :value="option"
-                  v-model="exportType"
-                />
-                <label :for="`export-type-${option}`" class="form-check-label">
-                  {{ $t(`result.kwic.export.type.${option}`) }}
-                </label>
-              </div>
+        <ExportButton
+          :disabled="!kwic"
+          name="kwic"
+          :get-rows="createExport"
+          :json="rawResponse"
+          endpoint="query"
+        >
+          <div class="text-nowrap">
+            <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                :id="`export-type-${option}`"
+                :value="option"
+                v-model="exportType"
+              />
+              <label :for="`export-type-${option}`" class="form-check-label">
+                {{ $t(`result.kwic.export.type.${option}`) }}
+              </label>
             </div>
-          </ExportButton>
-        </div>
+          </div>
+        </ExportButton>
       </template>
     </OptionsBar>
 
