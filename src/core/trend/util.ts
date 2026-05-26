@@ -1,4 +1,4 @@
-import { last, maxBy, minBy, sortedIndexOf } from "lodash-es"
+import { last, minBy, sortedIndexOf } from "lodash-es"
 import type { Moment } from "moment"
 import type { Granularity } from "../backend/types"
 import moment from "moment"
@@ -161,25 +161,24 @@ export function spliceGraphData(baseData: Series[], newData: Series[]) {
   }
 }
 
-export function createTrendTableCsv(series: Series[], relative: boolean): (string | number)[][] {
+export function createTrendTableCsv(
+  series: Series[],
+  level: Level,
+  relative: boolean,
+  hitStr: string,
+  totalStr: string,
+): (string | number)[][] {
   // Create header row
-  const formatHeader = (cell: SeriesPoint): string =>
-    moment(cell.x * 1000).format(FORMATS[cell.zoom])
-  const dateHeaders = series[0].data.map(formatHeader)
-  const header = [loc("stats_hit"), ...dateHeaders]
+  const formatHeader = (point: Point): string => point.x.format(FORMATS[level])
+  const dateHeaders = series[0].points.map(formatHeader)
+  const header = [hitStr, ...dateHeaders]
 
   // Create data rows
-  const formatCell = (row: Series, cell: SeriesPoint): number => {
-    if (relative) return cell.y
-    else {
-      const i = sortedIndexOf(
-        row.abs_data.map((point) => point.x),
-        cell.x,
-      )
-      return row.abs_data[i].y
-    }
-  }
-  const data = series.map((row) => [row.name, ...row.data.map((cell) => formatCell(row, cell))])
+  const data = series.map((row) => {
+    const freqs = row.points.map((point) => (relative ? point.y : point.absolute) || "")
+    return [row.label || "", ...freqs]
+  })
+  data[0][0] = totalStr
 
   return [header, ...data]
 }

@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
-import { findOptimalLevel, getTimeCqp, spliceGraphData, type Level } from "@/core/trend/util"
+import {
+  createTrendTableCsv,
+  findOptimalLevel,
+  getTimeCqp,
+  spliceGraphData,
+  type Level,
+} from "@/core/trend/util"
 import type { Moment } from "moment"
-import { onMounted, ref } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import TrendGraph from "./TrendGraph.vue"
 import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
@@ -15,6 +21,8 @@ import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
 import OptionsBar from "@/components/OptionsBar.vue"
 import TrendTable from "./TrendTable.vue"
+import ExportButton from "./ExportButton.vue"
+import { useAppStore } from "@/store/useAppStore.ts"
 
 const props = defineProps<{
   task: TrendTask
@@ -23,11 +31,13 @@ const props = defineProps<{
 const progress = defineModel<number>("progress")
 
 const { t } = useI18n()
+const store = useAppStore()
 const { createTab } = useDynamicTabs()
 const matomo = useMatomo()
 
 /** What time span to show in main chart */
 const range = ref<{ from: Date; to: Date }>()
+const reactiveTask = reactive(props.task)
 const series = ref<Series[]>([])
 const level = ref<Level>("year")
 const undatedRatio = ref(0)
@@ -92,6 +102,16 @@ function onSelectRange(from: Date, to: Date) {
   doSearch(moment(from), moment(to))
   matomo.value?.trackEvent("Trend", "Select range")
 }
+
+function createCsv() {
+  return createTrendTableCsv(
+    series.value,
+    level.value,
+    store.statsRelative,
+    t("result.trend.table.value"),
+    t("result.statistics.total"),
+  )
+}
 </script>
 
 <template>
@@ -126,6 +146,16 @@ function onSelectRange(from: Date, to: Date) {
           </button>
         </div>
       </div>
+
+      <template #end>
+        <ExportButton
+          :disabled="!series.length"
+          name="trend"
+          :get-rows="createCsv"
+          :json="reactiveTask.response"
+          endpoint="count_time"
+        />
+      </template>
     </OptionsBar>
 
     <!-- Undated ratio info -->
@@ -135,7 +165,7 @@ function onSelectRange(from: Date, to: Date) {
     </div>
 
     <TrendGraph
-      v-if="(view == 'line' || view == 'bar') && series.length && level"
+      v-if="(view == 'line' || view == 'bar') && series.length"
       :series
       :level
       :range

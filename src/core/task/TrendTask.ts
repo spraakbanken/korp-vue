@@ -1,5 +1,5 @@
 import type { Moment } from "moment"
-import type { CountTimeParams } from "../backend/types/countTime"
+import type { CountTimeParams, CountTimeResponse } from "../backend/types/countTime"
 import { fillMissingDate, GRANULARITIES, parseDate, type Level } from "../trend/util"
 import { TaskBase } from "./TaskBase"
 import type { NumericString, ProgressHandler } from "../backend/types"
@@ -31,6 +31,8 @@ export type Point = {
 }
 
 export class TrendTask extends TaskBase<TrendResult> {
+  public response: CountTimeResponse | undefined = undefined
+
   constructor(
     readonly cqp: string,
     readonly subqueries: [string, string][],
@@ -70,12 +72,14 @@ export class TrendTask extends TaskBase<TrendResult> {
     }
 
     const abortSignal = this.getAbortSignal()
-    const response = await korpRequest("count_time", params, { abortSignal, onProgress })
+    this.response = await korpRequest("count_time", params, { abortSignal, onProgress })
 
     // Process response data
     const labels = Object.fromEntries(this.subqueries)
     // Response data is array iff subcqps were used; ensure array for consistency
-    const seriesRaw = Array.isArray(response.combined) ? response.combined : [response.combined]
+    const seriesRaw = Array.isArray(this.response.combined)
+      ? this.response.combined
+      : [this.response.combined]
     const series: Series[] = seriesRaw.map((series) => {
       const points: Point[] = Object.entries(series.relative).map(([timestamp, frequency]) => ({
         x: parseDate(level, timestamp),
