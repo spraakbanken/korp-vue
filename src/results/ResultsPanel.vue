@@ -132,14 +132,14 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
       >
         {{ locObj(tab.label) }}
         <TabProgressBar :progress="progressMap[tab.id]" />
-        <button
-          type="button"
+        <a
+          href="#"
           :aria-label="$t('close')"
           class="tab-close btn btn-link btn-sm icon-link p-0 ms-1 align-baseline"
           @click.prevent.stop="closeTabLocal(tab.id)"
         >
           <fa-icon icon="fa-solid fa-xmark" size="sm" width-auto />
-        </button>
+        </a>
       </button>
     </nav>
 
