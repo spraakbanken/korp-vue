@@ -21,26 +21,29 @@ const itemsFiltered = computed(() =>
   <div v-if="itemsFiltered?.length">
     <h4>{{ $t("frontpage.news") }}</h4>
 
-    <article
-      v-for="(item, i) in itemsFiltered"
-      :key="i"
-      class="card mb-2"
-      :class="{
-        'bg-warning-subtle': item.tags?.includes('maintenance'),
-      }"
-    >
-      <div class="card-body">
-        <h5 class="card-title">{{ locObj(item.title) }}</h5>
-        <div class="card-subtitle mb-2 text-muted">
-          <time :datetime="item.created">
-            {{ locDate(item.created) }}
-          </time>
+    <div class="d-flex flex-wrap gap-4">
+      <article
+        v-for="(item, i) in itemsFiltered"
+        :key="i"
+        class="flex-grow-1"
+        :class="{
+          'bg-warning-subtle': item.tags?.includes('maintenance'),
+        }"
+        style="width: 18rem"
+      >
+        <div class="card-body">
+          <h5 class="card-title">{{ locObj(item.title) }}</h5>
+          <div class="card-subtitle text-muted">
+            <time :datetime="item.created">
+              {{ locDate(item.created) }}
+            </time>
+          </div>
+          <div class="card-text mt-2" v-html="locObj(item.body)" />
         </div>
-        <div class="card-text" v-html="locObj(item.body)" />
-      </div>
-    </article>
+      </article>
+    </div>
 
-    <div class="text-center">
+    <div class="mt-2 text-center">
       <button
         v-if="items!.length > COLLAPSED_MAX"
         class="btn btn-outline-secondary"
