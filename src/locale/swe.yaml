@@ -43,7 +43,7 @@ corpus.info.size: Antal token
 corpus.info.timespan: Tidsutsträckning
 corpus.info.updated: Senast uppdaterad
 corpus.protected: Skyddad
-corpus.protected_access: Åtkomst beviljad
+corpus.protected_access: Du har tillgång
 
 corpus.selection.graph.available: Tillgängligt
 corpus.selection.graph.selected: Valt

@@ -101,6 +101,7 @@ function openReadingMode() {
             {{ $t("result.kwic.deptree.open") }}
           </button>
           <ModalDialog id="deptree-modal" :title="$t('result.kwic.deptree')" size="xl">
+            <!-- TODO Wrong selected token in subsearch -->
             <DeptreeDiagram :corpus :tokens="selectedToken.row.tokens" />
           </ModalDialog>
         </template>

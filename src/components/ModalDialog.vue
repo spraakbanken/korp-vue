@@ -7,6 +7,8 @@ import { onMounted, ref } from "vue"
 export type ConfirmDialog = UseConfirmDialogReturn<void, void, void>
 
 defineProps<{
+  /** Label for the confirm button; default is "OK" */
+  confirmLabel?: string
   /** Disable cancel button, making the modal persist until confirmed */
   disableCancel?: boolean
   /** Modal element id attribute, for use with `data-bs-target` on modal toggle. */
@@ -95,7 +97,9 @@ function close(confirmed: boolean) {
 
             <div class="modal-footer">
               <slot name="footer">
-                <button class="btn btn-primary" @click="dialog.confirm()">{{ $t("ok") }}</button>
+                <button class="btn btn-primary" @click="dialog.confirm()">
+                  {{ confirmLabel || $t("ok") }}
+                </button>
               </slot>
             </div>
           </form>

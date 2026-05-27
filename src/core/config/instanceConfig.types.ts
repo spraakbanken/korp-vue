@@ -20,7 +20,7 @@ export type InstanceConfig = {
   default_overview_context: string
   default_reading_context: string
   default_within?: Record<string, string>
-  description?: string
+  description?: LangString
   download_cgi_script?: string
   download_formats: string[]
   download_format_params: Record<string, Record<string, string | number>>
