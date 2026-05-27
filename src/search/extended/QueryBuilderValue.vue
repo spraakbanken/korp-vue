@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+/** @file Determines what widget component to show to input a condition value */
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { injectionKeys } from "@/injection"
 import { computed, inject, useId } from "vue"
@@ -15,6 +16,7 @@ import DateIntervalWidget from "./widgets/DateIntervalWidget.vue"
 import type { OperatorKorp } from "@/core/cqp/cqp.types"
 import { regescape, unregescape } from "@/core/util"
 import SenseAutocompleteWidget from "./widgets/SenseAutocompleteWidget.vue"
+import { useI18n } from "vue-i18n"
 
 const model = defineModel<string>({
   required: true,
@@ -28,7 +30,8 @@ const props = defineProps<{
   operator: OperatorKorp
 }>()
 
-const inputId = useId()
+const id = useId()
+const { t } = useI18n()
 
 /**
  * Whether input value should be used raw, not escaped.
@@ -56,6 +59,9 @@ const widgets: Record<string, MaybeConfigurable<Widget>> = {
 
 /** The computed widget to use */
 const widget = computed<Widget>(() => {
+  if (props.attribute.name == "word")
+    return { component: DefaultWidget, options: { placeholder: t("search.extended.any_word") } }
+
   const def = props.attribute.extended_component
   return (def && getConfigurable(widgets, def)) || { component: DefaultWidget }
 })
@@ -69,10 +75,10 @@ const widgetProps = computed<WidgetProps>(() => ({
 
 <template>
   <div>
-    <label :for="inputId" class="visually-hidden">{{ $t("search.extended.value") }}</label>
+    <label :for="id" class="visually-hidden">{{ $t("search.extended.value") }}</label>
     <component
       :is="widget.component"
-      :id="inputId"
+      :id
       v-bind="widgetProps"
       v-model="model"
       v-model:flags="flags"

@@ -135,6 +135,7 @@ search.extended.boundary_add.end: slut
 search.extended.boundary_remove: Ta bort gräns
 search.extended.condition_add: Lägg till villkor
 search.extended.condition_remove: Ta bort villkor
+search.extended.any_word: vilket ord som helst
 search.extended.attribute: Attribut
 search.extended.operator: Operator
 search.extended.value: Värde

@@ -43,7 +43,7 @@ watch(operatorOptions, () => {
 
 <template>
   <div class="flex-grow-1 vstack gap-1">
-    <div>
+    <div class="hstack gap-1">
       <!-- Attribute -->
       <label :for="`${inputId}-attr`" class="visually-hidden">
         {{ $t("search.extended.attribute") }}
@@ -55,9 +55,7 @@ watch(operatorOptions, () => {
         @update:model-value="(attr) => (name = attr ? prefixAttr(attr) : '')"
         :id="`${inputId}-attr`"
       />
-    </div>
 
-    <div class="hstack gap-1">
       <!-- Operator -->
       <div v-if="!operatorDisabled">
         <label :for="`${inputId}-op`" class="visually-hidden">
@@ -69,7 +67,9 @@ watch(operatorOptions, () => {
           </option>
         </select>
       </div>
+    </div>
 
+    <div>
       <!-- Value -->
       <QueryBuilderValue
         v-if="attribute"

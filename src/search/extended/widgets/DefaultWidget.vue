@@ -1,19 +1,18 @@
 <script lang="ts" setup>
-import { computed, onUnmounted, useId, watchEffect } from "vue"
+import { computed, onUnmounted, watchEffect } from "vue"
 import type { WidgetProps } from "./widget"
 import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 
 export type DefaultWidgetOptions = {
   /** Set to true to skip the case-sensitivity toggle */
   case_sensitive?: boolean
+  placeholder?: string
 }
 
 const model = defineModel<string>({ required: true })
 const flags = defineModel<Record<string, true> | undefined>("flags")
 
 const props = defineProps<WidgetProps<DefaultWidgetOptions>>()
-
-const id = useId()
 
 const ignoreCase = computed({
   get: () => !!flags.value?.c,
@@ -36,7 +35,13 @@ onUnmounted(() => {
 
 <template>
   <div class="hstack gap-1">
-    <input type="text" v-model="model" size="10" class="form-control" />
+    <input
+      type="text"
+      v-model="model"
+      size="10"
+      class="form-control"
+      :placeholder="options.placeholder"
+    />
 
     <!-- Case-insensitive toggle button-->
     <CaseInsensitivityToggle v-if="!options.case_sensitive" v-model="ignoreCase" />

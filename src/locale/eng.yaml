@@ -134,6 +134,7 @@ search.extended.boundary_add.start: start
 search.extended.boundary_add.end: end
 search.extended.condition_add: Add condition
 search.extended.condition_remove: Remove condition
+search.extended.any_word: any word
 search.extended.attribute: Attribute
 search.extended.operator: Operator
 search.extended.value: Value
