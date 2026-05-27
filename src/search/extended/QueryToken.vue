@@ -39,7 +39,7 @@ function removeCondition(disjunctionIndex: number, conditionIndex: number) {
     <template v-for="(disjunction, j) in conditions" :key="j">
       <div v-if="j > 0">{{ $t("search.and") }}</div>
 
-      <div class="card bg-body-tertiary p-2 vstack gap-2">
+      <div class="card bg-body bg-opacity-75 p-2 vstack gap-2">
         <template v-for="(condition, k) in disjunction" :key="k">
           <div v-if="k > 0">{{ $t("search.or") }}</div>
 
