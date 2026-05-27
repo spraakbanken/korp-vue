@@ -26,13 +26,14 @@ async function send() {
   } finally {
     loading.value = false
   }
-  if (auth?.isLoggedIn()) dialog?.confirm()
+  if (auth.isLoggedIn()) dialog?.confirm()
 }
 </script>
 
 <template>
   <button
-    v-if="!auth?.isLoggedIn()"
+    v-if="!auth.isLoggedIn()"
+    type="button"
     class="nav-link text-start"
     data-bs-toggle="modal"
     data-bs-target="#auth-basic-modal"
@@ -40,7 +41,7 @@ async function send() {
     <fa-icon icon="fa-solid fa-arrow-right-to-bracket" />
     {{ $t("auth.login") }}
   </button>
-  <button v-else class="nav-link" @click="auth.logout()">
+  <button v-else type="button" class="nav-link" @click="auth.logout()">
     <fa-icon icon="fa-solid fa-arrow-right-from-bracket" />
     {{ $t("auth.logout", { name: auth.getUsername() }) }}
   </button>

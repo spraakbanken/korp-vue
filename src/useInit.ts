@@ -23,7 +23,7 @@ export default function useInit() {
 
   async function init() {
     // Initialize authentication
-    await auth.init(settings)
+    await auth.init()
 
     // Fetch config and info
     const corpusConfig = await loadCorpusConfig(settings)

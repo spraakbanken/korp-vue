@@ -6,11 +6,9 @@ import type { OperatorKorp } from "../cqp/cqp.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
 export type InstanceConfig = {
-  auth_module?: string | { module: string; options: object }
   autocomplete?: boolean
   backendURLMaxLength: number
   common_struct_types?: Record<string, Attribute>
-  config_dependent_on_authentication?: boolean
   get_corpus_ids?: () => Promise<string[]>
   corpus_info_link?: {
     url_template: string
@@ -36,8 +34,6 @@ export type InstanceConfig = {
   has_timespan: boolean
   hits_per_page_values: number[]
   hits_per_page_default: number
-  /** Implement this to do customized async initialization. Return true to skip standard initialization afterwards. */
-  initialization_checks?: () => Promise<boolean>
   input_case_insensitive_default?: boolean
   /** codes for translation ISO-639-1 to 639-2 */
   iso_languages: Record<string, string>

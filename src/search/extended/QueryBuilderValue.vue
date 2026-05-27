@@ -51,7 +51,7 @@ const widgets: Record<string, MaybeConfigurable<Widget>> = {
   singleValue: () => ({ component: SingleValueWidget }),
   structServiceSelect: () => ({ component: BackendSelectWidget }),
   structServiceAutocomplete: () => ({ component: BackendAutocompleteWidget }),
-  ...inject(injectionKeys.search.widgets),
+  ...inject(injectionKeys.search.widgets, {}),
 }
 
 /** The computed widget to use */

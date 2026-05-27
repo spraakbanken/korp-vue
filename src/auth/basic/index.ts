@@ -38,6 +38,7 @@ export async function login(...args: unknown[]): Promise<void> {
   if (saveLogin) storage.value = creds.value
 }
 
+// TODO Implement option `default_value_remember`
 const authBasic: VueAuthModule = {
   init: () => {
     creds.value = storage.value
