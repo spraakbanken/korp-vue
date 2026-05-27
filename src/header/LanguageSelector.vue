@@ -10,6 +10,7 @@ const store = useAppStore()
 const { locObj } = useLocale()
 const matomo = useMatomo()
 
+// TODO Loading with lang=eng is broken
 const { lang } = storeToRefs(store)
 
 matomo.value?.trackEvent("UI", "Locale init", lang.value)

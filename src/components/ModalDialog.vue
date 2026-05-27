@@ -7,6 +7,8 @@ import { onMounted, ref } from "vue"
 export type ConfirmDialog = UseConfirmDialogReturn<void, void, void>
 
 defineProps<{
+  /** Disable cancel button, making the modal persist until confirmed */
+  disableCancel?: boolean
   /** Modal element id attribute, for use with `data-bs-target` on modal toggle. */
   id?: string
   /** Modal title. */
@@ -17,7 +19,7 @@ defineProps<{
 
 const emit = defineEmits<{
   /** Provide dialog handler to parent component. */
-  (e: "setup", confirmDialog: UseConfirmDialogReturn<void, void, void>): void
+  (e: "setup", confirmDialog: ConfirmDialog): void
   /** Emitted when the modal is closed, be it via the Bootstrap modal handler or the VueUse confirm dialog handler. */
   (e: "close", confirmed: boolean): void
   /** To use form, add a submit button in the footer and listen to this event. */
@@ -63,6 +65,8 @@ function close(confirmed: boolean) {
       role="dialog"
       aria-labelledby="login-modal-title"
       aria-hidden="true"
+      :data-bs-backdrop="disableCancel ? 'static' : undefined"
+      :data-bs-keyboard="!disableCancel"
       v-on="{
         // Let confirm dialog handler pick up on modal events.
         'hidden.bs.modal': () => dialog.isRevealed.value && dialog.cancel(),
@@ -76,6 +80,7 @@ function close(confirmed: boolean) {
               {{ title }}
             </h5>
             <button
+              v-if="!disableCancel"
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
