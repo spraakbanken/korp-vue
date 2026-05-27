@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n"
 import eng from "@/locale/eng.yaml"
 import swe from "@/locale/swe.yaml"
-import settings from "@instance/settings"
+import settings from "@/core/config"
 
 /** Message sets by language code */
 type LocalesByLang = Record<string, Locale>
