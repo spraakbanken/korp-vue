@@ -96,7 +96,7 @@ export type Attribute = {
 }
 
 export type CustomAttribute = Attribute & {
-  custom_type: string
+  custom_type: "struct" | "pos"
 }
 
 export type DeptreeConfig = {

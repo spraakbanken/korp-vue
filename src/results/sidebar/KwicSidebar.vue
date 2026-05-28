@@ -4,13 +4,14 @@ import { useLocale } from "@/i18n/useLocale"
 import { computed, inject } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
-import { pickBy, sortBy } from "lodash-es"
+import { sortBy } from "lodash-es"
 import { isKwic, isKwicRowToken } from "@/core/kwic/kwic"
 import { useDynamicTabs } from "../useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import { TextTask } from "@/core/task/TextTask"
 import DeptreeDiagram from "./DeptreeDiagram.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
+import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 
 const { locObj } = useLocale()
 const { createTab } = useDynamicTabs()
@@ -22,32 +23,35 @@ const corpus = computed(() =>
 )
 
 const structAttributes = computed(() => {
-  if (!corpus.value) return []
   if (!selectedToken?.value || !isKwicRowToken(selectedToken?.value)) return []
   const row = selectedToken.value.row
-  const attrs = Object.entries({
-    ...corpus.value.struct_attributes,
-    ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type == "struct"),
-  }).filter(
-    ([name, attr]) => name in row.structs && attr.display_type != "hidden" && !attr.hide_sidebar,
-  )
-  const ordering = corpus.value?._struct_attributes_order || []
-  return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
+  return identifyAttributes("struct_attributes", (attr) => attr.name in row.structs, "struct")
 })
 
 const posAttributes = computed(() => {
-  if (!corpus.value) return []
   const token = selectedToken?.value?.token
   if (!token) return []
-  const attrs = Object.entries({
-    ...corpus.value.attributes,
-    ...pickBy(corpus.value.custom_attributes, (attr) => attr.custom_type != "struct"),
-  }).filter(
-    ([name, attr]) => name in token.attrs && attr.display_type != "hidden" && !attr.hide_sidebar,
-  )
-  const ordering = corpus.value?._attributes_order || []
-  return sortBy(attrs, ([name]) => (ordering.includes(name) ? -ordering.indexOf(name) : 0))
+  return identifyAttributes("attributes", (attr) => attr.name in token.attrs, "pos")
 })
+
+/** Find which attributes to show */
+function identifyAttributes(
+  corpusKey: "attributes" | "struct_attributes",
+  filter: (attr: Attribute) => boolean,
+  customType: "struct" | "pos",
+): Attribute[] {
+  if (!corpus.value) return []
+  const baseAttrs = Object.values(corpus.value[corpusKey]).filter(filter)
+  const customAttrs = Object.values(corpus.value.custom_attributes || {}).filter(
+    (attr) => attr.custom_type == customType,
+  )
+  const attrs = [...baseAttrs, ...customAttrs].filter(
+    (attr) => attr.display_type != "hidden" && !attr.hide_sidebar,
+  )
+  // Sort according to order in config
+  const ordering = corpus.value._attributes_order || []
+  return sortBy(attrs, (attr) => (ordering.includes(attr.name) ? -ordering.indexOf(attr.name) : 0))
+}
 
 function openReadingMode() {
   const row = selectedToken?.value?.row
@@ -125,13 +129,13 @@ function openReadingMode() {
           <div id="sidebar-accordion-struct" class="accordion-collapse collapse show">
             <div class="accordion-body">
               <KwicSidebarAttribute
-                v-for="[name, attribute] in structAttributes"
-                :key="name"
+                v-for="attr in structAttributes"
+                :key="attr.name"
                 :corpus
-                :attribute
-                :is-custom="'custom_type' in attribute && !!attribute.custom_type"
+                :attribute="attr"
+                :is-custom="'custom_type' in attr && !!attr.custom_type"
                 :row-token="selectedToken"
-                :value="selectedToken.row.structs[name]"
+                :value="selectedToken.row.structs[attr.name]"
               />
             </div>
           </div>
@@ -154,13 +158,13 @@ function openReadingMode() {
           <div id="sidebar-accordion-pos" class="accordion-collapse collapse show">
             <div class="accordion-body">
               <KwicSidebarAttribute
-                v-for="[name, attribute] in posAttributes"
-                :key="name"
+                v-for="attr in posAttributes"
+                :key="attr.name"
                 :corpus
-                :attribute
-                :is-custom="'custom_type' in attribute && !!attribute.custom_type"
+                :attribute="attr"
+                :is-custom="'custom_type' in attr && !!attr.custom_type"
                 :row-token="selectedToken"
-                :value="selectedToken.token.attrs[name]"
+                :value="selectedToken.token.attrs[attr.name]"
               />
             </div>
           </div>

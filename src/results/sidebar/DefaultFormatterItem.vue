@@ -31,7 +31,7 @@ const itemHtml = computed(() => {
     value = template(props.attribute.pattern)({
       key: props.attribute.name,
       val: value,
-      pos_attrs: props.rowToken.token,
+      pos_attrs: props.rowToken.token.attrs,
       struct_attrs: isKwicRowToken(props.rowToken) ? props.rowToken.row : {},
     })
 

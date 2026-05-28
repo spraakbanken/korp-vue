@@ -33,7 +33,7 @@ const items = computed<string[] | undefined>(() =>
   </ExpandableList>
 
   <!-- Single-value attribute -->
-  <DefaultFormatterItem v-else :attribute :item="value!" :rowToken />
+  <DefaultFormatterItem v-else :attribute :item="value ?? ''" :rowToken />
 </template>
 
 <style scoped>
