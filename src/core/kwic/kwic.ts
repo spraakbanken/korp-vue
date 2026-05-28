@@ -1,9 +1,8 @@
-import { clone, mapKeys, omit, pickBy, sum } from "lodash-es"
+import { clone, mapKeys, omit } from "lodash-es"
 import type { ApiKwic, KwicMatch, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"
-import { corpusListing } from "../corpora/corpusListing"
 
 export type Row = KwicRow | LinkedKwicRow | CorpusHeading
 
@@ -15,7 +14,7 @@ export type KwicRow = {
   /** An object for each token in the context, with attribute values for that token */
   tokens: KwicToken[]
   /** Attribute values for the context (e.g. sentence) */
-  structs: Record<string, string | undefined>
+  structs: Record<string, string | null>
   /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
   match: KwicMatch[]
   /** Hits from aligned corpora if available, otherwise omitted */

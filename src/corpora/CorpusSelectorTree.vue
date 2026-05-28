@@ -78,6 +78,7 @@ function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
 }
 
 function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
+  if (corpus.protected && !auth.hasCredential(corpus.id)) return
   // REM: An 'exclusive' click (alt-click or ctrl-click) deselects everything else
   if (exclusive) {
     store.corpus = [corpus.id]

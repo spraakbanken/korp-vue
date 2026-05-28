@@ -32,7 +32,10 @@ export class TextTask extends TaskBase<KwicRow> {
     // The data is just one long KWIC row.
     const kwic = massageData(data.kwic)[1] as KwicRow
     // Remove match info
-    kwic.tokens.forEach((token) => (token._match = token._matchSentence = false))
+    kwic.tokens.forEach((token) => {
+      token._match = false
+      token._matchSentence = true
+    })
     return kwic
   }
 }

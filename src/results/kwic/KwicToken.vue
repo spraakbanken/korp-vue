@@ -17,14 +17,22 @@ const selectedToken = inject(injectionKeys.selectedToken)
 
 const spaceBefore = computed(() => {
   const attrs = props.rowToken.token.attrs
-  if (attrs._head != null) return parseWhitespace(attrs._head)
+  // Parse encoded whitespace
+  if (typeof attrs._head == "string") return parseWhitespace(attrs._head)
+  // Null means no space
+  if (attrs._head === null) return ""
+  // Default to a single space, except for punctuation tokens
   if (isKwicRowToken(props.rowToken) && isPunctuation(props.rowToken.token.word)) return ""
   return " "
 })
 
 const spaceAfter = computed(() => {
   const attrs = props.rowToken.token.attrs
-  if (attrs._tail != null) return parseWhitespace(attrs._tail)
+  // Parse encoded whitespace
+  if (typeof attrs._tail == "string") return parseWhitespace(attrs._tail)
+  // Null means no space
+  if (attrs._tail === null) return ""
+  // Default to no space
   return ""
 })
 

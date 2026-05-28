@@ -6,6 +6,7 @@ import type { Stringifier } from "./attributes/attributes.types"
 import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
+import type { Reader } from "./results/text/text"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -31,6 +32,7 @@ export const injectionKeys = {
     formatters: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Formatter>>>,
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
+  readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   resultProgress: Symbol() as InjectionKey<Ref<number>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
 }
