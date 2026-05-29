@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// TODO Keyboard navigation
 import { computed, ref } from "vue"
 import KwicGrid from "./KwicGrid.vue"
 import { isKwic, type Row, type RowToken } from "@/core/kwic/kwic"

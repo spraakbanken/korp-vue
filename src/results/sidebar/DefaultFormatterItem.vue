@@ -24,8 +24,16 @@ const matomo = useMatomo()
 const itemHtml = computed(() => {
   let value = stringify(props.item)
 
-  if (value && props.attribute.type == "url")
-    value = `<a href="${value}" target="_blank" rel="noopener">${value.replace(/^https?:\/\//, "")}</a>`
+  // TODO Abbreviate displayed URL
+  if (value && props.attribute.type == "url") {
+    try {
+      // Parse just to check validity
+      new URL(value)
+      value = `<a href="${value}" target="_blank" rel="noopener">${value.replace(/^https?:\/\//, "")}</a>`
+    } catch {
+      // Not a valid URL, leave as is
+    }
+  }
 
   if (props.attribute.pattern)
     value = template(props.attribute.pattern)({

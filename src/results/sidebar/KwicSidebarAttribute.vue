@@ -29,7 +29,9 @@ const formatter = computed<Formatter>(() => {
 
 <template>
   <div class="sidebar-attribute position-relative mb-1">
-    <strong v-if="!attribute.sidebar_hide_label">{{ locObj(attribute.label) }}: </strong>
+    <strong v-if="attribute.label && !attribute.sidebar_hide_label">
+      {{ locObj(attribute.label) }}:
+    </strong>
     <component
       :is="formatter.component"
       :attribute
