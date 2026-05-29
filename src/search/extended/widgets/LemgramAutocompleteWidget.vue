@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// TODO Make input required
 import LemgramAutocomplete, {
   type LemgramAutocompleteModel,
 } from "@/search/LemgramAutocomplete.vue"

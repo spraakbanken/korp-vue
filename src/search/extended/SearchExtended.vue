@@ -49,6 +49,7 @@ watchImmediate([search, cqp], () => {
     tokens.value = parse<CqpQuery>(store.cqp)
   } catch (e) {
     addMessage("error", e instanceof Error ? e.message : String(e))
+    console.error(e)
   }
 
   // Trigger search

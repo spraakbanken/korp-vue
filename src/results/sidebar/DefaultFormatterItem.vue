@@ -45,7 +45,9 @@ const itemHtml = computed(() => {
 </script>
 
 <template>
-  <ItemDetails :attribute :item />
+  <ItemDetails :attribute :item>
+    <template #internalSearch><slot name="internalSearch" /></template>
+  </ItemDetails>
 
   <!-- Print formatted value -->
   <span v-html="itemHtml" />

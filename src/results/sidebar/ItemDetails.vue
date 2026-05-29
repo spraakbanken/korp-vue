@@ -42,13 +42,15 @@ function search() {
           <td style="text-wrap: nowrap">{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
         </tr>
 
-        <tr v-if="attribute.internal_search">
-          <td colspan="2">
-            <a href="#" @click.prevent="search()">
-              {{ $t("result.sidebar.search") }}
-            </a>
-          </td>
-        </tr>
+        <slot name="internalSearch">
+          <tr v-if="attribute.internal_search">
+            <td colspan="2">
+              <a href="#" @click.prevent="search()">
+                {{ $t("result.sidebar.search") }}
+              </a>
+            </td>
+          </tr>
+        </slot>
 
         <tr v-if="attribute.external_search">
           <td colspan="2">
