@@ -35,10 +35,3 @@ const items = computed<string[] | undefined>(() =>
   <!-- Single-value attribute -->
   <DefaultFormatterItem v-else :attribute :item="value ?? ''" :rowToken />
 </template>
-
-<style scoped>
-tr:last-child th,
-tr:last-child td {
-  border-bottom: 0;
-}
-</style>
