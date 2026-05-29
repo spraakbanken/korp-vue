@@ -40,7 +40,7 @@ const items = computed<string[] | undefined>(() =>
   <EmptyValue v-if="isEmpty && !isCustom" />
 
   <!-- Multi-value attribute -->
-  <ExpandableList v-else-if="items" :items class="list-unstyled my-0">
+  <ExpandableList v-else-if="items" :items class="list-unstyled ms-3 my-0">
     <template v-slot="{ item }">
       <component :is="itemComponent" :attribute :item :rowToken />
     </template>
