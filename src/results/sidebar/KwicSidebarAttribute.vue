@@ -21,6 +21,7 @@ const { locObj } = useLocale()
 
 const formatters = inject(injectionKeys.attribute.formatters, {})
 
+/** The computed formatter to use, determined by attribute config and instance code */
 const formatter = computed<Formatter>(() => {
   const def = props.attribute.sidebar_component
   return (def && getConfigurable(formatters, def)) || { component: DefaultFormatter }

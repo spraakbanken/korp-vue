@@ -1,12 +1,26 @@
 <script setup lang="ts">
+/**
+ * @file Default formatter for attribute values
+ *
+ * Splits multi-value attributes into items, or displays a single-value item.
+ * Adds a details dropdown to each item if applicable.
+ */
 import { compact } from "lodash-es"
 import { type FormatterProps } from "../formatter"
-import { computed } from "vue"
+import { computed, type Component } from "vue"
 import EmptyValue from "../EmptyValue.vue"
-import DefaultFormatterItem from "./DefaultFormatterItem.vue"
+import DefaultFormatterItem, { type DefaultFormatterItemProps } from "./DefaultFormatterItem.vue"
 import ExpandableList from "./ShortenedList.vue"
 
+export type DefaultFormatterOptions = {
+  /** A custom component to use for a single item when using the default formatter */
+  itemComponent?: Component<DefaultFormatterItemProps>
+}
+
 const props = defineProps<FormatterProps>()
+
+/** Component for displaying individual items */
+const itemComponent = computed(() => props.options?.itemComponent || DefaultFormatterItem)
 
 const isEmpty = computed(
   () =>
@@ -28,10 +42,10 @@ const items = computed<string[] | undefined>(() =>
   <!-- Multi-value attribute -->
   <ExpandableList v-else-if="items" :items class="list-unstyled my-0">
     <template v-slot="{ item }">
-      <DefaultFormatterItem :attribute :item :rowToken />
+      <component :is="itemComponent" :attribute :item :rowToken />
     </template>
   </ExpandableList>
 
   <!-- Single-value attribute -->
-  <DefaultFormatterItem v-else :attribute :item="value ?? ''" :rowToken />
+  <component v-else :is="itemComponent" :attribute :item="value ?? ''" :rowToken />
 </template>

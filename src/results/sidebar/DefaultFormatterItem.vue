@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** @file Displays an individual value in the default attribute formatter */
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { isKwicRowToken, type RowToken } from "@/core/kwic/kwic"
 import { template } from "lodash-es"
@@ -6,11 +7,13 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { computed } from "vue"
 import ItemDetails from "./ItemDetails.vue"
 
-const props = defineProps<{
+export type DefaultFormatterItemProps = {
   attribute: Attribute
   item: string
   rowToken: RowToken
-}>()
+}
+
+const props = defineProps<DefaultFormatterItemProps>()
 
 const stringify = useStringifiers()(props.attribute)
 
