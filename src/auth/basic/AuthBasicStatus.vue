@@ -3,12 +3,15 @@ import { ref } from "vue"
 import { useAuth } from "../useAuth"
 import { attemptLogin } from "./common"
 import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
+import type { BasicAuthModule } from "."
 
-const auth = useAuth()
+// Specify type to access `options`
+const auth = useAuth() as BasicAuthModule
 
+const { showRemember, defaultRemember } = auth.options
 const name = ref("")
 const password = ref("")
-const saveLogin = ref(false)
+const saveLogin = ref(defaultRemember)
 const loading = ref(false)
 const errorMessage = ref("")
 let dialog: ConfirmDialog | undefined
@@ -80,7 +83,7 @@ async function send() {
       </div>
     </div>
 
-    <div class="form-check">
+    <div v-if="showRemember" class="form-check">
       <input
         id="auth-basic-remember"
         type="checkbox"

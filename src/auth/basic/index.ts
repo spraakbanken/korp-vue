@@ -1,10 +1,22 @@
 import type { VueAuthModule } from "@/auth/auth.types"
-import AuthStatusBasic from "./AuthBasicStatus.vue"
+import AuthBasicStatus from "./AuthBasicStatus.vue"
 import { toBase64 } from "@/core/util"
 import settings from "@/core/config"
 import { ref } from "vue"
 import { StorageSerializers, useLocalStorage } from "@vueuse/core"
 import { attemptLogin } from "./common"
+
+/** Extended auth service type to store Basic auth options */
+export type BasicAuthModule = VueAuthModule & {
+  options: BasicAuthOptions
+}
+
+export type BasicAuthOptions = {
+  /** Whether to show the "remember me" option */
+  showRemember: boolean
+  /** Default value for "remember me" option */
+  defaultRemember: boolean
+}
 
 export type Creds = {
   /** Username */
@@ -38,13 +50,13 @@ export async function login(...args: unknown[]): Promise<void> {
   if (saveLogin) storage.value = creds.value
 }
 
-// TODO Implement option `default_value_remember`
-const authBasic: VueAuthModule = {
+const authBasic = ({ showRemember = true, defaultRemember = false }): BasicAuthModule => ({
+  options: { showRemember, defaultRemember },
   init: () => {
     creds.value = storage.value
     return !!creds.value
   },
-  statusComponent: AuthStatusBasic,
+  statusComponent: AuthBasicStatus,
   login,
   logout: () => {
     creds.value = undefined
@@ -57,6 +69,6 @@ const authBasic: VueAuthModule = {
   getCredentials: () => creds.value?.credentials || [],
   getUsername: () => creds.value!.name,
   isLoggedIn: () => !!creds.value,
-}
+})
 
 export default authBasic

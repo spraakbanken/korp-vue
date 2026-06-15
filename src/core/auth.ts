@@ -1,3 +1,4 @@
+/** Authentication service */
 export type AuthModule = {
   /** Get headers to include in API requests */
   getAuthorizationHeader: () => Record<string, string>
@@ -13,7 +14,7 @@ export type AuthModule = {
   isLoggedIn: () => boolean
 }
 
-/** Authentication service */
+/** Active authentication service */
 export let auth: AuthModule
 
 /** Set the authentication service. Must be used exactly once, before using the service. */
