@@ -13,8 +13,10 @@ export const injectComponent = (name: keyof typeof components) =>
   inject(componentInjectionKeys[name], undefined) || defineAsyncComponent(components[name])
 
 const components = {
-  BrandPrimary: () => import("@/header/BrandPrimary.vue"),
-  BrandSecondary: () => import("@/header/BrandSecondary.vue"),
+  BrandPrimary: () => import("@/page/header/BrandPrimary.vue"),
+  BrandSecondary: () => import("@/page/header/BrandSecondary.vue"),
+  FooterContent: () => import("@/page/FooterContent.vue"),
+  HelpMenu: () => import("@/page/header/HelpMenu.vue"),
 }
 
 // Generate injection keys for components

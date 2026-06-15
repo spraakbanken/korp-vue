@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeaderSection from "@/header/HeaderSection.vue"
+import HeaderSection from "@/page/header/HeaderSection.vue"
 import MainSection from "@/MainSection.vue"
 import AppFooter from "./AppFooter.vue"
 import AppMessages from "./AppMessages.vue"

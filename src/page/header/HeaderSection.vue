@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useAuth } from "../auth/useAuth"
-import ModeSelector from "@/header/ModeSelector.vue"
-import LanguageSelector from "@/header/LanguageSelector.vue"
+import { useAuth } from "../../auth/useAuth"
+import ModeSelector from "./ModeSelector.vue"
+import LanguageSelector from "./LanguageSelector.vue"
 import CorpusSelector from "@/corpora/CorpusSelector.vue"
 import SearchPanel from "@/search/SearchPanel.vue"
 import { injectComponent } from "@/injection"
@@ -15,8 +15,8 @@ const { locObj } = useLocale()
 
 const BrandPrimary = injectComponent("BrandPrimary")
 const BrandSecondary = injectComponent("BrandSecondary")
+const HelpMenu = injectComponent("HelpMenu")
 
-const helpLinks = computed(() => settings.navigation?.help_links || [])
 const links = computed(() => settings.navigation?.links || [])
 
 /** Whether the mode is parallel */
@@ -46,7 +46,7 @@ const isParallel = !!settings["parallel"]
           <div class="navbar-nav flex-grow-1">
             <ModeSelector class="me-auto" />
 
-            <!-- Korplabb -->
+            <!-- Links -->
             <a v-for="({ url, label }, i) in links" :key="i" :href="locObj(url)" class="nav-link">
               {{ locObj(label) }}
             </a>
@@ -59,36 +59,7 @@ const isParallel = !!settings["parallel"]
 
             <LanguageSelector />
 
-            <!-- Help menu -->
-            <div v-if="helpLinks.length" class="dropdown">
-              <button
-                id="help-dropdown"
-                type="button"
-                class="nav-link dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                aria-labelledby="gui-help-label"
-              >
-                <fa-icon icon="fa-regular fa-circle-question" />
-              </button>
-
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="help-dropdown">
-                <li>
-                  <h6 id="gui-help-label" class="dropdown-header">{{ $t("nav.help") }}</h6>
-                </li>
-
-                <li v-for="({ url, label }, i) in helpLinks" :key="i">
-                  <a
-                    :href="locObj(url)"
-                    target="_blank"
-                    class="dropdown-item hstack justify-content-between"
-                  >
-                    {{ locObj(label) }}
-                    <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <HelpMenu />
           </div>
         </div>
       </div>
