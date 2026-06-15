@@ -8,8 +8,6 @@ export type Store = {
   cqp: string
   /** CQP query for each selected language in parallel mode; mapped to URL params `cqp_<lang>` */
   cqpParallel: Record<string, string>
-  /** What modal to show */
-  display?: "about"
   /** A simple attribute–values structure of selected filters. */
   global_filter: Record<string, string[]>
   /** Hits per page */
@@ -21,11 +19,11 @@ export type Store = {
   /** UI language */
   lang: string
   /** Page number of KWIC result (zero-indexed) */
-  page?: number
+  page: number
   /** In simple search, match beginning of word */
   prefix: boolean
   /** Randomized number used when sorting hits by random. Stored for reproducible urls. */
-  random_seed?: number
+  random_seed: number | undefined
   /** Whether to KWIC with more context */
   reading_mode: boolean
   /** Active result tab */
@@ -37,7 +35,7 @@ export type Store = {
    *   - "lemgram", when using autocomplete in Simple
    *   - "cqp", for advanced mode (`query` is a CQP expression)
    */
-  search?: `${string}|${string}` | "cqp"
+  search: `${string}|${string}` | "cqp" | undefined
   /** Active search tab */
   search_tab: number
   /** Search result order */
@@ -51,5 +49,5 @@ export type Store = {
   /** In simple search, match end of word */
   suffix: boolean
   /** Chunk size to evaluate search query within, e.g. "sentence" or "paragraph" */
-  within?: string
+  within: string
 }

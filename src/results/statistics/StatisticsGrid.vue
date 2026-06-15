@@ -35,7 +35,7 @@ const { t } = useI18n()
 let grid: StatisticsGrid | undefined
 const gridEl = useTemplateRef("gridEl")
 const isVisible = useElementVisibility(gridEl)
-const { statsRelative } = storeToRefs(store)
+const { lang, statsRelative } = storeToRefs(store)
 let distributionDialog: ConfirmDialog | undefined
 const distributionRow = shallowRef<Row>()
 
@@ -77,7 +77,7 @@ async function renderGrid() {
   distributionRow.value = undefined
 }
 
-watch(statsRelative, () => grid?.refreshColumns())
+watch([lang, statsRelative], () => grid?.refreshColumns())
 
 /** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {

@@ -182,7 +182,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
 
     <KwicResultsContent
       v-else
-      :corpora="activeSearch.corpora"
+      :corpora="activeSearch?.corpora"
       :distribution
       :hitsCount
       :hpp

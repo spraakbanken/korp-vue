@@ -14,8 +14,6 @@ export type HashParams = {
   cqp?: string
   /** CQP query for Extended search in parallel mode */
   [cqpN: `cqp_${string}`]: string
-  /** Modal to show */
-  display?: "about"
   /** Conditions entered for search filters, as Base64-encoded JSON */
   global_filter?: string
   /** Hits per page */

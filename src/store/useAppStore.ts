@@ -3,15 +3,13 @@ import { ref } from "vue"
 import { defineStore } from "pinia"
 import settings, { getDefaultWithin } from "@/core/config"
 import { setLang } from "@/core/i18n"
-import type { Store } from "@/core/model/store"
-import { type NormalizeOptional } from "./util"
+import { type Store } from "@/core/model/store"
 
-export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", () => {
+export const useAppStore = defineStore("app", () => {
   const corpus = ref<string[]>([])
   const cqp = ref("[]")
-  const cqpParallel = ref({})
-  const display = ref("")
-  const global_filter = ref({})
+  const cqpParallel = ref<Store["cqpParallel"]>({})
+  const global_filter = ref<Store["global_filter"]>({})
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
   const isCaseInsensitive = ref(false)
@@ -21,9 +19,9 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
   const random_seed = ref<number>()
   const reading_mode = ref(false)
   const result_tab = ref(1)
-  const search = ref("")
+  const search = ref<Store["search"]>()
   const search_tab = ref(0)
-  const sort = ref("")
+  const sort = ref<Store["sort"]>("")
   const statsRelative = ref(false)
   const stats_reduce = ref("word")
   const stats_reduce_insensitive = ref("")
@@ -37,7 +35,6 @@ export const useAppStore = defineStore<"app", NormalizeOptional<Store>>("app", (
     corpus,
     cqp,
     cqpParallel,
-    display,
     global_filter,
     hpp,
     isCaseInsensitive,

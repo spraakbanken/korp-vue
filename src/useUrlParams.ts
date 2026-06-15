@@ -28,7 +28,6 @@ export function useUrlParams() {
   // Sync from URL to store
   watchUrl("corpus", (value) => (value ? value.split(",") : []))
   watchUrl("cqp")
-  watchUrl("display")
   watchUrl("global_filter", (value) => (value ? JSON.parse(atob(value)) : {}))
   watchUrl("hpp", (value) => (value && parseInt(value)) || settings["hits_per_page_default"])
   watchUrl("in_order", (value) => value != "false")
@@ -65,7 +64,6 @@ export function useUrlParams() {
   store.$subscribe(() => {
     url.corpus = store.corpus.sort().join() || undefined
     url.cqp = store.cqp || undefined
-    url.display = store.display || undefined
     url.global_filter =
       Object.keys(store.global_filter).length > 0
         ? btoa(JSON.stringify(store.global_filter))
