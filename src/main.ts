@@ -5,7 +5,6 @@ import settings from "@/core/config"
 import setupI18n from "@/i18n/plugin"
 import { getInstanceConfig } from "@/core/config/instanceConfig"
 import App from "@/App.vue"
-import fontawesome from "./fontawesome"
 import "@/assets/styles.scss"
 import "@fontsource/source-sans-pro/400.css"
 import "@fontsource/source-sans-pro/600.css"
@@ -17,10 +16,12 @@ const params = new URLSearchParams(location.search)
 
 const app = createApp(App) //
   .use(createPinia())
-  .use(fontawesome)
 
 // These plugins depend on dynamic loading, and must be in async.
 async function setup() {
+  // Dynamic import of Fontawesome for code-splitting
+  import("./fontawesome").then(({ default: fontawesome }) => app.use(fontawesome))
+
   // Load instance settings and merge into global settings
   const instanceConfig = getInstanceConfig()
   Object.assign(settings, instanceConfig)
