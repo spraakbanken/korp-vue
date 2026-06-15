@@ -20,27 +20,6 @@ export function objectIntersection<T extends object>(objs: T[]): T {
 /** Merge a list of objects, like _.merge but return-typed */
 export const objectUnion = <T extends object>(objs: T[]): T => merge({}, ...objs) as T
 
-/**
- * Allows a given class to be overridden before instantiation.
- *
- * Define a factory for the standard class: `fooFactory = new Factory(Foo)`
- * Then optionally override the class to be used: `fooFactory.setService(Bar)`
- * Finally instantiate: `fooFactory.create()`
- */
-export class Factory<T extends new (...args: unknown[]) => InstanceType<T>> {
-  private class_: T
-  constructor(class_: T) {
-    this.class_ = class_
-  }
-  setClass(class_: T) {
-    this.class_ = class_
-  }
-  create(...args: ConstructorParameters<T>): InstanceType<T>
-  create(...args: unknown[]): InstanceType<T> {
-    return new this.class_(...args)
-  }
-}
-
 /** Debounce an async function */
 export function debounceAsync<P extends unknown[], R>(
   f: (...args: P) => Promise<R>,
@@ -80,15 +59,6 @@ export class PromiseStarter<T = void> {
   }
 }
 
-/** Create a Moment that uses the date from one Date object and the time from another. */
-export function combineDateTime(date: Date, time: Date): Moment {
-  const m = moment(moment(date).format("YYYY-MM-DD"))
-  const m_time = moment(time)
-  m.add(m_time.hour(), "hour")
-  m.add(m_time.minute(), "minute")
-  return m
-}
-
 /** Check if a date is within a time limit from (before or after) today */
 export const isRecent = (date: Date, days = 30): boolean =>
   Math.abs(new Date().getTime() - date.getTime()) <= days * DAY_MS
@@ -96,10 +66,6 @@ export const isRecent = (date: Date, days = 30): boolean =>
 /** Truncate a string to a maximum length, adding an ellipsis if it was truncated. */
 export const truncateStr = (s: string, max: number) =>
   s.length > max ? s.slice(0, max - 1) + "…" : s
-
-/** Replace HTML special chars */
-export const escapeHtml = (str: string): string =>
-  str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 
 /** Unicode-tolerant Base64 encoding, copied from https://stackoverflow.com/a/43271130 */
 export function toBase64(str: string) {
@@ -127,17 +93,6 @@ export function numberToSuperscript(number: string | number): string {
 export function transformSeconds(seconds: number) {
   const hhmmss = new Date(seconds * 1000).toISOString().substring(11, 19)
   return hhmmss.replace(/^00:/, "")
-}
-
-/** Show a basic modal with vanilla JS */
-export function simpleModal(html: string) {
-  const dialog = document.createElement("dialog")
-  dialog.classList.add("bg-white", "p-4", "rounded-lg", "shadow-lg", "border")
-  const button = '<button class="block mx-auto btn btn-primary mt-4">OK</button>'
-  dialog.innerHTML = html + button
-  document.body.appendChild(dialog)
-  dialog.showModal()
-  dialog.querySelector("button")!.addEventListener("click", () => dialog.close())
 }
 
 /** Creates a simple HTML snippet for a key-value pair list */
@@ -175,10 +130,6 @@ export function buildUrl(base: string, params: Record<string, unknown>): string 
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, String(value)))
   return url.toString()
 }
-
-/** URL search params as a string value for comparison. */
-export const paramsString = (params: URLSearchParams | Record<string, unknown>) =>
-  JSON.stringify([...new URLSearchParams(mapValues(params, String)).entries()].sort())
 
 /** Trigger a download in the browser. */
 export function downloadFile(data: string, filename: string, type: string) {

@@ -1,4 +1,4 @@
-import { last, minBy, sortedIndexOf } from "lodash-es"
+import { last, minBy } from "lodash-es"
 import type { Moment } from "moment"
 import type { Granularity } from "../backend/types"
 import moment from "moment"

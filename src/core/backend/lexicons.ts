@@ -38,19 +38,3 @@ export async function getSenses(wf: string): Promise<SenseResult[]> {
   const senses = (await karp.getSenses(lemgrams)).hits
   return senses.map(({ senseID, primary }) => ({ sense: senseID, desc: primary }))
 }
-
-/** Look up SweFN frames matching a given lemgram and get their other lexical units (LUs)  */
-export async function relatedWordSearch(lemgram: string): Promise<karp.SwefnEntry[]> {
-  const senses = (await karp.getSenseId(lemgram)).hits
-  if (senses.length == 0) return []
-
-  const frames = (await karp.getSwefnFrame(senses)).hits
-  if (frames.length == 0) return []
-
-  // Lower some nasty words
-  const skiplist = ["Excreting"]
-  const first = frames.findIndex((entry) => !skiplist.includes(entry.swefnID))
-  if (first > 0) frames.splice(0, first + 1, frames[first]!, ...frames.slice(0, first))
-
-  return frames
-}

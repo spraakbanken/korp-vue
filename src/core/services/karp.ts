@@ -14,12 +14,6 @@ export type SaldoEntry = {
   // There's more, but not used here
 }
 
-export type SwefnEntry = {
-  swefnID: string
-  LUs: string[]
-  // There's more, but not used here
-}
-
 /** Query for saldom resource to find all entries that have wf as a non-compound word form */
 const wfQuery = (wf: string) =>
   `inflectionTable(and(equals|writtenForm|${wf}||not(equals|msd|c||equals|msd|ci||equals|msd|cm||equals|msd|sms)))`
@@ -38,11 +32,5 @@ async function query<T>(lexicons: string[], q: string, path: string, params?: ob
 export const getLemgrams = (wordForm: string, morphologies: string[]) =>
   query<string>(morphologies, wfQuery(wordForm), "entry.lemgram", { size: 10_000 })
 
-export const getSenseId = (lemgram: string) =>
-  query<string>(["saldo"], `equals|lemgrams|${lemgram}`, "entry.senseID")
-
 export const getSenses = (lemgrams: string[]) =>
   query<SaldoEntry>(["saldo"], equals("lemgrams", lemgrams), "entry", { size: 10_000 })
-
-export const getSwefnFrame = (senses: string[]) =>
-  query<SwefnEntry>(["swefn"], equals("LUs", senses), "entry")
