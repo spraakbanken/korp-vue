@@ -54,8 +54,8 @@ export type InstanceConfig = {
     [mode: string]: { url?: string; site?: number }
   }
   navigation?: {
-    help_links?: { label: LangString; url: LangString }[]
-    links?: { label: LangString; url: LangString }[]
+    help_links?: { label: LangString; title?: LangString; url: LangString }[]
+    links?: { label: LangString; title?: LangString; url: LangString }[]
   }
   news_url?: string
   reduce_word_attribute_selector: "union" | "intersection"

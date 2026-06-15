@@ -26,8 +26,13 @@ const helpLinks = computed(() => settings.navigation?.help_links || [])
         <h6 id="gui-help-label" class="dropdown-header">{{ $t("nav.help") }}</h6>
       </li>
 
-      <li v-for="({ url, label }, i) in helpLinks" :key="i">
-        <a :href="locObj(url)" target="_blank" class="dropdown-item hstack justify-content-between">
+      <li v-for="({ url, label, title }, i) in helpLinks" :key="i">
+        <a
+          :href="locObj(url)"
+          target="_blank"
+          :title="locObj(title)"
+          class="dropdown-item hstack justify-content-between"
+        >
           {{ locObj(label) }}
           <fa-icon icon="fa-solid fa-arrow-up-right-from-square" size="xs" class="ms-2" />
         </a>

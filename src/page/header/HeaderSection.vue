@@ -47,7 +47,13 @@ const isParallel = !!settings["parallel"]
             <ModeSelector class="me-auto" />
 
             <!-- Links -->
-            <a v-for="({ url, label }, i) in links" :key="i" :href="locObj(url)" class="nav-link">
+            <a
+              v-for="({ url, label, title }, i) in links"
+              :key="i"
+              :href="locObj(url)"
+              :title="locObj(title)"
+              class="nav-link"
+            >
               {{ locObj(label) }}
             </a>
 
