@@ -1,5 +1,4 @@
-import { watchImmediate } from "@vueuse/core"
-import { ref } from "vue"
+import { ref, watchEffect } from "vue"
 import { defineStore } from "pinia"
 import settings, { getDefaultWithin } from "@/core/config"
 import { setLang } from "@/core/i18n"
@@ -13,7 +12,7 @@ export const useAppStore = defineStore("app", () => {
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
   const isCaseInsensitive = ref(false)
-  const lang = ref(settings["default_language"])
+  const lang = ref<string>()
   const page = ref(0)
   const prefix = ref(false)
   const random_seed = ref<number>()
@@ -29,7 +28,7 @@ export const useAppStore = defineStore("app", () => {
   const within = ref(getDefaultWithin())
 
   // Sync to the non-reactive lang global
-  watchImmediate(lang, (langNew) => setLang(langNew))
+  watchEffect(() => setLang(lang.value))
 
   return {
     corpus,

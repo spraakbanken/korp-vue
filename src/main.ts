@@ -13,6 +13,7 @@ import { createVueMatomo } from "vue3-matomo"
 
 // Get URL parameters
 const params = new URLSearchParams(location.search)
+const hash = new URLSearchParams(location.hash.slice(1))
 
 const app = createApp(App) //
   .use(createPinia())
@@ -27,7 +28,7 @@ async function setup() {
   Object.assign(settings, instanceConfig)
 
   // Set up i18n plugin and use the t() function (look up a given key in the current language)
-  const lang = params.get("lang") || instanceConfig["default_language"]
+  const lang = hash.get("lang") || instanceConfig["default_language"]
   const i18n = await setupI18n(lang)
   const t = (key: string) => i18n.global.t(key)
   app.use(i18n)

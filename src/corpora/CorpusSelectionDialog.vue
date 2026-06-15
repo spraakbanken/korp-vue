@@ -60,7 +60,6 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
         return validateCorpusSelection(allowedCorpora.map((c) => c.id))
       } else {
         // Access denied for all corpora
-        // TODO What if all corpora are protected.
         await showDialog(
           `You do not have access to any of the selected corpora. Default corpus selection will be used.`,
         )

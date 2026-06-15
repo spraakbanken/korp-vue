@@ -8,7 +8,7 @@ let _lang: string
 export const getLang = (): string => _lang
 
 /** Update global UI language variable. */
-export const setLang = (langNew: string) => {
+export const setLang = (langNew?: string) => {
   if (langNew) _lang = langNew
 }
 

@@ -213,7 +213,6 @@ export const hasRepetition = (cqpObjs: CqpQuery) =>
   cqpObjs.some((token) => isCqpToken(token) && token.repeat)
 
 /** Check if a query has any structure boundaries, e.g. sentence start */
-// TODO include if isCqpBound?
 export const hasStruct = (cqpObjs: CqpQuery) => cqpObjs.some(isCqpStruct)
 
 /** Determine whether a query will work with the in_order option */
