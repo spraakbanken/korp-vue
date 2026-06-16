@@ -291,6 +291,14 @@ result.wordpic.description: I ordbilden visas vilka ord som tenderar att föreko
 result.wordpic.description.result: Vilka relationer som visas beror på sökordets ordklass. Varje lista innehåller ord som i det valda korpusmaterialet står i den givna relationen med sökordet.
 result.wordpic.empty: Sökningen gav inga träffar.
 result.wordpic.limit: Antal rader
+result.wordpic.periodization: Tidsindelning
+result.wordpic.periodization.option.none: Ingen
+result.wordpic.periodization.option.asc: "{count} år, äldst först"
+result.wordpic.periodization.option.desc: "{count} år, nyast först"
+result.wordpic.periodization.help: Välj intervall och ordning för att dela upp datan i tidsperioder och följ den semantiska utvecklingen över tid.
+result.wordpic.period.select: Visa period
+result.wordpic.period.all: alla
+result.wordpic.period.stat_comparison: "{key} för föregående period: {value}"
 result.wordpic.show_pos: Visa ordklasser
 result.wordpic.sort: Sortera på
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
@@ -334,6 +342,7 @@ stat.freq: absolut frekvens
 stat.freq_relative: relativ frekvens
 stat.loglike: log-likelihood
 stat.mi: LMI
+stat.rmi: relativ LMI
 
 tag.sentence: mening
 tag.paragraph: stycke

@@ -33,6 +33,9 @@ export type CorpusRaw = {
   context: Labeled[]
   deptree?: DeptreeConfig
   description: LangString
+  features?: {
+    relations_time?: boolean
+  }
   hide?: boolean
   id: string
   /** Must be present in parallel corpus */

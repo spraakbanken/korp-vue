@@ -5,12 +5,13 @@ import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
 import type { QueryProxyBase } from "@/core/backend/proxy/QueryProxyBase.ts"
 import type { RelationsSentencesProxy } from "@/core/backend/proxy/RelationsSentencesProxy.ts"
+import type { RelationsTimeSentencesProxy } from "@/core/backend/proxy/RelationsTimeSentencesProxy.ts"
 
 const exportType = ref<ExportType>("kwic")
 
 const props = defineProps<{
   kwic?: Row[]
-  proxy: QueryProxyBase | RelationsSentencesProxy
+  proxy: QueryProxyBase | RelationsSentencesProxy | RelationsTimeSentencesProxy
   totalHits: number
 }>()
 

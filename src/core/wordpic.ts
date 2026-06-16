@@ -1,8 +1,9 @@
 import { isEqual, once } from "lodash-es"
 import type { WordPictureDef, WordPictureDefItem } from "./config/instanceConfig.types"
-import type { Relation } from "./backend/types/relations"
+import type { Relation, RelationsSort } from "./backend/types/relations"
 import { getWordPictureConfig } from "./config"
 import { Lemgram } from "./lemgram"
+import { formatDecimals } from "./i18n"
 
 export type WordType = "word" | "lemgram"
 
@@ -127,11 +128,10 @@ export class WordPicture {
   }
 
   /** Get a string for the params that identify a word picture column */
-  getColumnId = (pos: string, rel: string, reverse: boolean) =>
-    `${pos}${reverse ? "+" : "-"}${rel}`;
+  getColumnId = (pos: string, rel: string, reverse: boolean) => `${pos}${reverse ? "+" : "-"}${rel}`
 
   /** Create listing of full data, suitable for CSV export. */
-  *generateCsv(): Generator<string[]> {
+  generateCsv(): (string | number)[][] {
     const fields: (keyof MatchedRelation)[] = [
       "head",
       "headpos",
@@ -140,17 +140,21 @@ export class WordPicture {
       "rel",
       "depextra",
       "freq",
+      "freq_relative",
       "mi",
+      "rmi",
     ]
+
     // Header row
-    yield fields
+    const rows: (string | number)[][] = [fields]
 
     // Data rows
     for (const key of Object.keys(this.items)) {
-      for (const relation of this.items[key]!) {
-        yield fields.map((field) => String(relation[field] || ""))
+      for (const relation of this.items[key]) {
+        rows.push(fields.map((field) => String(relation[field] || "")))
       }
     }
+    return rows
   }
 }
 
@@ -165,4 +169,23 @@ export function formatWordOrLemgram(
   if (lemgram) return lemgram.toHtml(t, !showPos)
   // Not a lemgram, return word, optionally with POS
   return showPos ? `${word} (${t(`pos.${pos.toLowerCase()}`)})` : word
+}
+
+/** Format a relation's stats as strings */
+export function formatStats(stats: Relation): Record<RelationsSort, string> {
+  return {
+    freq: String(stats.freq),
+    freq_relative: formatDecimals(stats.freq_relative, 2),
+    mi: formatDecimals(stats.mi, 2),
+    rmi: formatDecimals(stats.rmi, 2),
+  }
+}
+
+/** Add a leftmost column with a single value to a table, in-place */
+export function csvPrepend<T>(rows: T[][], columnName: T, value: T): void {
+  let isFirst = true
+  for (const row of rows) {
+    row.unshift(isFirst ? columnName : value)
+    isFirst = false
+  }
 }
