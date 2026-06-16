@@ -7,8 +7,9 @@ import { useI18n } from "vue-i18n"
 import { vPopover } from "@/bootstrap"
 import { mapKeys } from "lodash-es"
 import { createKeyValueHtml } from "@/core/util"
+import { getEmptyValueHtml } from "./formatter"
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const props = defineProps<{
   row: MatchedRelation
@@ -22,15 +23,17 @@ const stats = computed(() => {
     mi: formatDecimals(props.row.mi, 2),
   }
 })
+
+const valueHtml = computed(() =>
+  props.row.other
+    ? formatWordOrLemgram(props.row.other, props.row.otherpos, t, props.showPos)
+    : getEmptyValueHtml(t),
+)
 </script>
 
 <template>
   <tr>
-    <td
-      class="px-1 link"
-      v-html="formatWordOrLemgram(row.other, row.otherpos, $t, props.showPos)"
-      @click="$emit('clickRow', row)"
-    />
+    <td class="px-1 link" v-html="valueHtml" @click="$emit('clickRow', row)" />
     <td
       v-popover
       data-bs-toggle="popover"
