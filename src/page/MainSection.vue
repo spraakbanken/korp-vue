@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { watch } from "vue"
-import FrontPage from "./frontpage/FrontPage.vue"
-import ResultsPanel from "./results/ResultsPanel.vue"
-import { useDynamicTabs } from "./results/useDynamicTabs"
-import { useAppStore } from "./store/useAppStore"
+import FrontPage from "@/frontpage/FrontPage.vue"
+import ResultsPanel from "@/results/ResultsPanel.vue"
+import { useDynamicTabs } from "@/results/useDynamicTabs"
+import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
-import useSearchStore from "./search/useSearchStore"
+import useSearchStore from "@/search/useSearchStore"
 
 const store = useAppStore()
 const { dynamicTabs } = useDynamicTabs()

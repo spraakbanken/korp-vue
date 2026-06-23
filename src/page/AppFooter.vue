@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { injectComponent } from "./injection"
+import { injectComponent } from "@/injection"
 
 const FooterContent = injectComponent("FooterContent")
 </script>

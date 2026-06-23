@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { NewsItem } from "@/core/services/news"
-import KorpLogo from "./components/KorpLogo.vue"
+import KorpLogo from "@/components/KorpLogo.vue"
 import { ref } from "vue"
-import { useLocale } from "./i18n/useLocale"
+import { useLocale } from "@/i18n/useLocale"
 
 const { locObj } = useLocale()
 
