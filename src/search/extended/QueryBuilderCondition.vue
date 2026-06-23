@@ -50,23 +50,24 @@ watch(operatorOptions, () => {
       </label>
       <!-- Instead of the v-model syntax, use v-bind and event handler explicitly to convert between our `string` model and the child component's `Attribute` model. -->
       <AttributeSelector
+        :id="`${inputId}-attr`"
         :options="attributeOptions"
         :model-value="attribute"
         @update:model-value="(attr) => (name = attr ? prefixAttr(attr) : '')"
-        :id="`${inputId}-attr`"
+        class="w-auto"
       />
 
       <!-- Operator -->
-      <div v-if="!operatorDisabled">
+      <template v-if="!operatorDisabled">
         <label :for="`${inputId}-op`" class="visually-hidden">
           {{ $t("search.extended.operator") }}
         </label>
-        <select :id="`${inputId}-op`" class="form-select" v-model="operator">
+        <select :id="`${inputId}-op`" class="form-select w-auto" v-model="operator">
           <option v-for="(value, key) in operatorOptions" :key :value>
             {{ $t(`search.operator.${key}`) }}
           </option>
         </select>
-      </div>
+      </template>
     </div>
 
     <div>
