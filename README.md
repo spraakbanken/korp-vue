@@ -9,11 +9,12 @@ for exploring large corpora of text data.
 
 # korp-vue
 
-This is a rewrite of [korp-frontend](https://github.com/spraakbanken/korp-frontend), the user-facing part of Korp.
-
+This is the _frontend_, the user-facing part, of the Korp application.
 It is a single-page web app
 written in [Vue 3](https://vuejs.org/)
 that talks to the [Korp backend](https://github.com/spraakbanken/korp-backend/).
+It replaces [korp-frontend](https://github.com/spraakbanken/korp-frontend)
+which was written in the discontinued AngularJS framework.
 
 ## User documentation
 
@@ -23,6 +24,7 @@ that talks to the [Korp backend](https://github.com/spraakbanken/korp-backend/).
 ## Developer documentation
 
 - [CHANGELOG.md](CHANGELOG.md)
+- [docs/CONFIGURATION.md](docs/CONFIGURATION.md)
 - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
@@ -30,4 +32,4 @@ that talks to the [Korp backend](https://github.com/spraakbanken/korp-backend/).
 
 ## Contact
 
-Email Språkbanken Text at: [sb-info@svenska.gu.se](mailto:sb-info@svenska.gu.se)
+Email Språkbanken at: [sb-info@svenska.gu.se](mailto:sb-info@svenska.gu.se)
