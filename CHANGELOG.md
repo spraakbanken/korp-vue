@@ -10,6 +10,6 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 No version of this codebase is released yet.
 
-## Previous versions
+## Older versions
 
 See [korp-frontend/CHANGELOG.md](https://github.com/spraakbanken/korp-frontend/blob/master/CHANGELOG.md).
