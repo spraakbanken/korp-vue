@@ -24,7 +24,7 @@ which was written in the discontinued AngularJS framework.
 ## Developer documentation
 
 - [CHANGELOG.md](CHANGELOG.md)
-- [docs/CONFIGURATION.md](docs/CONFIGURATION.md)
+- [docs/INSTANCE.md](docs/INSTANCE.md)
 - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)

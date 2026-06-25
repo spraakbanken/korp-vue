@@ -26,8 +26,9 @@ subgraph Backend server
 end
 
 FE --> BE
-FE --> News["News service?"]
-FE --> Auth["Auth service?"]
+FE --> Karp[Karp backend?]
+FE --> News[News service?]
+FE --> Auth[Auth service?]
 FE --> Matomo?
 ```
 
@@ -65,7 +66,7 @@ and either clone it directly as `./instance` or place it outside and symlink to 
 
 ```sh
 ├── instance
-│   ├── locale          # Instance locales (optional)
+│   ├── locale          # Custom UI strings (optional)
 │   │   └── xyz.yaml
 │   ├── plugin.ts       # Instance plugin
 │   └── settings.ts     # Instance settings
@@ -73,8 +74,9 @@ and either clone it directly as `./instance` or place it outside and symlink to 
 
 - The _instance plugin_ must export an async function that returns `Promise<Plugin>`, see [Vue Plugin docs](https://vuejs.org/guide/reusability/plugins)
 - The _instance settings_ must export an `InstanceConfig` object (see [instanceConfig.types.ts](../src/core/config/instanceConfig.types.ts)) with frontend settings
-- _Instance locales_ should be given if the `languages` setting includes languages other than Swedish and English
+- _Instance locales_ should be present if the `languages` setting includes languages other than Swedish and English
 
+Read more about the instance concept in [INSTANCE.md](./INSTANCE.md).
 Take a look at [korp-vue-sb/plugin.ts](https://github.com/spraakbanken/korp-vue-sb/blob/main/plugin.ts) for a real example.
 
 ## Data flow
