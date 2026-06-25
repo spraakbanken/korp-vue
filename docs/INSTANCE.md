@@ -32,7 +32,7 @@ During initialization
 (see [ARCHITECTURE.md: Data flow](./ARCHITECTURE.md#data-flow)),
 **instance config** is merged with **corpus config**.
 The latter is fetched from the backend, and mainly documented in
-[korp-backend/README.md](https://github.com/spraakbanken/korp-backend/blob/dev/README.md#corpus-configuration-for-the-korp-frontend).
+[Backend README](https://github.com/spraakbanken/korp-backend/blob/dev/README.md#corpus-configuration-for-the-korp-frontend).
 However, frontend-related parts of the corpus config are covered here.
 
 ### Settings reference
@@ -125,6 +125,114 @@ The first few settings are needed at initialization time, and thus must be speci
 - **word_picture_tagset** - See [Word picture](#word-picture)
 - **word_picture_conf** - See [Word picture](#word-picture)
 
+### Configuring features
+
+This section aims to add context to some of the settings.
+
+#### Dependency tree visualization
+
+If a corpus has dependency annotations, the sidebar can show a tree visualization of the sentence. A button triggers a modal with the tree diagram.
+
+Dependency annotations are identified as four attributes, by default `ref`, `pos`, `dephead` and `deprel`. The names can be overridden in corpus config:
+
+```yaml
+deptree:
+  attrs: # This corpus has upos and udeprel instead
+    pos: upos
+    rel: udeprel
+```
+
+The button shows automatically if the attributes are present. To prevent this:
+
+```yaml
+deptree:
+  hidden: true
+```
+
+#### Date interval widget
+
+If a corpus has time data
+(see [Backend README: Time data](https://github.com/spraakbanken/korp-backend#time-data)),
+you can enable a date interval widget for the Extended search query builder.
+Add a **common structural attribute** config named `date_interval`:
+
+```yaml
+common_struct_types:
+  date_interval:
+    label: "time interval"
+    hide_sidebar: "true"
+    hide_compare: "true"
+    hide_statistics: "true"
+    opts: false
+    extended_component: dateInterval
+```
+
+#### Operators
+
+The operators available for an attribute in the Extended search query builder
+are specified as `opts` in the attribute config.
+The default value is given by the `default_options` setting.
+
+Example setting:
+
+```yaml
+default_options:
+  is: =
+  is_not: "!="
+  starts_with: ^=
+  contains: _=
+  ends_with: "&="
+  matches: "*="
+  matches_not: "!*="
+```
+
+The keys in this object are translation keys:
+`is` yields the translation key `search.operator.is`.
+
+The values are "Korp operators", a frontend-internal variant of CQP operators.
+The purpose of the internal operators are, for example,
+to know if values need to be escaped/unescaped with regards to special regexp characters.
+They will be translated to proper CWB-supported operators
+before being sent to the backend.
+For example, `starts_with_contains` will be translated to `contains`
+and the operand will be escaped and then have `.*` added to the end.
+
+The object above is suitable for simple words/strings
+where one can be interested in searching for affixes.
+
+If there is a known value set of an attribute,
+as for example in POS-tagging,
+this is a suitable value for `opts`:
+
+```yaml
+opts:
+  is: "="
+  is_not": "!="
+```
+
+And if the attribute has a set of values instead of a single one,
+but regexp and affixes should be supported,
+use this:
+
+```yaml
+opts:
+  contains: incontains_contains
+  ends_with: ends_with_contains
+  is: contains
+  is_not: not contains
+  matches: regexp_contains
+  matches_not: not_regexp_contains
+  starts_with: starts_with_contains
+```
+
+And if no regexp or affix-search is needed:
+
+```yaml
+opts:
+  is: contains
+  is_not: not contains
+```
+
 ## Modes
 
 Different sets of copora may have different features and requirements.
@@ -188,13 +296,42 @@ app.provide(injectionKeys.auth, auth)
 
 ## Adding subplugins
 
-The term _subplugins_ refers to various components and functions that are identified by names in your config or data.
+The term _subplugins_ refers to various components and functions that can be identified by name in config.
 
-### Attribute formatters
+Providing your own implementations is a three-step process:
 
-A **formatter** is a component that shows an attribute value in the KWIC sidebar.
+- Implement a component or function
+- Include it in an object that you provide for the subplugin type
+- Reference the subplugin in config
 
-Assuming a component `MyFormatter.vue`:
+For instance,
+a component `MyFormatter.vue` can be provided as a formatter
+and then referenced as `myFormatter` in config:
+
+```js
+app.provide(injectionKeys.attribute.formatters, {
+  myFormatter: { component: MyFormatter },
+})
+```
+
+### Subplugin types
+
+Note the naming is undergoing change, and will eventually be more harmonized.
+
+| Subplugin type | TS type                     | Injection key             | Config               |
+| -------------- | --------------------------- | ------------------------- | -------------------- |
+| Formatter      | `Component<FormatterProps>` | `.attribute.formatters`   | `sidebar_component`  |
+| Widget         | `Component<WidgetProps>`    | `.search.widgets`         | `extended_component` |
+| Stringifier    | `(item: string) => string`  | `.attribute.stringifiers` | `stringify`          |
+| Reader         | `Component<ReaderProps>`    | `.readers`                | `reading_mode`       |
+
+### Subplugin options
+
+Some subplugin types allow passing optional **options** to the implementations,
+in addition to basic props or args.
+This makes it easier to vary implementation details in different contexts.
+
+Assuming a formatter implementation `MyFormatter.vue`:
 
 ```html
 <script lang="ts" setup>
@@ -205,13 +342,26 @@ export type MyFormatterOptions = {
   foo: string
 }
 
-// Props include `attribute`, `value`, etc, as well as `options.foo`
+// Props will include `attribute`, `value`, etc, as well as `options.foo`
 defineProps<FormatterProps<MyFormatterOptions>>()
 
 // ...
 ```
 
-You can provide it as such:
+Pass options either in config:
+
+```yaml
+# Enable by name
+sidebar_component: myFormatter
+
+# Enable by name and options
+sidebar_component:
+  name: myFormatter
+  options:
+    foo: bar
+```
+
+Or in the provide step:
 
 ```js
 app.provide(injectionKeys.attribute.formatters, {
@@ -219,76 +369,44 @@ app.provide(injectionKeys.attribute.formatters, {
     component: MyFormatter,
     options: { foo: "bar" },
   },
-  // ...
+  myBazFormatter: {
+    component: MyFormatter,
+    options: { foo: "baz" },
+  },
 })
 ```
 
-Modify attribute config to enable it:
-
 ```yaml
+# Enable by name
 sidebar_component: myBarFormatter
 ```
 
-### Attribute stringifiers
+### Formatters
+
+An **formatter** is a component that shows an attribute value in the KWIC sidebar.
+
+The default formatter is fairly powerful, and should mostly be enough.
+With the appropriate attribute config, it can handle cases like sets, ranked values and urls.
+
+### Stringifiers
 
 A **stringifier** formats an attribute value string as HTML.
 It is used by the default formatter for the sidebar,
 but also in other result views like the statistics and comparison.
 
-```js
-app.provide(injectionKeys.attribute.stringifiers, {
-  myCodeStringifier: (item: string) => `<code>${item}</code>`,
-  // ...
-})
-```
+Please make sure it cannot contain harmful markup that could expose you to XSS attacks.
+The default stringifier escapes any HTML in the value string.
 
-Modify attribute config to enable it:
-
-```yaml
-stringify: myCodeStringifier
-```
-
-### Search widgets
+### Widgets
 
 A **widget** presents a value input for the query builder in the Extended search mode.
+It should define a v-model
+(see [Vue docs: Component v-model](https://vuejs.org/guide/components/v-model))
+that the user can modify:
 
-Assuming a component `MyWidget.vue`:
-
-```html
-<script lang="ts" setup>
-import type { WidgetProps } from "@/search/extended/widgets/widget"
-
-// Optionally declare custom options in addition to the basic widget props
-export type MyWidgetOptions = {
-  foo: string
-}
-
+```ts
 // A reactive model of the value in the query under construction
-// Let the user modify this
 const model = defineModel<string>({ required: true })
-
-// Props include `attribute`, `operator` and `options.foo`
-defineProps<WidgetProps<MyWidgetOptions>>()
-
-// ...
-```
-
-You can provide it as such:
-
-```js
-app.provide(injectionKeys.search.widgets, {
-  myBarWidget: {
-    component: MyWidget,
-    options: { foo: "bar" },
-  },
-  // ...
-})
-```
-
-Modify attribute config to enable it:
-
-```yaml
-extended_component: myBarWidget
 ```
 
 ### Reading mode
@@ -302,30 +420,7 @@ To use the default reader component, modify the corpus config:
 reading_mode: true
 ```
 
-Alternatively, you can implement a custom **reader** component.
-
-Assuming a component `MyReader.vue`:
-
-```html
-<script lang="ts" setup>
-import type { ReaderProps } from "@/results/text/text"
-
-// Props include `corpus`, `document` and `textId`
-defineProps<ReaderProps>()
-
-// ...
-```
-
-You can provide it as such:
-
-```js
-app.provide(injectionKeys.readers, {
-  myReader: { component: MyReader },
-  // ...
-})
-```
-
-Modify the corpus config to enable it:
+Or provide a custom **reader** component and enable it with:
 
 ```yaml
 reading_mode: myReader
