@@ -15,6 +15,7 @@ import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import useSearchStore from "./useSearchStore"
 import { useMatomo } from "vue3-matomo"
+import settings from "@/core/config"
 
 const store = useAppStore()
 const { search, prefix, suffix, in_order, isCaseInsensitive } = storeToRefs(store)
@@ -98,13 +99,20 @@ function submit() {
 
     <div class="d-flex gap-2 justify-content-center">
       <!-- Word/lemgram input -->
-      <label class="visually-hidden">{{ $t("search.word_or_lemgram") }}</label>
-      <LemgramAutocomplete
-        count
-        :morphologies="corpusSelection.getMorphologies()"
-        :size="30"
-        v-model="lemgram"
-      />
+      <template v-if="settings.autocomplete">
+        <label class="visually-hidden">{{ $t("search.word_or_lemgram") }}</label>
+        <LemgramAutocomplete
+          v-if="settings.autocomplete"
+          count
+          :morphologies="corpusSelection.getMorphologies()"
+          :size="30"
+          v-model="lemgram"
+        />
+      </template>
+      <template v-else>
+        <label class="visually-hidden">{{ $t("search.word") }}</label>
+        <input type="text" v-model="lemgram.value" :size="30" class="form-control" />
+      </template>
 
       <!-- Search/save buttons -->
       <div class="btn-group">

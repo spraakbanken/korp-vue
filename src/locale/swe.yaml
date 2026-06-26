@@ -202,6 +202,7 @@ search.parallel.instructions: Bygg sökfrågor i ett eller flera språk genom at
 search.parallel.negative: innehåller inte
 search.parallel.remove_query: Ta bort sökfrågan för detta språk
 
+search.word: Ord
 search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
 search.and: och

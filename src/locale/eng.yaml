@@ -202,6 +202,7 @@ search.parallel.instructions: Build search queries in one or more languages by a
 search.parallel.negative: does not contain
 search.parallel.remove_query: Remove the query for this language
 
+search.word: Word
 search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 search.and: and
