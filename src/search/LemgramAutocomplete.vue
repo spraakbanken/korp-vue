@@ -17,6 +17,8 @@ const model = defineModel<LemgramAutocompleteModel>({ required: true })
 const props = defineProps<{
   count?: boolean
   morphologies?: string[]
+  /** Report as invalid if no autocompleted value is selected */
+  required?: boolean
   size?: number
 }>()
 
@@ -66,7 +68,7 @@ const loadSuggestions = debounceAsync(
 
 <template>
   <div>
-    <AutocompleteInput :loadSuggestions :size :valueToString v-model="input">
+    <AutocompleteInput :loadSuggestions :size :valueToString v-model="input" :required>
       <template v-slot:item="{ select, value }">
         <a
           class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"

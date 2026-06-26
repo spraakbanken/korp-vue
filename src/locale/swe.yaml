@@ -167,6 +167,8 @@ search.compare.search_right: Sökning höger
 search.compare.attribute: Sammanställ på
 search.compare.submit: Jämför
 
+search.autocomplete.required: Välj ett förslag från listan
+
 search.save.help: Spara sökfrågor för att kunna använda dem för jämförelser. Detta sparas i din aktuella webbläsare.
 search.save.save_as: Spara sökning som
 

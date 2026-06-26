@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
 import { Dropdown } from "bootstrap"
 import { useAsyncState, watchImmediate } from "@vueuse/core"
+import { useI18n } from "vue-i18n"
 
 export type Option<T> = { key: string; value: T }
 
@@ -9,9 +10,13 @@ const model = defineModel<string | T>({ required: true })
 
 const props = defineProps<{
   loadSuggestions: (input: string) => Promise<Option<T>[]>
+  /** Report as invalid if no autocompleted value is selected */
+  required?: boolean
   size?: number
   valueToString?: (value: string | T) => string
 }>()
+
+const { t } = useI18n()
 
 let dropdown: Dropdown | undefined
 /** String to show in input box: user input or stringified selected value */
@@ -39,6 +44,8 @@ async function onInput() {
   // Hide and show dropdown to trigger suggestions loading
   dropdown?.hide()
   dropdown?.show()
+  // If selection is required, report custom input as invalid
+  if (props.required) inputEl.value?.setCustomValidity(t("search.autocomplete.required"))
 }
 
 /** Handle selection of an option */
@@ -50,6 +57,8 @@ function select(value: T) {
   // Hide dropdown and focus input
   dropdown?.hide()
   inputEl.value?.focus()
+  // Set input as valid
+  inputEl.value?.setCustomValidity("")
 }
 
 /** Open menu and focus first item */
@@ -80,6 +89,7 @@ onUnmounted(() => {
       autocomplete="off"
       :size="size ?? 10"
       v-model="input"
+      :required
       class="form-control"
       data-bs-toggle="dropdown"
       @input="onInput()"

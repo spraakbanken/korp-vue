@@ -33,5 +33,6 @@ defineProps<WidgetProps<LemgramAutocompleteOptions>>()
     :count="options.variant != 'affix'"
     :morphologies="options.variant == 'dalin' ? ['dalinm'] : undefined"
     v-model="model"
+    required
   />
 </template>

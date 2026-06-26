@@ -70,7 +70,7 @@ const loadSuggestions = debounceAsync(
 
 <template>
   <div>
-    <AutocompleteInput :loadSuggestions :valueToString v-model="input">
+    <AutocompleteInput :loadSuggestions :valueToString v-model="input" required>
       <template v-slot:item="{ select, value }">
         <a
           class="dropdown-item d-flex align-items-baseline gap-2"
