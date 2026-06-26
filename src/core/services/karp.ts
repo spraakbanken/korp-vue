@@ -16,11 +16,14 @@ export type SaldoEntry = {
 
 /** Query for saldom resource to find all entries that have wf as a non-compound word form */
 const wfQuery = (wf: string) =>
-  `inflectionTable(and(equals|writtenForm|${wf}||not(equals|msd|c||equals|msd|ci||equals|msd|cm||equals|msd|sms)))`
+  `inflectionTable(and(equals|writtenForm|${escape(wf)}||not(equals|msd|c||equals|msd|ci||equals|msd|cm||equals|msd|sms)))`
 
 /** Create a query condition for a field matching any of several values */
 const equals = (field: string, values: string[]) =>
-  `or(${values.map((value) => `equals|${field}|${value}`).join("||")})`
+  `or(${values.map((value) => `equals|${field}|${escape(value)}`).join("||")})`
+
+/** Surround unsafe value with quotes and escape inner quotes */
+const escape = (str: string) => (/[|()"]/.test(str) ? `"${str.replace(/"/g, '\\"')}"` : str)
 
 /** Query lexicons in the Karp API */
 async function query<T>(lexicons: string[], q: string, path: string, params?: object) {
