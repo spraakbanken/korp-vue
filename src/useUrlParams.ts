@@ -31,7 +31,9 @@ export function useUrlParams() {
   watchUrl("global_filter", (value) => (value ? JSON.parse(atob(value)) : {}))
   watchUrl("hpp", (value) => (value && parseInt(value)) || settings["hits_per_page_default"])
   watchUrl("in_order", (value) => value != "false")
-  watchUrl("isCaseInsensitive", (value) => value != undefined)
+  watchUrl("isCaseInsensitive", (value) =>
+    settings["input_case_insensitive_default"] ? value != "false" : value != undefined,
+  )
   watchUrl("lang", (value) => value || settings["default_language"])
   watchUrl("page", (value) => (value ? parseInt(value) : 0))
   watchUrl("prefix", (value) => value != undefined || url.mid_comp != undefined)
@@ -70,7 +72,13 @@ export function useUrlParams() {
         : undefined
     url.hpp = store.hpp != settings["hits_per_page_default"] ? `${store.hpp}` : undefined
     url.in_order = store.in_order ? undefined : "false"
-    url.isCaseInsensitive = store.isCaseInsensitive ? "" : undefined
+    // Empty param if same as default, otherwise set to "" or "false"
+    url.isCaseInsensitive =
+      !!settings["input_case_insensitive_default"] == !!store.isCaseInsensitive
+        ? undefined
+        : store.isCaseInsensitive
+          ? ""
+          : "false"
     url.lang = store.lang != settings["default_language"] ? store.lang : undefined
     url.page = store.page == 0 ? undefined : `${store.page}`
     url.prefix = store.prefix ? "" : undefined

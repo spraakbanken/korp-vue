@@ -11,7 +11,7 @@ export const useAppStore = defineStore("app", () => {
   const global_filter = ref<Store["global_filter"]>({})
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
-  const isCaseInsensitive = ref(false)
+  const isCaseInsensitive = ref(settings["input_case_insensitive_default"])
   const lang = ref<string>()
   const page = ref(0)
   const prefix = ref(false)
