@@ -98,14 +98,12 @@ onUnmounted(() => {
     />
 
     <!-- Dropdown -->
-    <ul
-      class="dropdown-menu"
-      ref="menuEl"
-      :class="{ idnvisible: !isLoading && !state.length }"
-      style="min-width: 100%"
-    >
+    <ul class="dropdown-menu" ref="menuEl" style="min-width: 100%">
       <li v-if="isLoading" class="dropdown-item disabled">
         {{ $t("loading") }}
+      </li>
+      <li v-if="!isLoading && !state.length" class="dropdown-item disabled">
+        {{ $t("search.autocomplete.no_suggestions") }}
       </li>
       <li v-for="{ key, value } in state" :key>
         <slot name="item" v-bind="{ select, value }">

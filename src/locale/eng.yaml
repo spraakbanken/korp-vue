@@ -167,6 +167,7 @@ search.compare.search_right: Right-hand search
 search.compare.attribute: Group by
 search.compare.submit: Compare
 
+search.autocomplete.no_suggestions: No suggestions found
 search.autocomplete.required: Select a suggestion from the list
 
 search.save.help: Store search queries to use them for comparison. Data is saved to your current web browser.
