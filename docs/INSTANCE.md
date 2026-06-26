@@ -12,7 +12,7 @@ The basic requirements for making the app run are covered in
 
 The **instance plugin** is a Vue plugin
 that is installed to the app at initialization
-(see [ARCHITECTURE.md: Vue initialization](./ARCHITECTURE.md#vue-initialization)
+(see [ARCHITECTURE.md: Initialization](./ARCHITECTURE.md#initialization)
 and [Vue docs: Plugins](https://vuejs.org/guide/reusability/plugins)).
 
 The `instance/plugin.ts` file must not directly export a plugin.
@@ -35,7 +35,7 @@ The latter is fetched from the backend, and mainly documented in
 [Backend README](https://github.com/spraakbanken/korp-backend/blob/dev/README.md#corpus-configuration-for-the-korp-frontend).
 However, frontend-related parts of the corpus config are covered here.
 
-### Settings reference
+### Instance config reference
 
 > TODO Review, update
 
@@ -125,6 +125,73 @@ The first few settings are needed at initialization time, and thus must be speci
 - **word_picture_tagset** - See [Word picture](#word-picture)
 - **word_picture_conf** - See [Word picture](#word-picture)
 
+### Attribute config reference
+
+> TODO Review, update
+
+Corpora and their attributes are configured in the backend,
+but most of the available settings are frontend related.
+These are the available configuration parameters for attributes.
+
+The following settings are available for `pos_attributes` and `struct_attributes`:
+
+- **label**: Label to display wherever the attribute is shown.
+- **display_type**: Set to `hidden` to fetch attribute, but never show it in the frontend.
+  See `hide_sidebar`, `hide_statistics`, `hide_extended` and `hide_compare` for more control.
+- **extended_component**: For available components, see [extended components](#extended-components). For writing custom components, see [customizing extended search](#customizing-extended-search).
+- **external_search**: Link with placeholder for replacing value. Example `https://spraakbanken.gu.se/karp/#?search=extended%7C%7Cand%7Csense%7Cequals%7C<%= val %>`
+- **group_by**: Set to either `group_by` or `group_by_struct`. Should only be needed for attributes with `is_struct_attr: true`.
+  Those attributes are by default sent as `group_by_struct` in the statistics, but can be overridden here.
+- **hide_sidebar**: `boolean`. Default `false`. Hide attribute in sidebar.
+- **hide_statistics**: `boolean`. Default: `false`. Should it be possible to compile statistics based on this attribute?
+- **hide_extended**: `boolean`. Default: `false`. Should it be possible to search using this attribute in extended?
+- **hide_compare**: `boolean`. Default: `false`. Should it be possible to compare searches using this attribute?
+- **internal_search**: `boolean`. Should the value be displayed as a link to a new Korp search? Only works for sets.
+  Searches for CQP-expression: `[<attrName> contains "<regescape(attrValue)>"]`
+- **is_struct_attr**: `boolean`.
+  If `true`, the attribute will appear as a word-level attribute, but be used with the backend as a structural attribute.
+  Useful for structural attributes that extend to smaller portions of the text than the selected context, such as name tagging.
+- **opts**: Operators available in the query builder. See [Operators](#operators).
+- **order**: Order of attribute in the sidebar. Attributes with a lower `order`-value will be placed above attributes
+  with a higher `order`-value.
+- **pattern**: HTML snippet with placeholders for replacing values. Available is `key` (attribute name) and `value`.
+  Also works for sets. Example: `'<p style="margin-left: 5px;"><%=val.toLowerCase()%></p>'`
+- **sidebar_component**: See [Customizing sidebar](#customizing-sidebar).
+- **sidebar_info_url**: `string` (URL). If defined and non-empty, add an info symbol ⓘ for the attribute in the
+  sidebar, linking to the given URL. This can be used to link to an explanation page for morphosyntactic tags, for example.
+- **sidebar_hide_label**: `boolean`. If `true`, do not show the localized attribute label and the colon following it in the
+  sidebar, only the attribute value. This can be used, for example, if the `pattern` for the attribute includes the label but
+  the label should be shown in the attribute lists of the extended search or statistics.
+- **stats_cqp**: See [Rendering attribute values in the statistics view](#rendering-attribute-values-in-the-statistics-view).
+- **stats_stringify**: See [Rendering attribute values in the statistics view](#rendering-attribute-values-in-the-statistics-view).
+- **stringify**: `string`. The key of a function in `<configDir>/custom/stringify.js`, used to render values in the sidebar and comparison results.
+- **translation**: An object containing translations of possible values of the attribute, in this format:
+  ```yaml
+  ROOT:
+    eng: Root
+    swe: Rot
+  ++:
+    eng: Coordinating conjunction
+    swe: Samordnande konjunktion
+  +A:
+    eng: Conjunctional adverbial
+    swe: Konjuktionellt adverb
+  ```
+  This replaces value-translation in the translation-files, and also the old attribute `translationKey`.
+- **type**: Possible values:
+  - `set` - The attribute is formatted as "|value1|value2|". Include contains and not contains in `opts`.
+    In the sidebar, the value will be split before formatted. When using compile / `groupby` on a "set"
+    attribute in a statistics request, it will be added to `split`.
+  - `url` - The value will be rendered as a link to the URL and possibly truncated if too long.
+
+#### Custom attributes
+
+Custom attributes are attributes that do not correspond to an attribute / annotation in the backend. They are mainly used to present information in the sidebar that combines values from other attributes.
+
+- **custom_attributes**: creates fields in the sidebar that have no corresponding attribute in the backend. Useful for combining two different attributes. All settings concerning sidebar format for normal attributes apply in addition to:
+  - **custom_type**: `"struct"` / `"pos"` - decides if the attribute should be grouped under word attributes or text attributes.
+  - **pattern**: Same as pattern for normal attributes, but `struct_attrs` and `pos_attrs` also available. Example: `'<p style="margin-left: 5px;"><%=struct_attrs.text_title - struct_attrs.text_description%></p>'`
+
 ### Configuring features
 
 This section aims to add context to some of the settings.
@@ -147,6 +214,93 @@ The button shows automatically if the attributes are present. To prevent this:
 ```yaml
 deptree:
   hidden: true
+```
+
+#### Word picture
+
+The word picture config object looks like this:
+
+```yaml
+word_picture_conf:
+  pos_tag:
+    - table_def1
+    - table_def2
+  # ...
+```
+
+where `table_defX` is an array of objects that describe the resulting word picture table.
+`table_def1` above might look like this:
+
+```yaml
+- rel: subject
+  color: "#d0d7f0"
+- _
+- rel: object
+  color: "#f7d1e4"
+- rel: adverbial
+  color: "#edfcd5"
+```
+
+The `_` refers to the placement of the lookup word in the table order.
+The value for `rel` refers to a key in `word_picture_tagset` looking like this:
+
+```yaml
+word_picture_tagset:
+  subject: ss
+  object: obj
+  adverbial: adv
+  preposition_rel: pa
+  pre_modifier: at
+  post_modifier: et
+  adverbial2: aa
+  # ...
+```
+
+The values are the actual relations returned by the backend.
+The relation used is determined by `field_reverse` in the column def.
+If `field_reverse` is `false` (default), `dep` is used, else `head`.
+If you find yourself with a table full of the search word just flip the `field_reverse` switch.
+
+`color` determines the background color of the column.
+The last supported attribute is `alt_label`,
+used for when another value than the relation name should be used for the table header.
+
+#### Map
+
+Korp's map uses annotations to get locations.
+The user selects rows from the statistics table, and map markers derived from different rows will have different colors.
+The selected corpora must have structural attributes with location data in them.
+The format is `Fukuoka;JP;33.6;130.41667`
+
+- the location name, country, latitude and longitude separated by `;`.
+
+Also the name of the attribute must contain `"__"` and `"geo"` to show up in the list of supported attributes.
+
+- `map_enabled` - Boolean. Enable/disable the map functionality.
+- `map_center` - Where the center of the map should be located when user opens map. Example:
+
+```yaml
+map_center:
+  lat: 62.99515845212052
+  lng: 16.69921875
+  zoom: 4
+```
+
+#### News widget
+
+By setting `news_url`, the news widget is enabled.
+The widget simply fetches a YAML file from the given URL.
+A short example of such a file,
+including only one news item with its title and body in two languages and a date:
+
+```yaml
+- title:
+    swe: "Ny korpus: Tvåkammarriksdagen"
+    eng: "New corpus: Tvåkammarriksdagen"
+  body:
+    swe: <p><a href="...">Tvåkammarriksdagen</a> finns nu i Korp.</p>
+    eng: <p><a href="...">Tvåkammarriksdagen</a> is now available in Korp.</p>
+  created: 2023-11-30
 ```
 
 #### Date interval widget
@@ -394,7 +548,8 @@ A **stringifier** formats an attribute value string as HTML.
 It is used by the default formatter for the sidebar,
 but also in other result views like the statistics and comparison.
 
-Please make sure it cannot contain harmful markup that could expose you to XSS attacks.
+Please make sure you can trust that the output doesn't contain any harmful markup,
+or otherwise escape or filter the data.
 The default stringifier escapes any HTML in the value string.
 
 ### Widgets
