@@ -83,7 +83,7 @@ Take a look at [korp-vue-sb/plugin.ts](https://github.com/spraakbanken/korp-vue-
 
 This section outlines the application workflow from a technical perspective.
 
-### Vue initialization
+### Initialization
 
 In `main.ts`, the Vue app is created and mounted. See [Vue docs on Creating an Application](https://vuejs.org/guide/essentials/application.html).
 
@@ -92,11 +92,9 @@ In `main.ts`, the Vue app is created and mounted. See [Vue docs on Creating an A
 3. The Vue-I18n plugin is installed using configured **languages**
 4. The Matomo plugin is installed if configured
 5. The **instance plugin** installed with the mode passed as a parameter
-6. Finally, the app is mounted
+6. Finally, the app root component `App.vue` is mounted
 
-### App initialization
-
-The root component `App.vue` starts off with an animation to indicate that the app is loading.
+The root component first just shows an animation to indicate that the app is loading.
 It immediately calls `init()` of the `useInit` composable, wherein:
 
 1. The configured **authentication module** is loaded and checks if the user is logged in
@@ -110,6 +108,8 @@ Once this is done, the animation is replaced with the main **page layout**:
 - The page header with navigation and the search panel
 - The main section with the frontpage, later replaced by the result panel
 - The page footer
+
+> TODO Corpus selection validation, initial search, time data response?
 
 ### State
 
@@ -168,6 +168,12 @@ Store[App store/URL] <--> Filters
 Store -- submit --> Search[Search store: active search]
 ```
 
+The available filter values must be fetched from the backend,
+so the filter UI is not available immediately after initialization.
+However, if the initial URL/store contains a filter selection,
+it is assumed to be valid,
+so the initial search doesn't have to wait for the filter values to load.
+
 #### Parallel mode
 
 In parallel mode, there is just a variant of the Extended component, with multiple queries in different languages.
@@ -198,6 +204,26 @@ Others just modify the display (e.g. relative frequencies in Statistics).
 A conceptual distinction is made where _search options_ can affect the set of results,
 while _result options_ only may affect what information is (retrieved and) shown for those results.
 
+#### KWIC
+
+Clicking a token in the KWIC result sets the **selected token**.
+This is a ref that is provided by the KWIC container
+and then used in the **KWIC sidebar** to display data of the token and its context.
+
+When the **sort** option is set to **random**, a seed is randomized and added to the store/URL.
+Thus, reloading the page reproduces the same result order.
+After the initial search, however, submitting a new search causes a new seed to be generated.
+
+#### Statistics
+
+The statistics response is processed to merged rows where values differ only by rank suffix.
+This happens in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API), `@/core/statistics/statisticsWorker`,
+to avoid freezing the main thread.
+
+The table can get very large, and it is shown in a grid that only renders the content of the current scroll viewport.
+
+#### Word picture
+
 #### Dynamic result tabs
 
 Some features trigger new types of results, in **dynamic tabs** that can be closed again.
@@ -216,6 +242,16 @@ Unlike fixed tabs, dynamic tabs are not dependent on the active search.
 Instead, they base their backend request on data provided in the task object
 (and possibly result options or app state).
 
+##### Trend graph
+
+##### Map
+
+##### Example KWIC
+
+##### Word picture example KWIC
+
+##### Reading mode
+
 ### Comparison
 
 The comparison feature is special in that it has its own search component,
@@ -228,6 +264,26 @@ which in turn uses the browser's `localStorage` to persist data across visits.
 In the Compare search component,
 the user can then choose two saved queries.
 Submitting the form creates a task and a dynamic tab.
+
+## Concepts
+
+### Corpus listing and selection
+
+Initial validation.
+
+Sync flow: Store, selector, corpusSelection.
+
+### Assets (images etc)
+
+### Code splitting
+
+### CQP Parser
+
+### Errors
+
+### Icons
+
+### Modal dialog
 
 ## Tests
 
