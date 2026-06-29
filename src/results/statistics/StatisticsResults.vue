@@ -17,7 +17,7 @@ import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { TrendTask } from "@/core/task/TrendTask"
 import { MapTask } from "@/core/task/MapTask"
-import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
+import { type MapAttributeOption } from "@/core/statistics/map"
 import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
@@ -54,8 +54,6 @@ const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
 const isDated = ref(false)
-/** List of map-compatible attributes in the searched corpus set */
-const mapAttributes = ref<MapAttributeOption[]>([])
 const unsupportedRatio = ref(0)
 const unsupportedAttributes = ref<AttributeOption[]>([])
 const rawResponse = ref<CountResponse>()
@@ -108,7 +106,6 @@ async function doSearch() {
       setError(error)
     }
     data.value = undefined
-    mapAttributes.value = []
     return
   }
 
@@ -128,7 +125,6 @@ async function doSearch() {
 
   rawResponse.value = proxy.getResponse()
   isDated.value = !!corpora.getTimeInterval()
-  mapAttributes.value = getGeoAttributes(corpora.corpora)
   unsupportedRatio.value = proxy.unsupportedRatio
   unsupportedAttributes.value = proxy.unsupportedAttributes
 }
@@ -146,7 +142,7 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
   const cqps = [cqp.value]
   if (subcqp) cqps.push(subcqp)
 
-  const within = proxy.getParams().default_within
+  const within = proxy.getParams()?.default_within
   const task = new ExampleTask(corpusIds, cqps, within)
   createTab(t("result.kwic"), task)
   matomo.value?.trackEvent("Statistics", "Subsearch")
@@ -171,7 +167,7 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
   const task = new MapTask(
     cqp.value,
     subqueries,
-    attribute.label,
+    attribute.name,
     attribute.corpora,
     withinSearched!,
     relative,
@@ -249,7 +245,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </button>
 
       <!-- Map button -->
-      <MapButton :attributes="mapAttributes" :disabled="!rowsSelected.length" @open="openMapTab" />
+      <MapButton :disabled="!rowsSelected.length" @open="openMapTab" />
     </div>
 
     <div v-if="unsupportedRatio" class="alert alert-info my-0">

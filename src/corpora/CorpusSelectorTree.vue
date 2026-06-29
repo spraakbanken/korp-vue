@@ -50,6 +50,7 @@ function updateCheckboxes() {
       folder.selected = "none"
     }
     // Set expanded status on first run, when it's still undefined, so partially selected folders are expanded by default
+    // TODO Broken: Have partially selected folders extended by default
     if (folder.expanded === undefined) folder.expanded = folder.selected == "some"
   })
   // Then the corpora

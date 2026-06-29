@@ -79,7 +79,9 @@ export type Point = {
 }
 
 export type MapAttributeOption = {
-  label: string
+  /** Name of geo attribute */
+  name: string
+  /** Subset of selected corpora having this attribute */
   corpora: string[]
 }
 
@@ -92,7 +94,7 @@ export function getGeoAttributes(corpora: Corpus[]) {
           attrs[attr].corpora.push(corpus.id)
         } else {
           attrs[attr] = {
-            label: attr,
+            name: attr,
             corpora: [corpus.id],
           }
         }

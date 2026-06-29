@@ -62,6 +62,7 @@ watch(isVisible, () => {
 </template>
 
 <style scoped>
+/* TODO Dark mode */
 svg:deep(*) {
   font-size: inherit;
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, useTemplateRef, watchEffect } from "vue"
+import { computed, ref, useTemplateRef, watchEffect } from "vue"
 import { Dropdown } from "bootstrap"
-import type { MapAttributeOption } from "@/core/statistics/map"
+import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import HelpBadge from "@/components/HelpBadge.vue"
+import useSearchStore from "@/search/useSearchStore"
+import { storeToRefs } from "pinia"
 
-const props = defineProps<{
-  /** Names of map-compatible attributes (private, no config available) */
-  attributes: MapAttributeOption[]
+defineProps<{
   disabled?: boolean
 }>()
 
@@ -14,18 +14,29 @@ const emit = defineEmits<{
   (e: "open", attribute: MapAttributeOption, relative: boolean): void
 }>()
 
+const { activeSearch } = storeToRefs(useSearchStore())
+
 const dropdownEl = useTemplateRef("dropdown")
 const relative = ref(true)
-const selected = ref(props.attributes[0]!)
+/** Attribute name of selected option */
+const selected = ref<string>()
+
+/** List of map-compatible attributes in the searched corpus set */
+const options = computed<MapAttributeOption[]>(() =>
+  getGeoAttributes(activeSearch.value?.corpora.corpora || []),
+)
 
 watchEffect(() => {
   // Reset selection if list is changed
-  if (!props.attributes.includes(selected.value)) selected.value = props.attributes[0]!
+  if (!selected.value || !options.value.find((option) => option.name == selected.value))
+    selected.value = options.value[0]?.name || undefined
 })
 
 // Save and close dropdown
 function confirm() {
-  emit("open", selected.value, relative.value)
+  const option = options.value.find((option) => option.name == selected.value)
+  if (!option) return
+  emit("open", option, relative.value)
   Dropdown.getOrCreateInstance(dropdownEl.value!).hide()
 }
 </script>
@@ -38,7 +49,7 @@ function confirm() {
     data-bs-toggle="dropdown"
     data-bs-auto-close="outside"
     aria-expanded="false"
-    :disabled="disabled || !attributes.length"
+    :disabled="disabled || !options.length"
   >
     <fa-icon icon="fa-solid fa-earth-africa" />
     {{ $t("result.map") }}
@@ -52,16 +63,16 @@ function confirm() {
 
       <div class="card-body">
         <!-- Attribute options -->
-        <div v-for="attribute in attributes" :key="attribute.label" class="form-check">
+        <div v-for="attribute in options" :key="attribute.name" class="form-check">
           <input
             type="radio"
-            :id="attribute.label"
+            :id="attribute.name"
             v-model="selected"
-            :value="attribute"
+            :value="attribute.name"
             class="form-check-input"
           />
-          <label class="form-check-label" :for="attribute.label">
-            {{ $t(`result.map.attribute.${attribute.label}`) }}
+          <label class="form-check-label" :for="attribute.name">
+            {{ $t(`result.map.attribute.${attribute.name}`) }}
           </label>
         </div>
       </div>
@@ -75,7 +86,12 @@ function confirm() {
           </label>
         </div>
         <div class="flex-grow-1"></div>
-        <input type="submit" class="btn btn-primary btn-sm" :value="$t('result.map.confirm')" />
+        <input
+          type="submit"
+          class="btn btn-primary btn-sm"
+          :value="$t('result.map.confirm')"
+          :disabled="!selected"
+        />
       </div>
     </form>
   </div>
