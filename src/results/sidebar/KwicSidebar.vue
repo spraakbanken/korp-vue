@@ -112,7 +112,7 @@ function openReadingMode() {
       </div>
 
       <div class="accordion accordion-flush border-top border-bottom">
-        <div v-if="isKwic(selectedToken.row)" class="accordion-item">
+        <div v-if="isKwic(selectedToken.row) && structAttributes.length" class="accordion-item">
           <h2 class="accordion-header">
             <button
               class="accordion-button"
@@ -141,7 +141,7 @@ function openReadingMode() {
           </div>
         </div>
 
-        <div class="accordion-item">
+        <div v-if="posAttributes.length" class="accordion-item">
           <h2 class="accordion-header">
             <button
               class="accordion-button"

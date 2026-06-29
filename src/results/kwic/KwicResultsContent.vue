@@ -35,6 +35,7 @@ watchImmediate(
   () => props.kwic,
   () => {
     // Select first match token
+    // TODO Only when first page changes, not while rest of result is loading
     const row = props.kwic?.find(isKwic)
     if (!row) return
     const match = [row.match].flat()[0]!

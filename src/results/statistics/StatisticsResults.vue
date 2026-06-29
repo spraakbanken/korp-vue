@@ -245,7 +245,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </button>
 
       <!-- Map button -->
-      <MapButton :disabled="!rowsSelected.length" @open="openMapTab" />
+      <MapButton v-if="settings.map_enabled" :disabled="!rowsSelected.length" @open="openMapTab" />
     </div>
 
     <div v-if="unsupportedRatio" class="alert alert-info my-0">

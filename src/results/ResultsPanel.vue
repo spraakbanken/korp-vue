@@ -14,6 +14,7 @@ import { TrendTask } from "@/core/task/TrendTask"
 import { MapTask } from "@/core/task/MapTask"
 import TabProgressBar from "./TabProgressBar.vue"
 import { TextTask } from "@/core/task/TextTask"
+import settings from "@/core/config/index.ts"
 
 const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
 const ExampleResults = defineAsyncComponent(() => import("./kwic/ExampleResults.vue"))
@@ -28,11 +29,12 @@ type TabId = FixedTabId | DynamicTabId
 type FixedTabId = number
 type DynamicTabId = string
 
-const FIXED_TABS = [
-  { key: 1, name: "kwic" },
-  { key: 2, name: "statistics" },
-  { key: 3, name: "wordpic" },
-]
+const statisticsEnabled = settings.statistics ?? true
+const wordpicEnabled = settings.word_picture ?? true
+
+const FIXED_TABS = [{ key: 1, name: "kwic" }]
+if (statisticsEnabled) FIXED_TABS.push({ key: 2, name: "statistics" })
+if (wordpicEnabled) FIXED_TABS.push({ key: 3, name: "wordpic" })
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
@@ -157,6 +159,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
       </div>
 
       <div
+        v-if="statisticsEnabled"
         class="tab-pane"
         :class="{ 'show active': currentTab == 2 }"
         id="result-tabs-pane-statistics"
@@ -168,6 +171,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
       </div>
 
       <div
+        v-if="wordpicEnabled"
         class="tab-pane"
         :class="{ 'show active': currentTab == 3 }"
         id="result-tabs-pane-wordpic"

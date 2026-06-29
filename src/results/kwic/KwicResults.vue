@@ -180,6 +180,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
+    <!-- TODO Only fade (gray out) until first page has loaded? -->
     <KwicResultsContent
       v-else
       :corpora="activeSearch?.corpora"
