@@ -22,3 +22,12 @@ h6 {
 .alert {
   max-width: 50rem;
 }
+
+// Bootstrap 5 has start/end in class names but still uses left/right for the rules.
+// This means missing out on automatic LTR. Bootstrap 6 will fix this.
+.text-start {
+  text-align: start !important;
+}
+.text-end {
+  text-align: end !important;
+}

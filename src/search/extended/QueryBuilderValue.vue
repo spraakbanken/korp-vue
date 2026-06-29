@@ -4,7 +4,7 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { injectionKeys } from "@/injection"
 import { computed, inject, useId } from "vue"
 import DefaultWidget from "./widgets/DefaultWidget.vue"
-import { getConfigurable } from "@/core/config"
+import settings, { getConfigurable } from "@/core/config"
 import LemgramAutocompleteWidget from "./widgets/LemgramAutocompleteWidget.vue"
 import type { MaybeConfigurable } from "@/core/config/config.types"
 import DatasetSelectWidget from "./widgets/DatasetSelectWidget.vue"
@@ -60,7 +60,10 @@ const widgets: Record<string, MaybeConfigurable<Widget>> = {
 /** The computed widget to use */
 const widget = computed<Widget>(() => {
   if (props.attribute.name == "word")
-    return { component: DefaultWidget, options: { placeholder: t("search.extended.any_word") } }
+    return {
+      component: DefaultWidget,
+      options: { placeholder: t("search.extended.any_word"), dir: settings.dir },
+    }
 
   const def = props.attribute.extended_component
   return (def && getConfigurable(widgets, def)) || { component: DefaultWidget }

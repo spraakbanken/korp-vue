@@ -111,7 +111,13 @@ function submit() {
       </template>
       <template v-else>
         <label class="visually-hidden">{{ $t("search.word") }}</label>
-        <input type="text" v-model="lemgram.value" :size="30" class="form-control" />
+        <input
+          type="text"
+          v-model="lemgram.value"
+          :size="30"
+          class="form-control"
+          :dir="settings.dir"
+        />
       </template>
 
       <!-- Search/save buttons -->

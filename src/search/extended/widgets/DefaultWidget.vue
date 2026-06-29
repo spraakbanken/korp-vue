@@ -6,6 +6,8 @@ import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 export type DefaultWidgetOptions = {
   /** Set to true to skip the case-sensitivity toggle */
   case_sensitive?: boolean
+  /** Writing direction: "rtl" or "ltr" (default) */
+  dir?: string
   placeholder?: string
 }
 
@@ -38,6 +40,7 @@ onUnmounted(() => {
     <input
       type="text"
       v-model="model"
+      :dir="options.dir"
       size="10"
       class="form-control"
       :placeholder="options.placeholder"

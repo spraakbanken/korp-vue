@@ -6,6 +6,7 @@ import { watchImmediate } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
 import vScrollToTarget from "@/components/vScrollToTarget"
 import KwicRowLinked from "./KwicRowLinked.vue"
+import settings from "@/core/config/index.ts"
 
 const props = defineProps<{ data: Row[] }>()
 
@@ -32,8 +33,8 @@ watchImmediate(
             </td>
           </tr>
 
-          <KwicRow v-if="isKwic(row)" :row />
-          <KwicRowLinked v-if="isLinkedKwic(row)" :row />
+          <KwicRow v-if="isKwic(row)" :row :dir="settings.dir" />
+          <KwicRowLinked v-if="isLinkedKwic(row)" :row :dir="settings.dir" />
         </template>
       </tbody>
     </table>
