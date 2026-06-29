@@ -214,6 +214,9 @@ When the **sort** option is set to **random**, a seed is randomized and added to
 Thus, reloading the page reproduces the same result order.
 After the initial search, however, submitting a new search causes a new seed to be generated.
 
+If the corpus supports it,
+a button in the sidebar will open a dynamic _Reading mode_ tab with the full document text.
+
 #### Statistics
 
 The statistics response is processed to merged rows where values differ only by rank suffix.
@@ -222,7 +225,26 @@ to avoid freezing the main thread.
 
 The table can get very large, and it is shown in a grid that only renders the content of the current scroll viewport.
 
+Clicking an attribute-value cell opens a dynamic _Example KWIC_ tab for the occurrences of that row.
+Clicking a frequency value cell opens occurrences of that cell.
+
+If rows are selected using the checkbox column,
+and there are attributes in the corpora to support it,
+the _Trend graph_ and _Map_ buttons can be used to open corresponding dynamic tabs.
+
 #### Word picture
+
+In code, we prefer the term _wordpic_ for simplicity.
+
+The `relations` backend command returns a list of relation objects.
+These are restructured as a multi-dimensional list ordered by
+_sections_ (word + POS), tables and columns.
+
+Clicking a related word opens a dynamic _Word picture example KWIC_ tab for that relation.
+Such a result set cannot be captured by CQP queries,
+so text sources behind relations are encoded in the backend database.
+This requires different code than the normal Example KWIC,
+but the result display is the same.
 
 #### Dynamic result tabs
 
@@ -242,15 +264,63 @@ Unlike fixed tabs, dynamic tabs are not dependent on the active search.
 Instead, they base their backend request on data provided in the task object
 (and possibly result options or app state).
 
+An overview of which result tabs can open other tabs:
+
+```mermaid
+flowchart LR
+
+subgraph Searching
+  Search
+  Compare
+end
+
+subgraph Fixed result tabs
+  Search --> KWIC
+  Search --> Statistics
+  Search --> Wordpic
+end
+
+subgraph Dynamic result tabs
+  KWIC --> Text
+  Statistics --> Example --> Text
+  Statistics --> Trend --> Example
+  Statistics --> Map --> Example
+  Wordpic --> Example
+  Compare --> Comparison
+  Comparison --> Example
+end
+```
+
 ##### Trend graph
+
+The trend graph uses the `count_time` command to get frequencies by time period.
+It uses the Chart.js library to show an interactive line/bar chart.
+
+Clicking a time point opens a dynamic _Example KWIC_ tab with results for that time point.
 
 ##### Map
 
+The map uses the `count` backend endpoint, just like statistics,
+but with specific parameters and response handling.
+
+Clicking a marker's info box opens a dynamic _Example KWIC_ tab with results for that location.
+
 ##### Example KWIC
 
-##### Word picture example KWIC
+The Example KWIC tab behaves much like the fixed KWIC tab.
+Most notably, the result options are fewer.
 
 ##### Reading mode
+
+In code, we prefer the term `Text` for simplicity.
+
+This uses the `query` command, like the KWIC results,
+but retrieves only a single row with all tokens of a given text ID.
+Tokens are displayed with reconstructed surrounding whitespace.
+
+The backend request is slow, and we generally recommend the
+[Strix](https://spraakbanken.gu.se/en/tools/strix) platform
+for document-scope corpus research.
 
 ### Comparison
 
@@ -264,6 +334,8 @@ which in turn uses the browser's `localStorage` to persist data across visits.
 In the Compare search component,
 the user can then choose two saved queries.
 Submitting the form creates a task and a dynamic tab.
+
+Clicking a value opens a dynamic _Example KWIC_ tab with the occurrences of that value.
 
 ## Concepts
 
