@@ -25,8 +25,8 @@ const attributes = computed(() => corpusSelection.getAttributeGroupsStatistics()
 const optionsGrouped = computed(
   () => groupBy(attributes.value, "group") as Record<AttributeOption["group"], AttributeOption[]>,
 )
-const selectedLocal = reactive(new Set<string>(...model.value.selected))
-const insensitiveLocal = reactive(new Set<string>(...model.value.insensitive))
+const selectedLocal = reactive(new Set<string>(model.value.selected))
+const insensitiveLocal = reactive(new Set<string>(model.value.insensitive))
 
 const selectedAttributes = computed(() =>
   compact(

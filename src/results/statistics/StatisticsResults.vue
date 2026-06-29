@@ -67,17 +67,17 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
+watchEffect(() => {
+  attributesSelected.value = {
+    selected: store.stats_reduce ? store.stats_reduce.split(",") : ["word"],
+    insensitive: store.stats_reduce_insensitive ? store.stats_reduce_insensitive.split(",") : [],
+  }
+})
+
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())
 
 watchDeep(attributesSelected, () => onOptionsChange())
-
-watchEffect(() => {
-  attributesSelected.value = {
-    selected: store.stats_reduce.split(","),
-    insensitive: store.stats_reduce_insensitive.split(","),
-  }
-})
 
 async function doSearch() {
   // Empty search is possible when doing comparison first
