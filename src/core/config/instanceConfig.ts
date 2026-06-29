@@ -13,14 +13,6 @@ export function getInstanceConfig(): InstanceConfig {
   settings["backendURLMaxLength"] ??= 8100
   settings["default_language"] ??= "eng"
   settings["default_options"] ??= { is: "=", is_not: "!=" }
-  // codes for translation ISO-639-1 to 639-2
-  settings["iso_languages"] ??= {
-    en: "eng",
-    sv: "swe",
-    fi: "fin",
-    da: "dan",
-    no: "nor",
-  }
   settings["cqp_prio"] ??= ["deprel", "pos", "msd", "suffix", "prefix", "lemma", "lex", "word"]
   settings["word_label"] ??= { swe: "ord", eng: "word" }
   settings["visible_modes"] ??= 6
