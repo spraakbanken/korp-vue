@@ -274,6 +274,9 @@ result.statistics.distributions.title: Fördelning över korpusar
 result.statistics.group_by: Sammanställ på
 result.statistics.relative: Visa relativa frekvenser
 result.statistics.relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
+result.statistics.row_count: "Rader: {count}"
+result.statistics.row_count.limited: (mest förekommande)
+result.statistics.row_count.limited.help: Det totala antalet rader var större, men de minst förekommande har tagits bort av prestandaskäl.
 result.statistics.total: Total
 result.statistics.map: Karta
 result.statistics.trend: Trenddiagram

@@ -54,6 +54,7 @@ const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
 const isDated = ref(false)
+const isLimited = ref(false)
 const unsupportedRatio = ref(0)
 const unsupportedAttributes = ref<AttributeOption[]>([])
 const rawResponse = ref<CountResponse>()
@@ -125,6 +126,7 @@ async function doSearch() {
 
   rawResponse.value = proxy.getResponse()
   isDated.value = !!corpora.getTimeInterval()
+  isLimited.value = !!settings["statistics_limit"] && counts.combined.rows.length < counts.count
   unsupportedRatio.value = proxy.unsupportedRatio
   unsupportedAttributes.value = proxy.unsupportedAttributes
 }
@@ -246,6 +248,16 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
       <!-- Map button -->
       <MapButton v-if="settings.map_enabled" :disabled="!rowsSelected.length" @open="openMapTab" />
+    </div>
+
+    <div v-if="data">
+      <!-- Do not count the totals row -->
+      {{ $t("result.statistics.row_count", data.rows.length - 1) }}
+
+      <span v-if="isLimited">
+        {{ $t("result.statistics.row_count.limited") }}
+        <HelpBadge :text="$t('result.statistics.row_count.limited.help')" />
+      </span>
     </div>
 
     <div v-if="unsupportedRatio" class="alert alert-info my-0">

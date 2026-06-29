@@ -274,6 +274,9 @@ result.statistics.distributions.title: Distribution across corpora
 result.statistics.group_by: Group by
 result.statistics.relative: Show relative frequencies
 result.statistics.relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
+result.statistics.row_count: "Rows: {count}"
+result.statistics.row_count.limited: (most frequent)
+result.statistics.row_count.limited.help: The total number of rows was larger, but the least frequent rows were skipped for better performance.
 result.statistics.total: Total
 result.statistics.map: Map
 result.statistics.trend: Trend graph
