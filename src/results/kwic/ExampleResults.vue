@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { storeToRefs } from "pinia"
 import { onMounted, ref, watch } from "vue"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import { debounce } from "lodash-es"
@@ -21,7 +20,7 @@ const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
-const { hpp } = storeToRefs(store)
+const hpp = store.hpp
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
 const context = ref(props.task.isReadingInit || store.reading_mode)
 const distribution = ref<HitsDistribution[]>()
@@ -41,7 +40,7 @@ async function doSearch(reuseCounts = false) {
 
   let response: QueryData
   try {
-    response = await props.task.send(page.value - 1, hpp.value, reuseCounts, context.value)
+    response = await props.task.send(page.value - 1, hpp, reuseCounts, context.value)
     progress.value = 100
   } catch (error) {
     progress.value = undefined

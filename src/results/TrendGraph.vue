@@ -19,7 +19,7 @@ import { type Moment } from "moment"
 import { computed, reactive, useId, watchEffect } from "vue"
 import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { useDark, watchImmediate } from "@vueuse/core"
+import { useDark } from "@vueuse/core"
 import { TrendChart } from "./TrendChart"
 import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
 

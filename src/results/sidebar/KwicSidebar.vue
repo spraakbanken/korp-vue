@@ -84,6 +84,7 @@ function openReadingMode() {
           />
         </header>
 
+        <!-- TODO Hide if this is already a Text tab -->
         <button
           v-if="corpus.reading_mode"
           type="button"
