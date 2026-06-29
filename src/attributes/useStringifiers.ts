@@ -23,7 +23,13 @@ export function useStringifiers() {
   /** Get default or custom stringifier for the given attribute */
   function getStringifier(attribute: Attribute): Stringifier {
     // Use custom stringifier if configured for this attribute
-    if (customStringifiers[attribute.name]) return customStringifiers[attribute.name]!
+    if (attribute.stringify) {
+      if (customStringifiers[attribute.stringify]) return customStringifiers[attribute.stringify]
+      else
+        console.warn(
+          `Custom stringifier ${attribute.stringify} not found for attribute ${attribute.name}`,
+        )
+    }
     // Otherwise use default stringifier
     return getDefaultStringifier(attribute)
   }
