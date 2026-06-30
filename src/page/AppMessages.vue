@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 /** Shows messages from the message store in fixed position on top of the page */
 import { storeToRefs } from "pinia"
-import useMessageStore, { type Severity } from "./store/useMessageStore"
+import useMessageStore, { type Severity } from "@/store/useMessageStore"
 
 const messageStore = useMessageStore()
 const { messages } = storeToRefs(messageStore)

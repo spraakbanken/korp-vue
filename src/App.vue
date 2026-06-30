@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import HeaderSection from "@/page/header/HeaderSection.vue"
-import MainSection from "@/MainSection.vue"
-import AppFooter from "./AppFooter.vue"
-import AppMessages from "./AppMessages.vue"
-import useMessageStore from "./store/useMessageStore"
-import useInit from "./useInit"
+import MainSection from "@/page/MainSection.vue"
+import AppFooter from "@/page/AppFooter.vue"
+import AppMessages from "@/page/AppMessages.vue"
+import useMessageStore from "@/store/useMessageStore"
+import useInit from "@/useInit"
 import { useMatomo } from "vue3-matomo"
-import currentMode from "./core/corpora/mode"
-import AppSplash from "./AppSplash.vue"
+import currentMode from "@/core/corpora/mode"
+import AppSplash from "@/page/AppSplash.vue"
 
 const messageStore = useMessageStore()
 const matomo = useMatomo()
@@ -34,6 +34,7 @@ window.addEventListener("error", (event) => {
     <MainSection class="flex-grow-1" />
     <AppFooter />
   </template>
+  <!-- TODO Show splash also in index.html before app is mounted? -->
   <AppSplash v-else />
   <AppMessages />
 </template>
