@@ -1,10 +1,10 @@
-// Detect dark/light mode automatically
-$color-mode-type: media-query;
-
 // Bootstrap's default values are set with `!default`, so we can replace them by assigning custom values before importing them.
 // This however means we cannot use other variables, like `$body-color`, because they are not defined yet.
 
-$font-family-base: "Source Sans Pro", Helvetica, Arial, Verdana, sans-serif;
+// Detect dark/light mode automatically
+$color-mode-type: media-query;
+
+$font-family-base: sans-serif;
 
 // Override minimum contrast level for Bootstrap's automatic text color calculation against a given background color.
 // Bootstrap's algorithm seems to fall short for some colors, including our primary and secondary.

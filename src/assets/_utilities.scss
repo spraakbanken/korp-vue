@@ -19,6 +19,10 @@
   }
 }
 
+.btn {
+  font-weight: 600;
+}
+
 // Max-width by breakpoint: fluid until breakpoint, then fixed max-width
 @each $name, $width in $grid-breakpoints {
   .w-max-#{$name} {

@@ -8,7 +8,7 @@ const model = defineModel<boolean>()
 <template>
   <span>
     <input type="checkbox" :id autocomplete="off" v-model="model" class="btn-check" />
-    <label class="btn btn-sm" :for="id">
+    <label class="btn btn-sm fw-normal" :for="id">
       <abbr :title="$t('search.ignore_case')">Aa</abbr>
     </label>
   </span>

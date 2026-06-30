@@ -55,7 +55,7 @@ const items = computed(() => {
         <a
           v-if="item.percentage > 0"
           href="#"
-          class="btn btn-sm btn-outline-secondary overflow-hidden px-0"
+          class="btn btn-sm btn-outline-secondary overflow-hidden px-0 fw-normal"
           :style="{ width: `${item.percentage}%` }"
           v-popover
           data-bs-toggle="popover"

@@ -6,8 +6,6 @@ import setupI18n from "@/i18n/plugin"
 import { getInstanceConfig } from "@/core/config/instanceConfig"
 import App from "@/App.vue"
 import "@/assets/styles.scss"
-import "@fontsource/source-sans-pro/400.css"
-import "@fontsource/source-sans-pro/600.css"
 import "@fontsource-variable/jost"
 import { createVueMatomo } from "vue3-matomo"
 
