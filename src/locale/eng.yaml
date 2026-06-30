@@ -153,7 +153,6 @@ search.advanced.current_query: "Current search query in {0}:"
 search.advanced.free_order.help: The {free_order} option is compatible with queries that have multiple tokens, no repetition, no boundaries and no wildcards.
 search.advanced.label: CQP query
 search.advanced.help.heading: About the CQP query language
-  CQP is the "corpus query processor" component of the Korp software.
 search.advanced.help.summary: Korp uses the IMS Open Corpus Workbench software, including its "corpus query processor" component (CQP). In the context of Korp, "CQP" practically means the query language used for searching. A typical query has conditions within square brackets that represent tokens (words) in sequence.
 search.advanced.help.example: "Example:"
 search.advanced.help.read_more: "Read more:"

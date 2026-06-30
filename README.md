@@ -1,51 +1,35 @@
+<img src="src/assets/korp.svg" width="300" alt="Korp – Språkbanken's word research platform" />
+
+Korp is [Språkbanken](https://spraakbanken.gu.se/)'s word research platform
+for exploring large corpora of text data.
+
+[Use Korp](https://spraakbanken.gu.se/korp/)
+• [Language resources](https://spraakbanken.gu.se/en/resources)
+• [Platforms](https://spraakbanken.gu.se/en/tools)
+
 # korp-vue
 
-A Vue 3 rewrite of [korp-frontend](https://github.com/spraakbanken/korp-frontend).
+This is the _frontend_, the user-facing part, of the Korp application.
+It is a single-page web app
+written in [Vue 3](https://vuejs.org/)
+that talks to the [Korp backend](https://github.com/spraakbanken/korp-backend/).
+It replaces [korp-frontend](https://github.com/spraakbanken/korp-frontend)
+which was written in the discontinued AngularJS framework.
 
-**Status: experimental**
+## User documentation
 
-## Quick setup
+- [About Korp](https://spraakbanken.gu.se/en/tools/korp)
+- [User manual](https://spraakbanken.gu.se/en/tools/korp/user-manual)
 
-```
-git clone git@github.com:spraakbanken/korp-vue
-git clone git@github.com:spraakbanken/korp-vue-sb
-mv korp-vue-sb korp-vue/instance
-cd korp-vue
-npm install
-npm run dev
-```
+## Developer documentation
 
-## Setup details
+- [CHANGELOG.md](CHANGELOG.md)
+- [docs/INSTANCE.md](docs/INSTANCE.md)
+- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/STYLE.md](docs/STYLE.md)
 
-The code requires an instance plugin with site-specific config and extensions to be placed in `instance/`.
+## Contact
 
-```
-src/                  # Main app code, alias: "@/"
-instance/             # This folder is in .gitignore, add it yourself, alias: "@instance/"
-instance/plugin.ts    # Instance plugin
-instance/settings.ts  # Instance settings
-```
-
-- **Instance plugin** – must export an function that returns `Promise<Plugin>`, used by [src/main.ts](./src/main.ts), see [Vue Plugin docs](https://vuejs.org/guide/reusability/plugins)
-- **Instance settings** - must export an object with frontend settings
-
-## SSL in development
-
-To activate SSL (e.g. for `?mode=mink` which uses SB-Auth):
-
-1. Point the hostname `korpdev.spraakbanken.gu.se` to localhost. On a UNIX system, you can do this by editing `/etc/hosts`.
-2. Create certificate files with mkcert:
-   ```sh
-   mkcert "*.spraakbanken.gu.se"
-   ```
-3. Set these environment variables in `.env` or otherwise:
-   ```ini
-   KORP_HOST=korpdev.spraakbanken.gu.se
-   DEV_HTTPS_KEY=_wildcard.spraakbanken.gu.se-key.pem
-   DEV_HTTPS_CERT=_wildcard.spraakbanken.gu.se.pem
-   ```
-
-## Development
-
-- Install deps by running `npm install`
-- Run with `npm run dev`
+Email Språkbanken at: [sb-info@svenska.gu.se](mailto:sb-info@svenska.gu.se)
