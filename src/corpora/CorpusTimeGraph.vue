@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-import { getSeries, type TimeData, type YearSeries } from "@/core/backend/timedata"
+import {
+  getSeries,
+  getSeriesSelected,
+  type TimeData,
+  type YearSeries,
+} from "@/core/backend/timedata"
 import {
   BarElement,
   CategoryScale,
@@ -11,12 +16,13 @@ import {
   type ChartData,
   type ChartOptions,
 } from "chart.js"
-import { assignWith, pickBy, range } from "lodash-es"
-import { computed } from "vue"
+import { range } from "lodash-es"
+import { computed, ref } from "vue"
 import { Bar } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
+import { watchImmediate } from "@vueuse/core"
 
 type Data = Record<number, number | undefined>
 
@@ -30,6 +36,8 @@ const primaryColor = useBootstrapThemeVar("--bs-primary")
 const dangerColor = useBootstrapThemeVar("--bs-danger")
 const neutralColor = useBootstrapThemeVar("--bs-secondary-bg")
 
+const selectedSeries = ref<YearSeries>({})
+
 Chart.register(LinearScale, TimeScale, BarElement, CategoryScale, Tooltip)
 
 const min = props.data.byYear[0][0]
@@ -38,25 +46,17 @@ const max = props.data.byYear[props.data.byYear.length - 1][0]
 // If there is undated data, add another bar slightly above the max of dated data
 const undatedFakeYear = max + Math.max(2, Math.ceil((max - min) / 60))
 
-function getSelectedSeries() {
-  // `pickBy` removes zeroes.
-  const series = corpusSelection.map((corpus) => ("time" in corpus ? pickBy(corpus.time) : {}))
-  // Sum the counts by year for each corpora
-  return assignWith<YearSeries>(
-    {},
-    ...series,
-    (sum: number | undefined, value: number) => (sum || 0) + value,
-  )
-}
+// Recalculate selection series whenever corpus selection is changed
+watchImmediate(corpusSelection, () => (selectedSeries.value = getSeriesSelected()))
 
 function getSelectedUndatedSeries() {
   return corpusSelection.corpora.reduce((sum, corpus) => sum + (corpus["non_time"] || 0), 0)
 }
 
-const datasetsDated = computed(() => [
+const datasetsDated = computed<ChartDataset<"bar", Data>[]>(() => [
   {
     label: t("corpus.selection.graph.selected"),
-    data: getSelectedSeries(),
+    data: selectedSeries.value,
     backgroundColor: primaryColor.value,
   },
   {

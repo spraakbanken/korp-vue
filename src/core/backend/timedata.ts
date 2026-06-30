@@ -87,36 +87,19 @@ function addToCorpora(dataByCorpus: Record<string, Histogram>) {
 /** Data size per year of all corpora. */
 export const getTimeDataPairs = (): [number, number][] => timeData!.byYear
 
-/** Data size of unknown year in all corpora. */
-export const getCountUndated = (): number => timeData!.undated
-
 /** Get data size per year of all corpora. */
 export const getSeries = () => Object.fromEntries(getTimeDataPairs()) as YearSeries
 
 /** Get data size per year of selected corpora. */
 export function getSeriesSelected() {
   // `pickBy` removes zeroes.
-  const series = corpusSelection.corpora.map((corpus) =>
-    "time" in corpus ? pickBy(corpus.time) : {},
-  )
-  // Sum the counts by year for each corpora
+  const series = corpusSelection.map((corpus) => ("time" in corpus ? pickBy(corpus.time) : {}))
+  // Sum the counts by year of all corpora
   return assignWith<YearSeries>(
     {},
     ...series,
     (sum: number | undefined, value: number) => (sum || 0) + value,
   )
-}
-
-/** Get data size of unknown year in selected corpora */
-// export function getCountUndatedSelected() {
-//   return corpusListing.selected.reduce((sum, corpus) => sum + (corpus['non_time'] || 0), 0)
-// }
-
-/** Get first and last year in all available corpora. */
-export function getSpan(): { min: number; max: number } | undefined {
-  const timeData = getTimeDataPairs()
-  if (!timeData.length) return undefined
-  return { min: timeData[0][0], max: timeData[timeData.length - 1][0] }
 }
 
 /** Numeric data by year. */
