@@ -34,7 +34,7 @@ FE --> Matomo?
 
 ## Layout
 
-Base source code lives in `src/`.
+**Base code** lives in `src/`.
 Some of the sub-directories are:
 
 ```sh
@@ -56,9 +56,18 @@ Some of the sub-directories are:
 │   └── store           # Pinia stores for app state
 ```
 
+The code is divided into **Core code** and **View code**:
+
+- Core code, under `@/core`, has no dependencies on Vue.
+  It could be migrated to another TypeScript project that uses another UI library or none.
+  The usefulness of this separation was apparent when migrating from AngularJS to Vue.
+- View code, outside `@/core`, uses Vue concepts for reactivity etc.
+
+We strive to keep the View layer thin, and manage as much as possible in Core code.
+
 ### Instance code
 
-Instance code must live in `instance/`.
+Instance code must be placed in `instance/`.
 
 The instance directory is left out of version control so that you can control its content separately.
 We recommend you keep your instance code in its own git repository
@@ -79,11 +88,16 @@ and either clone it directly as `./instance` or place it outside and symlink to 
 Read more about the instance concept in [INSTANCE.md](./INSTANCE.md).
 Take a look at [korp-vue-sb/plugin.ts](https://github.com/spraakbanken/korp-vue-sb/blob/main/plugin.ts) for a real example.
 
+Consider separating core and view code in your instance too,
+to make it easier to re-use code in the future.
+
 ## Data flow
 
 This section outlines the application workflow from a technical perspective.
 
 ### Initialization
+
+#### App creation
 
 In `main.ts`, the Vue app is created and mounted. See [Vue docs on Creating an Application](https://vuejs.org/guide/essentials/application.html).
 
@@ -91,8 +105,10 @@ In `main.ts`, the Vue app is created and mounted. See [Vue docs on Creating an A
 2. **Instance settings** are loaded to the global `settings` object
 3. The Vue-I18n plugin is installed using configured **languages**
 4. The Matomo plugin is installed if configured
-5. The **instance plugin** installed with the mode passed as a parameter
+5. The **instance plugin** is installed with the mode passed as a parameter
 6. Finally, the app root component `App.vue` is mounted
+
+#### Root component
 
 The root component first just shows an animation to indicate that the app is loading.
 It immediately calls `init()` of the `useInit` composable, wherein:
@@ -100,16 +116,45 @@ It immediately calls `init()` of the `useInit` composable, wherein:
 1. The configured **authentication module** is loaded and checks if the user is logged in
 2. **Corpus config** is fetched from the backend and merged into the global `settings` object
 3. The global **corpus listing** object is created from the corpus config
-4. **Time data** (token count per year of each corpus) starts loading in the background
+4. **Time data** starts loading in the background
 5. The **app store** is created and its state is synced from URL parameters
 
 Once this is done, the animation is replaced with the main **page layout**:
 
-- The page header with navigation and the search panel
+- The page header with navigation, the corpus selector and the search panel
 - The main section with the frontpage, later replaced by the result panel
 - The page footer
 
-> TODO Corpus selection validation, initial search, time data response?
+#### Initial state
+
+The loaded URL may have parameters that are synced to the app store at initialization.
+The user interface should reflect this state.
+Usually, concerned components just have to read the store state reactively,
+using `storeToRefs()` or similar.
+However, the corpus selection and active search need special handling.
+
+When the corpus selector component `CorpusSelector.vue` is mounted,
+it initializes the corpus selection.
+Via the `CorpusSelectionDialog.vue` component,
+the selection is read from the store (≈ URL) and validated against config and authentication status.
+This is an async process that may involve showing dialogs and modifying the selection.
+When validation is done, the final selection is set in the global `corpusSelection` object.
+
+If the initial store state contains a search,
+the search is performed once the corpus selection is finalized.
+The search store (`useSearchStore`) waits for the corpus selection,
+using the `useReactiveCorpusSelection` composable
+(see [Reactive singletons](#reactive-singletons)).
+
+#### Time data
+
+Time data is loaded with the `timespan` backend command,
+and contains token counts per corpus and year.
+It is used for:
+
+- the time graph in the corpus selector
+- the date Interval search widget
+- enabling Trend graph results
 
 ### State
 
@@ -341,21 +386,151 @@ Clicking a value opens a dynamic _Example KWIC_ tab with the occurrences of that
 
 ### Corpus listing and selection
 
-Initial validation.
+The `corpusListing` and `corpusSelection` objects are global instances of the `CorpusSet` class.
+In parallel mode, however, they use the `CorpusSetParallel` subclass.
 
-Sync flow: Store, selector, corpusSelection.
+The `corpusListing` is created as soon as corpus config has been loaded, and then doesn't change.
 
-### Assets (images etc)
+The `corpusSelection` is first created empty.
+When the async corpus validation is done,
+it is filled with the initial selection,
+see [Initialization](#initialization).
+After that, it is updated whenever the user changes the corpus selection.
+
+Data flow of the corpus selection during initialization:
+
+```mermaid
+flowchart LR
+Store --read--> SelectionDialog --emit--> Selector --write--> Store
+```
+
+And after initialization:
+
+```mermaid
+flowchart LR
+User --manipulate--> Selector
+Selector --write--> Store
+Store --watch--> Selector
+Store --watch and write--> corpusSelection
+```
+
+The `CorpusSet` class is also instantiated for various subsets of the listing or selection.
+
+### Reactive singletons
+
+The Vue `reactive()` function makes any object reactive.
+This can be used on objects in Core code to make them observable by View code.
+
+Notably, there are the `useReactiveCorpusSelection` composable for `corpusSelection`,
+and the `useReactiveFilterManager` composable for `GlobalFilterManager`.
+
+Note that the reactive wrapper will only notice changes made to the wrapper,
+not to the original Core object.
 
 ### Code splitting
 
+Vite's build process splits the code into _chunks_
+so that they can be loaded in parallel and when needed.
+See [Vite docs: Chunking strategy](https://vite.dev/guide/build#chunking-strategy).
+
+In summary, use _dynamic imports_ (`import(...)`) where depended-on code can be loaded async.
+Use it especially when importing large pieces of code, e.g. a third-party library.
+
+It is especially valuable to keep the _index chunk_ small, so that the initial load of the app is quick.
+
 ### CQP Parser
+
+The CQP (Corpus Query Processor) language is used to express searches in Korp.
+More information on the language is available in the Advanced search tab of the running frontend app.
+Mainly, the frontend creates CQP query strings (`stringify()`)
+from the user's input data and uses them in backend commands.
+Certain parts of the frontend also recreates query data from CQP strings (`parse()`).
+
+The parser is written as a [Peggy](https://peggyjs.org/) grammar, `CQPParser.peggy`.
+It does not cover all of CQP, but it should cover all queries that `stringify()` can create.
+
+In the Advanced tab, the user can enter any CQP supported by the backend,
+even if it is not covered by the frontend parser.
+
+Within the frontend, the parser and stringifier actually use a non-standard variant of the CQP language,
+with custom operators and a special date-interval syntax.
+To output the standard CQP format, use `stringify(query, true)`.
 
 ### Errors
 
+#### Errors in place of content
+
+Use the `ErrorBox` component to show an error message in place of expected content.
+Use the `useError` composable to have any exception interpreted in a more user-friendly way,
+and structured for use with `ErrorBox`.
+
+```ts
+const { setError, errorMessage } = useError()
+
+try {
+  // ...
+} catch (error) {
+  setError(error)
+}
+```
+
+```html
+<ErrorBox v-if="errorMessage" v-bind="errorMessage" />
+```
+
+#### Floating errors
+
+Use the _message store_ (`useMessageStore`)
+to show a floating error message in the top-center of the screen.
+This is useful when there isn't a certain location to show the error.
+
+Uncaught errors and rejections are caught by listeners set in `App.vue`,
+and displayed using the message store.
+
 ### Icons
 
+The FontAwesome icon library is used to clarify functionality where appropriate.
+
+1. Search available icons on https://fontawesome.com/search?ic=free-collection
+2. In `@/fontawesome`, import the desired icon from the _solid_ or _regular_ collection
+   and add it to the library
+3. Use `<fa-icon icon="..." />` to insert the icon in a component template
+
+To use new icons in instance code,
+replicate the `@/fontawesome` module but without the Vue plugin (the `install` function).
+Then you can add new icons to the same FontAwesome `library` object.
+
 ### Modal dialog
+
+Use a modal dialog to give more space to a UI flow,
+while blocking interaction with the rest of the app.
+
+The `ModalDialog` component provides two ways to control it:
+
+With Bootstrap data attributes
+(see [Bootstrap docs](https://getbootstrap.com/docs/5.3/components/modal/#via-data-attributes)).
+This is easier when you just need to open the modal from a parent component.
+
+```html
+<button type="button" data-bs-toggle="modal" data-bs-target="#my-modal">...</button>
+<ModalDialog id="my-modal">...</ModalDialog>
+```
+
+With the VueUse `useConfirmDialog` controller
+(see [VueUse docs](https://vueuse.org/core/useConfirmDialog/)).
+This gives the parent component an interface to control and listen to the modal.
+
+```ts
+let loginDialog: ConfirmDialog | undefined
+
+function open() {
+  loginDialog?.reveal()
+}
+```
+
+```html
+<ModalDialog @setup="loginDialog = $event">...</ModalDialog>
+```
 
 ## Tests
 
