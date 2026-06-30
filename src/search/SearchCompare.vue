@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useId, type Ref } from "vue"
+import { computed, ref, useId } from "vue"
 import { useSearchStorage } from "../search/useSearchStorage"
 import { watchImmediate } from "@vueuse/core"
 import { corpusListing } from "@/core/corpora/corpusListing"

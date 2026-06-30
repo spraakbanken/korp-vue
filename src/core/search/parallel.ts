@@ -1,4 +1,4 @@
-import { difference, groupBy, uniq } from "lodash-es"
+import { difference, groupBy } from "lodash-es"
 import type { CorpusSetParallel } from "../corpora/CorpusSetParallel"
 import { corpusSelection } from "../corpora/corpusListing"
 import { stringify } from "../cqp/cqp"
