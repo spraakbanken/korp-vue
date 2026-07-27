@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import { computed, onUnmounted, watchEffect } from "vue"
+import { computed, onUnmounted } from "vue"
 import type { WidgetProps } from "./widget"
 import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 
 export type DefaultWidgetOptions = {
-  /** Set to true to skip the case-sensitivity toggle */
-  case_sensitive?: boolean
   /** Writing direction: "rtl" or "ltr" (default) */
   dir?: string
   placeholder?: string
@@ -14,7 +12,7 @@ export type DefaultWidgetOptions = {
 const model = defineModel<string>({ required: true })
 const flags = defineModel<Record<string, true> | undefined>("flags")
 
-const props = defineProps<WidgetProps<DefaultWidgetOptions>>()
+defineProps<WidgetProps<DefaultWidgetOptions>>()
 
 const ignoreCase = computed({
   get: () => !!flags.value?.c,
@@ -22,11 +20,6 @@ const ignoreCase = computed({
     // Note: This assumes that we only use the `c` flag. To support more, maybe create a helper to add/remove flags.
     flags.value = value ? { c: true } : undefined
   },
-})
-
-// Turn off the case-insensitive flag if the `case_sensitive` option is used
-watchEffect(() => {
-  if (props.options.case_sensitive) ignoreCase.value = false
 })
 
 onUnmounted(() => {
@@ -47,6 +40,6 @@ onUnmounted(() => {
     />
 
     <!-- Case-insensitive toggle button-->
-    <CaseInsensitivityToggle v-if="!options.case_sensitive" v-model="ignoreCase" />
+    <CaseInsensitivityToggle v-model="ignoreCase" />
   </div>
 </template>
