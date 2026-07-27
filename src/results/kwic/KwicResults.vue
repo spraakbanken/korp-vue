@@ -48,7 +48,7 @@ let isCurrentRequestReading = false
 
 const proxy = new KwicProxy(store).setProgressHandler((report) => {
   // Show first KWIC page when available
-  if ("kwic" in report.data && report.data.kwic) {
+  if (!kwic.value && "kwic" in report.data && report.data.kwic) {
     kwic.value = massageData(report.data.kwic)
     // Use remembered state to control the result display
     isReading.value = isCurrentRequestReading
@@ -70,10 +70,13 @@ watchImmediate(activeSearch, () => {
 async function doSearch(reuseCounts = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
+  // Reset result state
   proxy.abort()
   clearError()
   progress.value = 0
   loading.value = !reuseCounts
+  if (!reuseCounts) hitsCount.value = 0
+  kwic.value = undefined
   // Remember options affecting result display in case they are changed while the request is ongoing
   isCurrentRequestReading = context.value || !store.in_order
 
@@ -180,7 +183,6 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
-    <!-- TODO Only fade (gray out) until first page has loaded? -->
     <KwicResultsContent
       v-else
       :corpora="activeSearch?.corpora"
@@ -191,7 +193,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       :kwic
       :loading
       v-model="pageLocal"
-      v-fade-if-loading="progress"
+      v-fade-if-loading="!hitsCount ? progress : undefined"
     />
   </div>
 </template>

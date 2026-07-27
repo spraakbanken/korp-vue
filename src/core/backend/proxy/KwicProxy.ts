@@ -19,7 +19,7 @@ export class KwicProxy extends QueryProxyBase {
 
     return {
       ...params,
-      incremental: true,
+      incremental: !reuseCounts,
       in_order: this.store.in_order ? undefined : false,
       random_seed: this.store.random_seed,
       sort: this.store.sort || undefined,

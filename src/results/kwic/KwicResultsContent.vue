@@ -35,7 +35,6 @@ watchImmediate(
   () => props.kwic,
   () => {
     // Select first match token
-    // TODO Only when first page changes, not while rest of result is loading
     const row = props.kwic?.find(isKwic)
     if (!row) return
     const match = [row.match].flat()[0]!
@@ -55,24 +54,24 @@ watchImmediate(
       </div>
     </div>
 
-    <template v-if="kwic">
-      <div class="hstack gap-4">
-        <PaginationBar
-          v-if="hitsCount > hpp"
-          v-model="page"
-          :max="Math.ceil(hitsCount / hpp)"
-          class="flex-shrink-0"
-        />
-        <HitsDistributionBar
-          v-if="distribution && hitsCount > hpp"
-          :distribution
-          :hpp
-          v-model="page"
-          class="flex-grow-1"
-          style="min-width: 0"
-        />
-      </div>
+    <div v-if="hitsCount" class="hstack gap-4">
+      <PaginationBar
+        v-if="hitsCount > hpp"
+        v-model="page"
+        :max="Math.ceil(hitsCount / hpp)"
+        class="flex-shrink-0"
+      />
+      <HitsDistributionBar
+        v-if="distribution && hitsCount > hpp"
+        :distribution
+        :hpp
+        v-model="page"
+        class="flex-grow-1"
+        style="min-width: 0"
+      />
+    </div>
 
+    <template v-if="kwic">
       <KwicGrid v-if="!isReading" :data="kwic" @click="selectedToken = undefined" />
       <KwicList v-else :data="kwic" @click="selectedToken = undefined" />
 
