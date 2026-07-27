@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useLocale } from "@/i18n/useLocale"
-import { computed, inject } from "vue"
+import { computed, inject, useId } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
 import { sortBy } from "lodash-es"
@@ -16,6 +16,7 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 const { locObj } = useLocale()
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
+const id = useId()
 
 const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
@@ -100,13 +101,12 @@ function openReadingMode() {
             type="button"
             class="btn btn-secondary"
             data-bs-toggle="modal"
-            data-bs-target="#deptree-modal"
+            :data-bs-target="`#${id}-deptree-modal`"
           >
             <fa-icon icon="fa-solid fa-sitemap" />
             {{ $t("result.kwic.deptree.open") }}
           </button>
-          <ModalDialog id="deptree-modal" :title="$t('result.kwic.deptree')" size="xl">
-            <!-- TODO Wrong selected token in subsearch -->
+          <ModalDialog :id="`${id}-deptree-modal`" :title="$t('result.kwic.deptree')" size="xl">
             <DeptreeDiagram :corpus :tokens="selectedToken.row.tokens" />
           </ModalDialog>
         </template>
@@ -119,15 +119,15 @@ function openReadingMode() {
               class="accordion-button"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#sidebar-accordion-struct"
+              :data-bs-target="`#${id}-accordion-struct`"
               aria-expanded="true"
-              aria-controls="sidebar-accordion-struct"
+              :aria-controls="`${id}-accordion-struct`"
             >
               {{ $t("attribute_type.struct") }}
             </button>
           </h2>
 
-          <div id="sidebar-accordion-struct" class="accordion-collapse collapse show">
+          <div :id="`${id}-accordion-struct`" class="accordion-collapse collapse show">
             <div class="accordion-body">
               <KwicSidebarAttribute
                 v-for="attr in structAttributes"
@@ -148,15 +148,15 @@ function openReadingMode() {
               class="accordion-button"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="#sidebar-accordion-pos"
+              :data-bs-target="`#${id}-accordion-pos`"
               aria-expanded="true"
-              aria-controls="sidebar-accordion-pos"
+              :aria-controls="`${id}-accordion-pos`"
             >
               {{ $t("attribute_type.pos") }}
             </button>
           </h2>
 
-          <div id="sidebar-accordion-pos" class="accordion-collapse collapse show">
+          <div :id="`${id}-accordion-pos`" class="accordion-collapse collapse show">
             <div class="accordion-body">
               <KwicSidebarAttribute
                 v-for="attr in posAttributes"
