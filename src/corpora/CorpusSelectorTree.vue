@@ -20,6 +20,9 @@ const { locObj } = useLocale()
 const auth = useAuth()
 const store = useAppStore()
 
+// Track whether initial corpus selection is done
+let corpusSelectionDone = false
+
 const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): T[] => {
   return [...items].sort((a, b) => {
     const titleA = a.title ? locObj(a.title) : a.id
@@ -30,10 +33,13 @@ const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): 
 
 watch(
   () => store.corpus,
-  () => updateCheckboxes(),
-  { deep: true },
+  () => {
+    // Skip updating checkboxes if initial corpus selection hasn't been evaluated yet
+    if (store.corpus.length || corpusSelectionDone) updateCheckboxes()
+    corpusSelectionDone = true
+  },
+  { deep: true, immediate: true },
 )
-updateCheckboxes()
 
 function updateCheckboxes() {
   // Folders first
@@ -50,7 +56,6 @@ function updateCheckboxes() {
       folder.selected = "none"
     }
     // Set expanded status on first run, when it's still undefined, so partially selected folders are expanded by default
-    // TODO Broken: Have partially selected folders extended by default
     if (folder.expanded === undefined) folder.expanded = folder.selected == "some"
   })
   // Then the corpora
