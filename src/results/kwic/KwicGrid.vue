@@ -27,9 +27,10 @@ watchImmediate(
       <tbody>
         <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">
           <tr v-if="isCorpusHeading(row)">
-            <td class="bg-body-tertiary" />
-            <td colspan="2" class="bg-body-tertiary">
-              <h3 class="fs-5 my-1">{{ locObj(row.newCorpus) }}</h3>
+            <td colspan="3" class="bg-body-tertiary">
+              <h3 class="d-inline-block position-sticky start-50 translate-middle-x my-1 fs-5">
+                {{ locObj(row.newCorpus) }}
+              </h3>
             </td>
           </tr>
 
