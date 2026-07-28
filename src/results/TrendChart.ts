@@ -7,11 +7,13 @@ import type { Moment } from "moment"
 
 export type ChartType = "line" | "bar"
 
+export type Range = { from: Date; to: Date }
+
 /** Prepares trend chart options/data for Chart.js */
 export class TrendChart {
   locale?: string
   /** Current zoom range */
-  range?: { from: Date; to: Date }
+  range?: Range
 
   constructor(
     /** Chart type: line or bars */
@@ -66,11 +68,24 @@ export class TrendChart {
   }
 
   /** Get options for the zoomable overview chart */
-  getOverviewOptions(onSelectRange: (start: Date, end: Date) => void): ChartOptions<ChartType> {
+  getOverviewOptions(onSelectRange: (range?: Range) => void): ChartOptions<ChartType> {
     /** The type of event passed to `onSelectComplete` */
     type SelectDragEvent = {
       /** Selection start and end points as Unix ms timestamps */
       range: [number, number]
+    }
+
+    const onSelectComplete = (event: SelectDragEvent): void => {
+      // If clicked and not dragged, reset to full range
+      if (event.range[0] == event.range[1]) {
+        // Only if a range is set
+        if (this.range) onSelectRange(undefined)
+        return
+      }
+
+      const from = new Date(event.range[0])
+      const to = new Date(event.range[1])
+      onSelectRange({ from, to })
     }
 
     return merge(this.getBaseOptions(), {
@@ -84,12 +99,7 @@ export class TrendChart {
           output: "value",
           highlight: false,
           // Note: Getting uncaught exceptions "TypeError: Cannot read properties of null (reading 'ownerDocument')" – broken destroy handler?
-          // TODO Reset selecting on non-drag click
-          onSelectComplete(event: SelectDragEvent): void {
-            const start = new Date(event.range[0])
-            const end = new Date(event.range[1])
-            onSelectRange(start, end)
-          },
+          onSelectComplete,
         },
       },
     })

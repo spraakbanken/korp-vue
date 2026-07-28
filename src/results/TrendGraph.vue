@@ -20,20 +20,20 @@ import { computed, reactive, useId, watchEffect } from "vue"
 import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { useDark } from "@vueuse/core"
-import { TrendChart } from "./TrendChart"
+import { TrendChart, type Range } from "./TrendChart"
 import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
 
 const props = defineProps<{
   series: Series[]
   level: Level
-  range?: { from: Date; to: Date }
+  range?: Range
   showTotal?: boolean
   type: "line" | "bar"
 }>()
 
 const emit = defineEmits<{
   (e: "clickPoint", series: Series[], time: Moment): void
-  (e: "selectRange", start: Date, end: Date): void
+  (e: "selectRange", range?: Range): void
 }>()
 
 const { t, locale } = useI18n()
@@ -65,7 +65,7 @@ const formatTooltipItem = (point: Point) => [
 
 const onClickPoint = (series: Series[], time: Moment) => emit("clickPoint", series, time)
 
-const onSelectRange = (start: Date, end: Date) => emit("selectRange", start, end)
+const onSelectRange = (range?: Range) => emit("selectRange", range)
 
 /** Chart.js options for the main chart */
 const mainOptions = computed(() =>

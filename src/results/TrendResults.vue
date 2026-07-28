@@ -23,6 +23,7 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import TrendTable from "./TrendTable.vue"
 import ExportButton from "./ExportButton.vue"
 import { useAppStore } from "@/store/useAppStore.ts"
+import type { Range } from "./TrendChart.ts"
 
 const props = defineProps<{
   task: TrendTask
@@ -36,7 +37,7 @@ const { createTab } = useDynamicTabs()
 const matomo = useMatomo()
 
 /** What time span to show in main chart */
-const range = ref<{ from: Date; to: Date }>()
+const range = ref<Range>()
 const reactiveTask = reactive(props.task)
 const series = ref<Series[]>([])
 const level = ref<Level>("year")
@@ -44,14 +45,12 @@ const undatedRatio = ref(0)
 const view = ref<"line" | "bar" | "table">("line")
 
 onMounted(() => {
-  const interval = props.task.corpusSet.getMomentInterval()
-  if (!interval) throw new Error("Time interval missing")
-  const [from, to] = interval
-  doSearch(from, to)
+  doSearch()
   matomo.value?.trackEvent("Trend", "New")
 })
 
-async function doSearch(from: Moment, to: Moment) {
+async function doSearch() {
+  const { from, to } = getMomentRange()
   const levelNew = findOptimalLevel(from, to)
   progress.value = 0
   undatedRatio.value = props.task.corpusSet.getUndatedRatio()
@@ -68,6 +67,16 @@ async function doSearch(from: Moment, to: Moment) {
 
   setSeries(data.series)
   level.value = data.level
+}
+
+function getMomentRange(): { from: Moment; to: Moment } {
+  if (range.value) return { from: moment(range.value.from), to: moment(range.value.to) }
+  else {
+    const interval = props.task.corpusSet.getMomentInterval()
+    if (!interval) throw new Error("Time interval missing")
+    const [from, to] = interval
+    return { from, to }
+  }
 }
 
 /** Ingest new series data */
@@ -97,9 +106,9 @@ function onClickPoint(series: Series[], time: Moment) {
   matomo.value?.trackEvent("Trend", "Subsearch")
 }
 
-function onSelectRange(from: Date, to: Date) {
-  range.value = { from, to }
-  doSearch(moment(from), moment(to))
+function onSelectRange(rangeNew?: Range) {
+  range.value = rangeNew
+  doSearch()
   matomo.value?.trackEvent("Trend", "Select range")
 }
 
