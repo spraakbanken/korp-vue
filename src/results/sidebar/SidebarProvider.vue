@@ -4,6 +4,10 @@ import { type RowToken } from "@/core/kwic/kwic"
 import KwicSidebar from "./KwicSidebar.vue"
 import { injectionKeys } from "@/injection"
 
+defineProps<{
+  hideReadingMode?: boolean
+}>()
+
 const selectedToken = defineModel<RowToken>()
 
 const text = useTemplateRef("text")
@@ -71,6 +75,6 @@ function selectTokenY(current: Element, delta: number): HTMLElement | undefined 
       <slot />
     </div>
 
-    <KwicSidebar style="width: 20rem" />
+    <KwicSidebar style="width: 20rem" :hideReadingMode />
   </div>
 </template>

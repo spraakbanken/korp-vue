@@ -13,6 +13,10 @@ import DeptreeDiagram from "./DeptreeDiagram.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 
+defineProps<{
+  hideReadingMode?: boolean
+}>()
+
 const { locObj } = useLocale()
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
@@ -85,9 +89,8 @@ function openReadingMode() {
           />
         </header>
 
-        <!-- TODO Hide if this is already a Text tab -->
         <button
-          v-if="corpus.reading_mode"
+          v-if="corpus.reading_mode && !hideReadingMode"
           type="button"
           class="btn btn-secondary"
           @click="openReadingMode()"

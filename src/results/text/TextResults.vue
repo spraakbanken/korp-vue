@@ -56,7 +56,7 @@ async function doSearch() {
     {{ $t("result.reader.id", { id: task.textId }) }}
   </h2>
 
-  <SidebarProvider>
+  <SidebarProvider hide-reading-mode>
     <component
       :is="reader.component"
       v-if="document"
