@@ -11,7 +11,8 @@ const { options, loading } = useAttrValues(() => props.attribute, model)
 
 <template>
   <select class="form-select" v-model="model" :disabled="loading">
-    <option v-if="loading" disabled value="">{{ $t("loading") }}</option>
+    <!-- Use `:value="model"` so this option is shown by default -->
+    <option v-if="loading" disabled :value="model">{{ $t("loading") }}</option>
     <option v-for="[value, label] in options" :key="value" :value>
       {{ label }}
     </option>

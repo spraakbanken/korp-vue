@@ -39,10 +39,6 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
 
   watchImmediate([corpusSelection, getAttribute, locale], async () => {
     const attribute = getAttribute()
-    // Temporarily empty the selection to show the loading label
-    // TODO This breaks internal search
-    const prevValue = model.value
-    model.value = ""
 
     // Load values from backend
     loading.value = true
@@ -52,8 +48,8 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
     // Format options list
     options.value = formatOptions(attribute, values)
 
-    // Restore or reset selection
-    model.value = values.includes(prevValue) ? prevValue : options.value[0]?.[0] || ""
+    // Reset invalid value
+    if (!values.includes(model.value)) model.value = options.value[0]?.[0] || ""
   })
 
   return { loadValues, formatOptions, options, loading }
