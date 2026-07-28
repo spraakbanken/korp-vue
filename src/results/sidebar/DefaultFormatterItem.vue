@@ -15,7 +15,8 @@ export type DefaultFormatterItemProps = {
 
 const props = defineProps<DefaultFormatterItemProps>()
 
-const stringify = useStringifiers()(props.attribute)
+const getStringifier = useStringifiers()
+const stringify = getStringifier(props.attribute)
 
 /** Enhanced stringification for sidebar */
 const itemHtml = computed(() => {

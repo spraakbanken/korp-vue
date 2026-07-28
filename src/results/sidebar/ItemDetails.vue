@@ -20,7 +20,6 @@ function search() {
   if (props.attribute.ranked) val = val.replace(/:.*/, "")
 
   // Create a CQP condition for each part of the value if compound, otherwise for the whole value
-  // TODO Fix for complemgram, compwf
   const query = [{ and_block: [[createAttrCondition(props.attribute, val)]] }]
 
   // Show extended search and fill with generated query

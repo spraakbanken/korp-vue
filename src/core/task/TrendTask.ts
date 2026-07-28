@@ -54,7 +54,6 @@ export class TrendTask extends TaskBase<TrendResult> {
     const formatDate = (d: Moment) => d.format("YYYYMMDDHHmmss") as NumericString
 
     const padLength = String(this.subqueries.length).length
-    // TODO: fix this for struct attrs
     const subcqps = Object.fromEntries(
       this.subqueries.map(([cqp], i) => [`subcqp${padStart(String(i), padLength, "0")}`, cqp]),
     )

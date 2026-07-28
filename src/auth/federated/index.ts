@@ -32,10 +32,6 @@ let state: State | undefined = undefined
 
 const createAuthFederated = (options: Options): VueAuthModule => {
   const login = async () => {
-    // TODO try to implement this again
-    // if we already tried to login, don't redirect again, to avoid infinite loops
-    // if (document.referrer == "") {
-    // }
     window.location.href = `${options.loginUrl}?redirect=${window.location.href}`
   }
 

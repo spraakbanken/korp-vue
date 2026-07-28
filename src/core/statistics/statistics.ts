@@ -14,7 +14,7 @@ import type { Stringifier } from "@/attributes/attributes.types"
 
 const customFunctions: Record<string, Stringifier> = {}
 
-// TODO
+// TODO NPEGL
 // try {
 //   customFunctions = require("custom/statistics.js").default
 // } catch (error) {

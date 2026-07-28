@@ -153,9 +153,8 @@ export class MapModel {
     })
     featureLayer.on("mouseover", (e) => {
       const marker = e.propagatedFrom as CustomMarker | CustomMarkerMany
-      marker.markerData instanceof Array
-        ? this.mouseOver(marker.markerData)
-        : this.mouseOver([marker.markerData])
+      const markerData = Array.isArray(marker.markerData) ? marker.markerData : [marker.markerData]
+      this.mouseOver(markerData)
     })
     featureLayer.on("mouseout", () =>
       this.selectedMarkers.length > 0 ? this.mouseOver(this.selectedMarkers) : this.mouseOut(),
