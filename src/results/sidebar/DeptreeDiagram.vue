@@ -48,7 +48,7 @@ watch(isVisible, () => {
 <template>
   <div class="text-center">
     <div class="overflow-x-auto">
-      <svg ref="svg"></svg>
+      <svg ref="svg" class="deptreeSvg"></svg>
     </div>
     <div class="mt-2">
       <template v-if="selection">
@@ -56,18 +56,22 @@ watch(isVisible, () => {
         ({{ locObj(selection.attr.label) }}):
         {{ getStringifier(selection.attr)(selection.key) }}
       </template>
-      <template v-else> &nbsp;</template>
+      <template v-else>&nbsp;</template>
     </div>
   </div>
 </template>
 
-<style scoped>
-/* TODO Dark mode */
-svg:deep(*) {
-  font-size: inherit;
+<style>
+.deptreeSvg .FORM,
+.deptreeSvg .arrowhead {
+  fill: var(--bs-body-color);
 }
-svg:deep(.UPOS),
-svg:deep(.DEPREL) {
+.deptreeSvg .curve,
+.deptreeSvg .arrowhead {
+  stroke: var(--bs-body-color);
+}
+.deptreeSvg .UPOS,
+.deptreeSvg .DEPREL {
   font-family: var(--font-family-heading);
   font-weight: bold;
   fill: var(--bs-info);
