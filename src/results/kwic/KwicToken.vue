@@ -51,16 +51,23 @@ const isDepheadToSelected = computed(() => {
 
 <template>
   {{ spaceBefore
-  }}<span
-    class="kwic-token rounded-3 cursor-pointer"
+  }}<a
+    href="#"
+    :tabindex="
+      // Disable tabbing between tokens, because they are too many.
+      // But enable tabbing between surrounding elements and the currently selected token.
+      // Other tokens can be selected using arrow keys instead, see SidebarProvider.
+      isRowTokenEqual(selectedToken, rowToken) ? 0 : -1
+    "
+    class="kwic-token rounded-3 cursor-pointer text-decoration-none"
     :class="{
       'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'bg-success-subtle text-success-emphasis': isRowTokenEqual(selectedToken, rowToken),
       'bg-info-subtle text-info-emphasis': isDepheadToSelected,
       'text-muted': isKwicRowToken(rowToken) && !rowToken.token._matchSentence,
     }"
-    @click.stop="selectedToken = rowToken"
-    >{{ rowToken.token.word }}</span
+    @click.prevent.stop="selectedToken = rowToken"
+    >{{ rowToken.token.word }}</a
   >{{ spaceAfter }}
 </template>
 
