@@ -86,8 +86,8 @@ function setSeries(newSeries: Series[]) {
   // If zooming: base data exists; splice new data into it
   else {
     // Splicing the ref value directly seems to cause an infinite loop.
+    // Maybe due to conflicts between the Chart.js and Vue reactivity systems.
     const copy = cloneDeep(series.value)
-    // TODO Remove unintuitive animation when splicing data
     spliceGraphData(copy, newSeries)
     series.value = copy
   }

@@ -49,6 +49,8 @@ export class TrendChart {
   /** Get options common to main and overview */
   getBaseOptions(): ChartOptions<ChartType> {
     return {
+      // Animation is unintuitive when zooming, points are shifted horizontally
+      animation: false,
       locale: this.locale,
       // See https://www.chartjs.org/docs/latest/configuration/responsive.html
       responsive: true,
