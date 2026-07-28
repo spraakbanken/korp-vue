@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// TODO Make input required
 import LemgramAutocomplete, {
   type LemgramAutocompleteModel,
 } from "@/search/LemgramAutocomplete.vue"
@@ -7,9 +6,6 @@ import type { WidgetProps } from "./widget"
 import { Lemgram } from "@/core/lemgram"
 
 export type LemgramAutocompleteOptions = {
-  // TODO Implement these in LemgramAutocomplete
-  error_on_empty?: boolean
-  type?: "lemgram" | "sense"
   /**
    * One or none of:
    * - `"dalin"` -> use `dalinm` morphology

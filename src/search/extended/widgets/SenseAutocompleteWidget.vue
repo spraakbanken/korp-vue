@@ -4,11 +4,6 @@ import type { WidgetProps } from "./widget"
 import { Saldo } from "@/core/saldo"
 import SenseAutocomplete from "@/search/SenseAutocomplete.vue"
 
-export type SenseAutocompleteOptions = {
-  // TODO Implement
-  error_on_empty?: boolean
-}
-
 const model = defineModel({
   required: true,
   get: (value: string): SenseAutocompleteModel =>
@@ -16,7 +11,7 @@ const model = defineModel({
   set: (value: SenseAutocompleteModel) => value.value,
 })
 
-defineProps<WidgetProps<SenseAutocompleteOptions>>()
+defineProps<WidgetProps>()
 </script>
 
 <template>
