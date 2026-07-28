@@ -22,12 +22,11 @@ const stringify = getStringifier(props.attribute)
 const itemHtml = computed(() => {
   let value = stringify(props.item)
 
-  // TODO Abbreviate displayed URL
   if (value && props.attribute.type == "url") {
     try {
       // Parse just to check validity
       new URL(value)
-      value = `<a href="${value}" target="_blank" rel="noopener">${value.replace(/^https?:\/\//, "")}</a>`
+      value = `<a href="${value}" target="_blank" rel="noopener" style="word-break: break-all;">${value.replace(/^https?:\/\//, "")}</a>`
     } catch {
       // Not a valid URL, leave as is
     }
