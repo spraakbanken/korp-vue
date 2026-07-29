@@ -15,3 +15,11 @@ declare const window: Window
 declare module "*.peggy" {
   export const parse: <T = unknown>(input: string) => T
 }
+
+import "chart.js"
+import type { InteractionModeFunction } from "chart.js"
+declare module "chart.js" {
+  export interface InteractionModeMap {
+    xnearest: InteractionModeFunction
+  }
+}

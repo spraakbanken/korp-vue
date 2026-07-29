@@ -1,13 +1,26 @@
 import { GoldenAnglePaletteHsl } from "@/core/color"
 import type { Point, Series } from "@/core/task/TrendTask"
 import type { Level } from "@/core/trend/util"
-import type { ChartDataset, ChartOptions } from "chart.js"
+import { Interaction, type ChartDataset, type ChartOptions } from "chart.js"
+import { getRelativePosition } from "chart.js/helpers"
 import { merge } from "lodash-es"
 import type { Moment } from "moment"
 
 export type ChartType = "line" | "bar"
 
 export type Range = { from: Date; to: Date }
+
+/** Custom interaction mode: find nearest vertical, and then the nearest y value along that line. */
+Interaction.modes.xnearest = function (chart, e, options, useFinalPosition) {
+  // Use the standard "x" mode to find the nearest vertical line of points
+  const items = Interaction.modes.x(chart, e, options, useFinalPosition)
+
+  // Get distance of each point, find the minimum distance and pick those items
+  const y = getRelativePosition(e, chart).y
+  const distances = items.map((item) => Math.abs(item.element.y - y))
+  const minDistance = Math.min(...distances)
+  return items.filter((item, i) => distances[i] == minDistance)
+}
 
 /** Prepares trend chart options/data for Chart.js */
 export class TrendChart {
@@ -121,9 +134,8 @@ export class TrendChart {
       scales: { x: { min: this.range?.from.getTime(), max: this.range?.to.getTime() } },
       // See https://www.chartjs.org/docs/latest/configuration/interactions.html
       interaction: {
-        // TODO Select nearest single point at nearest X value. I think we need a custom interation mode for that,
-        //   see https://www.chartjs.org/docs/latest/configuration/interactions.html#custom-interaction-modes
-        mode: "nearest",
+        // Use custom interaction mode
+        mode: "xnearest",
         intersect: false,
       },
       plugins: {
@@ -141,7 +153,7 @@ export class TrendChart {
         if (!elements.length) return
 
         // Look up the series and the time point indicated by the clicked elements
-        const series = elements.map((el) => this.series[el.datasetIndex!]!)
+        const series = elements.map((el) => this.getSeries()[el.datasetIndex!]!)
         const time = series[0]!.points[elements[0]!.index]!.x
         onClickPoint(series, time)
       },
