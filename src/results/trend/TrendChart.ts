@@ -27,25 +27,24 @@ export class TrendChart {
     /** Whether to show the totals series by default */
     public showTotal: boolean,
   ) {
-    this.enabled = series.map(() => true)
+    this.enabled = this.getSeries().map(() => true)
+  }
 
-    // Hide totals if specified or if drawing multiple bars series
-    const multipleBars = this.type == "bar" && this.series.length > 1
-    this.enabled[0] = this.showTotal && !multipleBars
+  /** Get series to show – hide totals unless it is the only one */
+  getSeries(): Series[] {
+    return this.series.slice(this.series.length > 1 ? 1 : 0)
   }
 
   /** Create Chart.js datasets for the active series. */
   getDatasets(totalLabel = ""): ChartDataset<ChartType, Point[]>[] {
     const palette = new GoldenAnglePaletteHsl()
-    return this.series.map((series, i) => {
+    return this.getSeries().map((series, i) => {
       const color = palette.shift()
       return {
         label: series.label ?? totalLabel,
         data: series.points,
         borderColor: color,
         backgroundColor: color,
-        // Stack totals bars separately
-        stack: i > 0 ? "default" : "totals",
         hidden: !this.enabled[i],
       }
     })

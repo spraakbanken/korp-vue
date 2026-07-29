@@ -4,7 +4,6 @@ import type { Point, Series } from "@/core/task/TrendTask"
 import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
-  Filler,
   LinearScale,
   LineElement,
   PointElement,
@@ -102,18 +101,10 @@ const enabledLabels = computed({
     <div class="position-relative w-100" style="height: 60svh; max-height: 66vw" :key="textColor">
       <SeriesLegend :legend v-model="enabledLabels" />
 
-      <!-- @vue-expect-error The Bar component expects only the built-in Point data type. -->
-      <Bar
-        v-if="type == 'bar'"
-        :id="`${id}-bar`"
-        :options="mainOptions"
-        :data="{ datasets }"
-        :plugins="[Tooltip]"
-      />
-      <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-      <Line
-        v-else
-        :id="`${id}-line`"
+      <!-- @vue-expect-error The Bar/Line component expects only the built-in Point data type. -->
+      <component
+        :is="type == 'bar' ? Bar : Line"
+        :id="`${id}-${type}`"
         :options="mainOptions"
         :data="{ datasets }"
         :plugins="[Tooltip]"
@@ -126,10 +117,8 @@ const enabledLabels = computed({
       <Line
         :id="`${id}-overview`"
         :options="overviewOptions"
-        :data="{
-          datasets: [{ ...datasets[0], hidden: false, fill: true }],
-        }"
-        :plugins="[Filler, SelectDragPlugin]"
+        :data="{ datasets }"
+        :plugins="[SelectDragPlugin]"
       />
     </div>
   </div>
