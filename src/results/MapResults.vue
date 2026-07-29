@@ -85,7 +85,7 @@ function onMarkerClick(marker: MarkerData) {
   const cqps = [queryData.searchCqp, queryData.subCqp, cqpGeo]
   const readingMode = queryData.label === "paragraph__geocontext"
   const task = new ExampleTask(queryData.corpora, cqps, queryData.within, readingMode)
-  createTab(t("result.kwic"), task)
+  createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Map", "Subsearch")
 }
 

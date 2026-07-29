@@ -146,7 +146,7 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
 
   const within = proxy.getParams()?.default_within
   const task = new ExampleTask(corpusIds, cqps, within)
-  createTab(t("result.kwic"), task)
+  createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Statistics", "Subsearch")
 }
 
@@ -161,7 +161,7 @@ function openTrendTab() {
     activeSearch.value!.corpora,
     withinSearched!,
   )
-  createTab(t("result.trend"), task)
+  createTab(() => t("result.trend"), task)
 }
 
 function openMapTab(attribute: MapAttributeOption, relative: boolean) {
@@ -174,7 +174,7 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
     withinSearched!,
     relative,
   )
-  createTab(t("result.map"), task)
+  createTab(() => t("result.map"), task)
 }
 
 function getSubqueries() {

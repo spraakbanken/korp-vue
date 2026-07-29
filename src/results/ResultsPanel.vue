@@ -3,7 +3,6 @@ import { useAppStore } from "@/store/useAppStore"
 import { storeToRefs } from "pinia"
 import { vTab } from "@/bootstrap"
 import { useDynamicTabs } from "./useDynamicTabs"
-import { useLocale } from "@/i18n/useLocale"
 import { defineAsyncComponent, ref, watchEffect, type Component } from "vue"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
@@ -38,7 +37,6 @@ if (wordpicEnabled) FIXED_TABS.push({ key: 3, name: "wordpic" })
 
 const store = useAppStore()
 const { dynamicTabs, closeTab } = useDynamicTabs()
-const { locObj } = useLocale()
 const isStatisticsAwake = ref(false)
 const isWordpicAwake = ref(false)
 
@@ -132,7 +130,7 @@ function selectTaskResultComponent(task: TaskBase): Component | null {
         :aria-selected="currentTab == tab.id"
         @click="currentTab = tab.id"
       >
-        {{ locObj(tab.label) }}
+        {{ tab.getLabel() }}
         <TabProgressBar :progress="progressMap[tab.id]" />
         <a
           href="#"

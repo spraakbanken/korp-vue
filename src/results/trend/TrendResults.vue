@@ -102,7 +102,7 @@ function onClickPoint(series: Series[], time: Moment) {
   // Open subsearch in new tab
   const cqps = compact([props.task.cqp, seriesCqp, timeCqp])
   const task = new ExampleTask(props.task.corpusSet.getIds(), cqps, props.task.defaultWithin)
-  createTab(t("result.kwic"), task)
+  createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Trend", "Subsearch")
 }
 

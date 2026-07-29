@@ -1,21 +1,19 @@
-import type { LangString } from "@/core/model/locale"
 import type { TaskBase } from "@/core/task/TaskBase"
 import { randomString } from "@/core/util"
 import { reactive } from "vue"
 
 export type DynamicTab = {
   readonly id: string
-  readonly label: LangString
+  readonly getLabel: () => string
   readonly task: TaskBase
 }
 
 const dynamicTabs = reactive<DynamicTab[]>([])
 
 export function useDynamicTabs() {
-  // TODO Include all translations in the label arg, so we can retranslate when lang is changed.
-  function createTab(label: LangString, task: TaskBase) {
+  function createTab(getLabel: () => string, task: TaskBase) {
     const id = randomString()
-    const tab = { id, label, task }
+    const tab = { id, getLabel, task }
     dynamicTabs.push(tab)
   }
 

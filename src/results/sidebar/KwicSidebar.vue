@@ -63,7 +63,7 @@ function openReadingMode() {
   if (row && isKwic(row)) {
     const textId = row.structs.text__id
     if (!textId) throw new Error("Selected row has no text__id")
-    createTab(t("result.reader"), new TextTask(corpus.value!, textId))
+    createTab(() => t("result.reader"), new TextTask(corpus.value!, textId))
   }
 }
 </script>

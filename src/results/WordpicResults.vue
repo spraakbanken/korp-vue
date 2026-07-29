@@ -78,7 +78,7 @@ const onOptionsChange = debounce(() => {
 
 function onClickRow(row: MatchedRelation): void {
   const task = new WordpicExampleTask(activeSearch.value!.corpora, row.source.join())
-  createTab(t("result.kwic"), task)
+  createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Wordpic", "Subsearch")
 }
 

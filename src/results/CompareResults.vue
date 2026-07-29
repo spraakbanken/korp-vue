@@ -23,7 +23,7 @@ const result = computedAsync<CompareResult>(async () => {
 
 function clickItem(side: 0 | 1, item: CompareItem) {
   const exampleTask = props.task.createExampleTask(side, item)
-  createTab(t("result.kwic"), exampleTask)
+  createTab(() => t("result.kwic"), exampleTask)
   matomo.value?.trackEvent("Compare", "Subsearch")
 }
 </script>

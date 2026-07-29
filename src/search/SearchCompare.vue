@@ -47,7 +47,7 @@ function submit() {
     return
   const task = new CompareTask(queryLeft.value, queryRight.value, [attribute.value.name])
   matomo.value?.trackEvent("Search", "Submit search", "Compare")
-  createTab(t("search.compare"), task)
+  createTab(() => t("search.compare"), task)
 }
 
 /** Remove the currently selected left or right search */
