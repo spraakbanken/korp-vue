@@ -5,7 +5,6 @@ import { FORMATS, type Level } from "@/core/trend/util"
 import {
   Chart,
   Filler,
-  Legend,
   LinearScale,
   LineElement,
   PointElement,
@@ -22,6 +21,7 @@ import { useI18n } from "vue-i18n"
 import { useDark } from "@vueuse/core"
 import { TrendChart, type Range } from "./TrendChart"
 import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
+import SeriesLegend from "../SeriesLegend.vue"
 
 const props = defineProps<{
   series: Series[]
@@ -51,7 +51,6 @@ watchEffect(() => (trendChart.range = props.range))
 watchEffect(() => (trendChart.locale = locale.value))
 
 // Update text color when theme changes
-// TODO Does not affect legend
 watchEffect(() => (Chart.defaults.color = textColor.value!))
 
 Chart.register(LinearScale, TimeScale, PointElement, LineElement)
@@ -78,19 +77,38 @@ const overviewOptions = computed(() => trendChart.getOverviewOptions(onSelectRan
 const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() =>
   trendChart.getDatasets(t("result.statistics.total")),
 )
+
+/** List of label-color tuples */
+const legend = computed(() =>
+  datasets.value.map((dataset) => ({
+    label: String(dataset.label),
+    color: String(dataset.borderColor),
+  })),
+)
+
+const labels = computed(() => legend.value.map((legend) => legend.label))
+
+/** A "writable computed" to translate between the list of labels used by SeriesLegend and the list of booleans used by the chart model */
+const enabledLabels = computed({
+  get: () => labels.value.filter((_, i) => trendChart.enabled[i]),
+  set: (labelsNew: string[]) =>
+    trendChart.setEnabled(labels.value.map((label) => labelsNew.includes(label))),
+})
 </script>
 
 <template>
   <div>
     <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
     <div class="position-relative w-100" style="height: 60svh; max-height: 66vw" :key="textColor">
+      <SeriesLegend :legend v-model="enabledLabels" />
+
       <!-- @vue-expect-error The Bar component expects only the built-in Point data type. -->
       <Bar
         v-if="type == 'bar'"
         :id="`${id}-bar`"
         :options="mainOptions"
         :data="{ datasets }"
-        :plugins="[Legend, Tooltip]"
+        :plugins="[Tooltip]"
       />
       <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
       <Line
@@ -98,7 +116,7 @@ const datasets = computed<ChartDataset<"line" | "bar", Point[]>[]>(() =>
         :id="`${id}-line`"
         :options="mainOptions"
         :data="{ datasets }"
-        :plugins="[Legend, Tooltip]"
+        :plugins="[Tooltip]"
       />
     </div>
 

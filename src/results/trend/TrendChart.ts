@@ -11,6 +11,8 @@ export type Range = { from: Date; to: Date }
 
 /** Prepares trend chart options/data for Chart.js */
 export class TrendChart {
+  /** Whether each series is enabled */
+  enabled: boolean[]
   locale?: string
   /** Current zoom range */
   range?: Range
@@ -24,24 +26,27 @@ export class TrendChart {
     public series: Series[],
     /** Whether to show the totals series by default */
     public showTotal: boolean,
-  ) {}
+  ) {
+    this.enabled = series.map(() => true)
+
+    // Hide totals if specified or if drawing multiple bars series
+    const multipleBars = this.type == "bar" && this.series.length > 1
+    this.enabled[0] = this.showTotal && !multipleBars
+  }
 
   /** Create Chart.js datasets for the active series. */
   getDatasets(totalLabel = ""): ChartDataset<ChartType, Point[]>[] {
     const palette = new GoldenAnglePaletteHsl()
     return this.series.map((series, i) => {
       const color = palette.shift()
-      const hideTotals = this.type == "bar" && this.series.length > 1
       return {
-        // TODO HTML in labels is being escaped
         label: series.label ?? totalLabel,
         data: series.points,
         borderColor: color,
         backgroundColor: color,
         // Stack totals bars separately
         stack: i > 0 ? "default" : "totals",
-        // Hide totals bars by default
-        hidden: i == 0 && (!this.showTotal || hideTotals),
+        hidden: !this.enabled[i],
       }
     })
   }
@@ -153,5 +158,9 @@ export class TrendChart {
       })
 
     return options
+  }
+
+  setEnabled(enabled: boolean[]): void {
+    this.enabled = [...enabled]
   }
 }
