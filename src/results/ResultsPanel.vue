@@ -22,7 +22,7 @@ const KwicResults = defineAsyncComponent(() => import("./kwic/KwicResults.vue"))
 const MapResults = defineAsyncComponent(() => import("./MapResults.vue"))
 const StatisticsResults = defineAsyncComponent(() => import("./statistics/StatisticsResults.vue"))
 const TextResults = defineAsyncComponent(() => import("./text/TextResults.vue"))
-const TrendResults = defineAsyncComponent(() => import("./TrendResults.vue"))
+const TrendResults = defineAsyncComponent(() => import("./trend/TrendResults.vue"))
 const WordpicResults = defineAsyncComponent(() => import("./WordpicResults.vue"))
 
 type TabId = FixedTabId | DynamicTabId

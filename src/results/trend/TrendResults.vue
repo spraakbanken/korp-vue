@@ -21,7 +21,7 @@ import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
 import OptionsBar from "@/components/OptionsBar.vue"
 import TrendTable from "./TrendTable.vue"
-import ExportButton from "./ExportButton.vue"
+import ExportButton from "../ExportButton.vue"
 import { useAppStore } from "@/store/useAppStore.ts"
 import type { Range } from "./TrendChart.ts"
 
