@@ -15,6 +15,7 @@ import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch
 import { useI18n } from "vue-i18n"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
+import SeriesLegend from "./SeriesLegend.vue"
 
 const props = defineProps<{
   task: MapTask
@@ -38,6 +39,11 @@ let model: MapModel
 /** Selected markers grouped by location. Makes a difference when clustering is enabled. */
 const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
   groupBy(markersList.value, (marker) => marker.point.name),
+)
+
+/** List of label-color tuples */
+const legend = computed(() =>
+  Object.entries(seriesAll.value).map(([label, series]) => ({ label, color: series.color })),
 )
 
 onMounted(() => {
@@ -103,26 +109,10 @@ onBeforeUnmount(() => {
           {{ $t("result.map.cluster") }}
         </label>
       </div>
-
-      <!-- Toggleable legend -->
-      <div
-        class="d-flex flex-grow-1 justify-content-end flex-wrap column-gap-3 align-items-baseline"
-      >
-        <div v-for="(series, label) in seriesAll" :key="label" class="form-check">
-          <input
-            type="checkbox"
-            :id="id + '-' + label"
-            :value="label"
-            v-model="enabledSeries"
-            class="form-check-input"
-            :style="{ backgroundColor: series.color, borderColor: series.color }"
-          />
-          <label :for="id + '-' + label" class="form-check-label">
-            {{ label }}
-          </label>
-        </div>
-      </div>
     </OptionsBar>
+
+    <!-- Toggleable legend -->
+    <SeriesLegend :legend v-model="enabledSeries" />
 
     <!-- Stacking container -->
     <div class="w-100 position-relative" style="height: 90svh" v-fade-if-loading="progress">

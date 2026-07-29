@@ -303,6 +303,8 @@ result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, an adaptatio
 result.wordpic.query.incompatible: Incompatible search query
 result.wordpic.query.incompatible.help: The search query for a word picture must be exactly one word or lemgram.
 
+result.legend: Legend
+
 pos.nn: noun
 pos.av: adjective
 pos.jj: adjective

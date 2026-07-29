@@ -304,6 +304,8 @@ result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassnin
 result.wordpic.query.incompatible: Ogiltig sökfråga
 result.wordpic.query.incompatible.help: Sökfrågan för ordbild måste innehålla exakt ett ord eller lemgram.
 
+result.legend: Förklaring
+
 pos.nn: substantiv
 pos.av: adjektiv
 pos.jj: adjektiv
