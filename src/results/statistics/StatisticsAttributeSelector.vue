@@ -51,8 +51,14 @@ watchImmediate([modelSelected, modelInsensitive, attributes], ([selectedNew], [s
 
 /** Add a selected attribute option to the selection model */
 function toggle(name: string) {
-  if (selectedLocal.has(name)) selectedLocal.delete(name)
-  else selectedLocal.add(name)
+  if (selectedLocal.has(name)) {
+    selectedLocal.delete(name)
+    if (insensitiveLocal.has(name)) insensitiveLocal.delete(name)
+  } else {
+    selectedLocal.add(name)
+    if (settings["statistics_case_insensitive_default"] && name == "word")
+      insensitiveLocal.add("word")
+  }
 }
 
 /** Toggle the ignore case option for a selected attribute */
