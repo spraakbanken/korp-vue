@@ -41,9 +41,9 @@ export type Store = {
   /** Search result order */
   sort: QueryParamSort
   /** Attributes on which to aggregate counts in statistics query */
-  stats_reduce: string
+  stats_reduce: string[]
   /** Attributes on which to aggregate counts, case-insensitively, in statistics query */
-  stats_reduce_insensitive: string
+  stats_reduce_insensitive: string[]
   /** Whether frequency numbers should be shown as absolute or relative (per million tokens) */
   statsRelative: boolean
   /** In simple search, match end of word */

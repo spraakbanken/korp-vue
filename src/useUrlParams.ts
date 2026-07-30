@@ -43,8 +43,8 @@ export function useUrlParams() {
   watchUrl("search")
   watchUrl("search_tab", (value) => (value && parseInt(value)) || 0)
   watchUrl("sort", (value) => value || "")
-  watchUrl("stats_reduce", (value) => value || "word")
-  watchUrl("stats_reduce_insensitive", (value) => value || "")
+  watchUrl("stats_reduce", (value) => (value ? value.split(",") : ["word"]))
+  watchUrl("stats_reduce_insensitive", (value) => (value ? value.split(",") : []))
   watchUrl("suffix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("within", (value) => value || getDefaultWithin())
 
@@ -88,8 +88,13 @@ export function useUrlParams() {
     url.search = store.search || undefined
     url.search_tab = store.search_tab != 0 ? `${store.search_tab}` : undefined
     url.sort = store.sort || undefined
-    url.stats_reduce = store.stats_reduce == "word" ? undefined : store.stats_reduce
-    url.stats_reduce_insensitive = store.stats_reduce_insensitive || undefined
+
+    url.stats_reduce = store.stats_reduce.join()
+    if (url.stats_reduce == "word") url.stats_reduce = undefined
+
+    url.stats_reduce_insensitive = store.stats_reduce_insensitive.join()
+    if (url.stats_reduce_insensitive == "") url.stats_reduce_insensitive = undefined
+
     url.suffix = store.suffix ? "" : undefined
     url.within = store.within == getDefaultWithin() ? undefined : store.within
 

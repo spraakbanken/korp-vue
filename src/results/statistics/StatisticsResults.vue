@@ -37,6 +37,7 @@ const UPDATE_DELAY_MS = 500
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
+const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { setError, clearError, errorMessage } = useError()
@@ -44,8 +45,6 @@ const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 const matomo = useMatomo()
 
-const attributesSelected = ref<string[]>([])
-const attributesInsensitive = ref<string[]>([])
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
@@ -64,17 +63,10 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
-watchEffect(() => {
-  attributesSelected.value = store.stats_reduce ? store.stats_reduce.split(",") : ["word"]
-  attributesInsensitive.value = store.stats_reduce_insensitive
-    ? store.stats_reduce_insensitive.split(",")
-    : []
-})
-
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())
 
-watch([attributesSelected, attributesInsensitive], (valuesNew, valuesOld) => {
+watch([stats_reduce, stats_reduce_insensitive], (valuesNew, valuesOld) => {
   if (!isEqual(valuesNew, valuesOld)) onOptionsChange()
 })
 
@@ -85,8 +77,8 @@ async function doSearch() {
   proxy.abort()
   clearError()
   withinSearched = store.within
-  const attrs = attributesSelected.value
-  const ignoreCase = !!attributesInsensitive.value.length
+  const attrs = stats_reduce.value
+  const ignoreCase = !!stats_reduce_insensitive.value.length
   progress.value = 0
 
   // Statistics does not support parallel queries
@@ -129,11 +121,7 @@ async function doSearch() {
   unsupportedAttributes.value = proxy.unsupportedAttributes
 }
 
-const onOptionsChange = debounce(() => {
-  store.stats_reduce = attributesSelected.value.join()
-  store.stats_reduce_insensitive = attributesInsensitive.value.join()
-  doSearch()
-}, UPDATE_DELAY_MS)
+const onOptionsChange = debounce(doSearch, UPDATE_DELAY_MS)
 
 /** Open a dynamic subsearch tab when clicking a frequency value */
 function onClickValue(corpusIds: string[], subcqp?: string) {
@@ -175,13 +163,13 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
 }
 
 function getSubqueries() {
-  const ignoreCase = !!attributesInsensitive.value.length
+  const ignoreCase = !!stats_reduce_insensitive.value.length
 
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
     const cqp = getCqp(row.statsValues, ignoreCase)
-    const label = attributesSelected.value.map((attr) => row.formattedValue[attr]).join(", ")
+    const label = stats_reduce.value.map((attr) => row.formattedValue[attr]).join(", ")
     subqueries.push([cqp, label])
   }
   return subqueries
@@ -194,7 +182,7 @@ function createExport() {
 
   return createStatisticsCsv(
     data.value!.rows,
-    attributesSelected.value,
+    stats_reduce.value,
     corpusTitles,
     statsRelative.value,
     t("result.statistics.total"),
@@ -210,8 +198,8 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:
         <StatisticsAttributeSelector
-          v-model="attributesSelected"
-          v-model:insensitive="attributesInsensitive"
+          v-model="stats_reduce"
+          v-model:insensitive="stats_reduce_insensitive"
         />
       </label>
 
@@ -276,7 +264,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
     <StatisticsGrid
       v-if="data"
-      :attributes="attributesSelected"
+      :attributes="stats_reduce"
       :rows="data.rows"
       :params="data.params"
       v-model="rowsSelected"
