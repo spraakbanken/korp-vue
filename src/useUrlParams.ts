@@ -44,7 +44,15 @@ export function useUrlParams() {
   watchUrl("search_tab", (value) => (value && parseInt(value)) || 0)
   watchUrl("sort", (value) => value || "")
   watchUrl("stats_reduce", (value) => (value ? value.split(",") : ["word"]))
-  watchUrl("stats_reduce_insensitive", (value) => (value ? value.split(",") : []))
+  watchUrl("stats_reduce_insensitive", (value) =>
+    value == ""
+      ? []
+      : value
+        ? value.split(",")
+        : settings["statistics_case_insensitive_default"]
+          ? ["word"]
+          : [],
+  )
   watchUrl("suffix", (value) => value != undefined || url.mid_comp != undefined)
   watchUrl("within", (value) => value || getDefaultWithin())
 
@@ -93,7 +101,9 @@ export function useUrlParams() {
     if (url.stats_reduce == "word") url.stats_reduce = undefined
 
     url.stats_reduce_insensitive = store.stats_reduce_insensitive.join()
-    if (url.stats_reduce_insensitive == "") url.stats_reduce_insensitive = undefined
+    const statsInsensitiveDefault = settings["statistics_case_insensitive_default"] ? "word" : ""
+    if (url.stats_reduce_insensitive == statsInsensitiveDefault)
+      url.stats_reduce_insensitive = undefined
 
     url.suffix = store.suffix ? "" : undefined
     url.within = store.within == getDefaultWithin() ? undefined : store.within

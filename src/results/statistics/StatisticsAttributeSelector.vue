@@ -10,6 +10,7 @@ import { corpusListing } from "@/core/corpora/corpusListing"
 import { vPopover } from "@/bootstrap"
 import { truncateStr } from "@/core/util"
 import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
+import settings from "@/core/config"
 
 const modelSelected = defineModel<string[]>({ default: [] })
 const modelInsensitive = defineModel<string[]>("insensitive", { default: [] })
@@ -31,12 +32,21 @@ const selectedAttributes = computed(() =>
 )
 
 // Validate and update selection against incoming changes
-watchImmediate([modelSelected, attributes], () => {
-  // Remove non-available attributes
+watchImmediate([modelSelected, modelInsensitive, attributes], ([selectedNew], [selectedOld]) => {
+  // Deselect removed attributes
   const selected = new Set(
     modelSelected.value.filter((name) => attributes.value.some((attr) => attr.name == name)),
   )
-  commit(selected, insensitiveLocal)
+  const insensitive = new Set(insensitiveLocal)
+
+  // If none selected, default to word.
+  if (selectedOld && selectedNew.includes("word") && !selectedOld.includes("word")) {
+    selected.add("word")
+    // If configured, default to case-insensitive
+    if (settings["statistics_case_insensitive_default"]) insensitive.add("word")
+  }
+
+  commit(selected, insensitive)
 })
 
 /** Add a selected attribute option to the selection model */
@@ -60,6 +70,7 @@ function commit(selected: Set<string>, insensitive: Set<string>) {
 
   // If none selected, default to word.
   if (!selected.size) selected.add("word")
+
   // Remove insensitive selections that are no longer selected
   insensitive = new Set([...insensitive].filter((name) => selected.has(name)))
 

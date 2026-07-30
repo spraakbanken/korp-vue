@@ -23,8 +23,9 @@ export const useAppStore = defineStore("app", () => {
   const sort = ref<Store["sort"]>("")
   const statsRelative = ref(false)
   const stats_reduce = ref(["word"])
-  // TODO Use setting statistics_case_insensitive_default
-  const stats_reduce_insensitive = ref<string[]>([])
+  const stats_reduce_insensitive = ref<string[]>(
+    settings["statistics_case_insensitive_default"] ? ["word"] : [],
+  )
   const suffix = ref(false)
   const within = ref(getDefaultWithin())
 
