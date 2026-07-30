@@ -76,11 +76,13 @@ function selectNone() {
 
         <CorpusTimeGraph v-if="timeData?.byYear?.length" :data="timeData" />
 
-        <div class="btn-group">
+        <div class="btn-group-vertical">
           <button type="button" class="btn btn-sm btn-secondary" @click="selectAll()">
+            <fa-icon icon="fa-solid fa-check-double" />
             {{ $t("corpus.selection.select_all") }}
           </button>
           <button type="button" class="btn btn-sm btn-secondary" @click="selectNone()">
+            <fa-icon icon="fa-solid fa-border-none" />
             {{ $t("corpus.selection.select_none") }}
           </button>
         </div>
