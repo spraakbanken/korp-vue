@@ -4,15 +4,13 @@ import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/sta
 import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { watchDeep, watchImmediate } from "@vueuse/core"
+import { watchImmediate } from "@vueuse/core"
 import { computed, onMounted, ref, watch, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { debounce } from "lodash-es"
-import StatisticsAttributeSelector, {
-  type StatisticsAttributeSelectorModel,
-} from "./StatisticsAttributeSelector.vue"
+import { debounce, isEqual } from "lodash-es"
+import StatisticsAttributeSelector from "./StatisticsAttributeSelector.vue"
 import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { TrendTask } from "@/core/task/TrendTask"
@@ -46,10 +44,8 @@ const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 const matomo = useMatomo()
 
-const attributesSelected = ref<StatisticsAttributeSelectorModel>({
-  selected: [],
-  insensitive: [],
-})
+const attributesSelected = ref<string[]>([])
+const attributesInsensitive = ref<string[]>([])
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const data = ref<StatisticsProcessed>()
 /** Whether searched material is dated */
@@ -69,16 +65,18 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
 watchEffect(() => {
-  attributesSelected.value = {
-    selected: store.stats_reduce ? store.stats_reduce.split(",") : ["word"],
-    insensitive: store.stats_reduce_insensitive ? store.stats_reduce_insensitive.split(",") : [],
-  }
+  attributesSelected.value = store.stats_reduce ? store.stats_reduce.split(",") : ["word"]
+  attributesInsensitive.value = store.stats_reduce_insensitive
+    ? store.stats_reduce_insensitive.split(",")
+    : []
 })
 
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())
 
-watchDeep(attributesSelected, () => onOptionsChange())
+watch([attributesSelected, attributesInsensitive], (valuesNew, valuesOld) => {
+  if (!isEqual(valuesNew, valuesOld)) onOptionsChange()
+})
 
 async function doSearch() {
   // Empty search is possible when doing comparison first
@@ -88,7 +86,7 @@ async function doSearch() {
   clearError()
   withinSearched = store.within
   const attrs = attributesSelected.value
-  const ignoreCase = !!attrs.insensitive.length
+  const ignoreCase = !!attributesInsensitive.value.length
   progress.value = 0
 
   // Statistics does not support parallel queries
@@ -96,7 +94,7 @@ async function doSearch() {
 
   let counts: CountsMerged
   try {
-    counts = await proxy.makeRequest(cqpValue, attrs.selected, withinSearched, ignoreCase)
+    counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
     progress.value = 100
   } catch (error) {
     progress.value = undefined
@@ -110,7 +108,7 @@ async function doSearch() {
     return
   }
 
-  const stringifiers = fromKeys(attrs.selected, (name) => {
+  const stringifiers = fromKeys(attrs, (name) => {
     const attribute = corpora.getReduceAttrs()[name]
     return attribute ? getStringifier(attribute) : String
   })
@@ -118,7 +116,7 @@ async function doSearch() {
   data.value = await processStatisticsResult(
     corpora.stringify(false),
     counts,
-    attrs.selected,
+    attrs,
     ignoreCase,
     cqpValue,
     stringifiers,
@@ -132,9 +130,8 @@ async function doSearch() {
 }
 
 const onOptionsChange = debounce(() => {
-  const { selected, insensitive } = attributesSelected.value
-  store.stats_reduce = selected.join()
-  store.stats_reduce_insensitive = insensitive.join()
+  store.stats_reduce = attributesSelected.value.join()
+  store.stats_reduce_insensitive = attributesInsensitive.value.join()
   doSearch()
 }, UPDATE_DELAY_MS)
 
@@ -178,15 +175,13 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
 }
 
 function getSubqueries() {
-  const ignoreCase = !!attributesSelected.value.insensitive.length
+  const ignoreCase = !!attributesInsensitive.value.length
 
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
     const cqp = getCqp(row.statsValues, ignoreCase)
-    const label = attributesSelected.value.selected
-      .map((attr) => row.formattedValue[attr])
-      .join(", ")
+    const label = attributesSelected.value.map((attr) => row.formattedValue[attr]).join(", ")
     subqueries.push([cqp, label])
   }
   return subqueries
@@ -199,7 +194,7 @@ function createExport() {
 
   return createStatisticsCsv(
     data.value!.rows,
-    attributesSelected.value.selected,
+    attributesSelected.value,
     corpusTitles,
     statsRelative.value,
     t("result.statistics.total"),
@@ -214,7 +209,10 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
     <OptionsBar>
       <label class="d-flex align-items-baseline gap-1">
         {{ $t("result.statistics.group_by") }}:
-        <StatisticsAttributeSelector v-model="attributesSelected" />
+        <StatisticsAttributeSelector
+          v-model="attributesSelected"
+          v-model:insensitive="attributesInsensitive"
+        />
       </label>
 
       <label class="form-check-label">
@@ -278,7 +276,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
     <StatisticsGrid
       v-if="data"
-      :attributes="attributesSelected.selected"
+      :attributes="attributesSelected"
       :rows="data.rows"
       :params="data.params"
       v-model="rowsSelected"

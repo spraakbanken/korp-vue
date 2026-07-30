@@ -11,12 +11,8 @@ import { vPopover } from "@/bootstrap"
 import { truncateStr } from "@/core/util"
 import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 
-export type StatisticsAttributeSelectorModel = {
-  selected: string[]
-  insensitive: string[]
-}
-
-const model = defineModel<StatisticsAttributeSelectorModel>({ required: true })
+const modelSelected = defineModel<string[]>({ default: [] })
+const modelInsensitive = defineModel<string[]>("insensitive", { default: [] })
 
 const corpusSelection = useReactiveCorpusSelection()
 const { locObj } = useLocale()
@@ -25,20 +21,20 @@ const attributes = computed(() => corpusSelection.getAttributeGroupsStatistics()
 const optionsGrouped = computed(
   () => groupBy(attributes.value, "group") as Record<AttributeOption["group"], AttributeOption[]>,
 )
-const selectedLocal = reactive(new Set<string>(model.value.selected))
-const insensitiveLocal = reactive(new Set<string>(model.value.insensitive))
+const selectedLocal = reactive(new Set<string>(modelSelected.value))
+const insensitiveLocal = reactive(new Set<string>(modelInsensitive.value))
 
 const selectedAttributes = computed(() =>
   compact(
-    model.value.selected.map((name) => attributes.value.find((option) => option.name === name)),
+    modelSelected.value.map((name) => attributes.value.find((option) => option.name === name)),
   ),
 )
 
 // Validate and update selection against incoming changes
-watchImmediate([model, attributes], () => {
+watchImmediate([modelSelected, attributes], () => {
   // Remove non-available attributes
   const selected = new Set(
-    model.value.selected.filter((name) => attributes.value.some((attr) => attr.name == name)),
+    modelSelected.value.filter((name) => attributes.value.some((attr) => attr.name == name)),
   )
   commit(selected, insensitiveLocal)
 })
@@ -73,12 +69,12 @@ function commit(selected: Set<string>, insensitive: Set<string>) {
   insensitiveLocal.clear()
   for (const name of insensitive) insensitiveLocal.add(name)
 
-  const value = {
-    selected: sortNames([...selected]),
-    insensitive: sortNames([...insensitive]),
-  }
+  const selectedList = sortNames([...selected])
+  const insensitiveList = sortNames([...insensitive])
+
   // Only update model value if changed
-  if (!isEqual(value, unref(model))) model.value = value
+  if (!isEqual(selectedList, unref(modelSelected))) modelSelected.value = selectedList
+  if (!isEqual(insensitiveList, unref(modelInsensitive))) modelInsensitive.value = insensitiveList
 }
 
 function getCorpusTitles(ids: string[]) {
