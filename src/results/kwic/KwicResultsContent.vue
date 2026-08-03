@@ -62,7 +62,7 @@ watchImmediate(
         class="flex-shrink-0"
       />
       <HitsDistributionBar
-        v-if="distribution && hitsCount > hpp"
+        v-if="distribution && distribution.length > 1 && hitsCount > hpp"
         :distribution
         :hpp
         v-model="page"

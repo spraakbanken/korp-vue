@@ -111,7 +111,7 @@ links.platforms.url: https://spraakbanken.gu.se/verktyg
 
 search.free_order: fri följd
 search.free_order.help: Sökorden får förekomma i obestämd ordning, och inte nödvändigtvis i följd.
-search.ignore_case: skiftlägesokänsligt
+search.ignore_case: skiftlägesoberoende
 
 search.history: Historik
 search.history.clear: Töm historik
