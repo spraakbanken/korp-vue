@@ -71,7 +71,7 @@ function selectTokenY(current: Element, delta: number): HTMLElement | undefined 
     }"
     @keydown="onKeydown"
   >
-    <div ref="text">
+    <div ref="text" class="vstack gap-2">
       <slot />
     </div>
 

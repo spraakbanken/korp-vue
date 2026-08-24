@@ -45,7 +45,7 @@ watchImmediate(
 </script>
 
 <template>
-  <SidebarProvider class="vstack gap-2" v-model="selectedToken">
+  <SidebarProvider v-model="selectedToken">
     <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': loading }">
       <div>{{ $t("result.kwic.hits_count") }}: {{ $n(hitsCount) }}</div>
       <div>
