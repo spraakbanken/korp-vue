@@ -1,7 +1,4 @@
-import { Lemgram } from "@/core/lemgram"
-import { Saldo } from "@/core/saldo"
 import type { Stringifier } from "./attributes.types"
-import { useI18n } from "vue-i18n"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
 import { escape } from "lodash-es"
@@ -14,7 +11,6 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
  * Custom stringifiers can be added using `provide`. For the sidebar, advanced output can be implemented as a formatter component instead.
  */
 export function useStringifiers() {
-  const { t } = useI18n()
   const { locObj } = useLocale()
 
   /** Custom stringifiers possibly provided by instance plugin */
@@ -34,7 +30,7 @@ export function useStringifiers() {
     return getDefaultStringifier(attribute)
   }
 
-  /** Handles a few standard attribute types */
+  /** Handles a few standard attribute stringification cases */
   const getDefaultStringifier: (attribute: Attribute) => Stringifier = (attribute) => (str) => {
     // Escape characters in raw value that could break HTML, like "<" and "&"
     str = escape(str)
@@ -44,12 +40,6 @@ export function useStringifiers() {
 
     // If the attribute has a translation table, look up the value there
     if (attribute.translation) str = locObj(attribute.translation[str])
-
-    // Parse some standard attribute types
-    if (["prefix", "suffix", "lex"].includes(attribute.name))
-      str = Lemgram.parse(str)?.toHtml(t) || str
-    else if (["saldo", "sense"].includes(attribute.name)) str = Saldo.parse(str)?.toHtml() || str
-    else if (attribute.name == "lemma") str = str.replace(/_/g, " ")
 
     return str
   }
