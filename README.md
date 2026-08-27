@@ -19,7 +19,7 @@ which was written in the discontinued AngularJS framework.
 ## User documentation
 
 - [About Korp](https://spraakbanken.gu.se/en/tools/korp)
-- [User manual](https://spraakbanken.gu.se/en/tools/korp/user-manual)
+- [User manual](docs/user_manual_eng.md)
 
 ## Developer documentation
 
