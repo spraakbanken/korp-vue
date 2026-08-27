@@ -10,7 +10,7 @@ const match = props.row.match[0]!
 
 <template>
   <tr>
-    <td class="pe-0 text-end" :class="{ 'border-bottom-0': props.row.aligned }">
+    <td class="pe-0 text-end" :class="{ 'border-bottom-0': props.row.link }">
       <KwicToken
         v-for="(token, i) in row.tokens.slice(0, match.start)"
         :key="i"
@@ -18,7 +18,7 @@ const match = props.row.match[0]!
       />
     </td>
 
-    <td class="kwic-match px-1 text-center w-0" :class="{ 'border-bottom-0': props.row.aligned }">
+    <td class="kwic-match px-1 text-center w-0" :class="{ 'border-bottom-0': props.row.link }">
       <KwicToken
         v-for="(token, i) in row.tokens.slice(match.start, match.end)"
         :key="i"
@@ -26,7 +26,7 @@ const match = props.row.match[0]!
       />
     </td>
 
-    <td class="ps-0 text-start" :class="{ 'border-bottom-0': props.row.aligned }">
+    <td class="ps-0 text-start" :class="{ 'border-bottom-0': props.row.link }">
       <KwicToken
         v-for="(token, i) in row.tokens.slice(match.end)"
         :key="i"

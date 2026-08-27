@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import settings from "@/core/config"
 import {
   isKwicRowToken,
+  isLinkedKwicRowToken,
   isPunctuation,
   isRowTokenEqual,
   parseWhitespace,
   type RowToken,
 } from "@/core/kwic/kwic"
 import { injectionKeys } from "@/injection"
+import { compact } from "lodash-es"
 import { computed, inject } from "vue"
 
 const props = defineProps<{
@@ -47,6 +50,27 @@ const isDepheadToSelected = computed(() => {
   const ref = props.rowToken.token.attrs.ref
   return dephead != undefined && ref != undefined && dephead == ref
 })
+
+/** In parallel mode, check if this token is linked to the selected token */
+const isLinkedToSelected = computed(() => {
+  if (!settings.parallel) return false
+  if (!selectedToken?.value) return false
+  const selected = selectedToken.value
+
+  // Selected token must be in the linked row.
+  if (selected.row.id != props.rowToken.row.link) return false
+
+  // Selected token must not be in the same row.
+  const linked = [props.rowToken, selected].find(isLinkedKwicRowToken)
+  const main = [props.rowToken, selected].find((x) => !isLinkedKwicRowToken(x))
+  if (!linked || !main || linked == main) return false
+
+  // Get language of the linked corpus from its corpus id
+  const [, lang] = linked.row.corpus.split("-")
+  // Check the token link
+  const linkrefs = compact(main.token.attrs[`wordlink-${lang}`]?.split("|")).map(Number)
+  return linkrefs.includes(Number(linked.token.attrs.linkref))
+})
 </script>
 
 <template>
@@ -64,6 +88,7 @@ const isDepheadToSelected = computed(() => {
       'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'bg-success-subtle text-success-emphasis': isRowTokenEqual(selectedToken, rowToken),
       'bg-info-subtle text-info-emphasis': isDepheadToSelected,
+      'bg-warning-subtle text-warning-emphasis': isLinkedToSelected,
       'text-muted': isKwicRowToken(rowToken) && !rowToken.token._matchSentence,
     }"
     @click.prevent.stop="selectedToken = rowToken"

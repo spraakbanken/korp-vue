@@ -1,4 +1,4 @@
-import { clone, mapKeys, omit } from "lodash-es"
+import { mapKeys, omit } from "lodash-es"
 import type { ApiKwic, KwicMatch, Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
@@ -17,10 +17,8 @@ export type KwicRow = {
   structs: Record<string, string | null>
   /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
   match: KwicMatch[]
-  /** Hits from aligned corpora if available, otherwise omitted */
-  aligned?: {
-    [linkedCorpusId: `${string}-${string}`]: Token[]
-  }
+  /** The id of a linked row, if any */
+  link?: string
 }
 
 /** Row from a secondary language in parallel mode. */
@@ -30,6 +28,8 @@ export type LinkedKwicRow = {
   tokens: LinkedKwicToken[]
   isLinked: true
   corpus: string
+  /** The id of the corresponding main row */
+  link: string
 }
 
 /** A row introducing the next corpus in the hit listing. */
@@ -151,15 +151,16 @@ export function massageData(rows: ApiKwic[]): Row[] {
     })
 
     // Add normal KWIC row
-    output.push({
+    const rowOut: KwicRow = {
       id: getId(),
       corpus: mainCorpusId,
       tokens,
       structs: { ...row.structs },
       match: matches,
-      aligned: row.aligned ? clone(row.aligned) : undefined,
-    })
+    }
+    output.push(rowOut)
 
+    // In parallel mode, create linked row
     if (row.aligned) {
       const [corpus, tokensAligned] = Object.entries(row.aligned)[0]!
 
@@ -169,12 +170,16 @@ export function massageData(rows: ApiKwic[]): Row[] {
         attrs: omit(token, ["structs"]),
       }))
 
+      const id = getId()
+      rowOut.link = id
+
       // Add linked KWIC row
       output.push({
-        id: getId(),
+        id,
         corpus,
         tokens,
         isLinked: true,
+        link: rowOut.id,
       })
     }
 
