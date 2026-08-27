@@ -2,7 +2,6 @@
 import { useTemplateRef } from "vue"
 import { useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
-import { useSortable } from "@vueuse/integrations/useSortable"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
   isCqpStruct,
@@ -19,11 +18,15 @@ const tokens = defineModel<CqpQuery>({ required: true })
 
 const [isAddingBoundary, toggleAddingBoundary] = useToggle(false)
 const rowEl = useTemplateRef("row")
-useSortable(rowEl, tokens, {
-  animation: 200,
-  draggable: ".card",
-  filter: ".card .card",
-  preventOnFilter: false,
+
+// The useSortable lib is pretty big, and not vital, so import it dynamically
+import("@vueuse/integrations/useSortable").then(({ useSortable }) => {
+  useSortable(rowEl, tokens, {
+    animation: 200,
+    draggable: ".card",
+    filter: ".card .card",
+    preventOnFilter: false,
+  })
 })
 
 const createToken = (): CqpToken => ({ and_block: [[createCondition("")]] })
