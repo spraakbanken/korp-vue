@@ -54,7 +54,7 @@ function addBoundary(start: boolean) {
 </script>
 
 <template>
-  <div ref="row" class="hstack flex-wrap gap-3 justify-content-center">
+  <div ref="row" class="hstack flex-wrap gap-3">
     <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2 bg-info-subtle">
       <QueryToken
         v-if="isCqpToken(token)"

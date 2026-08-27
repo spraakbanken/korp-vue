@@ -97,7 +97,7 @@ function formatWithin(key: string) {
     <GlobalFilters />
 
     <!-- Side-scrolling query builder -->
-    <QueryBuilder v-model="tokens" />
+    <QueryBuilder v-model="tokens" class="justify-content-center" />
 
     <!-- Instructions -->
     <div class="small text-muted text-center">

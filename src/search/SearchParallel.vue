@@ -126,7 +126,7 @@ function doSearch(force = false) {
           </div>
 
           <!-- Query builder -->
-          <QueryBuilder v-model="query.query" />
+          <QueryBuilder v-model="query.query" class="justify-content-start" />
         </div>
 
         <!-- Button to add new query -->
