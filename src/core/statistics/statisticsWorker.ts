@@ -7,6 +7,7 @@ import type {
   StatisticsWorkerMessage,
 } from "./statistics.types"
 import type { StatsRow } from "../backend/types/count"
+import { splitSuffix } from "../util"
 
 /*
     This is optimized code for transforming the statistics data.
@@ -26,7 +27,7 @@ onmessage = function (e) {
   const simplifyValue = function (values: string[] | string, attr: string): string {
     if (message.groupStatistics.includes(attr))
       // For these attrs, ":" must only be used when merging is desired, e.g. for ranking or MWE indexing.
-      values = (values as string[]).map((value) => value.replace(/(:.+?)($| )/g, "$2"))
+      values = (values as string[]).map((value) => splitSuffix(value)[0])
     // for struct attributes only a value is sent, not list
     return Array.isArray(values) ? values.join(" ") : values
   }
