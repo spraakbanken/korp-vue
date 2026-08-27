@@ -76,6 +76,10 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
     const [custom_attributes, _custom_attributes_order] =
       transformAttributes2<CustomAttribute>("custom_attributes")
 
+    // TODO Move into config
+    if (attributes["lemma"]) attributes["lemma"].stringify = "lemma"
+    if (attributes["compwf"]) attributes["compwf"].stringify = "compwf"
+
     return {
       ...omit(corpus, ["pos_attributes", "limited_access"]),
       attributes,
