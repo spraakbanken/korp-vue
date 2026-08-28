@@ -24,7 +24,7 @@ const model = defineModel({
     const [d1, d2, t1, t2] = parts
     /** `("20260101", "120000")` => `"2026-01-01T12:00"` */
     const numbersToDate = (d: string, t: string) =>
-      d.replace(/(....)(..)(..)/, "$1-$2-$3") + "T" + t.replace(/(..)(..)/, "$1:$2")
+      d.replace(/(....)(..)(..)/, "$1-$2-$3") + "T" + t.replace(/(..)(..).*/, "$1:$2")
     return [numbersToDate(d1, t1), numbersToDate(d2, t2)] as DateRange
   },
 
