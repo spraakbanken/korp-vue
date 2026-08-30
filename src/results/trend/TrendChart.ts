@@ -96,6 +96,7 @@ export class TrendChart {
 
     const onSelectComplete = (event: SelectDragEvent): void => {
       // If clicked and not dragged, reset to full range
+      // TODO Remove the SelectDragPlugin selection
       if (event.range[0] == event.range[1]) {
         // Only if a range is set
         if (this.range) onSelectRange(undefined)
@@ -120,6 +121,7 @@ export class TrendChart {
           // Note: Getting uncaught exceptions "TypeError: Cannot read properties of null (reading 'ownerDocument')" – broken destroy handler?
           onSelectComplete,
         },
+        tooltip: false,
       },
     })
   }
