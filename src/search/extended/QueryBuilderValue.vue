@@ -2,7 +2,7 @@
 /** @file Determines what widget component to show to input a condition value */
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import { injectionKeys } from "@/injection"
-import { computed, inject, useId } from "vue"
+import { computed, inject, useId, watch } from "vue"
 import DefaultWidget from "./widgets/DefaultWidget.vue"
 import settings, { getConfigurable } from "@/core/config"
 import LemgramAutocompleteWidget from "./widgets/LemgramAutocompleteWidget.vue"
@@ -17,6 +17,7 @@ import type { OperatorKorp } from "@/core/cqp/cqp.types"
 import { regescape, unregescape } from "@/core/util"
 import SenseAutocompleteWidget from "./widgets/SenseAutocompleteWidget.vue"
 import { useI18n } from "vue-i18n"
+import { isEqual } from "lodash-es"
 
 const model = defineModel<string>({
   required: true,
@@ -74,6 +75,14 @@ const widgetProps = computed<WidgetProps>(() => ({
   operator: props.operator,
   options: widget.value.options || {},
 }))
+
+// Reset input when switching widget
+watch(widget, (widgetNew, widgetOld) => {
+  // Only if component changes; sometimes saves re-typing when switching between similar attributes.
+  if (isEqual(widgetNew.component, widgetOld.component)) return
+  // It seems timeout is needed for the new component to react correctly to the change
+  setTimeout(() => (model.value = ""))
+})
 </script>
 
 <template>
