@@ -290,6 +290,8 @@ result.trend.view: View
 result.trend.view.line: Line
 result.trend.view.bar: Bar
 result.trend.view.table: Table
+result.trend.overview: Overview
+result.trend.overview.help: Click and drag here to zoom the main chart.
 result.trend.table.value: Value
 
 result.wordpic: Word picture

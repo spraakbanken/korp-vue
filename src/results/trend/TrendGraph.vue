@@ -96,11 +96,11 @@ const enabledLabels = computed({
 </script>
 
 <template>
-  <div>
+  <div class="vstack gap-2">
+    <SeriesLegend :legend v-model="enabledLabels" />
+
     <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
     <div class="position-relative w-100" style="height: 60svh; max-height: 66vw" :key="textColor">
-      <SeriesLegend :legend v-model="enabledLabels" />
-
       <!-- @vue-expect-error The Bar/Line component expects only the built-in Point data type. -->
       <component
         :is="type == 'bar' ? Bar : Line"
@@ -111,15 +111,20 @@ const enabledLabels = computed({
       />
     </div>
 
-    <!-- Full-span overview for zooming -->
-    <div class="mt-4 position-relative w-100" style="height: 5rem" :key="isDark ? 'dark' : 'light'">
-      <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
-      <Line
-        :id="`${id}-overview`"
-        :options="overviewOptions"
-        :data="{ datasets }"
-        :plugins="[SelectDragPlugin]"
-      />
+    <div class="p-2 bg-body-secondary rounded">
+      <h5 class="visually-hidden">{{ $t("result.trend.overview") }}</h5>
+
+      <!-- Full-span overview for zooming -->
+      <div class="position-relative w-100" style="height: 5rem" :key="isDark ? 'dark' : 'light'">
+        <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
+        <Line
+          :id="`${id}-overview`"
+          :options="overviewOptions"
+          :data="{ datasets }"
+          :plugins="[SelectDragPlugin]"
+        />
+      </div>
+      <p class="my-1 text-center small text-muted">{{ $t("result.trend.overview.help") }}</p>
     </div>
   </div>
 </template>

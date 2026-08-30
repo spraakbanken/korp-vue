@@ -291,6 +291,8 @@ result.trend.view: Visa
 result.trend.view.line: Linje
 result.trend.view.bar: Stapel
 result.trend.view.table: Tabell
+result.trend.overview: Översikt
+result.trend.overview.help: Klicka och dra här för att zooma i huvuddiagrammet.
 result.trend.table.value: Värde
 
 result.wordpic: Ordbild
