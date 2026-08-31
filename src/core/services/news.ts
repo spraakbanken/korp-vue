@@ -1,4 +1,4 @@
-import Yaml from "js-yaml"
+import { load } from "js-yaml"
 import settings from "@/core/config"
 import moment from "moment"
 import type { LangString } from "../model/locale"
@@ -13,7 +13,7 @@ export const fetchNews = once(async (): Promise<NewsItem[]> => {
   const response = await fetch(settings.news_url)
   const feedYaml: string = await response.text()
 
-  const itemsRaw = Yaml.load(feedYaml) as NewsItemRaw[]
+  const itemsRaw = load(feedYaml) as NewsItemRaw[]
 
   const currentDate = new Date().toISOString().slice(0, 10)
   const oneYearAgo = modifyYear(new Date(), -1).toISOString().slice(0, 10)
