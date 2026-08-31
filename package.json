@@ -50,7 +50,6 @@
     "vue3-matomo": "^1.2.6"
   },
   "devDependencies": {
-    "@modyfi/vite-plugin-yaml": "^1.1.1",
     "@tsconfig/node22": "^22.0.6",
     "@types/bootstrap": "^5.2.11",
     "@types/node": "^26.2.0",
@@ -63,9 +62,9 @@
     "jiti": "^2.7.0",
     "npm-run-all2": "^9.0.3",
     "prettier": "3.9.6",
-    "typescript": "~6.0.2",
     "rollup-plugin-visualizer": "^7.1.1",
     "sass": "^1.103.1",
+    "typescript": "~6.0.2",
     "vite": "^8.2.2",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vue-tsc": "^3.3.11"

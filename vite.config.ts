@@ -1,12 +1,12 @@
 import { fileURLToPath, URL } from "node:url"
-import { defineConfig, loadEnv, PluginOption } from "vite"
+import { defineConfig, loadEnv, PluginOption, type Plugin } from "vite"
 import vue from "@vitejs/plugin-vue"
 import vueDevTools from "vite-plugin-vue-devtools"
-import yaml from "@modyfi/vite-plugin-yaml"
 import { ServerOptions } from "node:https"
 import { readFileSync } from "node:fs"
 import peggy from "peggy"
 import { visualizer } from "rollup-plugin-visualizer"
+import { load } from "js-yaml"
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       vueDevTools(),
-      yaml(),
+      yamlLoader(),
       peggyLoader(),
       visualizer(), // Keep visualizer last
     ],
@@ -67,6 +67,25 @@ function peggyLoader(): PluginOption {
       if (!/\.(pegjs|peggy)$/.test(id)) return
       const code = peggy.generate(grammar, { output: "source", format: "es" })
       return { code }
+    },
+  }
+}
+
+// Custom plugin for importing YAML files directly in code.
+function yamlLoader(): Plugin {
+  return {
+    name: "vite-plugin-yaml",
+    transform(src, id) {
+      // Match file extension
+      if (/\.ya?ml$/.test(id)) {
+        // Load data from YAML
+        const data = load(src)
+        // Dump JSON into JS
+        return {
+          code: `const data = ${JSON.stringify(data)};
+            export default data;`,
+        }
+      }
     },
   }
 }
