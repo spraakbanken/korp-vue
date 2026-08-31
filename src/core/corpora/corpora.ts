@@ -51,8 +51,8 @@ export const initCorpusStructure = (allCorpora: Corpus[]): ChooserFolderRoot => 
 
     const folders: ChooserFolderSub[] = Object.entries(foldersRaw).map(([id, folder]) => {
       ids.push(...(folder.corpora || []))
-      const corpora = (folder.corpora || []).map(
-        (corpusId): Corpus => allCorpora.find((cp) => cp.id === corpusId)!,
+      const corpora = (folder.corpora || []).map((corpusId): Corpus =>
+        allCorpora.find((cp) => cp.id === corpusId)!,
       )
 
       // this is needed for folder identity checks in chooser
