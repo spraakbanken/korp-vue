@@ -8,7 +8,7 @@ import {
   type StatisticsWorkerMessage,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
-import { regescape, splitFirst, splitSuffix } from "../util"
+import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { Stringifier } from "@/attributes/attributes.types"
 
@@ -113,13 +113,20 @@ function reduceCqp(
   // Escape values for use in CQP regex
   values = values.map(regescape)
   // Combine grouped values
-  const cqpValue = values.length > 1 ? splitSuffix(values[0])[0] + ":.*" : values[0]
+  const cqpValue = values.length > 1 ? mergeRegex(values) : values[0]
   // Enclose in quotes and support case-insensitive search
   let quoted = `'${cqpValue}'`
   if (name == "word" && ignoreCase) quoted += " %c"
 
   const op = attr?.type === "set" ? "contains" : "="
   return `${cqpName} ${op} ${quoted}`
+}
+
+/** Merge ["foo:X", "foo:Y"] to "foo:(X|Y)" */
+function mergeRegex(values: string[]): string {
+  const init = splitSuffix(values[0])[0]
+  const tails = values.map((v) => splitSuffix(v)[1])
+  return init + ":(" + tails.join("|") + ")"
 }
 
 export function createStatisticsCsv(
