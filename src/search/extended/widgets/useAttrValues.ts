@@ -4,16 +4,19 @@ import { locObj } from "@/core/i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { watchImmediate } from "@vueuse/core"
 import { uniq } from "lodash-es"
-import { ref, type Ref } from "vue"
+import { ref } from "vue"
 import { useI18n } from "vue-i18n"
 
-export default function useAttrValues(getAttribute: () => Attribute, model: Ref<string>) {
+/** Async list of available values for a given attribute */
+export default function useAttrValues(getAttribute: () => Attribute) {
   const { locale } = useI18n()
   const corpusSelection = useReactiveCorpusSelection()
 
+  /** Options for use in a select input, each item is `[raw, translated]` */
   const options = ref<[string, string][]>([])
   const loading = ref(false)
 
+  /** Load values from the backend */
   async function loadValues(attribute: Attribute) {
     const name = attribute.name
     const split = attribute.type == "set"
@@ -28,6 +31,7 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
     return getAttrValues(corpora, name, split, ranked)
   }
 
+  /** Translate each value using attribute config */
   function formatOptions(attribute: Attribute, values: string[]) {
     const getLabel = (value: string) =>
       locObj(attribute.translation?.[value] || value, locale.value)
@@ -47,10 +51,7 @@ export default function useAttrValues(getAttribute: () => Attribute, model: Ref<
 
     // Format options list
     options.value = formatOptions(attribute, values)
-
-    // Reset invalid value
-    if (!values.includes(model.value)) model.value = options.value[0]?.[0] || ""
   })
 
-  return { loadValues, formatOptions, options, loading }
+  return { options, loading }
 }

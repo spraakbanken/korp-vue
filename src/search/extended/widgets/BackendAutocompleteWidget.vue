@@ -9,7 +9,7 @@ const model = defineModel<string>({ required: true })
 
 const props = defineProps<WidgetProps>()
 
-const { options, loading } = useAttrValues(() => props.attribute, model)
+const { options, loading } = useAttrValues(() => props.attribute)
 
 const items = computed<Option<string>[]>(() =>
   options.value.map(([key, value]) => ({ key, value })),

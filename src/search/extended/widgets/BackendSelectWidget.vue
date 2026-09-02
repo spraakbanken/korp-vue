@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import type { WidgetProps } from "./widget"
 import useAttrValues from "./useAttrValues"
+import { watchEffect } from "vue"
 
 const model = defineModel<string>({ required: true })
 
 const props = defineProps<WidgetProps>()
 
-const { options, loading } = useAttrValues(() => props.attribute, model)
+const { options, loading } = useAttrValues(() => props.attribute)
+
+// Reset invalid value
+watchEffect(() => {
+  if (options.value.length && options.value.find((option) => option[0] == model.value) == undefined)
+    model.value = options.value[0]?.[0] || ""
+})
 </script>
 
 <template>
