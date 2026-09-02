@@ -12,6 +12,7 @@ import { TextTask } from "@/core/task/TextTask"
 import DeptreeDiagram from "./DeptreeDiagram.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import { getDeptreeAttrMapping } from "@/core/config/index"
 
 defineProps<{
   hideReadingMode?: boolean
@@ -26,6 +27,16 @@ const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
   selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
 )
+
+/** Whether a dependency tree visualization can be shown */
+const hasDeptree = computed(() => {
+  if (!selectedToken?.value || !isKwicRowToken(selectedToken.value)) return false
+  if (!corpus.value) return false
+  if (corpus.value.deptree?.hidden) return false
+  const relAttr = getDeptreeAttrMapping(corpus.value).rel
+  if (!corpus.value?.attributes[relAttr]) return false
+  return true
+})
 
 /** All tokens in the same sentence as the selected one */
 const selectedSentence = computed<KwicToken[]>(() => {
@@ -107,7 +118,7 @@ function openReadingMode() {
           {{ $t("result.kwic.reading_mode.open") }}
         </button>
 
-        <template v-if="!corpus.deptree?.hidden && isKwicRowToken(selectedToken)">
+        <template v-if="hasDeptree">
           <button
             type="button"
             class="btn btn-secondary"
