@@ -55,14 +55,14 @@ const formatToken = (token: string, attribute?: Attribute) =>
         data-bs-html="true"
         :data-bs-content="
           createKeyValueHtml({
-            [$t('stat.freq')]: String(props.item.abs),
+            [$t('stat.freq')]: $n(props.item.abs),
             [$t('stat.loglike')]: formatDecimals(Math.abs(props.item.loglike), 2),
           })
         "
         class="text-muted"
         :key="locale"
       >
-        {{ item.abs }}
+        {{ $n(item.abs) }}
       </span>
     </div>
   </li>

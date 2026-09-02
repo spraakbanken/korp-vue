@@ -68,7 +68,7 @@ const pages = computed<number[]>(() => {
           class="form-control form-control-sm d-inline-block w-auto"
         />
       </template>
-      <template #total>{{ max }}</template>
+      <template #total>{{ $n(max) }}</template>
     </i18n-t>
   </nav>
 </template>

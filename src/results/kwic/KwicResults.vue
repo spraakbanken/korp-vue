@@ -152,11 +152,11 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
         <i18n-t scope="global" keypath="result.kwic.page_size.label">
           <select
             v-model="hpp"
-            class="form-select form-select-sm d-inline-block w-auto mx-1"
+            class="form-select form-select-sm d-inline-block w-auto mx-1 text-end"
             @change="onOptionsChange"
           >
             <option v-for="size in settings['hits_per_page_values']" :key="size" :value="size">
-              {{ size }}
+              {{ $n(size) }}
             </option>
           </select>
         </i18n-t>

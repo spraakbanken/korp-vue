@@ -72,12 +72,15 @@ watch(model, () => (selectionLocal.value = model.value))
     <ul class="dropdown-menu">
       <li v-for="[value, hits] in optionsSorted" :key="value">
         <a
-          class="dropdown-item"
+          class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"
           href="#"
           @click.prevent="toggle(value)"
           :class="{ active: selectionLocal.includes(value), disabled: !hits }"
         >
-          {{ value }} ({{ hits }})
+          {{ value }}
+          <span class="badge text-secondary">
+            {{ $n(hits) }}
+          </span>
         </a>
       </li>
     </ul>

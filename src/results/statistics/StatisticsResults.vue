@@ -226,7 +226,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
         <button
           type="button"
           class="btn btn-secondary"
-          :disabled="!data || !isDated || !rowsSelected.length"
+          :disabled="!isDated || !rowsSelected.length"
           @click="openTrendTab()"
         >
           <fa-icon icon="fa-solid fa-chart-line" />
@@ -243,7 +243,13 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
       <div>
         <!-- Do not count the totals row -->
-        {{ $t("result.statistics.row_count", data.rows.length - 1) }}
+        {{
+          $t(
+            "result.statistics.row_count",
+            { count: $n(data.rows.length - 1) },
+            data.rows.length - 1,
+          )
+        }}
 
         <span v-if="isLimited">
           {{ $t("result.statistics.row_count.limited") }}
@@ -275,7 +281,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       />
     </template>
 
-    <div v-else class="alert alert-warning align-self-center">
+    <div v-else-if="data" class="alert alert-warning align-self-center">
       {{ $t("result.empty") }}
     </div>
 
