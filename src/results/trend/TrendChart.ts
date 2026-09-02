@@ -117,8 +117,10 @@ export class TrendChart {
         selectdrag: {
           enabled: true,
           output: "value",
-          highlight: false,
-          // Note: Getting uncaught exceptions "TypeError: Cannot read properties of null (reading 'ownerDocument')" – broken destroy handler?
+          colors: {
+            // --bs-primary-bg-subtle
+            selection: "#fcded1",
+          },
           onSelectComplete,
         },
         tooltip: false,
