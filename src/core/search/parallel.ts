@@ -32,7 +32,6 @@ export function getParallelCqp(queries: ParallelQuery[]) {
     const prevLangs = langs.slice(0, i)
     const corpora = linkedCorpora.filter((corpus) => !prevLangs.includes(corpus.lang))
     const corporaByLang = groupBy(corpora, "lang")
-    // TODO Gives undefined when loading query from URL
     const linkedCorpus = corporaByLang[query.lang]
       ?.map((corpus) => corpus.id.toUpperCase())
       .join("|")

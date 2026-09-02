@@ -17,7 +17,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { uniq } from "lodash-es"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { storeToRefs } from "pinia"
-import { watchImmediate } from "@vueuse/core"
+import { until, watchImmediate } from "@vueuse/core"
 import useSearchStore from "./useSearchStore"
 import { useMatomo } from "vue3-matomo"
 
@@ -52,7 +52,7 @@ const availableLangs = computed(() => {
 const unusedLangs = computed(() => availableLangs.value[availableLangs.value.length - 1]!)
 
 // React to the `search` param being changed, at first load or later
-watchImmediate(search, () => {
+watchImmediate(search, async () => {
   if (!store.search) return
 
   // Restore input
@@ -60,6 +60,8 @@ watchImmediate(search, () => {
   if (cqpParallel.length)
     queries.value = cqpParallel.map(([lang, pcqp]) => parseParallel(lang, pcqp))
 
+  // Corpus selection must be settled for the parallel CQP to be built correctly
+  await until(() => !!corpusSelection.corpora.length).toBe(true)
   doSearch()
 })
 
