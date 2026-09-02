@@ -57,5 +57,9 @@ function clickItem(side: 0 | 1, item: CompareItem) {
         </ul>
       </div>
     </div>
+
+    <div v-if="!result?.max" class="alert alert-warning align-self-center">
+      {{ $t("result.empty") }}
+    </div>
   </div>
 </template>

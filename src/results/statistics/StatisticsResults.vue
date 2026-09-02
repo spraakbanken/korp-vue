@@ -220,56 +220,65 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </template>
     </OptionsBar>
 
-    <div class="hstack gap-2 align-items-baseline">
-      <!-- Trend chart button -->
-      <button
-        type="button"
-        class="btn btn-secondary"
-        :disabled="!data || !isDated || !rowsSelected.length"
-        @click="openTrendTab()"
-      >
-        <fa-icon icon="fa-solid fa-chart-line" />
-        {{ $t("result.statistics.trend") }}
-      </button>
+    <template v-if="data && data.rows.length > 1">
+      <div class="hstack gap-2 align-items-baseline">
+        <!-- Trend chart button -->
+        <button
+          type="button"
+          class="btn btn-secondary"
+          :disabled="!data || !isDated || !rowsSelected.length"
+          @click="openTrendTab()"
+        >
+          <fa-icon icon="fa-solid fa-chart-line" />
+          {{ $t("result.statistics.trend") }}
+        </button>
 
-      <!-- Map button -->
-      <MapButton v-if="settings.map_enabled" :disabled="!rowsSelected.length" @open="openMapTab" />
-    </div>
+        <!-- Map button -->
+        <MapButton
+          v-if="settings.map_enabled"
+          :disabled="!rowsSelected.length"
+          @open="openMapTab"
+        />
+      </div>
 
-    <div v-if="data">
-      <!-- Do not count the totals row -->
-      {{ $t("result.statistics.row_count", data.rows.length - 1) }}
+      <div>
+        <!-- Do not count the totals row -->
+        {{ $t("result.statistics.row_count", data.rows.length - 1) }}
 
-      <span v-if="isLimited">
-        {{ $t("result.statistics.row_count.limited") }}
-        <HelpBadge :text="$t('result.statistics.row_count.limited.help')" />
-      </span>
-    </div>
+        <span v-if="isLimited">
+          {{ $t("result.statistics.row_count.limited") }}
+          <HelpBadge :text="$t('result.statistics.row_count.limited.help')" />
+        </span>
+      </div>
 
-    <div v-if="unsupportedRatio" class="alert alert-info my-0">
-      <fa-icon icon="fa-solid fa-info-circle" class="me-1" />
-      <i18n-t
-        scope="global"
-        keypath="result.statistics.unsupported_attributes.warning"
-        :plural="unsupportedAttributes.length"
-      >
-        <template #ratio>{{ percentage(unsupportedRatio) }}</template>
-        <template #attributes>
-          <em>{{ unsupportedAttributes.map((attr) => locObj(attr.label)).join(", ") }}</em>
-        </template>
-      </i18n-t>
+      <div v-if="unsupportedRatio" class="alert alert-info my-0">
+        <fa-icon icon="fa-solid fa-info-circle" class="me-1" />
+        <i18n-t
+          scope="global"
+          keypath="result.statistics.unsupported_attributes.warning"
+          :plural="unsupportedAttributes.length"
+        >
+          <template #ratio>{{ percentage(unsupportedRatio) }}</template>
+          <template #attributes>
+            <em>{{ unsupportedAttributes.map((attr) => locObj(attr.label)).join(", ") }}</em>
+          </template>
+        </i18n-t>
+      </div>
+
+      <StatisticsGrid
+        :attributes="stats_reduce"
+        :rows="data.rows"
+        :params="data.params"
+        v-model="rowsSelected"
+        v-fade-if-loading="progress"
+        @click-value="onClickValue($event.corpusIds, $event.cqp)"
+      />
+    </template>
+
+    <div v-else class="alert alert-warning align-self-center">
+      {{ $t("result.empty") }}
     </div>
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
-
-    <StatisticsGrid
-      v-if="data"
-      :attributes="stats_reduce"
-      :rows="data.rows"
-      :params="data.params"
-      v-model="rowsSelected"
-      v-fade-if-loading="progress"
-      @click-value="onClickValue($event.corpusIds, $event.cqp)"
-    />
   </div>
 </template>

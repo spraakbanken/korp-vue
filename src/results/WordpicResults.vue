@@ -202,8 +202,8 @@ watch(showPos, () =>
         </div>
       </div>
 
-      <div class="alert alert-warning" v-if="!data.getData().length">
-        {{ $t("result.wordpic.empty") }}
+      <div v-if="!data.getData().length" class="alert alert-warning">
+        {{ $t("result.empty") }}
       </div>
     </div>
 

@@ -184,7 +184,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
     <KwicResultsContent
-      v-else
+      v-if="loading || hitsCount"
       :corpora="activeSearch?.corpora"
       :distribution
       :hitsCount
@@ -195,5 +195,9 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       v-model="pageLocal"
       v-fade-if-loading="!hitsCount ? progress : undefined"
     />
+
+    <div v-else class="alert alert-warning align-self-center">
+      {{ $t("result.empty") }}
+    </div>
   </div>
 </template>

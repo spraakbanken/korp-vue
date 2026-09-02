@@ -217,6 +217,9 @@ search.within.key.paragraph: stycke | {count} stycken
 search.within.key.link: länk | {count} länkar
 search.within.key.text: text | {count} texter
 
+result.empty: Sökningen gav inga träffar.
+result.legend: Förklaring
+
 result.compare.column_heading: Utmärkande för {label}
 
 result.export.action: Spara
@@ -298,15 +301,12 @@ result.trend.table.value: Värde
 result.wordpic: Ordbild
 result.wordpic.description: I ordbilden visas vilka ord som tenderar att förekomma i syntaktiska relationer med sökordet.
 result.wordpic.description.result: Vilka relationer som visas beror på sökordets ordklass. Varje lista innehåller ord som i det valda korpusmaterialet står i den givna relationen med sökordet.
-result.wordpic.empty: Sökningen gav inga träffar.
 result.wordpic.limit: Antal rader
 result.wordpic.show_pos: Visa ordklasser
 result.wordpic.sort: Sortera på
 result.wordpic.sort.help: LMI = Lexicographer's Mutual Information, en anpassning av associationsmåttet "Mutual Information" som prioriterar upp det typiska framför det ovanliga
 result.wordpic.query.incompatible: Ogiltig sökfråga
 result.wordpic.query.incompatible.help: Sökfrågan för ordbild måste innehålla exakt ett ord eller lemgram.
-
-result.legend: Förklaring
 
 pos.nn: substantiv
 pos.av: adjektiv
