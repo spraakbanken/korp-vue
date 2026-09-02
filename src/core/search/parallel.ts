@@ -1,7 +1,7 @@
 import { difference, groupBy } from "lodash-es"
 import type { CorpusSetParallel } from "../corpora/CorpusSetParallel"
 import { corpusSelection } from "../corpora/corpusListing"
-import { stringify } from "../cqp/cqp"
+import { parse, stringify } from "../cqp/cqp"
 import settings from "../config"
 import type { CqpQuery } from "../cqp/cqp.types"
 
@@ -11,6 +11,9 @@ export type ParallelQuery = {
   query: CqpQuery
   negative?: boolean
 }
+
+/** Prefix to negate a parallel CQP query */
+export const NEG_PREFIX = "! "
 
 /**
  * Build a CQP string from parallel search queries.
@@ -29,16 +32,31 @@ export function getParallelCqp(queries: ParallelQuery[]) {
     const prevLangs = langs.slice(0, i)
     const corpora = linkedCorpora.filter((corpus) => !prevLangs.includes(corpus.lang))
     const corporaByLang = groupBy(corpora, "lang")
+    // TODO Gives undefined when loading query from URL
     const linkedCorpus = corporaByLang[query.lang]
       ?.map((corpus) => corpus.id.toUpperCase())
       .join("|")
 
-    const expanded = stringify(query.query, true)
-    const neg = query.negative ? "!" : ""
-    return `:LINKED_CORPUS:${linkedCorpus} ${neg} ${expanded}`
+    const pcqp = stringifyParallel(query, true)
+    return `:LINKED_CORPUS:${linkedCorpus} ${pcqp}`
   })
 
   return headCqp + tailCqps.join("")
+}
+
+/** Parse a possibly negated parallel CQP */
+export function parseParallel(lang: string, pcqp: string): ParallelQuery {
+  const negative = pcqp.startsWith(NEG_PREFIX)
+  const cqp = negative ? pcqp.slice(NEG_PREFIX.length) : pcqp
+  const query = parse<CqpQuery>(cqp)
+  return { lang, negative, query }
+}
+
+/** Stringify a parallel query */
+export function stringifyParallel(query: ParallelQuery, expand?: boolean): string {
+  const neg = query.negative ? NEG_PREFIX : ""
+  const cqp = stringify(query.query, expand)
+  return `${neg}${cqp}`
 }
 
 /** Calculate what languages are available to choose for each query */

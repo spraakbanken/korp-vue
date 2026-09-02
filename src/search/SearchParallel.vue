@@ -3,8 +3,14 @@
 import settings from "@/core/config"
 import { computed, ref, watchEffect } from "vue"
 import QueryBuilder from "./extended/QueryBuilder.vue"
-import { createCondition, parse, stringify } from "@/core/cqp/cqp"
-import { getAvailableLangs, getParallelCqp, type ParallelQuery } from "@/core/search/parallel"
+import { createCondition } from "@/core/cqp/cqp"
+import {
+  getAvailableLangs,
+  getParallelCqp,
+  parseParallel,
+  stringifyParallel,
+  type ParallelQuery,
+} from "@/core/search/parallel"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { CorpusSetParallel } from "@/core/corpora/CorpusSetParallel"
 import { useAppStore } from "@/store/useAppStore"
@@ -12,7 +18,6 @@ import { uniq } from "lodash-es"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
-import type { CqpQuery } from "@/core/cqp/cqp.types"
 import useSearchStore from "./useSearchStore"
 import { useMatomo } from "vue3-matomo"
 
@@ -53,7 +58,7 @@ watchImmediate(search, () => {
   // Restore input
   const cqpParallel = Object.entries(store.cqpParallel)
   if (cqpParallel.length)
-    queries.value = cqpParallel.map(([lang, cqp]) => ({ lang, query: parse<CqpQuery>(cqp) }))
+    queries.value = cqpParallel.map(([lang, pcqp]) => parseParallel(lang, pcqp))
 
   doSearch()
 })
@@ -67,7 +72,7 @@ watchEffect(() => {
 /** Handle submitting the search form */
 function submit() {
   store.cqpParallel = Object.fromEntries(
-    queries.value.map((query) => [query.lang, stringify(query.query)]),
+    queries.value.map((query) => [query.lang, stringifyParallel(query)]),
   )
   store.search = `cqp|${getParallelCqp(queries.value)}`
   store.page = 0

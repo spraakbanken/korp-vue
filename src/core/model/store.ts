@@ -6,7 +6,7 @@ export type Store = {
   corpus: string[]
   /** CQP query for Extended search, possibly with frontend-specific operators */
   cqp: string
-  /** CQP query for each selected language in parallel mode; mapped to URL params `cqp_<lang>` */
+  /** CQP query (optionally prepended with "! " for negation) for each selected language in parallel mode; mapped to URL params `cqp_<lang>` */
   cqpParallel: Record<string, string>
   /** A simple attribute–values structure of selected filters. */
   global_filter: Record<string, string[]>
