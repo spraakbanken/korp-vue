@@ -5,7 +5,7 @@ import { computed, inject, useId } from "vue"
 import KwicSidebarAttribute from "./KwicSidebarAttribute.vue"
 import { injectionKeys } from "@/injection"
 import { sortBy } from "lodash-es"
-import { isKwic, isKwicRowToken } from "@/core/kwic/kwic"
+import { isKwic, isKwicRowToken, type KwicToken } from "@/core/kwic/kwic"
 import { useDynamicTabs } from "../useDynamicTabs"
 import { useI18n } from "vue-i18n"
 import { TextTask } from "@/core/task/TextTask"
@@ -26,6 +26,14 @@ const selectedToken = inject(injectionKeys.selectedToken)
 const corpus = computed(() =>
   selectedToken?.value ? corpusListing.get(selectedToken.value.row.corpus) : undefined,
 )
+
+/** All tokens in the same sentence as the selected one */
+const selectedSentence = computed<KwicToken[]>(() => {
+  if (!selectedToken?.value || !isKwicRowToken(selectedToken.value)) return []
+  const { row, token } = selectedToken.value
+  // Get all tokens in the same sentence as the selected one
+  return row.tokens.filter((t) => t.attrs.sentence_id == token.attrs.sentence_id)
+})
 
 const structAttributes = computed(() => {
   if (!selectedToken?.value || !isKwicRowToken(selectedToken?.value)) return []
@@ -110,7 +118,7 @@ function openReadingMode() {
             {{ $t("result.kwic.deptree.open") }}
           </button>
           <ModalDialog :id="`${id}-deptree-modal`" :title="$t('result.kwic.deptree')" size="xl">
-            <DeptreeDiagram :corpus :tokens="selectedToken.row.tokens" />
+            <DeptreeDiagram :corpus :tokens="selectedSentence" />
           </ModalDialog>
         </template>
       </div>

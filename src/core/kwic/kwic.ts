@@ -190,7 +190,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
 }
 
 /** Find span of sentence containing the match */
-// This is used in reading mode to highlight the sentence.
+// This is used in context mode to highlight the sentence.
 function findMatchSentence(row: ApiKwic): [number, number] {
   const matches = Array.isArray(row.match) ? row.match : [row.match]
   let start = matches[0]!.start
