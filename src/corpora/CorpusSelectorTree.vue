@@ -7,6 +7,7 @@ import { useAppStore } from "@/store/useAppStore"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { LangString } from "@/core/model/locale"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps<{
   node: ChooserFolder
@@ -16,6 +17,7 @@ defineEmits<{
   (e: "inspect", corpus: Corpus): void
 }>()
 
+const { locale } = useI18n()
 const { locObj } = useLocale()
 const auth = useAuth()
 const store = useAppStore()
@@ -27,7 +29,7 @@ const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): 
   return [...items].sort((a, b) => {
     const titleA = a.title ? locObj(a.title) : a.id
     const titleB = b.title ? locObj(b.title) : b.id
-    return titleA.localeCompare(titleB)
+    return titleA.localeCompare(titleB, locale.value)
   })
 }
 
