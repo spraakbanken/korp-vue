@@ -48,3 +48,11 @@
     opacity: 1;
   }
 }
+
+/* Color secondary only if item not active, because then it has primary bg */
+.text-secondary-inactive {
+  color: var(--bs-secondary-color);
+  :is(.active, :active) & {
+    color: inherit;
+  }
+}

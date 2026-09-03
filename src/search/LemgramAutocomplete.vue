@@ -78,7 +78,7 @@ const loadSuggestions = debounceAsync(
         >
           <span v-html="Lemgram.parse(value.lemgram)?.toHtml($t) || value.lemgram" />
           <!-- Count is -1 if counting is disabled -->
-          <span v-if="value.count > 0" class="badge text-secondary">
+          <span v-if="value.count > 0" class="badge text-secondary-inactive">
             {{ $n(value.count) }}
           </span>
         </a>

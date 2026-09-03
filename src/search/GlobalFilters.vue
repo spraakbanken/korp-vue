@@ -32,7 +32,7 @@ watchDeep(selection, () => {
 
 <template>
   <div v-if="isEnabled" class="d-flex gap-2 align-items-baseline">
-    <span class="fw-bold">{{ $t("search.filters") }}:</span>
+    {{ $t("search.filters") }}:
     <div v-for="filter in filterManager.filters" :key="filter.attribute.name">
       <GlobalFilterSelector
         v-model="filter.value"

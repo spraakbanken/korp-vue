@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
+import EmptyValue from "@/results/EmptyValue.vue"
 import { useAppStore } from "@/store/useAppStore"
 import { capitalize, sortBy } from "lodash-es"
 import { computed, ref, watch } from "vue"
+import { useI18n } from "vue-i18n"
 
 const model = defineModel<string[]>({ default: [] })
 
@@ -12,6 +14,7 @@ const props = defineProps<{
   options: [string, number][]
 }>()
 
+const { locale } = useI18n()
 const { locObj } = useLocale()
 const store = useAppStore()
 // Store WIP selection locally until menu is closed
@@ -26,12 +29,17 @@ const optionsSorted = computed(() =>
   ),
 )
 
+const selectionSummary = computed(() =>
+  selectionLocal.value.map((value) => value || "—").join(", "),
+)
+
 // Select or deselect value
 function toggle(value: string) {
   if (selectionLocal.value.includes(value)) {
     selectionLocal.value = selectionLocal.value.filter((v) => v != value)
   } else {
     selectionLocal.value = [...selectionLocal.value, value]
+    selectionLocal.value.sort((a, b) => a.localeCompare(b, locale.value))
   }
 }
 
@@ -48,12 +56,11 @@ watch(model, () => (selectionLocal.value = model.value))
     }"
   >
     <button
-      class="btn dropdown-toggle align-baseline"
+      class="form-control dropdown-toggle"
       type="button"
       data-bs-toggle="dropdown"
       data-bs-auto-close="outside"
       aria-expanded="false"
-      :class="model.length ? 'btn-secondary' : 'btn-outline-secondary'"
     >
       <span
         class="d-inline-block align-bottom overflow-hidden text-truncate"
@@ -61,7 +68,7 @@ watch(model, () => (selectionLocal.value = model.value))
       >
         <template v-if="selectionLocal.length">
           {{ capitalize(locObj(label)) }}:
-          {{ selectionLocal.join(", ") }}
+          {{ selectionSummary }}
         </template>
         <template v-else>
           {{ $t("search.filters.add", [locObj(label)]) }}
@@ -75,10 +82,14 @@ watch(model, () => (selectionLocal.value = model.value))
           class="dropdown-item d-flex justify-content-between align-items-baseline gap-2"
           href="#"
           @click.prevent="toggle(value)"
-          :class="{ active: selectionLocal.includes(value), disabled: !hits }"
+          :class="{
+            active: selectionLocal.includes(value),
+            disabled: !selectionLocal.includes(value) && !hits,
+          }"
         >
-          {{ value }}
-          <span class="badge text-secondary">
+          <template v-if="value">{{ value }}</template>
+          <EmptyValue v-else />
+          <span class="badge text-secondary-inactive">
             {{ $n(hits) }}
           </span>
         </a>

@@ -208,7 +208,7 @@ search.and: and
 search.or: or
 
 search.filters: Filters
-search.filters.add: Add {0}…
+search.filters.add: Add {0}
 
 search.within: within
 search.within.key.sentence: sentence | {count} sentences
