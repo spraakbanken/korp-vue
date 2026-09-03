@@ -1,13 +1,13 @@
 :root {
-  --font-family-heading: "Jost Variable", var(--bs-body-font-family);
+  --font-family-data: sans-serif;
 }
 
 .cursor-pointer {
   cursor: pointer;
 }
 
-.font-family-heading {
-  font-family: var(--font-family-heading);
+.font-family-data {
+  font-family: var(--font-family-data);
 }
 
 // Link-like text

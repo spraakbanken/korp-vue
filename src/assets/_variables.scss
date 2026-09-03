@@ -4,7 +4,7 @@
 // Detect dark/light mode automatically
 $color-mode-type: media-query;
 
-$font-family-base: sans-serif;
+$font-family-base: "Jost Variable";
 
 // Override minimum contrast level for Bootstrap's automatic text color calculation against a given background color.
 // Bootstrap's algorithm seems to fall short for some colors, including our primary and secondary.

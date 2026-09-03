@@ -131,13 +131,16 @@ function onDistributionClick(row: Row): void {
 <style>
 .slick-pane {
   .slick-header {
-    /* div[role="columnheader"] { */
     background-color: var(--bs-secondary-bg);
     font-weight: bold;
   }
 
   .slick-header-sortable {
     cursor: pointer;
+  }
+
+  .slick-viewport {
+    font-family: var(--font-family-data);
   }
 
   .slick-row:hover {

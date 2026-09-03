@@ -33,7 +33,7 @@ const valueHtml = computed(() =>
 
 <template>
   <tr>
-    <td class="px-1 link" v-html="valueHtml" @click="$emit('clickRow', row)" />
+    <td class="px-1 font-family-data link" v-html="valueHtml" @click="$emit('clickRow', row)" />
     <td
       v-popover
       data-bs-toggle="popover"

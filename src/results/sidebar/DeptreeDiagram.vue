@@ -52,7 +52,7 @@ watch(isVisible, () => {
     </div>
     <div class="mt-2">
       <template v-if="selection">
-        <strong class="text-info font-family-heading small">{{ selection.key }}</strong>
+        <strong class="text-info small">{{ selection.key }}</strong>
         ({{ locObj(selection.attr.label) }}):
         {{ getStringifier(selection.attr)(selection.key) }}
       </template>
@@ -72,7 +72,6 @@ watch(isVisible, () => {
 }
 .deptreeSvg .UPOS,
 .deptreeSvg .DEPREL {
-  font-family: var(--font-family-heading);
   font-weight: bold;
   fill: var(--bs-info);
   font-size: 0.8em;

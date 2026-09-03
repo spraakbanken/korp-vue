@@ -83,7 +83,7 @@ const isLinkedToSelected = computed(() => {
       // Other tokens can be selected using arrow keys instead, see SidebarProvider.
       isRowTokenEqual(selectedToken, rowToken) ? 0 : -1
     "
-    class="kwic-token rounded-3 cursor-pointer text-decoration-none"
+    class="kwic-token font-family-data rounded-3 cursor-pointer text-decoration-none"
     :class="{
       'fw-bold': isKwicRowToken(rowToken) && rowToken.token._match,
       'bg-success-subtle text-success-emphasis': isRowTokenEqual(selectedToken, rowToken),
