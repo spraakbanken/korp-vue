@@ -45,7 +45,7 @@ watchEffect(() => {
         field: "",
         formatter: (row, cell, value, columnDef, dataContext) => {
           const val = dataContext.data[t]
-          return val == undefined ? "" : formatFrequency(val, store.statsRelative)
+          return val == undefined ? "" : formatFrequency(val, store.statsRelative, store.lang)
         },
         cssClass: "text-end",
       }

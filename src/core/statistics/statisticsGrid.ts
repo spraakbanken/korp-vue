@@ -11,7 +11,6 @@ import {
 import { corpusListing } from "../corpora/corpusListing"
 import settings from "../config"
 import { formatFrequency, locObj } from "../i18n"
-import type { Store } from "../model/store"
 import type { LangString } from "../model/locale"
 import { icon } from "@fortawesome/fontawesome-svg-core"
 import { faChartPie } from "@fortawesome/free-solid-svg-icons"
@@ -22,13 +21,20 @@ export class StatisticsGrid extends SlickGrid<Row> {
     data: Dataset,
     corpusIds: string[],
     attrs: string[],
-    readonly store: Store,
     totalsLabel: LangString,
+    protected getLang: () => string,
+    getRelative: () => boolean,
     setSelectedRows: (rows: Row[]) => void,
     showPieChart: (row: Row) => void,
     onValueClick: (row: Row, corpusId?: string) => void,
   ) {
-    const { columns, checkboxSelector } = createColumns(store, corpusIds, attrs, totalsLabel)
+    const { columns, checkboxSelector } = createColumns(
+      corpusIds,
+      attrs,
+      totalsLabel,
+      getLang,
+      getRelative,
+    )
 
     super(el, data, columns as Column<Row>[], {
       enableCellNavigation: false,
@@ -49,7 +55,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
       const { sortCol, sortAsc } = sort as SingleColumnSort
 
       if (!(sortCol?.field && sortCol.id)) return
-      const sorter = getSorter(sortCol.field, sortCol.id, store.lang)
+      const sorter = getSorter(sortCol.field, sortCol.id, getLang())
 
       data.sort((a, b) => {
         // Place totals row first
@@ -78,7 +84,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
   refreshColumns() {
     const columns = this.getColumns() as SlickgridColumn[]
     columns.forEach((column) => {
-      if (column.getName) column.name = column.toolTip = column.getName(this.store.lang)
+      if (column.getName) column.name = column.toolTip = column.getName(this.getLang())
     })
     this.setColumns(columns as Column<Row>[])
   }
@@ -104,10 +110,11 @@ type Comparer<T> = (a: T, b: T) => number
 
 /** Create SlickGrid column definitions for statistics data. */
 function createColumns(
-  store: Store,
   corpora: string[],
   attrs: string[],
   totalsLabel: LangString,
+  getLang: () => string,
+  getRelative: () => boolean,
 ): { columns: SlickgridColumn[]; checkboxSelector: SlickCheckboxSelectColumn } {
   const cl = corpusListing.pick(corpora)
   const attributes = cl.getReduceAttrs()
@@ -117,8 +124,8 @@ function createColumns(
 
   // This sorting will not react to language change, but that's quite alright, we like columns staying in place.
   const getCorpusTitle = (id: string): string =>
-    locObj(settings.corpora[id.toLowerCase()]!.title, store.lang)
-  corpora.sort((a, b) => getCorpusTitle(a).localeCompare(getCorpusTitle(b), store.lang))
+    locObj(settings.corpora[id.toLowerCase()]!.title, getLang())
+  corpora.sort((a, b) => getCorpusTitle(a).localeCompare(getCorpusTitle(b), getLang()))
 
   const checkboxSelector = new SlickCheckboxSelectColumn({
     cssClass: "parameter-column",
@@ -169,7 +176,7 @@ function createColumns(
     sortable: true,
     defaultSortAsc: false,
     formatter: (row, cell, value) => {
-      return formatFrequency(value, store.statsRelative, store.lang)
+      return formatFrequency(value, getRelative(), getLang())
     },
     minWidth,
     cssClass: "total-column frequency-cell",
@@ -183,7 +190,7 @@ function createColumns(
       sortable: true,
       defaultSortAsc: false,
       formatter: (row, cell, value) => {
-        return formatFrequency(value[id], store.statsRelative, store.lang)
+        return formatFrequency(value[id], getRelative(), getLang())
       },
       minWidth,
       cssClass: "frequency frequency-cell",

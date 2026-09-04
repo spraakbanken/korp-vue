@@ -12,7 +12,7 @@ export const useAppStore = defineStore("app", () => {
   const hpp = ref(settings["hits_per_page_default"])
   const in_order = ref(false)
   const isCaseInsensitive = ref(settings["input_case_insensitive_default"])
-  const lang = ref<string>()
+  const lang = ref<string>(settings["default_language"])
   const page = ref(0)
   const prefix = ref(false)
   const random_seed = ref<number>()
