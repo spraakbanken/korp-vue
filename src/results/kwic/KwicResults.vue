@@ -90,7 +90,7 @@ async function doSearch(reuseCounts = false) {
       isReading: store.reading_mode,
       defaultWithin: store.within,
       page: store.page,
-      inOrder: store.in_order,
+      freeOrder: !store.in_order,
       randomSeed: store.random_seed,
       sort: store.sort,
     })

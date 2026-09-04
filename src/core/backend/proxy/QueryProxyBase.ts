@@ -10,7 +10,7 @@ export type QueryParamOptions = {
   /** Enable to reuse the `query_data` from the last request, causing backend to skip counting hits per corpora. */
   reuseCounts?: boolean
   page?: number
-  inOrder?: boolean
+  freeOrder?: boolean
   randomSeed?: number
   sort?: QueryParamSort
   isReading?: boolean
@@ -50,7 +50,7 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
       within: cl.getWithinParam(defaultWithin),
       ...cl.getContextParams(!!options.isReading),
       ...cl.buildShowParams(),
-      in_order: options.inOrder ? undefined : false,
+      in_order: options.freeOrder ? false : undefined,
       random_seed: options.randomSeed,
       sort: options.sort || undefined,
       query_data: this.queryData,
