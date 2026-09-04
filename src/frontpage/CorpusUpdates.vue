@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { corpusListing } from "@/core/corpora/corpusListing"
-import { isRecent } from "@/core/util"
+import { isRecent } from "@/core/time"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
 import { useToggle } from "@vueuse/core"

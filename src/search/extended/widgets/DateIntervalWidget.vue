@@ -7,9 +7,6 @@ import { parseDateRange } from "@/core/cqp/cqp"
 /** Start and end dates on the format `YYYY-MM-DDTHH:mm` */
 type DateRange = [string, string]
 
-/** The format used by `<input type="date">` and friends */
-const FORMAT = "YYYY-MM-DDTHH:mm"
-
 // The model is exposed to parent as a `fromdate,todate,fromtime,totime` string,
 // but internally we work with two `YYYY-MM-DDTHH:mm` strings for the two inputs.
 const model = defineModel({
@@ -52,8 +49,13 @@ const date2 = ref(model.value[1])
 /** Time span of current corpus selection */
 function getBounds(): DateRange {
   // Interval return value is guaranteed, as this widget is only used with dated corpora.
-  const interval = corpusSelection.getMomentInterval()!
-  return [interval[0].format(FORMAT), interval[1].format(FORMAT)]
+  const [from, to] = corpusSelection.getTimeRange()!
+  return [formatDatetime(from), formatDatetime(to)]
+}
+
+/** Format a date like `YYYY-MM-DDTHH:mm` */
+function formatDatetime(date: Date) {
+  return date.toISOString().slice(0, 16)
 }
 
 watchEffect(() => {

@@ -1,8 +1,5 @@
 import { intersection, merge, pick } from "lodash-es"
 
-/** Length of a day, in ms */
-export const DAY_MS = 24 * 60 * 60 * 1000
-
 /** Use html`<div>html here</div>` to enable formatting template strings with Prettier. */
 export const html = String.raw
 
@@ -58,10 +55,6 @@ export class PromiseStarter<T = void> {
   }
 }
 
-/** Check if a date is within a time limit from (before or after) today */
-export const isRecent = (date: Date, days = 30): boolean =>
-  Math.abs(new Date().getTime() - date.getTime()) <= days * DAY_MS
-
 /** Truncate a string to a maximum length, adding an ellipsis if it was truncated. */
 export const truncateStr = (s: string, max: number) =>
   s.length > max ? s.slice(0, max - 1) + "…" : s
@@ -86,12 +79,6 @@ export const randomString = () => Math.random().toString(36).slice(2)
  */
 export function numberToSuperscript(number: string | number): string {
   return [...String(number)].map((n) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(n)]).join("")
-}
-
-/** Format time as hh:mm:ss if hours > 0, else mm:ss */
-export function transformSeconds(seconds: number) {
-  const hhmmss = new Date(seconds * 1000).toISOString().substring(11, 19)
-  return hhmmss.replace(/^00:/, "")
 }
 
 /** Creates a simple HTML snippet for a key-value pair list */

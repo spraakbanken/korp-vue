@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDecimals } from "@/core/i18n"
 import type { Point, Series } from "@/core/task/TrendTask"
-import { FORMATS, type Level } from "@/core/trend/util"
+import { formatDateOnLevel, type Level } from "@/core/time"
 import {
   Chart,
   LinearScale,
@@ -11,9 +11,7 @@ import {
   Tooltip,
   type ChartDataset,
 } from "chart.js"
-import "chartjs-adapter-moment"
 import SelectDragPlugin from "@01coder/chartjs-plugin-selectdrag"
-import { type Moment } from "moment"
 import { computed, reactive, useId, watchEffect } from "vue"
 import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
@@ -31,7 +29,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: "clickPoint", series: Series[], time: Moment): void
+  (e: "clickPoint", series: Series[], time: Date): void
   (e: "selectRange", range?: Range): void
 }>()
 
@@ -54,14 +52,14 @@ watchEffect(() => (Chart.defaults.color = textColor.value!))
 
 Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
-const formatTooltipTitle = (time: Moment) => time.format(FORMATS[props.level])
+const formatTooltipTitle = (time: Date) => formatDateOnLevel(time, props.level)
 
 const formatTooltipItem = (point: Point) => [
   `${t("stat.freq_relative")}: ${formatDecimals(point.y!, 1)}`,
   `${t("stat.freq")}: ${point.absolute!}`,
 ]
 
-const onClickPoint = (series: Series[], time: Moment) => emit("clickPoint", series, time)
+const onClickPoint = (series: Series[], time: Date) => emit("clickPoint", series, time)
 
 const onSelectRange = (range?: Range) => emit("selectRange", range)
 

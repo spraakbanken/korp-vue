@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
+import type { Level } from "@/core/time.ts"
 import {
   createTrendTableCsv,
   findOptimalLevel,
   getTimeCqp,
   spliceGraphData,
-  type Level,
 } from "@/core/trend/util"
-import type { Moment } from "moment"
 import { onMounted, reactive, ref } from "vue"
 import TrendGraph from "./TrendGraph.vue"
 import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
-import moment from "moment"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
@@ -50,7 +48,7 @@ onMounted(() => {
 })
 
 async function doSearch() {
-  const { from, to } = getMomentRange()
+  const { from, to } = getRange()
   const levelNew = findOptimalLevel(from, to)
   progress.value = 0
   undatedRatio.value = props.task.corpusSet.getUndatedRatio()
@@ -69,10 +67,10 @@ async function doSearch() {
   level.value = data.level
 }
 
-function getMomentRange(): { from: Moment; to: Moment } {
-  if (range.value) return { from: moment(range.value.from), to: moment(range.value.to) }
+function getRange(): { from: Date; to: Date } {
+  if (range.value) return range.value
   else {
-    const interval = props.task.corpusSet.getMomentInterval()
+    const interval = props.task.corpusSet.getTimeRange()
     if (!interval) throw new Error("Time interval missing")
     const [from, to] = interval
     return { from, to }
@@ -93,7 +91,7 @@ function setSeries(newSeries: Series[]) {
   }
 }
 
-function onClickPoint(series: Series[], time: Moment) {
+function onClickPoint(series: Series[], time: Date) {
   // Build CQP for the selected time interval
   const timeCqp = getTimeCqp(time, level.value)
   // Combine the CQP fragments of the selected series as a disjunction `X | Y`

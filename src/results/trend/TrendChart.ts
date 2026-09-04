@@ -1,10 +1,10 @@
+import "chartjs-adapter-date-fns"
 import { GoldenAnglePaletteHsl } from "@/core/color"
+import type { Level } from "@/core/time"
 import type { Point, Series } from "@/core/task/TrendTask"
-import type { Level } from "@/core/trend/util"
 import { Interaction, type ChartDataset, type ChartOptions } from "chart.js"
 import { getRelativePosition } from "chart.js/helpers"
 import { merge } from "lodash-es"
-import type { Moment } from "moment"
 
 export type ChartType = "line" | "bar"
 
@@ -130,9 +130,9 @@ export class TrendChart {
 
   /** Get options for the main line/bar chart */
   getOptions(
-    formatTooltipTitle: (time: Moment) => string,
+    formatTooltipTitle: (time: Date) => string,
     formatTooltipItem: (point: Point) => string[],
-    onClickPoint: (series: Series[], time: Moment) => void,
+    onClickPoint: (series: Series[], time: Date) => void,
   ): ChartOptions<ChartType> {
     const options = merge(this.getBaseOptions(), <ChartOptions<ChartType>>{
       scales: { x: { min: this.range?.from.getTime(), max: this.range?.to.getTime() } },

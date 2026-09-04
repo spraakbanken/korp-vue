@@ -1,6 +1,5 @@
 import { load } from "js-yaml"
 import settings from "@/core/config"
-import moment from "moment"
 import type { LangString } from "../model/locale"
 import { once } from "lodash-es"
 
@@ -19,9 +18,7 @@ export const fetchNews = once(async (): Promise<NewsItem[]> => {
   const oneYearAgo = modifyYear(new Date(), -1).toISOString().slice(0, 10)
   const items: NewsItem[] = itemsRaw
     // Hide expired items.
-    .filter((item) => !item.expires || formatDate(item.expires) >= currentDate)
-    // Stringify dates.
-    .map((item) => ({ ...item, created: formatDate(item.created) }))
+    .filter((item) => !item.expires || item.expires >= currentDate)
     // Hide old items.
     .filter((item) => item.created >= oneYearAgo)
 
@@ -34,11 +31,9 @@ function modifyYear(date: Date, years: number) {
   return date
 }
 
-const formatDate = (date: Date) => moment(date).format("YYYY-MM-DD")
-
 type NewsItemRaw = {
-  created: Date
-  expires?: Date
+  created: string
+  expires?: string
   title: LangString
   body: LangString
   tags?: string[]

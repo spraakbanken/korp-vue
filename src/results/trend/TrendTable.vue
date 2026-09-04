@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { formatFrequency } from "@/core/i18n"
+import { formatDateOnLevel, type Level } from "@/core/time"
 import type { AbsRelSeq } from "@/core/statistics/statistics.types"
 import type { Series } from "@/core/task/TrendTask"
-import { FORMATS, type Level } from "@/core/trend/util"
 import { useAppStore } from "@/store/useAppStore"
 import { SlickGrid, type Column } from "slickgrid"
 import { useTemplateRef, watchEffect } from "vue"
@@ -37,8 +37,7 @@ watchEffect(() => {
     for (const item of seriesRow.points) {
       // Skip timesteps where none of selected corpora has any data
       if (item.absolute === null) continue
-      const stampformat = FORMATS[props.level]
-      const t = item.x.format(stampformat) // this needs to be fixed for other resolutions
+      const t = formatDateOnLevel(item.x, props.level) // this needs to be fixed for other resolutions
       columnsMap[t] = {
         id: t,
         name: t,

@@ -3,8 +3,6 @@ import {
   get,
   intersection,
   isEmpty,
-  maxBy,
-  minBy,
   partition,
   pick,
   pickBy,
@@ -13,7 +11,6 @@ import {
   union,
   uniq,
 } from "lodash-es"
-import moment, { type Moment } from "moment"
 import settings, { normalizeDataset } from "@/core/config"
 import { getLang, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
@@ -257,17 +254,13 @@ export class CorpusSet {
     return [Math.min(...years), Math.max(...years)]
   }
 
-  getMomentInterval(): [Moment, Moment] | undefined {
-    const infoGetter = (prop: "FirstDate" | "LastDate") => {
-      return compact(this.map((corpus) => corpus.info[prop])).map((item) => moment(item))
-    }
-
-    const froms = infoGetter("FirstDate")
-    const tos = infoGetter("LastDate")
-
-    const from = minBy(froms, (item) => item.unix())
-    const to = maxBy(tos, (item) => item.unix())
-    return from && to ? [from, to] : undefined
+  getTimeRange(): [Date, Date] | undefined {
+    const dateStrings = compact(
+      this.corpora.flatMap((corpus) => [corpus.info.FirstDate, corpus.info.LastDate]),
+    )
+    if (!dateStrings.length) return undefined
+    const dates = dateStrings.sort().map((d) => new Date(d))
+    return [dates[0], dates[dates.length - 1]]
   }
 
   /** Percentage of data that is undated. */

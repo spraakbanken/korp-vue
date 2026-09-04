@@ -1,6 +1,6 @@
-import type { Moment } from "moment"
 import type { CountTimeParams, CountTimeResponse } from "../backend/types/countTime"
-import { fillMissingDate, GRANULARITIES, parseDate, type Level } from "../trend/util"
+import { dateEndOf, dateStartOf, type Level } from "@/core/time"
+import { fillMissingDate, GRANULARITIES, parseDate } from "../trend/util"
 import { TaskBase } from "./TaskBase"
 import type { NumericString, ProgressHandler } from "../backend/types"
 import { padStart } from "lodash-es"
@@ -24,7 +24,7 @@ export type Series = {
 /** A time point with optional frequency. The type generic helps sync the types of the frequency fields. */
 export type Point<TEmpty extends boolean = false> = {
   /** Time (start of an interval being counted) */
-  x: Moment
+  x: Date
   /** Relative frequency */
   y: TEmpty extends true ? null : number
   /** Absolute frequency */
@@ -46,13 +46,13 @@ export class TrendTask extends TaskBase<TrendResult> {
 
   async send(
     level: Level,
-    from: Moment,
-    to: Moment,
+    from: Date,
+    to: Date,
     onProgress: ProgressHandler<"count_time">,
   ): Promise<TrendResult> {
     this.abort()
 
-    const formatDate = (d: Moment) => d.format("YYYYMMDDHHmmss") as NumericString
+    const formatDate = (d: Date) => d.toISOString().replace(/\D/g, "").slice(0, 14) as NumericString
 
     const padLength = String(this.subqueries.length).length
     const subcqps = Object.fromEntries(
@@ -64,8 +64,8 @@ export class TrendTask extends TaskBase<TrendResult> {
       default_within: this.defaultWithin,
       corpus: this.corpusSet.stringify(),
       granularity: GRANULARITIES[level],
-      from: formatDate(from),
-      to: formatDate(to),
+      from: formatDate(dateStartOf(from, level)),
+      to: formatDate(dateEndOf(to, level)),
       incremental: true,
       per_corpus: false,
       ...subcqps,
@@ -81,12 +81,13 @@ export class TrendTask extends TaskBase<TrendResult> {
       ? this.response.combined
       : [this.response.combined]
     const series: Series[] = seriesRaw.map((series) => {
-      const points: Point[] = Object.entries(series.relative).map(
+      const entries = Object.entries(series.relative) as [NumericString, number | null][]
+      const points: Point[] = entries.map(
         ([timestamp, frequency]) =>
           ({
-            x: parseDate(level, timestamp),
+            x: parseDate(timestamp),
             y: frequency,
-            absolute: series.absolute[timestamp as `${number}`],
+            absolute: series.absolute[timestamp],
           }) as Point,
       )
       return {
