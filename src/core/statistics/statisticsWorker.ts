@@ -103,8 +103,7 @@ onmessage = function (e) {
 
   dataset.sort((a, b) => b.total[0] - a.total[0])
 
-  const ctx: Worker = self as any
-  ctx.postMessage(dataset)
+  self.postMessage(dataset)
 }
 
 const sumByAbsRel = (rows: StatsRow[]): AbsRelSeq => [

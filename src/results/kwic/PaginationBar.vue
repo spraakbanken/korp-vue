@@ -6,7 +6,7 @@ const props = defineProps<{
   max: number
 }>()
 
-const model = defineModel({
+const model = defineModel<number>({
   default: 1,
   // Prevent out-of-bounds page numbers
   set: (value) => (value >= 1 && value <= props.max ? value : model.value),

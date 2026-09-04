@@ -17,20 +17,10 @@ declare module "*.peggy" {
 }
 
 declare module "*.yaml" {
-  const value: Record<string, unknown>
+  const value: unknown
   export default value
 }
-
-// Specify type of locale files as strings
-declare module "@/locale/*.yaml" {
-  const value: Record<string, string>
+declare module "*.yml" {
+  const value: unknown
   export default value
-}
-
-import "chart.js"
-import type { InteractionModeFunction } from "chart.js"
-declare module "chart.js" {
-  export interface InteractionModeMap {
-    xnearest: InteractionModeFunction
-  }
 }

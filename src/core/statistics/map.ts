@@ -52,22 +52,14 @@ export type MergedMarker = {
   lng: number
 }
 
-export class MarkerClusterGroup extends L.MarkerClusterGroup {
-  getAllChildMarkers: () => CustomMarker[]
-}
-
-export class MarkerCluster extends L.MarkerCluster {
-  getAllChildMarkers: () => CustomMarker[]
-}
-
 /** Determine if a given layer is a single marker */
 export const isMarker = <T extends L.Layer>(layer: T | CustomMarker): layer is CustomMarker =>
   "markerData" in layer
 
 /** Determine if a given layer is a cluster marker */
 export const isMarkerCluster = <T extends L.Layer>(
-  layer: T | MarkerClusterGroup,
-): layer is MarkerClusterGroup => "getChildCount" in layer
+  layer: T | L.MarkerClusterGroup,
+): layer is L.MarkerClusterGroup => "getChildCount" in layer
 
 export type Point = {
   abs: number

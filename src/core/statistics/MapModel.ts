@@ -7,8 +7,6 @@ import {
   type CustomMarkerMany,
   isMarker,
   isMarkerCluster,
-  MarkerCluster,
-  MarkerClusterGroup,
   type MarkerData,
   type MarkerGroup,
   type MergedMarker,
@@ -20,7 +18,7 @@ export class MapModel {
   map: L.Map
   selectedMarkers: MarkerData[] = []
   featureLayer: L.FeatureGroup | undefined
-  markerCluster: MarkerClusterGroup | undefined
+  markerCluster: L.MarkerClusterGroup | undefined
   /** Maximum frequency in current result */
   maxRel = 0
   useClustering = false
@@ -65,9 +63,10 @@ export class MapModel {
       groups.splice(3)
       groups.push(restColor)
     }
-    return (cluster: MarkerCluster) => {
+    return (cluster: L.MarkerCluster) => {
       const sizes = Object.fromEntries(groups.map((color) => [color, 0]))
-      cluster.getAllChildMarkers().forEach((childMarker: CustomMarker) => {
+      const childMarkers = cluster.getAllChildMarkers() as CustomMarker[]
+      childMarkers.forEach((childMarker) => {
         let color = childMarker.markerData.color
         if (!(color in sizes)) color = restColor
         sizes[color] += childMarker.markerData.point.rel
@@ -125,7 +124,8 @@ export class MapModel {
       this.map.eachLayer((layer) => {
         if (isMarkerCluster(layer)) {
           const sumRels: Record<string, number> = {}
-          for (const child of layer.getAllChildMarkers()) {
+          const childMarkers = layer.getAllChildMarkers() as CustomMarker[]
+          for (const child of childMarkers) {
             const color = child.markerData.color
             if (!sumRels[color]) sumRels[color] = 0
             sumRels[color] += child.markerData.point.rel
@@ -168,22 +168,26 @@ export class MapModel {
   createMarkerCluster(
     clusterGroups: Record<string, MarkerGroup>,
     restColor: string,
-  ): MarkerClusterGroup {
+  ): L.MarkerClusterGroup {
     const markerCluster = L.markerClusterGroup({
       spiderfyOnMaxZoom: false,
       showCoverageOnHover: false,
       maxClusterRadius: 40,
       zoomToBoundsOnClick: false,
       iconCreateFunction: this.createClusterIcon(clusterGroups, restColor),
-    }) as MarkerClusterGroup
-    markerCluster.on("clustermouseover", (e: { propagatedFrom: MarkerCluster }) =>
-      this.mouseOver(e.propagatedFrom.getAllChildMarkers().map((layer) => layer.markerData)),
+    }) as L.MarkerClusterGroup
+    markerCluster.on("clustermouseover", (e: { propagatedFrom: L.MarkerCluster }) =>
+      this.mouseOver(
+        (e.propagatedFrom.getAllChildMarkers() as CustomMarker[]).map((layer) => layer.markerData),
+      ),
     )
     markerCluster.on("clustermouseout", () =>
       this.selectedMarkers.length > 0 ? this.mouseOver(this.selectedMarkers) : this.mouseOut(),
     )
-    markerCluster.on("clusterclick", (e: { propagatedFrom: MarkerCluster }) => {
-      this.selectedMarkers = e.propagatedFrom.getAllChildMarkers().map((layer) => layer.markerData)
+    markerCluster.on("clusterclick", (e: { propagatedFrom: L.MarkerCluster }) => {
+      this.selectedMarkers = (e.propagatedFrom.getAllChildMarkers() as CustomMarker[]).map(
+        (layer) => layer.markerData,
+      )
       this.mouseOver(this.selectedMarkers)
       if (this.shouldZooomToBounds(e.propagatedFrom)) {
         return e.propagatedFrom.zoomToBounds()
@@ -194,10 +198,10 @@ export class MapModel {
       return this.mouseOver(this.selectedMarkers)
     })
     markerCluster.on("mouseover", (e) => this.mouseOver([e.propagatedFrom.markerData]))
-    markerCluster.on("mouseout", (e) =>
+    markerCluster.on("mouseout", () =>
       this.selectedMarkers.length > 0 ? this.mouseOver(this.selectedMarkers) : this.mouseOut(),
     )
-    markerCluster.on("animationend", (e) => this.updateMarkerSizes())
+    markerCluster.on("animationend", () => this.updateMarkerSizes())
     return markerCluster
   }
 
@@ -207,8 +211,8 @@ export class MapModel {
 
     if (this.useClustering) {
       const clusterGroups = keyBy(selectedMarkers, "color")
-      this.markerCluster = this.createMarkerCluster(clusterGroups, restColor)
-      this.map.addLayer(this.markerCluster)
+      const cluster = (this.markerCluster = this.createMarkerCluster(clusterGroups, restColor))
+      this.map.addLayer(cluster)
 
       const isCluster = selectedMarkers.length !== 1
       for (const markerGroup of selectedMarkers) {
@@ -222,7 +226,7 @@ export class MapModel {
             point: markerOrig.point,
             queryData: markerOrig.queryData,
           }
-          this.markerCluster.addLayer(marker)
+          cluster.addLayer(marker)
         })
       }
     } else {

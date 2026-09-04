@@ -21,13 +21,14 @@ export type Series = {
   subcqp?: string
 }
 
-export type Point = {
+/** A time point with optional frequency. The type generic helps sync the types of the frequency fields. */
+export type Point<TEmpty extends boolean = false> = {
   /** Time (start of an interval being counted) */
   x: Moment
   /** Relative frequency */
-  y: number | null
+  y: TEmpty extends true ? null : number
   /** Absolute frequency */
-  absolute: number | null
+  absolute: TEmpty extends true ? null : number
 }
 
 export class TrendTask extends TaskBase<TrendResult> {
@@ -80,11 +81,14 @@ export class TrendTask extends TaskBase<TrendResult> {
       ? this.response.combined
       : [this.response.combined]
     const series: Series[] = seriesRaw.map((series) => {
-      const points: Point[] = Object.entries(series.relative).map(([timestamp, frequency]) => ({
-        x: parseDate(level, timestamp),
-        y: frequency,
-        absolute: series.absolute[timestamp as `${number}`]!,
-      }))
+      const points: Point[] = Object.entries(series.relative).map(
+        ([timestamp, frequency]) =>
+          ({
+            x: parseDate(level, timestamp),
+            y: frequency,
+            absolute: series.absolute[timestamp as `${number}`],
+          }) as Point,
+      )
       return {
         points: fillMissingDate(points, level),
         // Label and subcqp only present for subquery rows, not the total row

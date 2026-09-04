@@ -3,9 +3,6 @@ import eng from "@/locale/eng.yaml"
 import swe from "@/locale/swe.yaml"
 import settings from "@/core/config"
 
-/** Message sets by language code */
-type LocalesByLang = Record<string, Locale>
-
 /** Localized messages by key */
 type Locale = Record<string, string>
 
@@ -14,8 +11,8 @@ export default async function setupI18n(locale: string) {
   const messages = await loadInstanceLocales()
 
   // Add default messages
-  messages.eng = { ...eng, ...messages.eng }
-  messages.swe = { ...swe, ...messages.swe }
+  messages.eng = { ...(eng as Locale), ...messages.eng }
+  messages.swe = { ...(swe as Locale), ...messages.swe }
 
   // Passing `false` as type arg helps to infer the return type as a non-legacy I18n instance.
   return createI18n<false>({
@@ -27,10 +24,10 @@ export default async function setupI18n(locale: string) {
 }
 
 /** Load named locales */
-async function loadInstanceLocales(): Promise<LocalesByLang> {
+async function loadInstanceLocales() {
   const langs = settings.languages.map((item) => item.value)
   const locales = await Promise.all(
-    langs.map(async (lang) => (await import(`@instance/locale/${lang}.yaml`)).default),
+    langs.map(async (lang) => (await import(`@instance/locale/${lang}.yaml`)).default as Locale),
   )
   return Object.fromEntries(langs.map((lang, i) => [lang, locales[i]]))
 }

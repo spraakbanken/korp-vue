@@ -12,7 +12,9 @@ import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { Stringifier } from "@/attributes/attributes.types"
 
-const customFunctions: Record<string, Stringifier> = {}
+export type StatisticsStringifier = (values: string[], ignoreCase: boolean) => string
+
+const customFunctions: Record<string, StatisticsStringifier> = {}
 
 // TODO NPEGL
 // try {
