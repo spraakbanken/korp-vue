@@ -10,7 +10,7 @@
     "lint": "eslint",
     "format": "prettier . --check",
     "fix": "run-p \"lint -- --fix\" \"format -- --write\"",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc --build",
     "check": "run-p lint format typecheck"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "vue3-matomo": "^1.2.6"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.6",
+    "@tsconfig/node24": "^24.0.4",
     "@types/bootstrap": "^5.2.11",
     "@types/node": "^26.2.0",
     "@vitejs/plugin-vue": "^6.0.8",
