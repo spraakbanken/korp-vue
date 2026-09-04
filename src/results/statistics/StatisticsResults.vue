@@ -115,7 +115,7 @@ async function doSearch() {
   )
 
   rawResponse.value = proxy.getResponse()
-  isDated.value = !!corpora.getTimeInterval()
+  isDated.value = !!corpora.getYearRange()
   isLimited.value = !!settings["statistics_limit"] && counts.combined.rows.length < counts.count
   unsupportedRatio.value = proxy.unsupportedRatio
   unsupportedAttributes.value = proxy.unsupportedAttributes

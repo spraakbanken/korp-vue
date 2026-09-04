@@ -247,18 +247,14 @@ export class CorpusSet {
     }
   }
 
-  getTimeInterval(): [number, number] | undefined {
-    const all = this.corpora
-      .map((corpus) => corpus.time)
-      .filter((item) => item != null)
-      .map(Object.keys)
-      .flat()
-      .map(Number)
-      .sort((a, b) => a - b)
-
-    const from = all[0]
-    const to = all.pop()
-    return from && to ? [from, to] : undefined
+  /** First and last year with data */
+  getYearRange(): [number, number] | undefined {
+    // Find years that have non-zero counts in each corpus
+    const pairs = this.corpora.flatMap((corpus) => Object.entries(corpus.time || {}))
+    const years = pairs.filter(([, count]) => count > 0).map(([year]) => Number(year))
+    // Get first and last year
+    if (!years.length) return undefined
+    return [Math.min(...years), Math.max(...years)]
   }
 
   getMomentInterval(): [Moment, Moment] | undefined {
