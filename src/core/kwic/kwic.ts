@@ -141,7 +141,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
         position: i,
         // Copy positional attributes
         attrs: {
-          ...omit(token, ["structs"]),
+          ...omit(token, "structs"),
           ...structAttrs,
         },
         _match: isMatch(i),
@@ -167,7 +167,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
       const tokens = tokensAligned.map((token) => ({
         id: getId(),
         word: token.word,
-        attrs: omit(token, ["structs"]),
+        attrs: omit(token, "structs"),
       }))
 
       const id = getId()

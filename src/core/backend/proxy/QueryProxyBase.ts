@@ -1,6 +1,6 @@
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { pageToRange } from "../common"
-import type { QueryParams, QueryResponse } from "../types/query"
+import type { QueryParams, QueryParamSort, QueryResponse } from "../types/query"
 import ProxyBase from "./ProxyBase"
 import { getDefaultWithin } from "@/core/config"
 import { expandCqp } from "@/core/cqp/cqp"
@@ -10,6 +10,9 @@ export type QueryParamOptions = {
   /** Enable to reuse the `query_data` from the last request, causing backend to skip counting hits per corpora. */
   reuseCounts?: boolean
   page?: number
+  inOrder?: boolean
+  randomSeed?: number
+  sort?: QueryParamSort
   isReading?: boolean
   defaultWithin?: string
 }
@@ -34,7 +37,7 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
     corpusIds: string[],
     cqp: string,
     hpp: number,
-    options: QueryParamOptions,
+    options: QueryParamOptions = {},
   ): QueryParams {
     if (!options.reuseCounts) this.queryData = undefined
     const cl = corpusListing.pick(corpusIds)
@@ -47,6 +50,9 @@ export abstract class QueryProxyBase extends ProxyBase<"query"> {
       within: cl.getWithinParam(defaultWithin),
       ...cl.getContextParams(!!options.isReading),
       ...cl.buildShowParams(),
+      in_order: options.inOrder ? undefined : false,
+      random_seed: options.randomSeed,
+      sort: options.sort || undefined,
       query_data: this.queryData,
       ...pageToRange(options.page || 0, hpp),
     }

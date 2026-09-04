@@ -173,6 +173,7 @@ function calculateYearTicks(min: number, max: number) {
 
 <template>
   <div class="position-relative" style="height: 5rem; width: 20rem">
+    <!-- @vue-expect-error The Bar component expects only the built-in Point data type. -->
     <Bar :data :options />
   </div>
 </template>

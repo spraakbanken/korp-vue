@@ -11,7 +11,11 @@ import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import { massageData, type Row } from "@/core/kwic/kwic"
-import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
+import type {
+  HitsDistribution,
+  QueryData,
+  QueryParamOptions,
+} from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
@@ -46,7 +50,7 @@ const sort = ref<QueryParamSort>(store.sort)
 /** Flags if the current running request will be shown in reading mode */
 let isCurrentRequestReading = false
 
-const proxy = new KwicProxy(store).setProgressHandler((report) => {
+const proxy = new KwicProxy().setProgressHandler((report) => {
   // Show first KWIC page when available
   if (!kwic.value && "kwic" in report.data && report.data.kwic) {
     kwic.value = massageData(report.data.kwic)
@@ -82,7 +86,14 @@ async function doSearch(reuseCounts = false) {
 
   let response: QueryData
   try {
-    response = await proxy.makeRequest(activeSearch.value.cqp, reuseCounts)
+    response = await proxy.makeRequest(activeSearch.value.cqp, store.hpp, {
+      isReading: store.reading_mode,
+      defaultWithin: store.within,
+      page: store.page,
+      inOrder: store.in_order,
+      randomSeed: store.random_seed,
+      sort: store.sort,
+    })
     progress.value = 100
   } catch (error) {
     progress.value = undefined

@@ -81,7 +81,7 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
     if (attributes["compwf"]) attributes["compwf"].stringify = "compwf"
 
     return {
-      ...omit(corpus, ["pos_attributes", "limited_access"]),
+      ...omit(corpus, "pos_attributes", "limited_access"),
       attributes,
       struct_attributes,
       custom_attributes,
