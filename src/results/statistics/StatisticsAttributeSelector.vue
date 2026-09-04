@@ -12,8 +12,8 @@ import { truncateStr } from "@/core/util"
 import CaseInsensitivityToggle from "@/components/CaseInsensitivityToggle.vue"
 import settings from "@/core/config"
 
-const modelSelected = defineModel<string[]>({ default: [] })
-const modelInsensitive = defineModel<string[]>("insensitive", { default: [] })
+const modelSelected = defineModel<string[]>({ required: true })
+const modelInsensitive = defineModel<string[]>("insensitive", { required: true })
 
 const corpusSelection = useReactiveCorpusSelection()
 const { locObj } = useLocale()

@@ -23,7 +23,7 @@ const props = defineProps<{
   rows: Row[]
 }>()
 
-const rowsSelected = defineModel<Row[]>({ default: [] })
+const rowsSelected = defineModel<Row[]>({ required: true })
 
 const emit = defineEmits<{
   (e: "clickValue", payload: { corpusIds: string[]; cqp?: string }): void

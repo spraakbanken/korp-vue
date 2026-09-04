@@ -7,7 +7,7 @@ import { capitalize, sortBy } from "lodash-es"
 import { computed, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 
-const model = defineModel<string[]>({ default: [] })
+const model = defineModel<string[]>({ required: true })
 
 const props = defineProps<{
   label: LangString

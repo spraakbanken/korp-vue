@@ -13,7 +13,7 @@ defineProps<{
 }>()
 
 /** Labels of enabled series */
-const model = defineModel<string[]>({ default: [] })
+const model = defineModel<string[]>({ required: true })
 
 const id = useId()
 </script>
