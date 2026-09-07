@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import OptionsBar from "@/components/OptionsBar.vue"
-import { GoldenAnglePaletteHsl } from "@/core/color"
 import settings from "@/core/config"
 import { formatDecimals } from "@/core/i18n"
 import type { MarkerData, MarkerGroup } from "@/core/statistics/map"
 import { MapModel } from "@/core/statistics/MapModel"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import type { MapTask } from "@/core/task/MapTask"
-import { regescape } from "@/core/util"
+import { goldenOklch, regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useElementVisibility, whenever } from "@vueuse/core"
 import { groupBy } from "lodash-es"
@@ -16,6 +15,7 @@ import { useI18n } from "vue-i18n"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import SeriesLegend from "./SeriesLegend.vue"
+import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar.ts"
 
 const props = defineProps<{
   task: MapTask
@@ -26,6 +26,7 @@ const progress = defineModel<number>("progress")
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 const matomo = useMatomo()
+const primaryColor = useBootstrapThemeVar("--bs-primary")
 
 const id = useId()
 const mapEl = useTemplateRef("map")
@@ -64,8 +65,8 @@ async function doSearch() {
   await props.task.send()
   progress.value = 100
 
-  const palette = new GoldenAnglePaletteHsl()
-  seriesAll.value = props.task.getMarkerGroups(() => palette.shift())
+  const palette = goldenOklch(primaryColor.value)
+  seriesAll.value = props.task.getMarkerGroups(() => palette.next().value!)
   enabledSeries.value = Object.keys(seriesAll.value)
 }
 

@@ -37,8 +37,11 @@ const { t, locale } = useI18n()
 const id = useId()
 const isDark = useDark()
 const textColor = useBootstrapThemeVar("--bs-body-color")
+const primaryColor = useBootstrapThemeVar("--bs-primary")
 
-const trendChart = reactive(new TrendChart(props.type, props.level, props.series, props.showTotal))
+const trendChart = reactive(
+  new TrendChart(props.type, props.level, props.series, props.showTotal, primaryColor),
+)
 
 // Sync props to chart model
 watchEffect(() => (trendChart.type = props.type))

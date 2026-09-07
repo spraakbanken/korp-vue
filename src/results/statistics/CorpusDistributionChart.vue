@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { GoldenAnglePaletteHsl } from "@/core/color"
+import { goldenOklch } from "@/core/util"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { formatFrequency } from "@/core/i18n"
 import type { Row } from "@/core/statistics/statistics.types"
@@ -8,11 +8,13 @@ import { ArcElement, Chart, Legend, Tooltip, type ChartData, type ChartOptions }
 import { computed } from "vue"
 import { Pie } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
+import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
 
 const props = defineProps<{
   row: Row
 }>()
 
+const primaryColor = useBootstrapThemeVar("--bs-primary")
 const { locale, t } = useI18n()
 const { locObj } = useLocale()
 
@@ -20,19 +22,19 @@ Chart.register(ArcElement, Tooltip, Legend)
 
 // Look up corpus objects and combine with frequencies
 const stats = computed(() =>
-  Object.entries(props.row.count).map(([id, count]) => ({
-    corpus: corpusListing.get(id),
-    count,
-  })),
+  Object.entries(props.row.count)
+    .map(([id, count]) => ({
+      count,
+      title: locObj(corpusListing.get(id).title),
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title, locale.value)),
 )
 
-const corpusNames = computed(() => stats.value.map(({ corpus }) => locObj(corpus.title)))
-
 const data = computed<ChartData<"pie">>(() => {
-  const palette = new GoldenAnglePaletteHsl()
-  const colors = stats.value.map(() => palette.shift())
+  const palette = goldenOklch(primaryColor.value)
+  const colors = stats.value.map(() => palette.next().value!)
   return {
-    labels: corpusNames.value,
+    labels: stats.value.map((item) => item.title),
     datasets: [
       // Outer series: absolute frequencies
       {

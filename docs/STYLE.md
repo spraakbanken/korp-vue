@@ -46,6 +46,8 @@ Design for both **light** and **dark mode**.
 
 Design for different **screen sizes**, but primarily for a low-end computer screen size, about 1000px wide.
 
+Use the `useBootstrapThemeVar` composable to make colors and other CSS variables available in TypeScript code.
+
 ### Typography
 
 The **font** is [Jost](https://indestructibletype.com/Jost.html) for headings and `sans-serif` for everything else.
@@ -68,6 +70,8 @@ Use the **secondary color** for:
 - informational elements
 
 Use the **error color** if the user's intention cannot be fulfilled, and the **warning color** if you suspect that the user's intention may not be fulfilled.
+
+Use the `goldenOklch()` function to generate an arbitrary amount of evenly distributed colors for diagrams, etc.
 
 ### Patterns
 

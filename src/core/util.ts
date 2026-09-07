@@ -88,6 +88,18 @@ export function createKeyValueHtml(stats: Record<string, unknown>) {
     .join("<br />\n")
 }
 
+/**
+ * Generate colors using the golden angle in the OKLCH color space.
+ *
+ * Each color yielded is the golden angle away from the previous color in the hue dimension,
+ * while keeping the lightness and chroma constant.
+ * This results in a visually distinct and evenly distributed set of colors.
+ */
+export function* goldenOklch(first = "red") {
+  let i = 0
+  while (true) yield `oklch(from ${first} l c calc(h + 137.5 * ${i++}))`
+}
+
 /** Split a string by the first occurence of a given separator */
 export const splitFirst = (sep: string, s: string): [string, string] => {
   const pos = s.indexOf(sep)

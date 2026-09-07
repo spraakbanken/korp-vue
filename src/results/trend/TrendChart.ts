@@ -1,5 +1,5 @@
 import "chartjs-adapter-date-fns"
-import { GoldenAnglePaletteHsl } from "@/core/color"
+import { goldenOklch } from "@/core/util"
 import type { Level } from "@/core/time"
 import type { Point, Series } from "@/core/task/TrendTask"
 import { Interaction, type ChartDataset, type ChartOptions } from "chart.js"
@@ -39,6 +39,8 @@ export class TrendChart {
     public series: Series[],
     /** Whether to show the totals series by default */
     public showTotal: boolean,
+    /** Primary color */
+    public primaryColor: string,
   ) {
     this.enabled = this.getSeries().map(() => true)
   }
@@ -50,9 +52,9 @@ export class TrendChart {
 
   /** Create Chart.js datasets for the active series. */
   getDatasets(totalLabel = ""): ChartDataset<ChartType, Point[]>[] {
-    const palette = new GoldenAnglePaletteHsl()
+    const palette = goldenOklch(this.primaryColor)
     return this.getSeries().map((series, i) => {
-      const color = palette.shift()
+      const color = palette.next().value!
       return {
         label: series.label ?? totalLabel,
         data: series.points,
@@ -123,6 +125,7 @@ export class TrendChart {
           },
           onSelectComplete,
         },
+        legend: false,
         tooltip: false,
       },
     })
