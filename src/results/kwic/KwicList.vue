@@ -2,7 +2,7 @@
 import { isCorpusHeading, isKwic, type Row } from "@/core/kwic/kwic"
 import KwicToken from "./KwicToken.vue"
 import { useLocale } from "@/i18n/useLocale"
-import settings from "@/core/config/index.ts"
+import settings from "@/core/config"
 
 defineProps<{ data: Row[] }>()
 

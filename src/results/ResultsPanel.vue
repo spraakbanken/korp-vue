@@ -13,7 +13,7 @@ import { TrendTask } from "@/core/task/TrendTask"
 import { MapTask } from "@/core/task/MapTask"
 import TabProgressBar from "./TabProgressBar.vue"
 import { TextTask } from "@/core/task/TextTask"
-import settings from "@/core/config/index.ts"
+import settings from "@/core/config"
 
 const CompareResults = defineAsyncComponent(() => import("./CompareResults.vue"))
 const ExampleResults = defineAsyncComponent(() => import("./kwic/ExampleResults.vue"))

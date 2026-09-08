@@ -12,7 +12,7 @@ import { TextTask } from "@/core/task/TextTask"
 import DeptreeDiagram from "./DeptreeDiagram.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { getDeptreeAttrMapping } from "@/core/config/index"
+import { getDeptreeAttrMapping } from "@/core/config"
 
 defineProps<{
   hideReadingMode?: boolean

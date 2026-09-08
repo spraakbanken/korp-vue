@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
-import type { Level } from "@/core/time.ts"
+import type { Level } from "@/core/time"
 import {
   createTrendTableCsv,
   findOptimalLevel,
@@ -20,8 +20,8 @@ import { percentage } from "@/core/i18n"
 import OptionsBar from "@/components/OptionsBar.vue"
 import TrendTable from "./TrendTable.vue"
 import ExportButton from "../ExportButton.vue"
-import { useAppStore } from "@/store/useAppStore.ts"
-import type { Range } from "./TrendChart.ts"
+import { useAppStore } from "@/store/useAppStore"
+import type { Range } from "./TrendChart"
 
 const props = defineProps<{
   task: TrendTask

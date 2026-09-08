@@ -7,8 +7,8 @@ import type { KwicRow } from "@/core/kwic/kwic"
 import { useLocale } from "@/i18n/useLocale"
 import SidebarProvider from "../sidebar/SidebarProvider.vue"
 import { useMatomo } from "vue3-matomo"
-import { injectionKeys } from "@/injection.ts"
-import { getConfigurable } from "@/core/config/index.ts"
+import { injectionKeys } from "@/injection"
+import { getConfigurable } from "@/core/config"
 import { type Reader } from "./text"
 
 const props = defineProps<{

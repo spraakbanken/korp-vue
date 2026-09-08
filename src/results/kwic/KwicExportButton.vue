@@ -3,8 +3,8 @@ import { reactive, ref } from "vue"
 import ExportButton from "../ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
-import type { QueryProxyBase } from "@/core/backend/proxy/QueryProxyBase.ts"
-import type { RelationsSentencesProxy } from "@/core/backend/proxy/RelationsSentencesProxy.ts"
+import type { QueryProxyBase } from "@/core/backend/proxy/QueryProxyBase"
+import type { RelationsSentencesProxy } from "@/core/backend/proxy/RelationsSentencesProxy"
 
 const exportType = ref<ExportType>("kwic")
 

@@ -6,7 +6,7 @@ import { watchImmediate } from "@vueuse/core"
 import { useLocale } from "@/i18n/useLocale"
 import vScrollToTarget from "@/components/vScrollToTarget"
 import KwicRowLinked from "./KwicRowLinked.vue"
-import settings from "@/core/config/index.ts"
+import settings from "@/core/config"
 
 const props = defineProps<{ data: Row[] }>()
 
