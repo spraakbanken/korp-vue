@@ -46,6 +46,8 @@ watchEffect(() => (trendChart.level = props.level))
 watchEffect(() => (trendChart.series = props.series))
 watchEffect(() => (trendChart.range = props.range))
 watchEffect(() => (trendChart.locale = locale.value))
+watchEffect(() => (trendChart.gridColor = theme.secondaryBg))
+watchEffect(() => (trendChart.selectColor = theme.primaryBgSubtle))
 
 // Update text color when theme changes
 watchEffect(() => (Chart.defaults.color = theme.bodyColor))

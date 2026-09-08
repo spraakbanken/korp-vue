@@ -40,7 +40,9 @@ export class TrendChart {
     /** Whether to show the totals series by default */
     public showTotal: boolean,
     /** Primary color */
-    public primaryColor: string,
+    public primaryColor?: string,
+    public gridColor?: string,
+    public selectColor?: string,
   ) {
     this.enabled = this.getSeries().map(() => true)
   }
@@ -75,7 +77,19 @@ export class TrendChart {
       responsive: true,
       maintainAspectRatio: false,
       // See https://www.chartjs.org/docs/latest/axes/cartesian/time.html
-      scales: { x: { type: "time" } },
+      scales: {
+        x: {
+          grid: {
+            color: this.gridColor,
+          },
+          type: "time",
+        },
+        y: {
+          grid: {
+            color: this.gridColor,
+          },
+        },
+      },
       // See https://www.chartjs.org/docs/latest/configuration/elements.html
       elements: {
         // line: { tension: 0.1 },
@@ -120,8 +134,7 @@ export class TrendChart {
           enabled: true,
           output: "value",
           colors: {
-            // --bs-primary-bg-subtle
-            selection: "#fcded1",
+            selection: this.selectColor,
           },
           onSelectComplete,
         },

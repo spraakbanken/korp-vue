@@ -36,4 +36,6 @@ const NAME_MAP = {
   bodyColor: "--bs-body-color",
   secondaryBg: "--bs-secondary-bg",
   secondaryColor: "--bs-secondary-color",
+  primaryBgSubtle: "--bs-primary-bg-subtle",
+  secondaryBgSubtle: "--bs-secondary-bg-subtle",
 }
