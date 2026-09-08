@@ -17,8 +17,7 @@ export const setLang = (langNew?: string) => {
  * @param map An object of strings keyed by language codes. Alternatively, just a string.
  * @returns The translated string, or empty string if no translation is found.
  */
-export function locObj(map?: LangString, lang?: string): string {
-  lang ||= _lang
+export function locObj(map?: LangString, lang = _lang): string {
   if (!map) return ""
   if (typeof map == "string") return map
   // fall back to the first value if neither the selected or default language are available
@@ -28,7 +27,7 @@ export function locObj(map?: LangString, lang?: string): string {
 /**
  * Format frequency as relative or absolute using chosen mode.
  */
-export function formatFrequency(absrel: AbsRelSeq, statsRelative: boolean, lang?: string) {
+export function formatFrequency(absrel: AbsRelSeq, statsRelative: boolean, lang = _lang) {
   const [absolute, relative] = absrel
   return statsRelative ? formatDecimals(relative, 1) : absolute.toLocaleString(lang)
 }
@@ -57,4 +56,9 @@ export function abbreviateNumber(n: number) {
   // Otherwise, the compact notation for Swedish is "tn", "mn" etc, which is not wrong but we prefer this
   const parts = new Intl.NumberFormat(getLang(), { notation: "compact" }).formatToParts(n)
   return parts.map((part) => (part.type == "compact" ? abbr : part.value)).join("")
+}
+
+/** Creates a comparator for sorting items by a given labeling function */
+export function compareLabels<T>(getLabel: (item: T) => string = (x) => String(x)) {
+  return (a: T, b: T) => getLabel(a).localeCompare(getLabel(b), getLang())
 }

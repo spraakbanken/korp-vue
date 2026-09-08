@@ -1,6 +1,6 @@
 import { getAttrValues } from "@/core/backend/attrValues"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { locObj } from "@/core/i18n"
+import { compareLabels, locObj } from "@/core/i18n"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { watchImmediate } from "@vueuse/core"
 import { uniq } from "lodash-es"
@@ -38,7 +38,7 @@ export default function useAttrValues(getAttribute: () => Attribute) {
 
     return uniq(values)
       .map((value) => [value, getLabel(value)] as [string, string])
-      .sort((a, b) => a[1].localeCompare(b[1], locale.value))
+      .sort(compareLabels((option) => option[1]))
   }
 
   watchImmediate([corpusSelection, getAttribute, locale], async () => {

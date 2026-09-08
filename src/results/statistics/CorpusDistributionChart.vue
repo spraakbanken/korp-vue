@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { goldenOklch } from "@/core/util"
 import { corpusListing } from "@/core/corpora/corpusListing"
-import { formatFrequency } from "@/core/i18n"
+import { compareLabels, formatFrequency } from "@/core/i18n"
 import type { Row } from "@/core/statistics/statistics.types"
 import { useLocale } from "@/i18n/useLocale"
 import { ArcElement, Chart, Legend, Tooltip, type ChartData, type ChartOptions } from "chart.js"
@@ -27,7 +27,7 @@ const stats = computed(() =>
       count,
       title: locObj(corpusListing.get(id).title),
     }))
-    .sort((a, b) => a.title.localeCompare(b.title, locale.value)),
+    .sort(compareLabels((item) => item.title)),
 )
 
 const data = computed<ChartData<"pie">>(() => {

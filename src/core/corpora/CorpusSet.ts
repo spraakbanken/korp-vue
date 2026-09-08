@@ -12,7 +12,7 @@ import {
   uniq,
 } from "lodash-es"
 import settings, { normalizeDataset } from "@/core/config"
-import { getLang, locObj } from "@/core/i18n"
+import { compareLabels, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { objectIntersection, objectUnion } from "@/core/util"
@@ -317,8 +317,7 @@ export class CorpusSet {
     }
     const attrs = this.getWordAttributeGroups(wordOp, lang)
     const sentAttrs = this.getStructAttributeGroups(structOp, lang)
-    const comparator = (a: Attribute, b: Attribute) =>
-      locObj(a.label).localeCompare(locObj(b.label), getLang())
+    const comparator = compareLabels<Attribute>((attr) => locObj(attr.label))
     return [wordOption, ...attrs.sort(comparator), ...sentAttrs.sort(comparator)]
   }
 

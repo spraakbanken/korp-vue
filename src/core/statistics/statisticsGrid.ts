@@ -10,7 +10,7 @@ import {
 } from "slickgrid"
 import { corpusListing } from "../corpora/corpusListing"
 import settings from "../config"
-import { formatFrequency, locObj } from "../i18n"
+import { compareLabels, formatFrequency, locObj } from "../i18n"
 import type { LangString } from "../model/locale"
 import { icon } from "@fortawesome/fontawesome-svg-core"
 import { faChartPie } from "@fortawesome/free-solid-svg-icons"
@@ -55,7 +55,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
       const { sortCol, sortAsc } = sort as SingleColumnSort
 
       if (!(sortCol?.field && sortCol.id)) return
-      const sorter = getSorter(sortCol.field, sortCol.id, getLang())
+      const sorter = getSorter(sortCol.field, sortCol.id)
 
       data.sort((a, b) => {
         // Place totals row first
@@ -95,10 +95,9 @@ export class StatisticsGrid extends SlickGrid<Row> {
   }
 }
 
-function getSorter(type: string, col: string | number, lang: string): Comparer<SingleRow> {
+function getSorter(type: string, col: string | number): Comparer<SingleRow> {
   const sorters: Record<string, Comparer<SingleRow>> = {
-    hit_value: (a, b) =>
-      (a.formattedValue[col] || "").localeCompare(b.formattedValue[col] || "", lang),
+    hit_value: compareLabels((row) => row.formattedValue[col] || ""),
     total: (a, b) => a.total[0] - b.total[0],
     count: (a, b) => (a.count[col]?.[0] || 0) - (b.count[col]?.[0] || 0),
   }
@@ -123,9 +122,7 @@ function createColumns(
   )
 
   // This sorting will not react to language change, but that's quite alright, we like columns staying in place.
-  const getCorpusTitle = (id: string): string =>
-    locObj(settings.corpora[id.toLowerCase()]!.title, getLang())
-  corpora.sort((a, b) => getCorpusTitle(a).localeCompare(getCorpusTitle(b), getLang()))
+  corpora.sort(compareLabels((id) => locObj(settings.corpora[id.toLowerCase()]!.title)))
 
   const checkboxSelector = new SlickCheckboxSelectColumn({
     cssClass: "parameter-column",

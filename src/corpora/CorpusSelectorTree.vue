@@ -7,7 +7,7 @@ import { useAppStore } from "@/store/useAppStore"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { LangString } from "@/core/model/locale"
-import { useI18n } from "vue-i18n"
+import { compareLabels } from "@/core/i18n"
 
 const props = defineProps<{
   node: ChooserFolder
@@ -17,7 +17,6 @@ defineEmits<{
   (e: "inspect", corpus: Corpus): void
 }>()
 
-const { locale } = useI18n()
 const { locObj } = useLocale()
 const auth = useAuth()
 const store = useAppStore()
@@ -25,13 +24,8 @@ const store = useAppStore()
 // Track whether initial corpus selection is done
 let corpusSelectionDone = false
 
-const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): T[] => {
-  return [...items].sort((a, b) => {
-    const titleA = a.title ? locObj(a.title) : a.id
-    const titleB = b.title ? locObj(b.title) : b.id
-    return titleA.localeCompare(titleB, locale.value)
-  })
-}
+const sortOnTitle = <T extends { id: string; title?: LangString }>(items: T[]): T[] =>
+  [...items].sort(compareLabels((item) => (item.title ? locObj(item.title) : item.id)))
 
 watch(
   () => store.corpus,

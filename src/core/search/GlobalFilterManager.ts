@@ -4,7 +4,7 @@ import type { RecursiveRecord } from "@/core/backend/types/attrValues"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
-import { getLang } from "../i18n"
+import { compareLabels } from "../i18n"
 import { mergeCqpExprs } from "../cqp/cqp"
 import { createAttrCondition } from "../corpora/attribute"
 
@@ -106,7 +106,7 @@ export class GlobalFilterManager {
         options[value] += count
       }
       // Cast back to list and sort alphabetically
-      filter.options = Object.entries(options).sort((a, b) => a[0].localeCompare(b[0], getLang()))
+      filter.options = Object.entries(options).sort(compareLabels((option) => option[0]))
     }
   }
 

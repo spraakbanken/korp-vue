@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import { compareLabels } from "@/core/i18n"
 import type { LangString } from "@/core/model/locale"
 import { useLocale } from "@/i18n/useLocale"
 import EmptyValue from "@/results/EmptyValue.vue"
-import { useAppStore } from "@/store/useAppStore"
 import { capitalize, sortBy } from "lodash-es"
 import { computed, ref, watch } from "vue"
-import { useI18n } from "vue-i18n"
 
 const model = defineModel<string[]>({ required: true })
 
@@ -14,16 +13,14 @@ const props = defineProps<{
   options: [string, number][]
 }>()
 
-const { locale } = useI18n()
 const { locObj } = useLocale()
-const store = useAppStore()
 // Store WIP selection locally until menu is closed
 const selectionLocal = ref<string[]>(model.value)
 
 // Sort options by name, then by hits (any or none), then by selection
 const optionsSorted = computed(() =>
   sortBy(
-    [...props.options].sort((a, b) => a[0].localeCompare(b[0], store.lang)),
+    [...props.options].sort(compareLabels((option) => option[0])),
     (option) => option[1] == 0,
     (option) => !model.value.includes(option[0]),
   ),
@@ -38,8 +35,7 @@ function toggle(value: string) {
   if (selectionLocal.value.includes(value)) {
     selectionLocal.value = selectionLocal.value.filter((v) => v != value)
   } else {
-    selectionLocal.value = [...selectionLocal.value, value]
-    selectionLocal.value.sort((a, b) => a.localeCompare(b, locale.value))
+    selectionLocal.value = [...selectionLocal.value, value].sort(compareLabels())
   }
 }
 

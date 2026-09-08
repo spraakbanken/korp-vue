@@ -11,11 +11,7 @@ import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import { massageData, type Row } from "@/core/kwic/kwic"
-import type {
-  HitsDistribution,
-  QueryData,
-  QueryParamOptions,
-} from "@/core/backend/proxy/QueryProxyBase"
+import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
