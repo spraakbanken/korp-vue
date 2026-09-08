@@ -21,7 +21,7 @@ import { computed, ref } from "vue"
 import { Bar } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
-import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
+import { useTheme } from "@/components/useTheme"
 import { watchImmediate } from "@vueuse/core"
 
 type Data = Record<number, number | undefined>
@@ -32,9 +32,7 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 const corpusSelection = useReactiveCorpusSelection()
-const primaryColor = useBootstrapThemeVar("--bs-primary")
-const dangerColor = useBootstrapThemeVar("--bs-danger")
-const neutralColor = useBootstrapThemeVar("--bs-secondary-bg")
+const theme = useTheme()
 
 const selectedSeries = ref<YearSeries>({})
 
@@ -57,12 +55,12 @@ const datasetsDated = computed<ChartDataset<"bar", Data>[]>(() => [
   {
     label: t("corpus.selection.graph.selected"),
     data: selectedSeries.value,
-    backgroundColor: primaryColor.value,
+    backgroundColor: theme.primary,
   },
   {
     label: t("corpus.selection.graph.available"),
     data: getSeries(),
-    backgroundColor: neutralColor.value,
+    backgroundColor: theme.secondaryBg,
   },
 ])
 
@@ -70,12 +68,12 @@ const datasetsUndated = computed<ChartDataset<"bar", Data>[]>(() => [
   {
     label: t("corpus.selection.graph.selected"),
     data: { [undatedFakeYear]: getSelectedUndatedSeries() },
-    backgroundColor: dangerColor.value,
+    backgroundColor: theme.danger,
   },
   {
     label: t("corpus.selection.graph.available"),
     data: { [undatedFakeYear]: props.data.undated },
-    backgroundColor: neutralColor.value,
+    backgroundColor: theme.secondaryBg,
   },
 ])
 

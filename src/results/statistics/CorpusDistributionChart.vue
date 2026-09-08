@@ -8,13 +8,13 @@ import { ArcElement, Chart, Legend, Tooltip, type ChartData, type ChartOptions }
 import { computed } from "vue"
 import { Pie } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
+import { useTheme } from "@/components/useTheme"
 
 const props = defineProps<{
   row: Row
 }>()
 
-const primaryColor = useBootstrapThemeVar("--bs-primary")
+const theme = useTheme()
 const { locale, t } = useI18n()
 const { locObj } = useLocale()
 
@@ -31,7 +31,7 @@ const stats = computed(() =>
 )
 
 const data = computed<ChartData<"pie">>(() => {
-  const palette = goldenOklch(primaryColor.value)
+  const palette = goldenOklch(theme.primary)
   const colors = stats.value.map(() => palette.next().value!)
   return {
     labels: stats.value.map((item) => item.title),

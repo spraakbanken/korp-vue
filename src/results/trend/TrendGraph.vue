@@ -15,9 +15,8 @@ import SelectDragPlugin from "@01coder/chartjs-plugin-selectdrag"
 import { computed, reactive, useId, watchEffect } from "vue"
 import { Bar, Line } from "vue-chartjs"
 import { useI18n } from "vue-i18n"
-import { useDark } from "@vueuse/core"
 import { TrendChart, type Range } from "./TrendChart"
-import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar"
+import { useTheme } from "@/components/useTheme"
 import SeriesLegend from "../SeriesLegend.vue"
 
 const props = defineProps<{
@@ -35,12 +34,10 @@ const emit = defineEmits<{
 
 const { t, locale } = useI18n()
 const id = useId()
-const isDark = useDark()
-const textColor = useBootstrapThemeVar("--bs-body-color")
-const primaryColor = useBootstrapThemeVar("--bs-primary")
+const theme = useTheme()
 
 const trendChart = reactive(
-  new TrendChart(props.type, props.level, props.series, props.showTotal, primaryColor),
+  new TrendChart(props.type, props.level, props.series, props.showTotal, theme.primary),
 )
 
 // Sync props to chart model
@@ -51,7 +48,7 @@ watchEffect(() => (trendChart.range = props.range))
 watchEffect(() => (trendChart.locale = locale.value))
 
 // Update text color when theme changes
-watchEffect(() => (Chart.defaults.color = textColor.value!))
+watchEffect(() => (Chart.defaults.color = theme.bodyColor))
 
 Chart.register(LinearScale, TimeScale, PointElement, LineElement)
 
@@ -101,7 +98,11 @@ const enabledLabels = computed({
     <SeriesLegend :legend v-model="enabledLabels" />
 
     <!-- 90vh to almost maximize on a small landscape screen, but cap at 3:2 to save readability on portrait -->
-    <div class="position-relative w-100" style="height: 60svh; max-height: 66vw" :key="textColor">
+    <div
+      class="position-relative w-100"
+      style="height: 60svh; max-height: 66vw"
+      :key="theme.bodyColor"
+    >
       <!-- @vue-expect-error The Bar/Line component expects only the built-in Point data type. -->
       <component
         :is="type == 'bar' ? Bar : Line"
@@ -116,7 +117,7 @@ const enabledLabels = computed({
       <h5 class="visually-hidden">{{ $t("result.trend.overview") }}</h5>
 
       <!-- Full-span overview for zooming -->
-      <div class="position-relative w-100" style="height: 5rem" :key="isDark ? 'dark' : 'light'">
+      <div class="position-relative w-100" style="height: 5rem" :key="theme.bodyColor">
         <!-- @vue-expect-error The Line component expects only the built-in Point data type. -->
         <Line
           :id="`${id}-overview`"

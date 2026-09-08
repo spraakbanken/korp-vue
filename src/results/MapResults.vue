@@ -15,7 +15,7 @@ import { useI18n } from "vue-i18n"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import SeriesLegend from "./SeriesLegend.vue"
-import { useBootstrapThemeVar } from "@/components/useBootstrapThemeVar.ts"
+import { useTheme } from "@/components/useTheme"
 
 const props = defineProps<{
   task: MapTask
@@ -26,7 +26,7 @@ const progress = defineModel<number>("progress")
 const { createTab } = useDynamicTabs()
 const { t } = useI18n()
 const matomo = useMatomo()
-const primaryColor = useBootstrapThemeVar("--bs-primary")
+const theme = useTheme()
 
 const id = useId()
 const mapEl = useTemplateRef("map")
@@ -65,7 +65,7 @@ async function doSearch() {
   await props.task.send()
   progress.value = 100
 
-  const palette = goldenOklch(primaryColor.value)
+  const palette = goldenOklch(theme.primary)
   seriesAll.value = props.task.getMarkerGroups(() => palette.next().value!)
   enabledSeries.value = Object.keys(seriesAll.value)
 }
