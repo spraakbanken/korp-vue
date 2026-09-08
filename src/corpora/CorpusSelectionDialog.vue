@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useAppStore } from "@/store/useAppStore"
-import { onMounted, ref } from "vue"
+import { ref } from "vue"
 import { partition } from "lodash-es"
 import { getDefaultCorpusSelection } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
@@ -18,10 +18,11 @@ const auth = useAuth()
 const message = ref("")
 let dialog: ConfirmDialog | undefined
 
-onMounted(async () => {
+async function onDialogReady(dialogNew: ConfirmDialog) {
+  dialog = dialogNew
   const ids = await validateCorpusSelection(store.corpus)
   emit("resolve", ids)
-})
+}
 
 /** Interactively check that the corpus selection in the store is valid. */
 async function validateCorpusSelection(ids: string[], skipLogin = false): Promise<string[]> {
@@ -86,7 +87,7 @@ async function showDialog(messageNew: string) {
 </script>
 
 <template>
-  <ModalDialog :title="$t('corpus.selection.validation.dialog.title')" @setup="dialog = $event">
+  <ModalDialog :title="$t('corpus.selection.validation.dialog.title')" @setup="onDialogReady">
     {{ message }}
   </ModalDialog>
 </template>

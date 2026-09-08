@@ -1,8 +1,8 @@
 <script lang="ts" setup generic="T">
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue"
-import { Dropdown } from "bootstrap"
 import { useAsyncState, watchImmediate } from "@vueuse/core"
 import { useI18n } from "vue-i18n"
+import type { Dropdown } from "bootstrap"
 
 export type Option<T> = { key: string; value: T }
 
@@ -28,7 +28,8 @@ const raw = ref("")
 
 const { execute, isLoading, state } = useAsyncState(() => props.loadSuggestions(raw.value), [])
 
-onMounted(() => {
+onMounted(async () => {
+  const Dropdown = await import("bootstrap").then((m) => m.Dropdown)
   dropdown = new Dropdown(inputEl.value!)
 })
 

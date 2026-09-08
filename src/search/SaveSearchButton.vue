@@ -2,7 +2,6 @@
 import { useSearchStorage } from "./useSearchStorage"
 import { computed, ref, useTemplateRef, watchEffect } from "vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
-import { Dropdown } from "bootstrap"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
 import { stringify } from "@/core/cqp/cqp"
 import { useReactiveFilterManager } from "./useReactiveFilterManager"
@@ -30,8 +29,9 @@ const cqp = computed(() =>
 watchEffect(() => (label.value = props.suggestedLabel || cqp.value || label.value))
 
 // Save and close dropdown
-function save() {
+async function save() {
   saveSearch(cqp.value, label.value, corpusSelection.getIds())
+  const Dropdown = await import("bootstrap").then((m) => m.Dropdown)
   Dropdown.getOrCreateInstance(dropdownEl.value!).hide()
 }
 </script>

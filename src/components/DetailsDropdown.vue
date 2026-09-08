@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { Dropdown } from "bootstrap"
 import { useId, useTemplateRef } from "vue"
 import { vElementHover } from "@vueuse/components"
 
 const id = useId()
 const toggle = useTemplateRef<HTMLButtonElement>("toggle")
 
-function onHover(state: boolean) {
+async function onHover(state: boolean) {
+  const Dropdown = await import("bootstrap").then((m) => m.Dropdown)
   const dropdown = Dropdown.getOrCreateInstance(toggle.value!)
   if (state) dropdown.show()
   else dropdown.hide()

@@ -179,8 +179,4 @@ details:not(.bg-primary-subtle) > summary:hover,
 .corpus:not(.bg-primary-subtle):hover {
   background-color: var(--bs-tertiary-bg);
 }
-
-.text-bg-primary * {
-  color: #fff !important;
-}
 </style>

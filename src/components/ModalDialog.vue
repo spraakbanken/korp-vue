@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useConfirmDialog, type UseConfirmDialogReturn } from "@vueuse/core"
-import { Modal } from "bootstrap"
-import { onMounted, ref } from "vue"
+import type { Modal } from "bootstrap"
+import { onMounted, ref, useTemplateRef } from "vue"
 
 /** Type of the `dialog` passed to the `@setup` event handler. */
 export type ConfirmDialog = UseConfirmDialogReturn<void, void, void>
@@ -29,15 +29,16 @@ const emit = defineEmits<{
 }>()
 
 const dialog = useConfirmDialog()
-const modalRef = ref<HTMLElement>()
+const modalRef = useTemplateRef("modalRef")
 let modal: Modal
 
 // Setup handling after mounting, when the modal element ref is available.
-onMounted(() => {
+onMounted(async () => {
   const modalEl = modalRef.value
   if (!modalEl) throw new Error("Login modal element missing")
 
   // Attach Bootstrap modal handler to the element.
+  const Modal = await import("bootstrap").then((m) => m.Modal)
   modal = new Modal(modalEl)
 
   // Let modal pick up on confirm dialog events.

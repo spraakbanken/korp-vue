@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watchEffect } from "vue"
-import { Dropdown } from "bootstrap"
 import { getGeoAttributes, type MapAttributeOption } from "@/core/statistics/map"
 import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "@/search/useSearchStore"
@@ -33,10 +32,11 @@ watchEffect(() => {
 })
 
 // Save and close dropdown
-function confirm() {
+async function confirm() {
   const option = options.value.find((option) => option.name == selected.value)
   if (!option) return
   emit("open", option, relative.value)
+  const Dropdown = await import("bootstrap").then((m) => m.Dropdown)
   Dropdown.getOrCreateInstance(dropdownEl.value!).hide()
 }
 </script>
