@@ -148,6 +148,12 @@ function onDistributionClick(row: Row): void {
     background-color: var(--bs-tertiary-bg);
   }
 
+  .slick-cell,
+  .slick-header.ui-state-default,
+  .slick-header-column.ui-state-default {
+    border-color: var(--bs-secondary-bg);
+  }
+
   .slick-cell:has(input[type="checkbox"]),
   [role="columnheader"]:has(input[type="checkbox"]) {
     text-align: center;
