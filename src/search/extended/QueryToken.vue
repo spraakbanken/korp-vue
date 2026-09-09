@@ -36,11 +36,11 @@ function removeCondition(disjunctionIndex: number, conditionIndex: number) {
 <template>
   <div class="vstack gap-2">
     <!-- 2-dimensional repetition: an AND of OR's-->
-    <template v-for="(disjunction, j) in conditions" :key="j">
+    <template v-for="(disjunction, j) in conditions" :key="JSON.stringify(disjunction)">
       <div v-if="j > 0">{{ $t("search.and") }}</div>
 
       <div class="card bg-body bg-opacity-75 p-2 vstack gap-2">
-        <template v-for="(condition, k) in disjunction" :key="k">
+        <template v-for="(condition, k) in disjunction" :key="JSON.stringify(condition)">
           <div v-if="k > 0">{{ $t("search.or") }}</div>
 
           <!-- Each condition (attribute-operator-value) -->
