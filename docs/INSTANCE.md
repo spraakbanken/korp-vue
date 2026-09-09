@@ -64,6 +64,11 @@ The first few settings are needed at initialization time, and thus must be speci
 - **corpus_info_link** - Object. Use this to render a link for each corpus in the corpus chooser.
   - **url_template** - String or translation object. A URL containing a token "%s", which will be replaced with the corpus id.
   - **label** - String or translation object. The label is the the same for all corpora.
+- **cqp_prio** - List of strings (attribute names).
+  When a query is stringified to CQP, conditions will be sorted by attribute according to this list:
+  attributes last in the list will come first; attributes not in the list will come last.
+  The purpose is to optimize generated queries for performance in the backend/CWB.
+  Default: a list with some common attributes, `word` being last (thus sorted first).
 - **default_options** - See [Operators](#operators).
 - **default_overview_context** - The default context for KWIC-view. Use a context that is supported by the majority of corpora in the mode (URLs will be shorter). E.g.: `"1 sentence"`. For corpora that do not support this context an additional parameter will be sent to the backend based on the `context`-setting in the corpus.
 - **default_reading_context** - Same as **default_overview_context**, but for the context-view. Use a context larger than the **default_overview_context**.

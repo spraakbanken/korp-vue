@@ -168,6 +168,8 @@ export function expandCqp(cqp: string): string {
 
 /**
  * Sort the conditions in each token according to the `cqp_prio` setting.
+ *
+ * This should optimize the query so that the most selective conditions are evaluated first.
  */
 export function prioSort(cqpObjs: CqpQuery) {
   const getPrio = function (or_block: Condition[]) {
