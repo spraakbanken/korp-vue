@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useConfirmDialog, type UseConfirmDialogReturn } from "@vueuse/core"
 import type { Modal } from "bootstrap"
-import { onMounted, ref, useTemplateRef } from "vue"
+import { onMounted, useTemplateRef } from "vue"
 
 /** Type of the `dialog` passed to the `@setup` event handler. */
 export type ConfirmDialog = UseConfirmDialogReturn<void, void, void>

@@ -74,6 +74,7 @@ export class CorpusSet {
     return sum(this.map((corpus) => parseInt(corpus.info.Size || "0")))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- lang param is used in subclass
   getAttributes(lang?: string) {
     // lang not used here, only in parallel mode
     const attrs = this.map((corpus) => corpus.attributes)
@@ -85,6 +86,7 @@ export class CorpusSet {
     return objectIntersection(attrs)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- lang param is used in subclass
   getStructAttrsIntersection(lang?: string): Record<string, Attribute> {
     const attrs = this.map(function (corpus) {
       for (const key in corpus["struct_attributes"]) {
@@ -97,6 +99,7 @@ export class CorpusSet {
     return objectIntersection(attrs)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- lang param is used in subclass
   getStructAttrs(lang?: string): Record<string, Attribute> {
     return this.structAttributes
   }
@@ -156,6 +159,7 @@ export class CorpusSet {
     )
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- onlyMain param is used in subclass
   stringify(onlyMain?: boolean): string {
     return this.map((corpus) => corpus.id.toUpperCase()).join()
   }
