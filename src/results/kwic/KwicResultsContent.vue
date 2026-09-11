@@ -52,10 +52,14 @@ watchImmediate(
   () => {
     // Select first match token
     const row = props.kwic?.find(isKwic)
-    if (!row) return
+    // Deselect if empty
+    if (!row) {
+      selectedToken.value = undefined
+      return
+    }
     const match = [row.match].flat()[0]!
     const token = row.tokens[match.start]!
-    selectedToken!.value = { row, token }
+    selectedToken.value = { row, token }
   },
 )
 </script>

@@ -64,8 +64,8 @@ function selectTokenY(current: Element, delta: number): HTMLElement | undefined 
 <template>
   <div
     class="position-relative"
-    style="min-height: 50rem"
     :style="{
+      minHeight: selectedToken ? '50rem' : undefined,
       // Make room for sidebar
       paddingInlineEnd: selectedToken ? '21rem' : undefined,
     }"

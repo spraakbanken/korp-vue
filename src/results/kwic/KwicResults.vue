@@ -52,7 +52,6 @@ const proxy = new KwicProxy().setProgressHandler((report) => {
     // Use remembered state to control the result display
     isReading.value = isCurrentRequestReading
   }
-  distribution.value = undefined
   if (report.hits !== null) hitsCount.value = report.hits
   progress.value = report.percent
 })
@@ -73,7 +72,11 @@ async function doSearch(reuseCounts = false) {
   proxy.abort()
   progress.value = 0
   setState(reuseCounts ? "updating" : "loading")
-  if (!reuseCounts) hitsCount.value = 0
+  // Reset more if new search
+  if (!reuseCounts) {
+    distribution.value = undefined
+    hitsCount.value = 0
+  }
   kwic.value = undefined
   // Remember options affecting result display in case they are changed while the request is ongoing
   isCurrentRequestReading = context.value || !store.in_order
