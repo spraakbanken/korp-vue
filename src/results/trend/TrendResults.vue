@@ -22,6 +22,8 @@ import TrendTable from "./TrendTable.vue"
 import ExportButton from "../ExportButton.vue"
 import { useAppStore } from "@/store/useAppStore"
 import type { Range } from "./TrendChart"
+import { useResultState } from "../useResultState.ts"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const props = defineProps<{
   task: TrendTask
@@ -31,6 +33,7 @@ const progress = defineModel<number>("progress")
 
 const { t } = useI18n()
 const store = useAppStore()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { createTab } = useDynamicTabs()
 const matomo = useMatomo()
 
@@ -47,10 +50,16 @@ onMounted(() => {
   matomo.value?.trackEvent("Trend", "New")
 })
 
+listenAbort(() => {
+  props.task.abort()
+  progress.value = undefined
+})
+
 async function doSearch() {
   const { from, to } = getRange()
   const levelNew = findOptimalLevel(from, to)
   progress.value = 0
+  setState("loading")
   undatedRatio.value = props.task.corpusSet.getUndatedRatio()
 
   let data: TrendResult
@@ -60,9 +69,11 @@ async function doSearch() {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    throw error
+    setError(error)
+    return
   }
 
+  setState("done")
   setSeries(data.series)
   level.value = data.level
 }
@@ -184,5 +195,11 @@ function createCsv() {
     />
 
     <TrendTable v-if="view == 'table'" :series :level />
+
+    <div v-if="state == 'aborted' && !series.length" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
+    </div>
+
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
   </div>
 </template>

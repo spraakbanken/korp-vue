@@ -24,13 +24,13 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
-import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
 import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
+import { useResultState } from "../useResultState.ts"
 
 const UPDATE_DELAY_MS = 500
 
@@ -40,7 +40,7 @@ const store = useAppStore()
 const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
-const { setError, clearError, errorMessage } = useError()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 const matomo = useMatomo()
@@ -63,6 +63,11 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
+listenAbort(() => {
+  proxy.abort()
+  progress.value = undefined
+})
+
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())
 
@@ -75,7 +80,7 @@ async function doSearch() {
   if (!activeSearch.value) return
   const corpora = activeSearch.value.corpora
   proxy.abort()
-  clearError()
+  setState("loading")
   withinSearched = store.within
   const attrs = stats_reduce.value
   const ignoreCase = !!stats_reduce_insensitive.value.length
@@ -88,6 +93,7 @@ async function doSearch() {
   try {
     counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
     progress.value = 100
+    setState("done")
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
@@ -283,6 +289,10 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
     <div v-else-if="data" class="alert alert-warning align-self-center">
       {{ $t("result.empty") }}
+    </div>
+
+    <div v-if="state == 'aborted' && !data" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
     </div>
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />

@@ -16,6 +16,9 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import SeriesLegend from "./SeriesLegend.vue"
 import { useTheme } from "@/components/useTheme"
+import { useResultState } from "./useResultState.ts"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase.ts"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const props = defineProps<{
   task: MapTask
@@ -24,6 +27,7 @@ const props = defineProps<{
 const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const matomo = useMatomo()
 const theme = useTheme()
@@ -36,6 +40,11 @@ const enableClustering = ref(false)
 const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
+
+listenAbort(() => {
+  props.task.abort()
+  progress.value = undefined
+})
 
 /** Selected markers grouped by location. Makes a difference when clustering is enabled. */
 const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
@@ -62,8 +71,19 @@ onMounted(() => {
 
 async function doSearch() {
   progress.value = 0
-  await props.task.send()
+  setState("loading")
+
+  try {
+    await props.task.send()
+  } catch (error) {
+    progress.value = undefined
+    if (isAbortError(error)) return
+    setError(error)
+    return
+  }
+
   progress.value = 100
+  setState("done")
 
   const palette = goldenOklch(theme.primary)
   seriesAll.value = props.task.getMarkerGroups(() => palette.next().value!)
@@ -119,6 +139,22 @@ onBeforeUnmount(() => {
     <div class="w-100 position-relative" style="height: 90svh" v-fade-if-loading="progress">
       <!-- Map target -->
       <div ref="map" class="position-absolute w-100 h-100 z-0" />
+
+      <!-- Display messages on top of map -->
+      <div class="position-absolute w-100 mt-4 d-flex flex-column align-items-center">
+        <div
+          v-if="state == 'done' && !props.task.hasData()"
+          class="alert alert-warning align-self-center"
+        >
+          {{ $t("result.empty") }}
+        </div>
+
+        <div v-if="state == 'aborted'" class="alert alert-warning align-self-center">
+          {{ $t("result.aborted") }}
+        </div>
+
+        <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+      </div>
 
       <!-- Place info on hover/click -->
       <div

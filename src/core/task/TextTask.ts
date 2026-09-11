@@ -27,7 +27,8 @@ export class TextTask extends TaskBase<KwicRow> {
       end: 0,
     }
 
-    const data = await korpRequest("query", params)
+    const abortSignal = this.getAbortSignal()
+    const data = await korpRequest("query", params, { abortSignal })
 
     // The data is just one long KWIC row.
     const kwic = massageData(data.kwic)[1] as KwicRow

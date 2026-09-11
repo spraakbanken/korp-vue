@@ -217,6 +217,7 @@ search.within.key.paragraph: stycke | {count} stycken
 search.within.key.link: länk | {count} länkar
 search.within.key.text: text | {count} texter
 
+result.aborted: Sökningen avbröts.
 result.empty: Sökningen gav inga träffar.
 result.legend: Förklaring
 

@@ -13,6 +13,7 @@ import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import KwicExportButton from "./KwicExportButton.vue"
 import { useResultState } from "../useResultState.ts"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -21,7 +22,7 @@ const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
-const { state, setState } = useResultState()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 
 const hpp = store.hpp
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
@@ -33,6 +34,11 @@ const kwic = ref<Row[]>()
 const page = ref(1)
 
 onMounted(() => doSearch())
+
+listenAbort(() => {
+  props.task.abort()
+  progress.value = undefined
+})
 
 async function doSearch(reuseCounts = false) {
   setState(reuseCounts ? "updating" : "loading")
@@ -47,12 +53,11 @@ async function doSearch(reuseCounts = false) {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
-    setState("error")
-    throw error
-  } finally {
-    setState("done")
+    setError(error)
+    return
   }
 
+  setState("done")
   distribution.value = response.distribution
   hitsCount.value = response.hits
   kwic.value = massageData(response.kwic)
@@ -87,6 +92,7 @@ watch(page, () => doSearch(true))
     </OptionsBar>
 
     <KwicResultsContent
+      v-if="state == 'loading' || hitsCount"
       :corpora="task.corpora"
       :distribution
       :hitsCount
@@ -97,5 +103,15 @@ watch(page, () => doSearch(true))
       v-model="page"
       v-fade-if-loading="progress"
     />
+
+    <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
+      {{ $t("result.empty") }}
+    </div>
+
+    <div v-if="state == 'aborted' && !kwic" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
+    </div>
+
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
   </div>
 </template>

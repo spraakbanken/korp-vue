@@ -5,20 +5,37 @@ import type { CompareItem, CompareResult, CompareTask } from "@/core/task/Compar
 import CompareRow from "./CompareRow.vue"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useMatomo } from "vue3-matomo"
+import { isAbortError } from "@/core/backend/proxy/ProxyBase.ts"
+import { useResultState } from "./useResultState.ts"
 
 const props = defineProps<{ task: CompareTask }>()
 
 const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const matomo = useMatomo()
 
+listenAbort(() => {
+  props.task.abort()
+  progress.value = undefined
+})
+
 const result = computedAsync<CompareResult>(async () => {
   progress.value = 0
-  const result = await props.task.send()
-  progress.value = 100
-  return result
+  setState("loading")
+  try {
+    const result = await props.task.send()
+    progress.value = 100
+    setState("done")
+    return result
+  } catch (error) {
+    progress.value = undefined
+    if (isAbortError(error)) return
+    setError(error)
+  }
+  return undefined
 })
 
 function clickItem(side: 0 | 1, item: CompareItem) {
@@ -61,5 +78,11 @@ function clickItem(side: 0 | 1, item: CompareItem) {
     <div v-if="result && !result.max" class="alert alert-warning align-self-center">
       {{ $t("result.empty") }}
     </div>
+
+    <div v-if="state == 'aborted'" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
+    </div>
+
+    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
   </div>
 </template>

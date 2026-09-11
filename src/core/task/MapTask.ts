@@ -44,7 +44,8 @@ export class MapTask extends TaskBase<MapSeries[]> {
 
     Object.keys(this.cqpExprs).forEach((cqp, i) => (params[`subcqp${i}`] = cqp))
 
-    const data = await korpRequest("count", params)
+    const abortSignal = this.getAbortSignal()
+    const data = await korpRequest("count", params, { abortSignal })
 
     // Normalize data to the split format.
     const combined = Array.isArray(data.combined) ? data.combined : [data.combined]
@@ -59,6 +60,10 @@ export class MapTask extends TaskBase<MapSeries[]> {
     }))
 
     return this.data
+  }
+
+  hasData(): boolean {
+    return !!this.data?.some((series) => series.points.length > 0)
   }
 
   getPoint(row: StatsRow): Point | undefined {

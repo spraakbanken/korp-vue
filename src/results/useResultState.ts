@@ -3,7 +3,6 @@ import { onUnmounted, ref } from "vue"
 
 export type ResultState = "initial" | "loading" | "updating" | "done" | "aborted" | "error"
 
-// TODO Use in all result tabs
 export function useResultState() {
   const { errorMessage, clearError, setError: setErrorReal } = useError()
 

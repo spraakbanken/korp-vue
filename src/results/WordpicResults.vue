@@ -15,18 +15,18 @@ import ExportButton from "./ExportButton.vue"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
-import useError from "@/components/useError"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
 import { useMatomo } from "vue3-matomo"
+import { useResultState } from "./useResultState.ts"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
 
 const progress = defineModel<number>("progress")
 
-const { setError, clearError, errorMessage } = useError()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
@@ -46,12 +46,17 @@ const proxy = new RelationsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Wordpic", "Activate"))
 
+listenAbort(() => {
+  proxy.abort()
+  progress.value = undefined
+})
+
 // Start watching the active search query
 watchImmediate(activeSearch, () => doSearch())
 
 async function doSearch() {
   proxy.abort()
-  clearError()
+  setState("loading")
   progress.value = 0
 
   try {
@@ -205,6 +210,10 @@ watch(showPos, () =>
       <div v-if="!data.getData().length" class="alert alert-warning">
         {{ $t("result.empty") }}
       </div>
+    </div>
+
+    <div v-if="state == 'aborted' && !data" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
     </div>
 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
