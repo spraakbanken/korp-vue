@@ -15,10 +15,10 @@ import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProx
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
-import useError from "@/components/useError"
 import useSearchStore from "@/search/useSearchStore"
 import { useMatomo } from "vue3-matomo"
 import KwicExportButton from "./KwicExportButton.vue"
+import { useResultState } from "../useResultState.ts"
 
 const UPDATE_DELAY_MS = 500
 
@@ -26,7 +26,7 @@ const progress = defineModel<number>("progress")
 
 const store = useAppStore()
 const { activeSearch } = storeToRefs(useSearchStore())
-const { setError, clearError, errorMessage } = useError()
+const { errorMessage, state, setError, setState } = useResultState()
 const matomo = useMatomo()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
@@ -40,7 +40,6 @@ const hitsCount = ref(0)
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(store.hpp)
 const kwic = ref<Row[]>()
-const loading = ref(false)
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>(store.sort)
 /** Flags if the current running request will be shown in reading mode */
@@ -72,9 +71,8 @@ async function doSearch(reuseCounts = false) {
   if (!activeSearch.value) return
   // Reset result state
   proxy.abort()
-  clearError()
   progress.value = 0
-  loading.value = !reuseCounts
+  setState(reuseCounts ? "updating" : "loading")
   if (!reuseCounts) hitsCount.value = 0
   kwic.value = undefined
   // Remember options affecting result display in case they are changed while the request is ongoing
@@ -100,7 +98,7 @@ async function doSearch(reuseCounts = false) {
   }
 
   // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
-  loading.value = false
+  setState("done")
   distribution.value = response.distribution
   // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
   hitsCount.value = response.hits
@@ -192,19 +190,19 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
     <KwicResultsContent
-      v-if="loading || hitsCount"
+      v-if="state == 'loading' || hitsCount"
       :corpora="activeSearch?.corpora"
       :distribution
       :hitsCount
       :hpp
       :isReading
       :kwic
-      :loading
+      :state
       v-model="pageLocal"
-      v-fade-if-loading="!hitsCount ? progress : undefined"
+      v-fade-if-loading="progress"
     />
 
-    <div v-else class="alert alert-warning align-self-center">
+    <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
       {{ $t("result.empty") }}
     </div>
   </div>

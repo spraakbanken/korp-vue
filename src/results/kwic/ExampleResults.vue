@@ -12,6 +12,7 @@ import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProx
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import KwicExportButton from "./KwicExportButton.vue"
+import { useResultState } from "../useResultState.ts"
 
 const UPDATE_DELAY_MS = 500
 
@@ -20,6 +21,8 @@ const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
+const { state, setState } = useResultState()
+
 const hpp = store.hpp
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
 const context = ref(props.task.isReadingInit || store.reading_mode)
@@ -27,13 +30,12 @@ const distribution = ref<HitsDistribution[]>()
 const hitsCount = ref(0)
 const isReading = ref(store.reading_mode)
 const kwic = ref<Row[]>()
-const loading = ref(false)
 const page = ref(1)
 
 onMounted(() => doSearch())
 
 async function doSearch(reuseCounts = false) {
-  loading.value = !reuseCounts
+  setState(reuseCounts ? "updating" : "loading")
   const willBeReading = context.value
   props.task.abort()
   progress.value = 0
@@ -45,9 +47,10 @@ async function doSearch(reuseCounts = false) {
   } catch (error) {
     progress.value = undefined
     if (isAbortError(error)) return
+    setState("error")
     throw error
   } finally {
-    loading.value = false
+    setState("done")
   }
 
   distribution.value = response.distribution
@@ -90,7 +93,7 @@ watch(page, () => doSearch(true))
       :hpp
       :isReading
       :kwic
-      :loading
+      :state
       v-model="page"
       v-fade-if-loading="progress"
     />
