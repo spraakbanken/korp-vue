@@ -83,6 +83,7 @@ async function doSearch(reuseCounts = false) {
   let response: QueryData
   try {
     response = await proxy.makeRequest(activeSearch.value.cqp, store.hpp, {
+      reuseCounts,
       isReading: store.reading_mode,
       defaultWithin: store.within,
       page: store.page,
