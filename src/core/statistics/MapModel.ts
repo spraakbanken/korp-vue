@@ -94,25 +94,6 @@ export class MapModel {
   }
 
   /**
-   * check if the cluster with split into several clusters / markers on zooom
-   * TODO: does not work in some cases
-   */
-  shouldZooomToBounds(cluster: any) {
-    // This code is a modification of MarkerCluster.zoomToBounds()
-    // See https://github.com/Leaflet/Leaflet.markercluster/blob/master/src/MarkerCluster.js
-    let childClusters = cluster._childClusters.slice()
-    const map = cluster._group._map
-    const boundsZoom = map.getBoundsZoom(cluster._bounds)
-    let zoom = cluster._zoom + 1
-    while (childClusters.length > 0 && boundsZoom > zoom) {
-      zoom += 1
-      const newClusters = childClusters.flatMap((childCluster: any) => childCluster._childClusters)
-      childClusters = newClusters
-    }
-    return childClusters.length > 1
-  }
-
-  /**
    * check all current clusters and sum up the sizes of its childen
    * this is the max relative value of any cluster and can be used to
    * calculate marker sizes
@@ -189,9 +170,7 @@ export class MapModel {
         (layer) => layer.markerData,
       )
       this.mouseOver(this.selectedMarkers)
-      if (this.shouldZooomToBounds(e.propagatedFrom)) {
-        return e.propagatedFrom.zoomToBounds()
-      }
+      return e.propagatedFrom.zoomToBounds()
     })
     markerCluster.on("click", (e: { propagatedFrom: CustomMarker }) => {
       this.selectedMarkers = [e.propagatedFrom.markerData]
