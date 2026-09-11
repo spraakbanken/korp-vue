@@ -42,19 +42,8 @@ const hpp = ref(store.hpp)
 const kwic = ref<Row[]>()
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>(store.sort)
-/** Flags if the current running request will be shown in reading mode */
-let isCurrentRequestReading = false
 
-const proxy = new KwicProxy().setProgressHandler((report) => {
-  // Show first KWIC page when available
-  if (!kwic.value && "kwic" in report.data && report.data.kwic) {
-    kwic.value = massageData(report.data.kwic)
-    // Use remembered state to control the result display
-    isReading.value = isCurrentRequestReading
-  }
-  if (report.hits !== null) hitsCount.value = report.hits
-  progress.value = report.percent
-})
+const proxy = new KwicProxy()
 
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
@@ -76,10 +65,23 @@ async function doSearch(reuseCounts = false) {
   if (!reuseCounts) {
     distribution.value = undefined
     hitsCount.value = 0
+    kwic.value = undefined
   }
-  kwic.value = undefined
-  // Remember options affecting result display in case they are changed while the request is ongoing
-  isCurrentRequestReading = context.value || !store.in_order
+
+  // Set up progress handler
+  let hasFirstPage = false
+  // Remember if the current running request will be shown in reading mode
+  const isReadingNew = context.value || !store.in_order
+  proxy.setProgressHandler((report) => {
+    // Show first KWIC page when available
+    if (!hasFirstPage && "kwic" in report.data && report.data.kwic) {
+      kwic.value = massageData(report.data.kwic)
+      hasFirstPage = true
+      isReading.value = isReadingNew
+    }
+    if (report.hits !== null) hitsCount.value = report.hits
+    progress.value = report.percent
+  })
 
   let response: QueryData
   try {
@@ -202,7 +204,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       :kwic
       :state
       v-model="pageLocal"
-      v-fade-if-loading="progress"
+      v-fade-if-loading="!kwic || state == 'updating' ? progress : undefined"
     />
 
     <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
