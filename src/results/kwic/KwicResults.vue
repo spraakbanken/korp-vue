@@ -26,7 +26,7 @@ const progress = defineModel<number>("progress")
 
 const store = useAppStore()
 const { activeSearch } = storeToRefs(useSearchStore())
-const { errorMessage, state, setError, setState } = useResultState()
+const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const matomo = useMatomo()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
@@ -47,6 +47,11 @@ const proxy = new KwicProxy()
 
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
+
+listenAbort(() => {
+  proxy.abort()
+  progress.value = undefined
+})
 
 // Watch the active search query
 watchImmediate(activeSearch, () => {
@@ -209,6 +214,10 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
 
     <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
       {{ $t("result.empty") }}
+    </div>
+
+    <div v-if="state == 'aborted' && !kwic" class="alert alert-warning align-self-center">
+      {{ $t("result.aborted") }}
     </div>
   </div>
 </template>
