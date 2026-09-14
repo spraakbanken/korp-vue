@@ -1,5 +1,6 @@
 import useError from "@/components/useError"
-import { onUnmounted, ref } from "vue"
+import type Abortable from "@/core/backend/abortable"
+import { onUnmounted, ref, type Ref } from "vue"
 
 export type ResultState = "initial" | "loading" | "updating" | "done" | "aborted" | "error"
 
@@ -21,11 +22,12 @@ export function useResultState() {
   }
 
   /** Listen for the Escape key to abort the current operation */
-  function listenAbort(onAbort: () => void) {
+  function listenAbort(abortable: Abortable, progress: Ref<number | undefined>): void {
     function onEscapeKey(event: KeyboardEvent) {
       if (event.key != "Escape" || !isWorking()) return
       setState("aborted")
-      onAbort()
+      abortable.abort()
+      progress.value = undefined
     }
     // Attach listener now, detach when calling component is unmounted
     window.addEventListener("keyup", onEscapeKey)

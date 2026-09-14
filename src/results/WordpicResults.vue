@@ -46,10 +46,7 @@ const proxy = new RelationsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Wordpic", "Activate"))
 
-listenAbort(() => {
-  proxy.abort()
-  progress.value = undefined
-})
+listenAbort(proxy, progress)
 
 // Start watching the active search query
 watchImmediate(activeSearch, () => doSearch())

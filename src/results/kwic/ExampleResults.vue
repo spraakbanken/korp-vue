@@ -35,10 +35,7 @@ const page = ref(1)
 
 onMounted(() => doSearch())
 
-listenAbort(() => {
-  props.task.abort()
-  progress.value = undefined
-})
+listenAbort(props.task, progress)
 
 async function doSearch(reuseCounts = false) {
   setState(reuseCounts ? "updating" : "loading")

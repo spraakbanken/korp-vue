@@ -1,23 +1,13 @@
+import Abortable from "../abortable"
 import { korpRequest } from "../common"
 import type { API, ProgressHandler } from "../types"
 
 /** Handles the request and processes input and outputs for a given Korp backend API endpoint. */
-export default abstract class ProxyBase<K extends keyof API = keyof API> {
-  private abortController = new AbortController()
+export default abstract class ProxyBase<K extends keyof API = keyof API> extends Abortable {
   protected abstract readonly endpoint: K
   private onProgress?: ProgressHandler<K>
   private params?: API[K]["params"]
   private response?: API[K]["response"]
-
-  /** Abort any running request */
-  abort(): void {
-    this.abortController?.abort()
-    this.abortController = new AbortController()
-  }
-
-  protected getAbortSignal(): AbortSignal {
-    return this.abortController.signal
-  }
 
   getParams(): API[K]["params"] | undefined {
     return this.params

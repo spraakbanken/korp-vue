@@ -25,10 +25,7 @@ const matomo = useMatomo()
 const readers = inject(injectionKeys.readers, {})
 const document = shallowRef<KwicRow>()
 
-listenAbort(() => {
-  props.task.abort()
-  progress.value = undefined
-})
+listenAbort(props.task, progress)
 
 const reader = computed<Reader>(() => {
   const readingMode = props.task.corpus.reading_mode

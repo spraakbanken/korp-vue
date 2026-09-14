@@ -63,10 +63,7 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
-listenAbort(() => {
-  proxy.abort()
-  progress.value = undefined
-})
+listenAbort(proxy, progress)
 
 // Start watching search query
 watchImmediate(activeSearch, () => doSearch())

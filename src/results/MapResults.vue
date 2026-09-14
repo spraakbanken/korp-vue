@@ -41,10 +41,7 @@ const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
 
-listenAbort(() => {
-  props.task.abort()
-  progress.value = undefined
-})
+listenAbort(props.task, progress)
 
 /** Selected markers grouped by location. Makes a difference when clustering is enabled. */
 const markersGrouped = computed<Record<string, MarkerData[]>>(() =>

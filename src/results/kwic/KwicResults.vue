@@ -48,10 +48,7 @@ const proxy = new KwicProxy()
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
 
-listenAbort(() => {
-  proxy.abort()
-  progress.value = undefined
-})
+listenAbort(proxy, progress)
 
 // Watch the active search query
 watchImmediate(activeSearch, () => {

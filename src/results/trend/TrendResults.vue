@@ -50,10 +50,7 @@ onMounted(() => {
   matomo.value?.trackEvent("Trend", "New")
 })
 
-listenAbort(() => {
-  props.task.abort()
-  progress.value = undefined
-})
+listenAbort(props.task, progress)
 
 async function doSearch() {
   const { from, to } = getRange()

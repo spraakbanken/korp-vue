@@ -17,10 +17,7 @@ const { errorMessage, state, setError, setState, listenAbort } = useResultState(
 const { t } = useI18n()
 const matomo = useMatomo()
 
-listenAbort(() => {
-  props.task.abort()
-  progress.value = undefined
-})
+listenAbort(props.task, progress)
 
 const result = computedAsync<CompareResult>(async () => {
   progress.value = 0
