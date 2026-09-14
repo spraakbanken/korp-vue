@@ -12,7 +12,7 @@ const { locale } = useI18n()
 
 <template>
   <span
-    class="badge text-secondary fst-normal"
+    class="text-secondary fst-normal"
     v-popover
     data-bs-toggle="popover"
     data-bs-trigger="focus hover"
