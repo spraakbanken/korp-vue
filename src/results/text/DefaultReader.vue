@@ -6,7 +6,7 @@ defineProps<ReaderProps>()
 </script>
 
 <template>
-  <div style="white-space: pre">
+  <div style="white-space: pre-wrap">
     <KwicToken
       v-for="(token, i) in document.tokens"
       :key="i"
