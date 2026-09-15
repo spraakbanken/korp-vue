@@ -16,9 +16,8 @@ import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import SeriesLegend from "./SeriesLegend.vue"
 import { useTheme } from "@/components/useTheme"
-import { useResultState } from "./useResultState.ts"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase.ts"
 import ErrorBox from "@/components/ErrorBox.vue"
+import { useResult } from "./useResult"
 
 const props = defineProps<{
   task: MapTask
@@ -27,7 +26,6 @@ const props = defineProps<{
 const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const matomo = useMatomo()
 const theme = useTheme()
@@ -41,8 +39,6 @@ const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
 let model: MapModel
 
-listenAbort(props.task, progress)
-
 /** Selected markers grouped by location. Makes a difference when clustering is enabled. */
 const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
   groupBy(markersList.value, (marker) => marker.point.name),
@@ -54,7 +50,7 @@ const legend = computed(() =>
 )
 
 onMounted(() => {
-  doSearch()
+  loadResult()
 
   model = new MapModel(
     mapEl.value!,
@@ -66,26 +62,14 @@ onMounted(() => {
   matomo.value?.trackEvent("Map", "New")
 })
 
-async function doSearch() {
-  progress.value = 0
-  setState("loading")
-
-  try {
-    await props.task.send()
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    return
-  }
-
-  progress.value = 100
-  setState("done")
-
+async function load() {
+  await props.task.send()
   const palette = goldenOklch(theme.primary)
   seriesAll.value = props.task.getMarkerGroups(() => palette.next().value!)
   enabledSeries.value = Object.keys(seriesAll.value)
 }
+
+const { errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
 watch([enableClustering, enabledSeries], () => {
   model.useClustering = enableClustering.value

@@ -11,7 +11,7 @@ import HitsDistributionBar from "./HitsDistributionBar.vue"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { formatDecimals } from "@/core/i18n"
 import SidebarProvider from "../sidebar/SidebarProvider.vue"
-import type { ResultState } from "../useResultState.ts"
+import type { ResultState } from "../useResult"
 
 /** Current page number, 1-indexed */
 const page = defineModel<number>({ default: 1 })

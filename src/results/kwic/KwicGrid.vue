@@ -22,7 +22,10 @@ watchImmediate(
 </script>
 
 <template>
-  <div class="w-100 overflow-x-auto" v-scroll-to-target="{ watch: data, selector: '.kwic-match' }">
+  <div
+    class="w-100 overflow-x-auto"
+    v-scroll-to-target="{ watch: () => data, selector: '.kwic-match' }"
+  >
     <table class="table table-sm text-nowrap">
       <tbody>
         <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">

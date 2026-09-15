@@ -3,22 +3,20 @@ import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
 import { useAppStore } from "@/store/useAppStore"
 import { syncRef, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import settings from "@/core/config"
 import { debounce } from "lodash-es"
 import type { QueryParamSort } from "@/core/backend/types/query"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
-import { massageData, type Row } from "@/core/kwic/kwic"
-import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
+import { massageData } from "@/core/kwic/kwic"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { useMatomo } from "vue3-matomo"
 import KwicExportButton from "./KwicExportButton.vue"
-import { useResultState } from "../useResultState.ts"
+import { useResult } from "../useResult"
 
 const UPDATE_DELAY_MS = 500
 
@@ -26,7 +24,6 @@ const progress = defineModel<number>("progress")
 
 const store = useAppStore()
 const { activeSearch } = storeToRefs(useSearchStore())
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const matomo = useMatomo()
 
 const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
@@ -34,12 +31,9 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 const { page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
-const distribution = ref<HitsDistribution[]>()
-const hitsCount = ref(0)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(store.hpp)
-const kwic = ref<Row[]>()
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>(store.sort)
 
@@ -48,68 +42,49 @@ const proxy = new KwicProxy()
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
 
-listenAbort(proxy, progress)
-
-// Watch the active search query
-watchImmediate(activeSearch, () => {
-  updateRandomSeed()
-  doSearch()
-})
-
-async function doSearch(reuseCounts = false) {
+async function load(updating = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
-  // Reset result state
-  proxy.abort()
-  progress.value = 0
-  setState(reuseCounts ? "updating" : "loading")
-  // Reset more if new search
-  if (!reuseCounts) {
-    distribution.value = undefined
-    hitsCount.value = 0
-    kwic.value = undefined
-  }
 
   // Set up progress handler
   let hasFirstPage = false
   // Remember if the current running request will be shown in reading mode
   const isReadingNew = context.value || !store.in_order
   proxy.setProgressHandler((report) => {
+    // Since `data` is a shallowRef, make sure to replace the object.
+    data.value = { distribution: [], hits: 0, kwic: [], ...data.value }
     // Show first KWIC page when available
     if (!hasFirstPage && "kwic" in report.data && report.data.kwic) {
-      kwic.value = massageData(report.data.kwic)
+      data.value.kwic = report.data.kwic
       hasFirstPage = true
       isReading.value = isReadingNew
     }
-    if (report.hits !== null) hitsCount.value = report.hits
+    if (report.hits !== null) data.value.hits = report.hits
     progress.value = report.percent
   })
 
-  let response: QueryData
-  try {
-    response = await proxy.makeRequest(activeSearch.value.cqp, store.hpp, {
-      reuseCounts,
-      isReading: store.reading_mode,
-      defaultWithin: store.within,
-      page: store.page,
-      freeOrder: !store.in_order,
-      randomSeed: store.random_seed,
-      sort: store.sort,
-    })
-    progress.value = 100
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    return
-  }
-
-  // No need to set `kwic` and `hitsCount` as they are set in the progress handler.
-  setState("done")
-  distribution.value = response.distribution
-  // For cached responses, the progress report has an empty hits count, so setting `hitsCount` in progress handler is not enough
-  hitsCount.value = response.hits
+  return proxy.makeRequest(activeSearch.value.cqp, store.hpp, {
+    reuseCounts: updating,
+    isReading: store.reading_mode,
+    defaultWithin: store.within,
+    page: store.page,
+    freeOrder: !store.in_order,
+    randomSeed: store.random_seed,
+    sort: store.sort,
+  })
 }
+
+const { data, errorMessage, state, loadResult } = useResult(progress, load, proxy)
+
+const distribution = computed(() => data.value?.distribution)
+const hitsCount = computed(() => data.value?.hits || 0)
+const kwic = computed(() => data.value && massageData(data.value.kwic))
+
+// Watch the active search query
+watchImmediate(activeSearch, () => {
+  updateRandomSeed()
+  loadResult()
+})
 
 /** Update the sort randomization seed if needed */
 function updateRandomSeed() {
@@ -132,12 +107,12 @@ const onOptionsChange = debounce(() => {
   store.hpp = hpp.value
   store.sort = sort.value
   store.reading_mode = context.value
-  doSearch(true)
+  loadResult(true)
 }, UPDATE_DELAY_MS)
 
 watch(pageLocal, () => {
   matomo.value?.trackEvent("KWIC", "Change page")
-  doSearch(true)
+  loadResult(true)
 })
 
 watch(context, () =>

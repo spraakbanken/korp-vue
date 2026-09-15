@@ -6,34 +6,31 @@ import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
 import { RelationsProxy } from "@/core/backend/proxy/RelationsProxy"
 import type { RelationsResponse, RelationsSort } from "@/core/backend/types/relations"
-import { formatWordOrLemgram, type MatchedRelation, type WordPicture } from "@/core/wordpic"
+import { formatWordOrLemgram, type MatchedRelation } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
 import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
 import { useMatomo } from "vue3-matomo"
-import { useResultState } from "./useResultState.ts"
+import { useResult } from "./useResult"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
 
 const progress = defineModel<number>("progress")
 
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
 const matomo = useMatomo()
 
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
-const data = ref<WordPicture>()
 const limit = ref(LIMITS[0])
 const rawResponse = ref<RelationsResponse>()
 const showPos = ref(false)
@@ -46,36 +43,25 @@ const proxy = new RelationsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Wordpic", "Activate"))
 
-listenAbort(proxy, progress)
-
-// Start watching the active search query
-watchImmediate(activeSearch, () => doSearch())
-
-async function doSearch() {
-  proxy.abort()
-  setState("loading")
-  progress.value = 0
-
-  try {
-    const query = RelationsProxy.parseCqp(cqp.value)
-    data.value = await proxy.makeRequest(query.type, query.word, sortLocal.value)
-    progress.value = 100
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    data.value = undefined
-    return
-  }
+async function load() {
+  const query = RelationsProxy.parseCqp(cqp.value)
+  const result = await proxy.makeRequest(query.type, query.word, sortLocal.value)
 
   rawResponse.value = proxy.getResponse()
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
   sort.value = sortLocal.value
+
+  return result
 }
+
+const { data, state, errorMessage, loadResult } = useResult(progress, load, proxy)
+
+// Start watching the active search query
+watchImmediate(activeSearch, () => loadResult())
 
 // Debounce repeated request to avoid lag when changing options quickly, e.g. by keyboard.
 const onOptionsChange = debounce(() => {
-  doSearch()
+  loadResult(true)
 }, UPDATE_DELAY_MS)
 
 function onClickRow(row: MatchedRelation): void {

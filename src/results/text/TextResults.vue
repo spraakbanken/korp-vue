@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import type { TextTask } from "@/core/task/TextTask"
-import { computed, inject, onMounted, shallowRef } from "vue"
+import { computed, inject, onMounted } from "vue"
 import DefaultReader from "./DefaultReader.vue"
-import type { KwicRow } from "@/core/kwic/kwic"
 import { useLocale } from "@/i18n/useLocale"
 import SidebarProvider from "../sidebar/SidebarProvider.vue"
 import { useMatomo } from "vue3-matomo"
 import { injectionKeys } from "@/injection"
 import { getConfigurable } from "@/core/config"
 import { type Reader } from "./text"
-import { useResultState } from "../useResultState.ts"
+import { useResult } from "../useResult"
+import ErrorBox from "@/components/ErrorBox.vue"
 
 const props = defineProps<{
   task: TextTask
@@ -18,14 +17,10 @@ const props = defineProps<{
 
 const progress = defineModel<number>("progress")
 
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { locObj } = useLocale()
 const matomo = useMatomo()
 
 const readers = inject(injectionKeys.readers, {})
-const document = shallowRef<KwicRow>()
-
-listenAbort(props.task, progress)
 
 const reader = computed<Reader>(() => {
   const readingMode = props.task.corpus.reading_mode
@@ -36,41 +31,27 @@ const reader = computed<Reader>(() => {
 })
 
 onMounted(() => {
-  doSearch()
+  loadResult()
   matomo.value?.trackEvent("Text", "New")
 })
 
-async function doSearch() {
-  props.task.abort()
-  progress.value = 0
-  setState("loading")
-  try {
-    document.value = await props.task.send()
-    progress.value = 100
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    return
-  }
-  setState("done")
-}
+const load = () => props.task.send()
+const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 </script>
 
 <template>
   <h2>
     {{
-      document?.structs.text_title ||
-      $t("result.reader.from", { corpus: locObj(task.corpus.title) })
+      data?.structs.text_title || $t("result.reader.from", { corpus: locObj(task.corpus.title) })
     }}
   </h2>
 
   <SidebarProvider hide-reading-mode>
     <component
       :is="reader.component"
-      v-if="document"
+      v-if="data"
       :corpus="task.corpus"
-      :document
+      :document="data"
       :text-id="task.textId"
     />
 

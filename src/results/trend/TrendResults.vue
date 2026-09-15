@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import type { Series, TrendResult, TrendTask } from "@/core/task/TrendTask"
-import type { Level } from "@/core/time"
+import type { Series, TrendTask } from "@/core/task/TrendTask"
 import {
   createTrendTableCsv,
   findOptimalLevel,
   getTimeCqp,
   spliceGraphData,
 } from "@/core/trend/util"
-import { onMounted, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref, watch } from "vue"
 import TrendGraph from "./TrendGraph.vue"
 import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
@@ -22,8 +20,8 @@ import TrendTable from "./TrendTable.vue"
 import ExportButton from "../ExportButton.vue"
 import { useAppStore } from "@/store/useAppStore"
 import type { Range } from "./TrendChart"
-import { useResultState } from "../useResultState.ts"
 import ErrorBox from "@/components/ErrorBox.vue"
+import { useResult } from "../useResult"
 
 const props = defineProps<{
   task: TrendTask
@@ -33,7 +31,6 @@ const progress = defineModel<number>("progress")
 
 const { t } = useI18n()
 const store = useAppStore()
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { createTab } = useDynamicTabs()
 const matomo = useMatomo()
 
@@ -41,39 +38,23 @@ const matomo = useMatomo()
 const range = ref<Range>()
 const reactiveTask = reactive(props.task)
 const series = ref<Series[]>([])
-const level = ref<Level>("year")
-const undatedRatio = ref(0)
+const undatedRatio = props.task.corpusSet.getUndatedRatio()
 const view = ref<"line" | "bar" | "table">("line")
 
 onMounted(() => {
-  doSearch()
+  loadResult()
   matomo.value?.trackEvent("Trend", "New")
 })
 
-listenAbort(props.task, progress)
-
-async function doSearch() {
+async function load() {
   const { from, to } = getRange()
   const levelNew = findOptimalLevel(from, to)
-  progress.value = 0
-  setState("loading")
-  undatedRatio.value = props.task.corpusSet.getUndatedRatio()
-
-  let data: TrendResult
-  try {
-    data = await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
-    progress.value = 100
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    return
-  }
-
-  setState("done")
-  setSeries(data.series)
-  level.value = data.level
+  return await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
 }
+
+const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+
+const level = computed(() => data.value?.level || "year")
 
 function getRange(): { from: Date; to: Date } {
   if (range.value) return range.value
@@ -86,18 +67,23 @@ function getRange(): { from: Date; to: Date } {
 }
 
 /** Ingest new series data */
-function setSeries(newSeries: Series[]) {
-  // First load
-  if (!series.value.length) series.value = newSeries
+watch(data, () => {
+  if (!data.value) {
+    // Unset on error
+    series.value = []
+    return
+  } else if (!series.value.length)
+    // First load
+    series.value = data.value.series
   // If zooming: base data exists; splice new data into it
   else {
     // Splicing the ref value directly seems to cause an infinite loop.
     // Maybe due to conflicts between the Chart.js and Vue reactivity systems.
     const copy = cloneDeep(series.value)
-    spliceGraphData(copy, newSeries)
+    spliceGraphData(copy, data.value.series)
     series.value = copy
   }
-}
+})
 
 function onClickPoint(series: Series[], time: Date) {
   // Build CQP for the selected time interval
@@ -114,7 +100,7 @@ function onClickPoint(series: Series[], time: Date) {
 
 function onSelectRange(rangeNew?: Range) {
   range.value = rangeNew
-  doSearch()
+  loadResult(true)
   matomo.value?.trackEvent("Trend", "Select range")
 }
 

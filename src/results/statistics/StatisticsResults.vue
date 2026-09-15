@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NoSupportedCorporaError, StatsProxy } from "@/core/backend/proxy/StatsProxy"
 import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/statistics/statistics"
-import { isTotalRow, type Row, type StatisticsProcessed } from "@/core/statistics/statistics.types"
+import { isTotalRow, type Row } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
@@ -20,17 +20,16 @@ import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { locObj, percentage } from "@/core/i18n"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
 import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
-import type { CountResponse, CountsMerged } from "@/core/backend/types/count"
+import type { CountResponse } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
-import { useResultState } from "../useResultState.ts"
+import { useResult } from "../useResult"
 
 const UPDATE_DELAY_MS = 500
 
@@ -40,15 +39,11 @@ const store = useAppStore()
 const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 const matomo = useMatomo()
 
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
-const data = ref<StatisticsProcessed>()
-/** Whether searched material is dated */
-const isDated = ref(false)
 const isLimited = ref(false)
 const unsupportedRatio = ref(0)
 const unsupportedAttributes = ref<AttributeOption[]>([])
@@ -63,52 +58,28 @@ const proxy = new StatsProxy().setProgressHandler((report) => {
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
-listenAbort(proxy, progress)
+/** Whether searched material is dated */
+const isDated = computed(() => !!activeSearch.value?.corpora.getYearRange())
 
-// Start watching search query
-watchImmediate(activeSearch, () => doSearch())
-
-watch([stats_reduce, stats_reduce_insensitive], (valuesNew, valuesOld) => {
-  if (!isEqual(valuesNew, valuesOld)) onOptionsChange()
-})
-
-async function doSearch() {
+async function load() {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
   const corpora = activeSearch.value.corpora
-  proxy.abort()
-  setState("loading")
   withinSearched = store.within
   const attrs = stats_reduce.value
   const ignoreCase = !!stats_reduce_insensitive.value.length
-  progress.value = 0
 
   // Statistics does not support parallel queries
   const cqpValue = settings.parallel ? cqp.value.replace(/\:LINKED_CORPUS.*/, "") : cqp.value
 
-  let counts: CountsMerged
-  try {
-    counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
-    progress.value = 100
-    setState("done")
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    if (error instanceof NoSupportedCorporaError) {
-      setError(t("result.statistics.no_supported_corpora"))
-    } else {
-      setError(error)
-    }
-    data.value = undefined
-    return
-  }
+  const counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
 
   const stringifiers = fromKeys(attrs, (name) => {
     const attribute = corpora.getReduceAttrs()[name]
     return attribute ? getStringifier(attribute) : String
   })
 
-  data.value = await processStatisticsResult(
+  const result = await processStatisticsResult(
     corpora.stringify(false),
     counts,
     attrs,
@@ -118,13 +89,28 @@ async function doSearch() {
   )
 
   rawResponse.value = proxy.getResponse()
-  isDated.value = !!corpora.getYearRange()
   isLimited.value = !!settings["statistics_limit"] && counts.combined.rows.length < counts.count
   unsupportedRatio.value = proxy.unsupportedRatio
   unsupportedAttributes.value = proxy.unsupportedAttributes
+
+  return result
 }
 
-const onOptionsChange = debounce(doSearch, UPDATE_DELAY_MS)
+function onError(error: unknown) {
+  if (error instanceof NoSupportedCorporaError) return t("result.statistics.no_supported_corpora")
+  return error
+}
+
+const { data, state, errorMessage, loadResult } = useResult(progress, load, proxy, onError)
+
+// Start watching search query
+watchImmediate(activeSearch, () => loadResult())
+
+watch([stats_reduce, stats_reduce_insensitive], (valuesNew, valuesOld) => {
+  if (!isEqual(valuesNew, valuesOld)) onOptionsChange()
+})
+
+const onOptionsChange = debounce(() => loadResult(true), UPDATE_DELAY_MS)
 
 /** Open a dynamic subsearch tab when clicking a frequency value */
 function onClickValue(corpusIds: string[], subcqp?: string) {

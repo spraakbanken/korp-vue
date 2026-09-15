@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import { debounce } from "lodash-es"
 import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
-import { massageData, type Row } from "@/core/kwic/kwic"
-import type { HitsDistribution, QueryData } from "@/core/backend/proxy/QueryProxyBase"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
+import { massageData } from "@/core/kwic/kwic"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import KwicExportButton from "./KwicExportButton.vue"
-import { useResultState } from "../useResultState.ts"
 import ErrorBox from "@/components/ErrorBox.vue"
+import { useResult } from "../useResult"
 
 const UPDATE_DELAY_MS = 500
 
@@ -22,51 +20,32 @@ const props = defineProps<{ task: ExampleTask | WordpicExampleTask }>()
 const progress = defineModel<number>("progress")
 
 const store = useAppStore()
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 
 const hpp = store.hpp
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
 const context = ref(props.task.isReadingInit || store.reading_mode)
-const distribution = ref<HitsDistribution[]>()
-const hitsCount = ref(0)
 const isReading = ref(store.reading_mode)
-const kwic = ref<Row[]>()
 const page = ref(1)
 
-onMounted(() => doSearch())
+onMounted(() => loadResult())
 
-listenAbort(props.task, progress)
-
-async function doSearch(reuseCounts = false) {
-  setState(reuseCounts ? "updating" : "loading")
+async function load(updating = false) {
   const willBeReading = context.value
-  props.task.abort()
-  progress.value = 0
-
-  let response: QueryData
-  try {
-    response = await props.task.send(page.value - 1, hpp, reuseCounts, context.value)
-    progress.value = 100
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-    return
-  }
-
-  setState("done")
-  distribution.value = response.distribution
-  hitsCount.value = response.hits
-  kwic.value = massageData(response.kwic)
+  const response = await props.task.send(page.value - 1, hpp, updating, context.value)
   isReading.value = willBeReading
+  return response
 }
 
-/** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
-const onOptionsChange = debounce(() => {
-  doSearch(true)
-}, UPDATE_DELAY_MS)
+const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
-watch(page, () => doSearch(true))
+const distribution = computed(() => data.value?.distribution)
+const hitsCount = computed(() => data.value?.hits || 0)
+const kwic = computed(() => data.value && massageData(data.value.kwic))
+
+/** When search options are changed, update the search. Debounce to avoid lag in case of quick changes. */
+const onOptionsChange = debounce(() => loadResult(true), UPDATE_DELAY_MS)
+
+watch(page, () => loadResult(true))
 </script>
 
 <template>

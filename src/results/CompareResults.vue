@@ -1,39 +1,24 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import { computedAsync } from "@vueuse/core"
-import type { CompareItem, CompareResult, CompareTask } from "@/core/task/CompareTask"
+import type { CompareItem, CompareTask } from "@/core/task/CompareTask"
 import CompareRow from "./CompareRow.vue"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useMatomo } from "vue3-matomo"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase.ts"
-import { useResultState } from "./useResultState.ts"
+import { useResult } from "./useResult"
+import { onMounted } from "vue"
 
 const props = defineProps<{ task: CompareTask }>()
 
 const progress = defineModel<number>("progress")
 
 const { createTab } = useDynamicTabs()
-const { errorMessage, state, setError, setState, listenAbort } = useResultState()
 const { t } = useI18n()
 const matomo = useMatomo()
 
-listenAbort(props.task, progress)
+onMounted(() => loadResult())
 
-const result = computedAsync<CompareResult>(async () => {
-  progress.value = 0
-  setState("loading")
-  try {
-    const result = await props.task.send()
-    progress.value = 100
-    setState("done")
-    return result
-  } catch (error) {
-    progress.value = undefined
-    if (isAbortError(error)) return
-    setError(error)
-  }
-  return undefined
-})
+const load = () => props.task.send()
+const { data: result, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
 function clickItem(side: 0 | 1, item: CompareItem) {
   const exampleTask = props.task.createExampleTask(side, item)
