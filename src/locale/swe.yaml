@@ -266,7 +266,7 @@ result.pagination.label: "Sida:"
 result.pagination.goto: Gå till {input} av {total}
 
 result.reader: Läsläge
-result.reader.id: Text {id}
+result.reader.from: Text från {corpus}
 
 result.sidebar.rank_score: Konfidens
 result.sidebar.search: Sök på detta

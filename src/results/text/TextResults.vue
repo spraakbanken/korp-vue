@@ -52,8 +52,10 @@ async function doSearch() {
 
 <template>
   <h2>
-    {{ locObj(task.corpus.title) }} –
-    {{ $t("result.reader.id", { id: task.textId }) }}
+    {{
+      document?.structs.text_title ||
+      $t("result.reader.from", { corpus: locObj(task.corpus.title) })
+    }}
   </h2>
 
   <SidebarProvider hide-reading-mode>
