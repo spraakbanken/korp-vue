@@ -28,7 +28,7 @@ const valueHtml = computed(() => {
   const { other, otherpos, prefix } = props.row
   if (!other) return getEmptyValueHtml(t)
   const main = formatWordOrLemgram(other, otherpos, t, props.showPos)
-  return `${prefix} ${main}`
+  return `${prefix || ""} ${main}`
 })
 </script>
 
