@@ -1,19 +1,23 @@
 <script lang="ts" setup>
 import ErrorBox, { type ErrorMessage } from "@/components/ErrorBox.vue"
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
-import type { ResultState } from "./useResultState"
+import type { ResultState } from "./useResult"
+import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const props = defineProps<{
   errorMessage: ErrorMessage | undefined
   state: ResultState
+  /** Whether the result has hits, i.e. isn't empty */
   populated: MaybeRefOrGetter<boolean>
+  progress: number | undefined
 }>()
 
 const populated = computed(() => toValue(props.populated))
 </script>
 
 <template>
-  <div>
+  <!-- TODO Absorb fading transition -->
+  <div v-fade-if-loading="progress">
     <!-- Show error if present -->
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 

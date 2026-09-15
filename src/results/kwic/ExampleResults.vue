@@ -8,10 +8,9 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import type { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import { massageData } from "@/core/kwic/kwic"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import KwicExportButton from "./KwicExportButton.vue"
-import ErrorBox from "@/components/ErrorBox.vue"
 import { useResult } from "../useResult"
+import ResultsDisplay from "../ResultsDisplay.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -67,27 +66,17 @@ watch(page, () => loadResult(true))
       </template>
     </OptionsBar>
 
-    <KwicResultsContent
-      v-if="state == 'loading' || hitsCount"
-      :corpora="task.corpora"
-      :distribution
-      :hitsCount
-      :hpp
-      :isReading
-      :kwic
-      :state
-      v-model="page"
-      v-fade-if-loading="progress"
-    />
-
-    <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
-      {{ $t("result.empty") }}
-    </div>
-
-    <div v-if="state == 'aborted' && !kwic" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+    <ResultsDisplay :errorMessage :state :populated="!!hitsCount" :progress>
+      <KwicResultsContent
+        :corpora="task.corpora"
+        :distribution
+        :hitsCount
+        :hpp
+        :isReading
+        :kwic
+        :state
+        v-model="page"
+      />
+    </ResultsDisplay>
   </div>
 </template>

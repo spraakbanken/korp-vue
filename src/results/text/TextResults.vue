@@ -9,7 +9,7 @@ import { injectionKeys } from "@/injection"
 import { getConfigurable } from "@/core/config"
 import { type Reader } from "./text"
 import { useResult } from "../useResult"
-import ErrorBox from "@/components/ErrorBox.vue"
+import ResultsDisplay from "../ResultsDisplay.vue"
 
 const props = defineProps<{
   task: TextTask
@@ -47,18 +47,14 @@ const { data, errorMessage, state, loadResult } = useResult(progress, load, prop
   </h2>
 
   <SidebarProvider hide-reading-mode>
-    <component
-      :is="reader.component"
-      v-if="data"
-      :corpus="task.corpus"
-      :document="data"
-      :text-id="task.textId"
-    />
-
-    <div v-if="state == 'aborted'" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+    <ResultsDisplay :errorMessage :state :populated="!!data" :progress>
+      <component
+        :is="reader.component"
+        v-if="data"
+        :corpus="task.corpus"
+        :document="data"
+        :text-id="task.textId"
+      />
+    </ResultsDisplay>
   </SidebarProvider>
 </template>

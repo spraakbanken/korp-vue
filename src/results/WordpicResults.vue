@@ -12,7 +12,6 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
@@ -126,10 +125,10 @@ watch(showPos, () =>
     <!-- Wordpic cards -->
     <ResultsDisplay
       :errorMessage
-      :state
       :populated="!!data?.getData().length"
+      :progress
+      :state
       class="d-flex flex-wrap justify-content-center gap-2"
-      v-fade-if-loading="progress"
     >
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div

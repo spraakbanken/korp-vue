@@ -16,8 +16,6 @@ export type SavedSearch = {
 export type CompareResult = {
   tables: CompareTables
   max: number
-  cmp1: SavedSearch
-  cmp2: SavedSearch
 }
 
 export type CompareTables = { positive: CompareItem[]; negative: CompareItem[] }
@@ -128,8 +126,6 @@ export class CompareTask extends TaskBase<CompareResult> {
     return {
       tables: { positive, negative },
       max,
-      cmp1: this.cmp1,
-      cmp2: this.cmp2,
     }
   }
 

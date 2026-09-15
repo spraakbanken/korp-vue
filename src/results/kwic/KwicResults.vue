@@ -11,7 +11,6 @@ import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import { massageData } from "@/core/kwic/kwic"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import useSearchStore from "@/search/useSearchStore"
 import { useMatomo } from "vue3-matomo"
 import KwicExportButton from "./KwicExportButton.vue"
@@ -169,7 +168,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :errorMessage :state :populated="!!hitsCount">
+    <ResultsDisplay :errorMessage :populated="!!hitsCount" :progress :state>
       <KwicResultsContent
         :corpora="activeSearch?.corpora"
         :distribution
@@ -179,7 +178,6 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
         :kwic
         :state
         v-model="pageLocal"
-        v-fade-if-loading="!kwic || state == 'updating' ? progress : undefined"
       />
     </ResultsDisplay>
   </div>

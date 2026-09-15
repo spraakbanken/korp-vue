@@ -20,7 +20,6 @@ import MapButton from "./MapButton.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "../ExportButton.vue"
 import { locObj, percentage } from "@/core/i18n"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
 import settings from "@/core/config"
@@ -212,7 +211,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :errorMessage :state :populated="!!rowCount">
+    <ResultsDisplay :errorMessage :populated="!!rowCount" :progress :state>
       <div class="hstack gap-2 align-items-baseline">
         <!-- Trend chart button -->
         <button
@@ -263,7 +262,6 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
         :rows="data.rows"
         :params="data.params"
         v-model="rowsSelected"
-        v-fade-if-loading="progress"
         @click-value="onClickValue($event.corpusIds, $event.cqp)"
       />
     </ResultsDisplay>

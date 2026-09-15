@@ -6,6 +6,7 @@ import { useDynamicTabs } from "./useDynamicTabs"
 import { useMatomo } from "vue3-matomo"
 import { useResult } from "./useResult"
 import { onMounted } from "vue"
+import ResultsDisplay from "./ResultsDisplay.vue"
 
 const props = defineProps<{ task: CompareTask }>()
 
@@ -29,42 +30,34 @@ function clickItem(side: 0 | 1, item: CompareItem) {
 
 <template>
   <div class="vstack gap-2">
-    <div v-if="result" class="row">
-      <div class="col-sm-6">
-        <h3>{{ $t("result.compare.column_heading", { label: result.cmp1.label }) }}</h3>
-        <ul class="list-group">
-          <CompareRow
-            v-for="item in result.tables.negative"
-            :key="item.key"
-            :item
-            :max="result.max"
-            left
-            @select="() => clickItem(0, item)"
-          />
-        </ul>
+    <ResultsDisplay :errorMessage :state :populated="!!result?.max" :progress>
+      <div v-if="result" class="row">
+        <div class="col-sm-6">
+          <h3>{{ $t("result.compare.column_heading", { label: task.cmp1.label }) }}</h3>
+          <ul class="list-group">
+            <CompareRow
+              v-for="item in result.tables.negative"
+              :key="item.key"
+              :item
+              :max="result.max"
+              left
+              @select="() => clickItem(0, item)"
+            />
+          </ul>
+        </div>
+        <div class="col-sm-6">
+          <h3>{{ $t("result.compare.column_heading", { label: task.cmp2.label }) }}</h3>
+          <ul class="list-group">
+            <CompareRow
+              v-for="item in result.tables.positive"
+              :key="item.key"
+              :item
+              :max="result.max"
+              @select="() => clickItem(1, item)"
+            />
+          </ul>
+        </div>
       </div>
-      <div class="col-sm-6">
-        <h3>{{ $t("result.compare.column_heading", { label: result.cmp2.label }) }}</h3>
-        <ul class="list-group">
-          <CompareRow
-            v-for="item in result.tables.positive"
-            :key="item.key"
-            :item
-            :max="result.max"
-            @select="() => clickItem(1, item)"
-          />
-        </ul>
-      </div>
-    </div>
-
-    <div v-if="result && !result.max" class="alert alert-warning align-self-center">
-      {{ $t("result.empty") }}
-    </div>
-
-    <div v-if="state == 'aborted'" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+    </ResultsDisplay>
   </div>
 </template>

@@ -2,7 +2,7 @@
 import OptionsBar from "@/components/OptionsBar.vue"
 import settings from "@/core/config"
 import { formatDecimals } from "@/core/i18n"
-import type { MarkerData, MarkerGroup } from "@/core/statistics/map"
+import type { MarkerData } from "@/core/statistics/map"
 import { MapModel } from "@/core/statistics/MapModel"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import type { MapTask } from "@/core/task/MapTask"
@@ -10,14 +10,13 @@ import { goldenOklch, regescape } from "@/core/util"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useElementVisibility, whenever } from "@vueuse/core"
 import { groupBy } from "lodash-es"
-import { computed, onBeforeUnmount, onMounted, ref, useId, useTemplateRef, watch } from "vue"
+import { computed, onMounted, ref, useId, useTemplateRef, watch, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import SeriesLegend from "./SeriesLegend.vue"
 import { useTheme } from "@/components/useTheme"
-import ErrorBox from "@/components/ErrorBox.vue"
 import { useResult } from "./useResult"
+import ResultsDisplay from "./ResultsDisplay.vue"
 
 const props = defineProps<{
   task: MapTask
@@ -33,11 +32,20 @@ const theme = useTheme()
 const id = useId()
 const mapEl = useTemplateRef("map")
 const isMapVisible = useElementVisibility(mapEl)
-const seriesAll = ref<Record<string, MarkerGroup>>({})
 const enableClustering = ref(false)
 const enabledSeries = ref<string[]>([])
 const markersList = ref<MarkerData[]>([])
-let model: MapModel
+
+const model = computed(() => {
+  if (!mapEl.value) return
+  const model = new MapModel(
+    mapEl.value!,
+    (markers) => (markersList.value = markers.sort((a, b) => b.point.rel - a.point.rel)),
+    () => (markersList.value = []),
+  )
+  model.setCenter(settings["map_center"])
+  return model
+})
 
 /** Selected markers grouped by location. Makes a difference when clustering is enabled. */
 const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
@@ -46,38 +54,34 @@ const markersGrouped = computed<Record<string, MarkerData[]>>(() =>
 
 /** List of label-color tuples */
 const legend = computed(() =>
-  Object.entries(seriesAll.value).map(([label, series]) => ({ label, color: series.color })),
+  Object.entries(data.value || {}).map(([label, series]) => ({ label, color: series.color })),
 )
 
 onMounted(() => {
   loadResult()
-
-  model = new MapModel(
-    mapEl.value!,
-    (markers) => (markersList.value = markers.sort((a, b) => b.point.rel - a.point.rel)),
-    () => (markersList.value = []),
-  )
-
-  model.setCenter(settings["map_center"])
   matomo.value?.trackEvent("Map", "New")
 })
 
 async function load() {
   await props.task.send()
   const palette = goldenOklch(theme.primary)
-  seriesAll.value = props.task.getMarkerGroups(() => palette.next().value!)
-  enabledSeries.value = Object.keys(seriesAll.value)
+  return props.task.getMarkerGroups(() => palette.next().value!)
 }
 
-const { errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
+// Enable all series when data arrives
+watchEffect(() => (enabledSeries.value = Object.keys(data.value || {})))
+
+// Update map to reflect clustering/series selection
 watch([enableClustering, enabledSeries], () => {
-  model.useClustering = enableClustering.value
-  const series = enabledSeries.value.map((label) => seriesAll.value[label]!)
-  model.updateMarkers(series, "gray")
+  if (!model.value) return
+  model.value.useClustering = enableClustering.value
+  const series = enabledSeries.value.map((label) => data.value![label])
+  model.value.updateMarkers(series, "gray")
 })
 
-whenever(isMapVisible, () => model.map.invalidateSize())
+whenever(isMapVisible, () => model.value?.map.invalidateSize())
 
 function onMarkerClick(marker: MarkerData) {
   const { point, queryData } = marker
@@ -90,10 +94,6 @@ function onMarkerClick(marker: MarkerData) {
   createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Map", "Subsearch")
 }
-
-onBeforeUnmount(() => {
-  props.task.abort()
-})
 </script>
 
 <template>
@@ -113,65 +113,59 @@ onBeforeUnmount(() => {
       </div>
     </OptionsBar>
 
-    <!-- Toggleable legend -->
-    <SeriesLegend :legend v-model="enabledSeries" />
+    <ResultsDisplay
+      :errorMessage
+      :populated="props.task.hasData()"
+      :progress
+      :state
+      class="vstack gap-2"
+    >
+      <!-- Toggleable legend -->
+      <SeriesLegend :legend v-model="enabledSeries" />
 
-    <!-- Stacking container -->
-    <div class="w-100 position-relative" style="height: 90svh" v-fade-if-loading="progress">
-      <!-- Map target -->
-      <div ref="map" class="position-absolute w-100 h-100 z-0" />
+      <!-- Stacking container -->
+      <div class="w-100 position-relative" style="height: 90svh">
+        <!-- Map target -->
+        <div ref="map" class="position-absolute w-100 h-100 z-0" />
 
-      <!-- Display messages on top of map -->
-      <div class="position-absolute w-100 mt-4 d-flex flex-column align-items-center">
+        <!-- Place info on hover/click -->
         <div
-          v-if="state == 'done' && !props.task.hasData()"
-          class="alert alert-warning align-self-center"
+          v-if="markersList.length"
+          class="hover-info-container position-absolute end-0 p-1 z-1"
+          style="width: 15rem"
         >
-          {{ $t("result.empty") }}
-        </div>
-
-        <div v-if="state == 'aborted'" class="alert alert-warning align-self-center">
-          {{ $t("result.aborted") }}
-        </div>
-
-        <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
-      </div>
-
-      <!-- Place info on hover/click -->
-      <div
-        v-if="markersList.length"
-        class="hover-info-container position-absolute end-0 p-1 z-1"
-        style="width: 15rem"
-      >
-        <div v-for="(markers, location) in markersGrouped" :key="location" class="card mb-1">
-          <div class="card-body p-2">
-            <div class="fw-bold">
-              {{ location }}
-            </div>
-            <div
-              v-for="marker in markers"
-              :key="marker.label"
-              class="hstack align-items-baseline position-relative"
-            >
-              <div class="swatch" :style="{ backgroundColor: marker.color }" />
-              <div class="flex-grow-1">
-                <div>
-                  <a
-                    href="#"
-                    class="stretched-link text-decoration-none fw-bold"
-                    @click.prevent="onMarkerClick(marker)"
-                  >
-                    {{ marker.label }}
-                  </a>
+          <div v-for="(markers, location) in markersGrouped" :key="location" class="card mb-1">
+            <div class="card-body p-2">
+              <div class="fw-bold">
+                {{ location }}
+              </div>
+              <div
+                v-for="marker in markers"
+                :key="marker.label"
+                class="hstack align-items-baseline position-relative"
+              >
+                <div class="swatch" :style="{ backgroundColor: marker.color }" />
+                <div class="flex-grow-1">
+                  <div>
+                    <a
+                      href="#"
+                      class="stretched-link text-decoration-none fw-bold"
+                      @click.prevent="onMarkerClick(marker)"
+                    >
+                      {{ marker.label }}
+                    </a>
+                  </div>
+                  <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
+                  <div>
+                    {{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}
+                  </div>
                 </div>
-                <div>{{ $t("stat.freq") }}: {{ marker.point.abs }}</div>
-                <div>{{ $t("stat.freq_relative") }}: {{ formatDecimals(marker.point.rel, 2) }}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ResultsDisplay>
   </div>
 </template>
 

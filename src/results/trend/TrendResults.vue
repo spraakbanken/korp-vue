@@ -12,7 +12,6 @@ import { cloneDeep, compact } from "lodash-es"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useMatomo } from "vue3-matomo"
 import { percentage } from "@/core/i18n"
 import OptionsBar from "@/components/OptionsBar.vue"
@@ -20,8 +19,8 @@ import TrendTable from "./TrendTable.vue"
 import ExportButton from "../ExportButton.vue"
 import { useAppStore } from "@/store/useAppStore"
 import type { Range } from "./TrendChart"
-import ErrorBox from "@/components/ErrorBox.vue"
 import { useResult } from "../useResult"
+import ResultsDisplay from "../ResultsDisplay.vue"
 
 const props = defineProps<{
   task: TrendTask
@@ -165,24 +164,19 @@ function createCsv() {
       {{ t("result.trend.undated", { ratio: percentage(undatedRatio) }) }}
     </div>
 
-    <TrendGraph
-      v-if="(view == 'line' || view == 'bar') && series.length"
-      :series
-      :level
-      :range
-      :showTotal="task.showTotal"
-      :type="view"
-      v-fade-if-loading="progress"
-      @clickPoint="onClickPoint"
-      @selectRange="onSelectRange"
-    />
+    <ResultsDisplay :errorMessage :state :populated="series.length > 0" :progress>
+      <TrendGraph
+        v-if="(view == 'line' || view == 'bar') && series.length"
+        :series
+        :level
+        :range
+        :showTotal="task.showTotal"
+        :type="view"
+        @clickPoint="onClickPoint"
+        @selectRange="onSelectRange"
+      />
 
-    <TrendTable v-if="view == 'table'" :series :level />
-
-    <div v-if="state == 'aborted' && !series.length" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+      <TrendTable v-if="view == 'table'" :series :level />
+    </ResultsDisplay>
   </div>
 </template>
