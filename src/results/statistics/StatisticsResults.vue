@@ -23,13 +23,13 @@ import { locObj, percentage } from "@/core/i18n"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
-import ErrorBox from "@/components/ErrorBox.vue"
 import settings from "@/core/config"
 import type { CountResponse } from "@/core/backend/types/count"
 import useSearchStore from "@/search/useSearchStore"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
 import { useResult } from "../useResult"
+import ResultsDisplay from "../ResultsDisplay.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -55,6 +55,9 @@ const { statsRelative } = storeToRefs(store)
 const proxy = new StatsProxy().setProgressHandler((report) => {
   progress.value = report.percent
 })
+
+/** Number of statistics rows except the totals row */
+const rowCount = computed(() => data.value && data.value.rows.length - 1)
 
 onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 
@@ -209,7 +212,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </template>
     </OptionsBar>
 
-    <template v-if="data && data.rows.length > 1">
+    <ResultsDisplay :errorMessage :state :populated="!!rowCount">
       <div class="hstack gap-2 align-items-baseline">
         <!-- Trend chart button -->
         <button
@@ -232,13 +235,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
 
       <div>
         <!-- Do not count the totals row -->
-        {{
-          $t(
-            "result.statistics.row_count",
-            { count: $n(data.rows.length - 1) },
-            data.rows.length - 1,
-          )
-        }}
+        {{ $t("result.statistics.row_count", { count: $n(rowCount!) }, rowCount!) }}
 
         <span v-if="isLimited">
           {{ $t("result.statistics.row_count.limited") }}
@@ -261,6 +258,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </div>
 
       <StatisticsGrid
+        v-if="data"
         :attributes="stats_reduce"
         :rows="data.rows"
         :params="data.params"
@@ -268,16 +266,6 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
         v-fade-if-loading="progress"
         @click-value="onClickValue($event.corpusIds, $event.cqp)"
       />
-    </template>
-
-    <div v-else-if="data" class="alert alert-warning align-self-center">
-      {{ $t("result.empty") }}
-    </div>
-
-    <div v-if="state == 'aborted' && !data" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+    </ResultsDisplay>
   </div>
 </template>

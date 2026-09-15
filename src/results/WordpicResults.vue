@@ -14,11 +14,11 @@ import OptionsBar from "@/components/OptionsBar.vue"
 import ExportButton from "./ExportButton.vue"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
 import HelpBox from "@/components/HelpBox.vue"
-import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { storeToRefs } from "pinia"
 import { useMatomo } from "vue3-matomo"
 import { useResult } from "./useResult"
+import ResultsDisplay from "./ResultsDisplay.vue"
 
 const LIMITS: readonly number[] = [15, 50, 100, 500, 1000]
 const UPDATE_DELAY_MS = 500
@@ -124,14 +124,16 @@ watch(showPos, () =>
     </OptionsBar>
 
     <!-- Wordpic cards -->
-    <div
-      v-if="data"
+    <ResultsDisplay
+      :errorMessage
+      :state
+      :populated="!!data?.getData().length"
       class="d-flex flex-wrap justify-content-center gap-2"
       v-fade-if-loading="progress"
     >
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div
-        v-for="section of data.getData()"
+        v-for="section of data?.getData()"
         :key="`${section.heading.word} ${section.heading.pos}`"
         class="card p-2 bg-body-tertiary"
       >
@@ -189,17 +191,7 @@ watch(showPos, () =>
           </div>
         </div>
       </div>
-
-      <div v-if="!data.getData().length" class="alert alert-warning">
-        {{ $t("result.empty") }}
-      </div>
-    </div>
-
-    <div v-if="state == 'aborted' && !data" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
-
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
+    </ResultsDisplay>
 
     <HelpBox>
       <p>{{ $t("result.wordpic.description") }}</p>

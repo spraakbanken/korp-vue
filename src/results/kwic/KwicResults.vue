@@ -12,11 +12,11 @@ import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
 import { massageData } from "@/core/kwic/kwic"
 import vFadeIfLoading from "@/components/vFadeIfLoading"
-import ErrorBox from "@/components/ErrorBox.vue"
 import useSearchStore from "@/search/useSearchStore"
 import { useMatomo } from "vue3-matomo"
 import KwicExportButton from "./KwicExportButton.vue"
 import { useResult } from "../useResult"
+import ResultsDisplay from "../ResultsDisplay.vue"
 
 const UPDATE_DELAY_MS = 500
 
@@ -169,27 +169,18 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </template>
     </OptionsBar>
 
-    <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
-
-    <KwicResultsContent
-      v-if="state == 'loading' || hitsCount"
-      :corpora="activeSearch?.corpora"
-      :distribution
-      :hitsCount
-      :hpp
-      :isReading
-      :kwic
-      :state
-      v-model="pageLocal"
-      v-fade-if-loading="!kwic || state == 'updating' ? progress : undefined"
-    />
-
-    <div v-if="state == 'done' && !hitsCount" class="alert alert-warning align-self-center">
-      {{ $t("result.empty") }}
-    </div>
-
-    <div v-if="state == 'aborted' && !kwic" class="alert alert-warning align-self-center">
-      {{ $t("result.aborted") }}
-    </div>
+    <ResultsDisplay :errorMessage :state :populated="!!hitsCount">
+      <KwicResultsContent
+        :corpora="activeSearch?.corpora"
+        :distribution
+        :hitsCount
+        :hpp
+        :isReading
+        :kwic
+        :state
+        v-model="pageLocal"
+        v-fade-if-loading="!kwic || state == 'updating' ? progress : undefined"
+      />
+    </ResultsDisplay>
   </div>
 </template>
