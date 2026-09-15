@@ -24,11 +24,12 @@ const stats = computed(() => {
   }
 })
 
-const valueHtml = computed(() =>
-  props.row.other
-    ? formatWordOrLemgram(props.row.other, props.row.otherpos, t, props.showPos)
-    : getEmptyValueHtml(t),
-)
+const valueHtml = computed(() => {
+  const { other, otherpos, prefix } = props.row
+  if (!other) return getEmptyValueHtml(t)
+  const main = formatWordOrLemgram(other, otherpos, t, props.showPos)
+  return `${prefix} ${main}`
+})
 </script>
 
 <template>
