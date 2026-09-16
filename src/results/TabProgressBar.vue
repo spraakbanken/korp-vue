@@ -14,7 +14,7 @@ defineProps<{
       aria-valuemin="0"
       aria-valuemax="100"
       class="progress position-absolute bottom-0 start-0 w-100"
-      style="height: 0.2rem"
+      style="height: 0.3rem"
     >
       <div class="progress-bar" :style="{ width: progress + '%' }"></div>
     </span>
@@ -35,7 +35,7 @@ defineProps<{
 
 /* Animation for progressbar background */
 .progress {
-  background: linear-gradient(90deg, transparent, var(--bs-primary-bg-subtle) 30%, transparent 60%);
+  background: linear-gradient(90deg, transparent, var(--bs-primary) 30%, transparent 60%);
   background-size: 1rem;
   animation: bg-pan 1s linear infinite;
 }
