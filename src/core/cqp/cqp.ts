@@ -172,14 +172,13 @@ export function expandCqp(cqp: string): string {
  * This should optimize the query so that the most selective conditions are evaluated first.
  */
 export function prioSort(cqpObjs: CqpQuery) {
-  const getPrio = function (or_block: Condition[]) {
-    const numbers = or_block.map((item) => settings.cqp_prio.indexOf(item.type))
-    return Math.min(...(numbers || []))
-  }
+  // Last attr in the prio setting should be placed first
+  const getPrio = (cond: Condition) => -settings.cqp_prio.indexOf(cond.type)
 
   for (const token of cqpObjs) {
     if (!isCqpToken(token)) continue
-    token.and_block = (sortBy(token.and_block, getPrio) as Condition[][]).reverse()
+    // Check the least prioritized attr in each OR block and sort by that
+    token.and_block = sortBy(token.and_block, (conds) => Math.max(...conds.map(getPrio)))
   }
 
   return cqpObjs
