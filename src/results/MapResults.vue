@@ -68,7 +68,7 @@ async function load() {
   return props.task.getMarkerGroups(() => palette.next().value!)
 }
 
-const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const { abort, data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
 // Enable all series when data arrives
 watchEffect(() => (enabledSeries.value = Object.keys(data.value || {})))
@@ -119,6 +119,7 @@ function onMarkerClick(marker: MarkerData) {
       :progress
       :state
       class="vstack gap-2"
+      @abort="abort()"
     >
       <!-- Toggleable legend -->
       <SeriesLegend :legend v-model="enabledSeries" />

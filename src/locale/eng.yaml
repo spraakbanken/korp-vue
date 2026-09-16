@@ -216,6 +216,7 @@ search.within.key.paragraph: paragraph | {count} paragraphs
 search.within.key.link: link | {count} links
 search.within.key.text: text | {count} texts
 
+result.abort: Abort
 result.aborted: The search was aborted.
 result.empty: The search gave no results.
 result.legend: Legend

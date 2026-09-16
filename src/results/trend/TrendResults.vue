@@ -51,7 +51,7 @@ async function load() {
   return await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
 }
 
-const { data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const { abort, data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
 
 const level = computed(() => data.value?.level || "year")
 
@@ -164,7 +164,7 @@ function createCsv() {
       {{ t("result.trend.undated", { ratio: percentage(undatedRatio) }) }}
     </div>
 
-    <ResultsDisplay :errorMessage :state :populated="series.length > 0" :progress>
+    <ResultsDisplay :errorMessage :state :populated="series.length > 0" :progress @abort="abort()">
       <TrendGraph
         v-if="(view == 'line' || view == 'bar') && series.length"
         :series

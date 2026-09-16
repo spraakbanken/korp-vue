@@ -19,7 +19,13 @@ const matomo = useMatomo()
 onMounted(() => loadResult())
 
 const load = () => props.task.send()
-const { data: result, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const {
+  abort,
+  data: result,
+  errorMessage,
+  state,
+  loadResult,
+} = useResult(progress, load, props.task)
 
 function clickItem(side: 0 | 1, item: CompareItem) {
   const exampleTask = props.task.createExampleTask(side, item)
@@ -30,7 +36,7 @@ function clickItem(side: 0 | 1, item: CompareItem) {
 
 <template>
   <div class="vstack gap-2">
-    <ResultsDisplay :errorMessage :state :populated="!!result?.max" :progress>
+    <ResultsDisplay :errorMessage :state :populated="!!result?.max" :progress @abort="abort()">
       <div v-if="result" class="row">
         <div class="col-sm-6">
           <h3>{{ $t("result.compare.column_heading", { label: task.cmp1.label }) }}</h3>

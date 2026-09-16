@@ -73,7 +73,7 @@ async function load(updating = false) {
   })
 }
 
-const { data, errorMessage, state, loadResult } = useResult(progress, load, proxy)
+const { abort, data, errorMessage, state, loadResult } = useResult(progress, load, proxy)
 
 const distribution = computed(() => data.value?.distribution)
 const hitsCount = computed(() => data.value?.hits || 0)
@@ -168,7 +168,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :errorMessage :populated="!!hitsCount" :progress :state>
+    <ResultsDisplay :errorMessage :populated="!!hitsCount" :progress :state @abort="abort()">
       <KwicResultsContent
         :corpora="activeSearch?.corpora"
         :distribution

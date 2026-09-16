@@ -51,15 +51,19 @@ export function useResult<T>(
 
   /** Handle Escape key to abort current operation */
   useEventListener("keyup", (event: KeyboardEvent) => {
+    if (event.key == "Escape") abort()
+  })
+
+  function abort() {
     if (!abortable) return
-    if (event.key != "Escape") return
     if (!["loading", "updating"].includes(state.value)) return
     state.value = "aborted"
     abortable.abort()
     progress.value = undefined
-  })
+  }
 
   return {
+    abort,
     data,
     errorMessage,
     loadResult,
