@@ -53,11 +53,10 @@ whenever(
     </div>
 
     <!-- Status message while request is working -->
-    <!-- TODO Hide when first KWIC page is showing -->
     <Transition appear>
       <div
         v-if="state == 'loading'"
-        class="position-absolute top-0 bottom-0 w-100 bg-body bg-opacity-50 z-3"
+        class="position-absolute top-0 bottom-0 w-100 bg-body bg-opacity-50 z-3 pe-none"
       >
         <div ref="working-status" class="p-5 vstack align-items-center gap-4">
           <!-- Progress bar -->
@@ -67,7 +66,7 @@ whenever(
             :aria-valuenow="progress"
             aria-valuemin="0"
             aria-valuemax="100"
-            class="progress progress-bar-striped progress-bar-animated"
+            class="progress progress-bar-striped progress-bar-animated pe-auto"
             style="width: 10rem"
           >
             <div
@@ -77,13 +76,18 @@ whenever(
           </div>
 
           <!-- Loading spinner -->
-          <div v-else class="spinner-border text-primary" role="status">
+          <div v-else class="spinner-border text-primary pe-auto" role="status">
             <span class="visually-hidden">{{ $t("loading") }}</span>
           </div>
 
           <!-- Abort button shown after a while -->
           <Transition appear>
-            <button v-if="abort && showAbort" type="button" class="btn btn-danger" @click="abort()">
+            <button
+              v-if="abort && showAbort"
+              type="button"
+              class="btn btn-danger pe-auto"
+              @click="abort()"
+            >
               {{ $t("result.abort") }}
             </button>
           </Transition>
