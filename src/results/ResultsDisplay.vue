@@ -2,7 +2,6 @@
 import ErrorBox, { type ErrorMessage } from "@/components/ErrorBox.vue"
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
 import type { ResultState } from "./useResult"
-import vFadeIfLoading from "@/components/vFadeIfLoading"
 
 const props = defineProps<{
   errorMessage: ErrorMessage | undefined
@@ -16,8 +15,7 @@ const populated = computed(() => toValue(props.populated))
 </script>
 
 <template>
-  <!-- TODO Absorb fading transition -->
-  <div v-fade-if-loading="progress">
+  <div class="fade show" :class="{ 'opacity-50': progress !== undefined && progress < 100 }">
     <!-- Show error if present -->
     <ErrorBox v-if="errorMessage" v-bind="errorMessage" class="mx-auto mb-0" />
 
