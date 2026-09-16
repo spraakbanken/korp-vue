@@ -35,6 +35,5 @@ export const injectionKeys = {
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
-  resultProgress: Symbol() as InjectionKey<Ref<number>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
 }

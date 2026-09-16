@@ -35,7 +35,7 @@ async function load(updating = false) {
   return response
 }
 
-const { abort, data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const { data, loadResult } = useResult(progress, load, props.task)
 
 const distribution = computed(() => data.value?.distribution)
 const hitsCount = computed(() => data.value?.hits || 0)
@@ -66,7 +66,7 @@ watch(page, () => loadResult(true))
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :errorMessage :state :populated="!!hitsCount" :progress @abort="abort()">
+    <ResultsDisplay :populated="!!hitsCount">
       <KwicResultsContent
         :corpora="task.corpora"
         :distribution
@@ -74,7 +74,6 @@ watch(page, () => loadResult(true))
         :hpp
         :isReading
         :kwic
-        :state
         v-model="page"
       />
     </ResultsDisplay>

@@ -36,7 +36,7 @@ onMounted(() => {
 })
 
 const load = () => props.task.send()
-const { abort, data, errorMessage, state, loadResult } = useResult(progress, load, props.task)
+const { data, loadResult } = useResult(progress, load, props.task)
 </script>
 
 <template>
@@ -47,7 +47,7 @@ const { abort, data, errorMessage, state, loadResult } = useResult(progress, loa
   </h2>
 
   <SidebarProvider hide-reading-mode>
-    <ResultsDisplay :errorMessage :state :populated="!!data" :progress @abort="abort()">
+    <ResultsDisplay :populated="!!data">
       <component
         :is="reader.component"
         v-if="data"

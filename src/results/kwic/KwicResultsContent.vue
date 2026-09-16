@@ -11,7 +11,6 @@ import HitsDistributionBar from "./HitsDistributionBar.vue"
 import type { CorpusSet } from "@/core/corpora/CorpusSet"
 import { formatDecimals } from "@/core/i18n"
 import SidebarProvider from "../sidebar/SidebarProvider.vue"
-import type { ResultState } from "../useResult"
 
 /** Current page number, 1-indexed */
 const page = defineModel<number>({ default: 1 })
@@ -23,7 +22,6 @@ const props = defineProps<{
   hpp: number
   isReading?: boolean
   kwic?: Row[]
-  state?: ResultState
 }>()
 
 const selectedToken = ref<RowToken>()
@@ -66,7 +64,7 @@ watchImmediate(
 
 <template>
   <SidebarProvider v-model="selectedToken" @keyup.p="decrementPage()" @keyup.n="incrementPage()">
-    <div class="d-flex gap-4" :class="{ 'text-muted fst-italic': state == 'loading' }">
+    <div class="d-flex gap-4">
       <div>{{ $t("result.kwic.hits_count") }}: {{ $n(hitsCount) }}</div>
       <div>
         {{ $t("result.kwic.hits_relative") }}: {{ formatDecimals(hitsRelative, 1) }}

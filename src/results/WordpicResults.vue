@@ -53,7 +53,7 @@ async function load() {
   return result
 }
 
-const { data, state, errorMessage, loadResult } = useResult(progress, load, proxy)
+const { data, loadResult } = useResult(progress, load, proxy)
 
 // Start watching the active search query
 watchImmediate(activeSearch, () => loadResult())
@@ -124,10 +124,7 @@ watch(showPos, () =>
 
     <!-- Wordpic cards -->
     <ResultsDisplay
-      :errorMessage
       :populated="!!data?.getData().length"
-      :progress
-      :state
       class="d-flex flex-wrap justify-content-center gap-2"
     >
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->

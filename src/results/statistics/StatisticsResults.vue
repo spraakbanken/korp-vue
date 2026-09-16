@@ -103,7 +103,7 @@ function onError(error: unknown) {
   return error
 }
 
-const { abort, data, state, errorMessage, loadResult } = useResult(progress, load, proxy, onError)
+const { data, loadResult } = useResult(progress, load, proxy, onError)
 
 // Start watching search query
 watchImmediate(activeSearch, () => loadResult())
@@ -211,7 +211,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :errorMessage :populated="!!rowCount" :progress :state @abort="abort()">
+    <ResultsDisplay :populated="!!rowCount">
       <div class="hstack gap-2 align-items-baseline">
         <!-- Trend chart button -->
         <button

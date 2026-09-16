@@ -1,10 +1,19 @@
+import type { ErrorMessage } from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import type Abortable from "@/core/backend/abortable"
 import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import { useEventListener } from "@vueuse/core"
-import { ref, shallowRef, type Ref } from "vue"
+import { provide, ref, shallowRef, type InjectionKey, type Ref } from "vue"
 
-export type ResultState = "initial" | "loading" | "updating" | "done" | "aborted" | "error"
+/** State of a result */
+export type ResultState = "initial" | "loading" | "done" | "aborted" | "error"
+
+/** Injection keys for result state */
+export const resultKeys = {
+  error: Symbol() as InjectionKey<Ref<ErrorMessage | undefined>>,
+  state: Symbol() as InjectionKey<Ref<ResultState>>,
+  abort: Symbol() as InjectionKey<() => void>,
+}
 
 /** Manages loading a result with progress percentage, abortion and error handling. */
 export function useResult<T>(
@@ -27,7 +36,7 @@ export function useResult<T>(
     clearError()
     abortable?.abort()
     if (!updating) data.value = undefined
-    state.value = updating ? "updating" : "loading"
+    state.value = "loading"
     progress.value = 0
 
     try {
@@ -56,11 +65,16 @@ export function useResult<T>(
 
   function abort() {
     if (!abortable) return
-    if (!["loading", "updating"].includes(state.value)) return
+    if (state.value != "loading") return
     state.value = "aborted"
     abortable.abort()
     progress.value = undefined
   }
+
+  // Provide state and functions to child components
+  provide(resultKeys.error, errorMessage)
+  provide(resultKeys.state, state)
+  provide(resultKeys.abort, abort)
 
   return {
     abort,
