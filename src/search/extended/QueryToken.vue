@@ -4,6 +4,7 @@ import { createCondition } from "@/core/cqp/cqp"
 import { type Condition } from "@/core/cqp/cqp.types"
 import QueryBuilderCondition from "./QueryBuilderCondition.vue"
 import QueryTokenRepeat from "./QueryTokenRepeat.vue"
+import { useCounter } from "@vueuse/core"
 
 const conditions = defineModel<Condition[][]>({ required: true })
 const repeat = defineModel<[number, number] | undefined>("repeat")
@@ -18,7 +19,13 @@ const emit = defineEmits<{
   (event: "remove"): void
 }>()
 
+/** A counter to force re-rendering of list items */
+const counter = useCounter()
+
 function removeCondition(disjunctionIndex: number, conditionIndex: number) {
+  // Trigger re-rendering
+  counter.inc()
+
   conditions.value[disjunctionIndex]!.splice(conditionIndex, 1)
 
   // If the disjunction is empty, remove it
@@ -36,11 +43,11 @@ function removeCondition(disjunctionIndex: number, conditionIndex: number) {
 <template>
   <div class="vstack gap-2">
     <!-- 2-dimensional repetition: an AND of OR's-->
-    <template v-for="(disjunction, j) in conditions" :key="j">
+    <template v-for="(disjunction, j) in conditions" :key="`${counter} ${j}`">
       <div v-if="j > 0">{{ $t("search.and") }}</div>
 
       <div class="card bg-body bg-opacity-75 p-2 vstack gap-2">
-        <template v-for="(condition, k) in disjunction" :key="k">
+        <template v-for="(condition, k) in disjunction" :key="`${counter} ${k}`">
           <div v-if="k > 0">{{ $t("search.or") }}</div>
 
           <!-- Each condition (attribute-operator-value) -->

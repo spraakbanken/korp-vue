@@ -44,17 +44,17 @@ watchImmediate([search, cqp], () => {
   const [type, value] = splitFirst("|", store.search || "")
   if (type != "cqp" || value) return
 
-  // Replace query under construction
-  try {
-    tokens.value = parse<CqpQuery>(store.cqp)
-  } catch (e) {
-    addMessage("error", e instanceof Error ? e.message : String(e))
-    console.error(e)
+  // If new query incoming, parse it and search
+  if (store.cqp != stringify(tokens.value)) {
+    try {
+      tokens.value = parse<CqpQuery>(store.cqp)
+      matomo.value?.trackEvent("Search", "Submit search", "Extended")
+      searchStore.commitQuery(tokens.value)
+    } catch (e) {
+      addMessage("error", e instanceof Error ? e.message : String(e))
+      console.error(e)
+    }
   }
-
-  // Trigger search
-  matomo.value?.trackEvent("Search", "Submit search", "Extended")
-  searchStore.commitQuery(tokens.value)
 })
 
 /** Handle clicking the Search button */
