@@ -3,6 +3,7 @@ import ErrorBox from "@/components/ErrorBox.vue"
 import { computed, inject, toValue, useTemplateRef, type MaybeRefOrGetter } from "vue"
 import { resultKeys } from "./useResult"
 import { useElementSize, useTimeout, whenever } from "@vueuse/core"
+import TransitionFade from "@/components/TransitionFade.vue"
 
 const props = defineProps<{
   /** Whether the progress percentage is expected to change while loading */
@@ -53,7 +54,7 @@ whenever(
     </div>
 
     <!-- Status message while request is working -->
-    <Transition appear>
+    <TransitionFade>
       <div
         v-if="state == 'loading'"
         class="position-absolute top-0 bottom-0 w-100 bg-body bg-opacity-50 z-3 pe-none"
@@ -81,7 +82,7 @@ whenever(
           </div>
 
           <!-- Abort button shown after a while -->
-          <Transition appear>
+          <TransitionFade>
             <button
               v-if="abort && showAbort"
               type="button"
@@ -90,21 +91,9 @@ whenever(
             >
               {{ $t("result.abort") }}
             </button>
-          </Transition>
+          </TransitionFade>
         </div>
       </div>
-    </Transition>
+    </TransitionFade>
   </div>
 </template>
-
-<style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 200ms ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-</style>

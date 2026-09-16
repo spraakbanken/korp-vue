@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import TransitionFade from "@/components/TransitionFade.vue"
+
 defineProps<{
   progress?: number
 }>()
 </script>
 
 <template>
-  <!-- `Transition` adds opacity animation when `v-show` changes -->
-  <Transition>
+  <TransitionFade>
     <span
-      v-show="progress != null && progress < 100"
+      v-if="progress != null && progress < 100"
       role="progressbar"
       :aria-valuenow="progress"
       aria-valuemin="0"
@@ -18,21 +19,10 @@ defineProps<{
     >
       <div class="progress-bar" :style="{ width: progress + '%' }"></div>
     </span>
-  </Transition>
+  </TransitionFade>
 </template>
 
 <style scoped>
-/* Classes used by `Transition` */
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-
 /* Animation for progressbar background */
 .progress {
   background: linear-gradient(90deg, transparent, var(--bs-primary) 30%, transparent 60%);
