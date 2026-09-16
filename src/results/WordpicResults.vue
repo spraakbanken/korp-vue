@@ -124,6 +124,7 @@ watch(showPos, () =>
 
     <!-- Wordpic cards -->
     <ResultsDisplay
+      incremental
       :populated="!!data?.getData().length"
       class="d-flex flex-wrap justify-content-center gap-2"
     >

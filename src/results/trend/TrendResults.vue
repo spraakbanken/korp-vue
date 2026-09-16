@@ -164,7 +164,7 @@ function createCsv() {
       {{ t("result.trend.undated", { ratio: percentage(undatedRatio) }) }}
     </div>
 
-    <ResultsDisplay :populated="series.length > 0">
+    <ResultsDisplay incremental :populated="series.length > 0">
       <TrendGraph
         v-if="(view == 'line' || view == 'bar') && series.length"
         :series

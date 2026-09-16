@@ -5,6 +5,8 @@ import { resultKeys } from "./useResult"
 import { useElementSize, useTimeout, whenever } from "@vueuse/core"
 
 const props = defineProps<{
+  /** Whether the progress percentage is expected to change while loading */
+  incremental?: boolean
   /** Whether the result has hits, i.e. isn't empty */
   populated: MaybeRefOrGetter<boolean>
 }>()
@@ -17,6 +19,7 @@ const { height: statusHeight } = useElementSize(useTemplateRef("working-status")
 })
 
 const error = inject(resultKeys.error)
+const progress = inject(resultKeys.progress)
 const state = inject(resultKeys.state)
 const abort = inject(resultKeys.abort)
 
@@ -50,14 +53,31 @@ whenever(
     </div>
 
     <!-- Status message while request is working -->
+    <!-- TODO Hide when first KWIC page is showing -->
     <Transition appear>
       <div
         v-if="state == 'loading'"
         class="position-absolute top-0 bottom-0 w-100 bg-body bg-opacity-50 z-3"
       >
         <div ref="working-status" class="p-5 vstack align-items-center gap-4">
+          <!-- Progress bar -->
+          <div
+            v-if="incremental"
+            role="progressbar"
+            :aria-valuenow="progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            class="progress progress-bar-striped progress-bar-animated"
+            style="width: 10rem"
+          >
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              :style="{ width: progress + '%' }"
+            ></div>
+          </div>
+
           <!-- Loading spinner -->
-          <div class="spinner-border text-primary" role="status">
+          <div v-else class="spinner-border text-primary" role="status">
             <span class="visually-hidden">{{ $t("loading") }}</span>
           </div>
 

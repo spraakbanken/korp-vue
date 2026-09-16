@@ -11,6 +11,7 @@ export type ResultState = "initial" | "loading" | "done" | "aborted" | "error"
 /** Injection keys for result state */
 export const resultKeys = {
   error: Symbol() as InjectionKey<Ref<ErrorMessage | undefined>>,
+  progress: Symbol() as InjectionKey<Ref<number | undefined>>,
   state: Symbol() as InjectionKey<Ref<ResultState>>,
   abort: Symbol() as InjectionKey<() => void>,
 }
@@ -73,6 +74,7 @@ export function useResult<T>(
 
   // Provide state and functions to child components
   provide(resultKeys.error, errorMessage)
+  provide(resultKeys.progress, progress)
   provide(resultKeys.state, state)
   provide(resultKeys.abort, abort)
 

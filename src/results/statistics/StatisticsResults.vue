@@ -211,7 +211,7 @@ watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row sel
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :populated="!!rowCount">
+    <ResultsDisplay incremental :populated="!!rowCount">
       <div class="hstack gap-2 align-items-baseline">
         <!-- Trend chart button -->
         <button

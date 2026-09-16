@@ -113,7 +113,7 @@ function onMarkerClick(marker: MarkerData) {
       </div>
     </OptionsBar>
 
-    <ResultsDisplay :populated="props.task.hasData()" class="vstack gap-2">
+    <ResultsDisplay incremental :populated="props.task.hasData()" class="vstack gap-2">
       <!-- Toggleable legend -->
       <SeriesLegend :legend v-model="enabledSeries" />
 

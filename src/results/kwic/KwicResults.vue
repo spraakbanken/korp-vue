@@ -30,6 +30,7 @@ const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
 const { page } = storeToRefs(store)
 /** Model for the "Show context" option */
 const context = ref(store.reading_mode)
+const incremental = ref(false)
 /** Controls result display style */
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(store.hpp)
@@ -44,6 +45,8 @@ syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } }
 async function load(updating = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
+  // Only new searches report progress
+  incremental.value = !updating
 
   // Set up progress handler
   let hasFirstPage = false
@@ -168,7 +171,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :populated="!!hitsCount">
+    <ResultsDisplay :incremental :populated="!!hitsCount">
       <KwicResultsContent
         :corpora="activeSearch?.corpora"
         :distribution
