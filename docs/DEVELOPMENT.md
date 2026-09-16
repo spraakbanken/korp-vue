@@ -51,12 +51,12 @@ See [ARCHITECTURE.md: Instance code](./ARCHITECTURE.md#instance-code).
 Vite will read variables from env files.
 See [Vite docs](https://vitejs.dev/guide/env-and-mode).
 
-| Variable       | Comment                             |
-| -------------- | ----------------------------------- |
-| BASE           | Base path, defaults to `/korp-vue/` |
-| DEV_HOST       | Hostname for dev server             |
-| DEV_HTTPS_CERT | Path to HTTPS certificate file      |
-| DEV_HTTPS_KEY  | Path to HTTPS private key file      |
+| Variable       | Comment                        |
+| -------------- | ------------------------------ |
+| BASE           | Base path, defaults to `/korp` |
+| DEV_HOST       | Hostname for dev server        |
+| DEV_HTTPS_CERT | Path to HTTPS certificate file |
+| DEV_HTTPS_KEY  | Path to HTTPS private key file |
 
 ### Enabling HTTPS
 
