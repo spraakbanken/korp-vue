@@ -1,7 +1,6 @@
 // Custom styling of SlickGrid markup
 .slick-header {
-  background-color: var(--bs-secondary-bg);
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .slick-header-sortable {
@@ -12,63 +11,33 @@
   font-family: var(--font-family-data);
 }
 
+.slick-pane {
+  .slick-cell,
+  .slick-header.ui-state-default,
+  .slick-header-column.ui-state-default {
+    border-color: transparent;
+  }
+  .slick-cell {
+    border-top-color: var(--bs-border-color);
+  }
+}
+
 .slick-row:hover {
-  background-color: var(--bs-tertiary-bg);
-}
-
-.slick-cell,
-.slick-header.ui-state-default,
-.slick-header-column.ui-state-default {
-  border-color: var(--bs-secondary-bg);
-}
-
-.slick-cell:has(input[type="checkbox"]),
-[role="columnheader"]:has(input[type="checkbox"]) {
-  text-align: center;
-}
-
-.distribution-cell,
-.frequency-cell,
-.value-cell {
-  cursor: pointer;
-}
-
-.frequency-cell:hover,
-.value-cell:hover {
-  color: var(--bs-primary);
-  text-decoration: underline;
-}
-
-.frequency-cell {
-  text-align: right;
+  --row-color: var(--bs-tertiary-bg);
 }
 
 .total-column {
-  background-color: #fff8f0;
-  .slick-row:hover & {
-    background-color: #f6ede2;
-  }
+  --column-color: var(--bs-yellow);
 }
 
 .parameter-column {
-  background-color: #f1f7ff;
-  .slick-row:hover & {
-    background-color: #e6ebff;
-  }
+  --column-color: var(--bs-info);
 }
 
-@media (prefers-color-scheme: dark) {
-  .total-column {
-    background-color: #4d2c0f;
-    .slick-row:hover & {
-      background-color: #5e3b1a;
-    }
-  }
-
-  .parameter-column {
-    background-color: #1e3a5f;
-    .slick-row:hover & {
-      background-color: #274e7a;
-    }
-  }
+.slick-cell {
+  background-color: color-mix(
+    in oklab,
+    var(--column-color, var(--bs-body-bg)),
+    var(--row-color, var(--bs-body-bg)) 90%
+  );
 }

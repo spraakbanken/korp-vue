@@ -23,6 +23,12 @@
   font-weight: 600;
 }
 
+// Align text specifically to the right, for example for numbers in a table.
+// Consider the Bootstrap class `text-end` for other cases.
+.text-right {
+  text-align: right;
+}
+
 // Max-width by breakpoint: fluid until breakpoint, then fixed max-width
 @each $name, $width in $grid-breakpoints {
   .w-max-#{$name} {

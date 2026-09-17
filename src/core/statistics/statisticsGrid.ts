@@ -39,7 +39,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     super(el, data, columns as Column<Row>[], {
       enableCellNavigation: false,
       enableColumnReorder: false,
-      forceFitColumns: false,
+      forceFitColumns: true,
     })
 
     this.setSelectionModel(new SlickRowSelectionModel({ selectActiveRow: false }))
@@ -48,7 +48,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
       setSelectedRows(args.rows.map((i) => this.getDataItem(i))),
     )
     this.setSelectedRows([0])
-    this.resize()
+    this.resizeCanvas()
     this.refreshColumns()
 
     this.onSort.subscribe((e, sort) => {
@@ -88,11 +88,6 @@ export class StatisticsGrid extends SlickGrid<Row> {
     })
     this.setColumns(columns as Column<Row>[])
   }
-
-  resize() {
-    this.resizeCanvas()
-    this.autosizeColumns()
-  }
 }
 
 function getSorter(type: string, col: string | number): Comparer<SingleRow> {
@@ -124,15 +119,17 @@ function createColumns(
   // This sorting will not react to language change, but that's quite alright, we like columns staying in place.
   corpora.sort(compareLabels((id) => locObj(settings.corpora[id.toLowerCase()]!.title)))
 
-  const checkboxSelector = new SlickCheckboxSelectColumn({
-    cssClass: "parameter-column",
-  })
-
   const minWidth = 100
   const dir = settings["dir"] ? `dir="${settings["dir"]}"` : ""
   const columns: SlickgridColumn[] = []
 
-  columns.push(checkboxSelector.getColumnDefinition() as SlickgridColumn)
+  const checkboxSelector = new SlickCheckboxSelectColumn({})
+  const checkboxColumn = checkboxSelector.getColumnDefinition() as SlickgridColumn
+  columns.push({
+    ...checkboxColumn,
+    cssClass: "parameter-column text-center",
+    headerCssClass: "parameter-column text-center",
+  })
 
   for (const [reduceVal, reduceValLabel] of zip(attrs, labels)) {
     if (reduceVal == null || reduceValLabel == null) break
@@ -147,7 +144,8 @@ function createColumns(
         return `<div data-row="${data.rowId}" ${dir}>${output}</div>`
       },
       minWidth,
-      cssClass: "parameter-column value-cell",
+      cssClass: "parameter-column link",
+      headerCssClass: "parameter-column",
     })
   }
 
@@ -163,7 +161,8 @@ function createColumns(
       formatter: () => chartIconHtml,
       maxWidth: 25,
       minWidth: 25,
-      cssClass: "total-column distribution-cell",
+      cssClass: "total-column link",
+      headerCssClass: "total-column",
     })
 
   columns.push({
@@ -176,7 +175,8 @@ function createColumns(
       return formatFrequency(value, getRelative(), getLang())
     },
     minWidth,
-    cssClass: "total-column frequency-cell",
+    cssClass: "total-column text-right link",
+    headerCssClass: "total-column text-right",
   })
 
   corpora.forEach((id) =>
@@ -190,7 +190,8 @@ function createColumns(
         return formatFrequency(value[id], getRelative(), getLang())
       },
       minWidth,
-      cssClass: "frequency frequency-cell",
+      cssClass: "text-right link",
+      headerCssClass: "text-right",
     }),
   )
 
