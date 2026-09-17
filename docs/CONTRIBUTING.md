@@ -2,7 +2,7 @@
 
 ## Asking a question
 
-Send an email to Språkbanken Text at [sb-info@svenska.gu.se](mailto:sb-info@svenska.gu.se) and we will reply as soon as we can.
+Send an email to Språkbanken at [info@sprakbanken.se](mailto:info@sprakbanken.se) and we will reply as soon as we can.
 
 ## Reporting a bug
 

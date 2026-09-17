@@ -95,19 +95,19 @@ lang.dsb: Lower Sorbian
 lang.hsb: Upper Sorbian
 lang.svm: Molise Slavic
 
-links.sbx.url: https://spraakbanken.gu.se/en/
+links.sb.url: https://sprakbanken.se/en
 links.gu.label: University of Gothenburg
 links.gu.url: https://gu.se/en/
 links.cite.label: Cite us
-links.cite.url: https://spraakbanken.gu.se/en/about/howtocite#Korp
+links.cite.url: https://sprakbanken.se/en/about/how-to-cite#Korp
 links.contact.label: Contact us
-links.contact.url: https://spraakbanken.gu.se/en/contact
+links.contact.url: https://sprakbanken.se/en/contact
 links.about.label: About us
-links.about.url: https://spraakbanken.gu.se/en/about
+links.about.url: https://sprakbanken.se/en/about
 links.news.label: News
-links.news.url: https://spraakbanken.gu.se/en/news-and-events
+links.news.url: https://sprakbanken.se/en/news-and-events
 links.platforms.label: Other platforms
-links.platforms.url: https://spraakbanken.gu.se/en/tools
+links.platforms.url: https://sprakbanken.se/en/platforms
 
 search.free_order: free order
 search.free_order.help: The search words can occur in any order, and not necessarily in sequence.

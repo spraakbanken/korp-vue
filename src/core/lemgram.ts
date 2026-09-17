@@ -3,7 +3,7 @@ import { numberToSuperscript } from "./util"
 /**
  * A parsed lemgram string.
  *
- * Read about lemgrams at https://spraakbanken.gu.se/faq/vad-ar-ett-lemgram
+ * Read about lemgrams at https://sprakbanken.se/faq/vad-ar-ett-lemgram
  */
 export class Lemgram {
   static regexp = /((\w+)--)?(.*?)\.\.(\w+)\.(\d+)(:\d+)?$/

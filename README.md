@@ -1,11 +1,11 @@
 <img src="src/assets/korp.svg" width="300" alt="Korp – Språkbanken's word research platform" />
 
-Korp is [Språkbanken](https://spraakbanken.gu.se/)'s word research platform
+Korp is [Språkbanken](https://sprakbanken.se/)'s word research platform
 for exploring large corpora of text data.
 
 [Use Korp](https://spraakbanken.gu.se/korp/)
-• [Language resources](https://spraakbanken.gu.se/en/resources)
-• [Platforms](https://spraakbanken.gu.se/en/tools)
+• [Language resources](https://sprakbanken.se/en/resources)
+• [Platforms](https://sprakbanken.se/en/platforms)
 
 # korp-vue
 
@@ -32,4 +32,4 @@ which was written in the discontinued AngularJS framework.
 
 ## Contact
 
-Email Språkbanken at: [sb-info@svenska.gu.se](mailto:sb-info@svenska.gu.se)
+Email Språkbanken at: [info@sprakbanken.se](mailto:info@sprakbanken.se)

@@ -3,7 +3,7 @@ import { numberToSuperscript } from "./util"
 /**
  * A parsed SALDO id.
  *
- * Read about the SALDO lexicon resource at https://spraakbanken.gu.se/en/resources/saldo
+ * Read about the SALDO lexicon resource at https://sprakbanken.se/en/resources/saldo
  */
 export class Saldo {
   static regexp = /(.*?)\.\.(\d\d?)(:\d+)?$/

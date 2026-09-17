@@ -10,10 +10,10 @@ const { locale } = useI18n()
       <!-- Left -->
       <div class="col-lg-4 text-lg-start">
         <div>
-          <a :href="$t('links.sbx.url')" target="_blank">
+          <a :href="$t('links.sb.url')" target="_blank">
             <img
-              src="@/assets/sprakbankentext-light.svg"
-              alt="Språkbanken Text"
+              src="@/assets/sprakbanken_logo.svg"
+              alt="Språkbanken"
               class="inline-block mb-2"
               style="height: 2rem"
             />

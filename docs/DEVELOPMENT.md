@@ -106,7 +106,7 @@ Close collaborators can ask for write access to the repo, and do not need to for
 
 ## Releases
 
-The timing of a release is determined by maintainers, and may be more or less connected to the ongoing work at Språkbanken Text.
+The timing of a release is determined by maintainers, and may be more or less connected to the ongoing work at Språkbanken.
 
 1. Check and test the code carefully
 2. Update [CHANGELOG.md](../CHANGELOG.md) and docs
