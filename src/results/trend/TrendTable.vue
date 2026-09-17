@@ -82,26 +82,3 @@ watchEffect(() => {
 <template>
   <div ref="gridEl" />
 </template>
-
-<style scoped lang="scss">
-/* Copy coloring from statistics table */
-:deep(.slick-pane) {
-  .parameter-column {
-    background-color: #f1f7ff;
-  }
-
-  .slick-row:hover .parameter-column {
-    background-color: #e6ebff;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .parameter-column {
-      background-color: #1e3a5f;
-    }
-
-    .slick-row:hover .parameter-column {
-      background-color: #274e7a;
-    }
-  }
-}
-</style>

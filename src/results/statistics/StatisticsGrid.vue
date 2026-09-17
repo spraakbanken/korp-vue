@@ -33,7 +33,7 @@ const store = useAppStore()
 const { t } = useI18n()
 
 let grid: StatisticsGrid | undefined
-const gridEl = useTemplateRef("gridEl")
+const gridEl = useTemplateRef("grid")
 const isVisible = useElementVisibility(gridEl)
 const { lang, statsRelative } = storeToRefs(store)
 let distributionDialog: ConfirmDialog | undefined
@@ -118,7 +118,7 @@ function onDistributionClick(row: Row): void {
 
 <template>
   <div>
-    <div ref="gridEl" />
+    <div ref="grid" style="height: 90svh" />
     <ModalDialog
       :title="t('result.statistics.distributions.title')"
       :size="params.corpora.length > 10 ? 'lg' : 'md'"
@@ -128,91 +128,3 @@ function onDistributionClick(row: Row): void {
     </ModalDialog>
   </div>
 </template>
-
-<style>
-.slick-pane {
-  .slick-header {
-    background-color: var(--bs-secondary-bg);
-    font-weight: bold;
-  }
-
-  .slick-header-sortable {
-    cursor: pointer;
-  }
-
-  .slick-viewport {
-    font-family: var(--font-family-data);
-  }
-
-  .slick-row:hover {
-    background-color: var(--bs-tertiary-bg);
-  }
-
-  .slick-cell,
-  .slick-header.ui-state-default,
-  .slick-header-column.ui-state-default {
-    border-color: var(--bs-secondary-bg);
-  }
-
-  .slick-cell:has(input[type="checkbox"]),
-  [role="columnheader"]:has(input[type="checkbox"]) {
-    text-align: center;
-  }
-}
-</style>
-
-<style scoped>
-[role="grid"] {
-  height: 90svh;
-}
-
-:deep(.total-column) {
-  background-color: #fff8f0;
-}
-
-:deep(.slick-row:hover .total-column) {
-  background-color: #f6ede2;
-}
-
-:deep(.parameter-column) {
-  background-color: #f1f7ff;
-}
-
-:deep(.slick-row:hover .parameter-column) {
-  background-color: #e6ebff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :deep(.total-column) {
-    background-color: #4d2c0f;
-  }
-
-  :deep(.slick-row:hover .total-column) {
-    background-color: #5e3b1a;
-  }
-
-  :deep(.parameter-column) {
-    background-color: #1e3a5f;
-  }
-
-  :deep(.slick-row:hover .parameter-column) {
-    background-color: #274e7a;
-  }
-}
-
-:deep(.distribution-cell),
-:deep(.frequency-cell),
-:deep(.value-cell) {
-  cursor: pointer;
-}
-
-:deep(.frequency-cell):hover,
-:deep(.value-cell):hover {
-  color: var(--bs-primary);
-  text-decoration: underline;
-}
-
-:deep(.frequency-cell) {
-  text-align: right;
-}
-</style>
