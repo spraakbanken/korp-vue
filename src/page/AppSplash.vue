@@ -12,7 +12,10 @@ setTimeout(loadMaintenanceNews, 3000)
 
 async function loadMaintenanceNews() {
   const newsService = await import("@/core/services/news")
-  const items = await newsService.fetchNews()
+  const items = await newsService.fetchNews().catch((error) => {
+    console.error("Failed to fetch news:", error)
+    return []
+  })
   maintenanceNews.value = items.filter((item) => item.tags?.includes("maintenance"))
 }
 </script>

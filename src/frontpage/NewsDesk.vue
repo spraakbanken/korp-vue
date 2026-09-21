@@ -10,8 +10,12 @@ const { locObj, locDate } = useLocale()
 
 const items = computedAsync(async () => {
   const news = await import("@/core/services/news")
-  return news.fetchNews()
+  return news.fetchNews().catch((error) => {
+    console.error("Failed to fetch news:", error)
+    return []
+  })
 })
+
 const itemsFiltered = computed(() =>
   expanded.value ? items.value : items.value?.slice(0, COLLAPSED_MAX),
 )
