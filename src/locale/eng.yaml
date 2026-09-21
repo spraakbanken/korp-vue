@@ -4,7 +4,7 @@ corpora: Corpora
 details: Details
 error.backend: Server returned {type}
 error.heading: An error has occurred.
-error.footer: If you have questions, or you want to report a bug, please contact sb-info{'@'}svenska.gu.se.
+error.footer: If you have questions, or you want to report a bug, please contact info{'@'}sprakbanken.se.
 gui.language: User interface language
 loading: Loading…
 more: More
@@ -32,7 +32,7 @@ attribute_type.struct: Structural attributes
 
 auth.login: Log in
 auth.logout: Log out {name}
-auth.description: An account is only necessary if you need to access protected corpora. To apply for access, email sb-info{'@'}svenska.gu.se and let us know what corpora you are interested in.
+auth.description: An account is only necessary if you need to access protected corpora. To apply for access, email info{'@'}sprakbanken.se and let us know what corpora you are interested in.
 auth.email: Email
 auth.password: Password
 auth.password.forgotten: Forgot password?

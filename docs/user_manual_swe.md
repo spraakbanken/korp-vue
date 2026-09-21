@@ -44,7 +44,7 @@ _Avancerad_ ger en ytterligare möjligheter men kräver att man är insatt i det
 ![Enkel sökning på lemgram](images/lemgram.png)
 
 I en enkel sökning kan man söka på antingen ett ord, flera ord, eller ett _lemgram_. Ett lemgram är ett ords eller ett flerordsuttrycks samtliga böjningsformer, och gör det
-möjligt att i en och samma sökning söka efter både "katt", "katter", "katterna" och så vidare. Läs mer på [Vad är ett lemgram?](https://spraakbanken.gu.se/faq/vad-ar-ett-lemgram)
+möjligt att i en och samma sökning söka efter både "katt", "katter", "katterna" och så vidare. Läs mer på [Vad är ett lemgram?](https://sprakbanken.se/faq/vad-ar-ett-lemgram)
 
 För att göra en vanlig ordsökning skriver man ordet eller orden i sökfältet och trycker på Sök-knappen eller Enter-tangenten på tangentbordet. Om man i stället för
 att direkt trycka på Sök väntar lite efter att man har skrivit ett komplett ord, så kommer det upp en lista under sökfältet över lemgram i vilka det inmatade ordet är en ordform.
