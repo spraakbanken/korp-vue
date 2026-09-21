@@ -4,6 +4,7 @@ import {
   isTotalRow,
   type Dataset,
   type SearchParams,
+  type StatisticsPostprocessor,
   type StatisticsProcessed,
   type StatisticsWorkerMessage,
 } from "./statistics.types"
@@ -30,6 +31,7 @@ export function processStatisticsResult(
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
   stringifiers: Record<string, Stringifier>,
+  postprocess?: StatisticsPostprocessor,
 ): Promise<StatisticsProcessed> {
   const corpora = Object.keys(data.corpora)
 
@@ -72,9 +74,7 @@ export function processStatisticsResult(
 
       let processed: StatisticsProcessed = { rows, params }
 
-      if (settings["statistics_postprocess"]) {
-        processed = settings["statistics_postprocess"](processed)
-      }
+      if (postprocess) processed = postprocess(processed)
 
       resolve(processed)
     }

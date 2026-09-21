@@ -11,6 +11,8 @@ export type StatisticsProcessed = {
   params: SearchParams
 }
 
+export type StatisticsPostprocessor = (data: StatisticsProcessed) => StatisticsProcessed
+
 export type SearchParams = {
   reduceVals: string[]
   ignoreCase: boolean

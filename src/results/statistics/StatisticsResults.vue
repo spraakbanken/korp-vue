@@ -5,7 +5,7 @@ import { isTotalRow, type Row } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, inject, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
@@ -29,6 +29,7 @@ import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
 import { useResult } from "../useResult"
 import ResultsDisplay from "../ResultsDisplay.vue"
+import { injectionKeys } from "@/injection.ts"
 
 const UPDATE_DELAY_MS = 500
 
@@ -42,6 +43,7 @@ const { activeSearch } = storeToRefs(useSearchStore())
 const getStringifier = useStringifiers()
 const matomo = useMatomo()
 
+const postprocess = inject(injectionKeys.statisticsPostprocess)
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const isLimited = ref(false)
 const unsupportedRatio = ref(0)
@@ -88,6 +90,7 @@ async function load() {
     ignoreCase,
     cqpValue,
     stringifiers,
+    postprocess,
   )
 
   rawResponse.value = proxy.getResponse()

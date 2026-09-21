@@ -7,6 +7,7 @@ import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
 import type { Reader } from "./results/text/text"
+import type { StatisticsPostprocessor } from "./core/statistics/statistics.types"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -36,4 +37,5 @@ export const injectionKeys = {
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
+  statisticsPostprocess: Symbol() as InjectionKey<StatisticsPostprocessor>,
 }
