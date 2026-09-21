@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const svgEl = useTemplateRef<SVGElement>("svg")
 const isVisible = useElementVisibility(svgEl)
-const getStringifier = useStringifiers()
+const { getStringifier } = useStringifiers()
 const { locObj } = useLocale()
 const matomo = useMatomo()
 

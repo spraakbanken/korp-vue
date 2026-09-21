@@ -40,7 +40,7 @@ const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
-const getStringifier = useStringifiers()
+const { getStringifier, getListStringifier } = useStringifiers()
 const matomo = useMatomo()
 
 const postprocess = inject(injectionKeys.statisticsPostprocess)
@@ -80,7 +80,8 @@ async function load() {
 
   const stringifiers = fromKeys(attrs, (name) => {
     const attribute = corpora.getReduceAttrs()[name]
-    return attribute ? getStringifier(attribute) : String
+    if (attribute) return { token: getStringifier(attribute), list: getListStringifier(attribute) }
+    return { token: String }
   })
 
   const result = await processStatisticsResult(

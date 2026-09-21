@@ -11,7 +11,7 @@ import {
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { Stringifier } from "@/attributes/attributes.types"
+import type { ListStringifier, Stringifier } from "@/attributes/attributes.types"
 import { joinWords } from "../corpora/attribute"
 
 export type StatisticsStringifier = (values: string[], ignoreCase: boolean) => string
@@ -31,7 +31,7 @@ export function processStatisticsResult(
   reduceVals: string[],
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
-  stringifiers: Record<string, Stringifier>,
+  stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
   postprocess?: StatisticsPostprocessor,
 ): Promise<StatisticsProcessed> {
   const corpora = Object.keys(data.corpora)
@@ -65,10 +65,13 @@ export function processStatisticsResult(
       for (const row of rows) {
         if (isTotalRow(row)) continue
         for (const attr of reduceVals) {
-          const stringifier = stringifiers[attr] || String
+          const stringifier = stringifiers[attr]?.token || String
+          const listStringifier = stringifiers[attr]?.list
           const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
-          const wordsFormatted = words.map(stringifier)
-          row.formattedValue[attr] = joinWords(wordsFormatted)
+          const formatted = listStringifier
+            ? listStringifier(words)
+            : joinWords(words.map(stringifier))
+          row.formattedValue[attr] = formatted
         }
       }
 

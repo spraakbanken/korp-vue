@@ -1,4 +1,4 @@
-import type { Stringifier } from "./attributes.types"
+import type { ListStringifier, Stringifier } from "./attributes.types"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
@@ -12,6 +12,8 @@ import { stringifyValue } from "@/core/corpora/attribute"
 export function useStringifiers() {
   /** Custom stringifiers possibly provided by instance plugin */
   const customStringifiers = inject(injectionKeys.attribute.stringifiers, {})
+  /** Custom list stringifiers possibly provided by instance plugin */
+  const customListStringifiers = inject(injectionKeys.attribute.listStringifiers, {})
 
   /** Get default or custom stringifier for the given attribute */
   function getStringifier(attribute: Attribute): Stringifier {
@@ -33,5 +35,10 @@ export function useStringifiers() {
     return (str) => stringifyValue(str, ranked, translation)
   }
 
-  return getStringifier
+  /** Get optional custom list stringifier (for a sequence of tokens) for the given attribute */
+  function getListStringifier(attribute: Attribute): ListStringifier | undefined {
+    return customListStringifiers[attribute.stats_stringify || ""]
+  }
+
+  return { getStringifier, getListStringifier }
 }

@@ -2,7 +2,7 @@ import { defineAsyncComponent, inject, type Component, type InjectionKey, type R
 import { mapValues } from "lodash-es"
 import type { AuthModule } from "./core/auth"
 import type { RowToken } from "./core/kwic/kwic"
-import type { Stringifier } from "./attributes/attributes.types"
+import type { ListStringifier, Stringifier } from "./attributes/attributes.types"
 import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
@@ -34,6 +34,7 @@ export const injectionKeys = {
   attribute: {
     formatters: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Formatter>>>,
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
+    listStringifiers: Symbol() as InjectionKey<Record<string, ListStringifier>>,
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
