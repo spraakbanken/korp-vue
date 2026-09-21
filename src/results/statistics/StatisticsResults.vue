@@ -9,7 +9,7 @@ import { computed, inject, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { debounce, isEqual } from "lodash-es"
+import { debounce, isEqual, mapValues, pickBy } from "lodash-es"
 import StatisticsAttributeSelector from "./StatisticsAttributeSelector.vue"
 import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
@@ -40,7 +40,7 @@ const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
-const { getStringifier, getListStringifier } = useStringifiers()
+const { getStringifier, getListStringifier, getCqpStringifier } = useStringifiers()
 const matomo = useMatomo()
 
 const postprocess = inject(injectionKeys.statisticsPostprocess)
@@ -65,6 +65,19 @@ onMounted(() => matomo.value?.trackEvent("Statistics", "Activate"))
 /** Whether searched material is dated */
 const isDated = computed(() => !!activeSearch.value?.corpora.getYearRange())
 
+const stringifiers = computed(() => {
+  if (!activeSearch.value) return {}
+  const attrs = activeSearch.value.corpora.getReduceAttrs()
+  return fromKeys(stats_reduce.value, (name) => {
+    const attribute = attrs[name]
+    return {
+      token: getStringifier(attribute) || String,
+      list: getListStringifier(attribute),
+      cqp: getCqpStringifier(attribute),
+    }
+  })
+})
+
 async function load() {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
@@ -78,19 +91,13 @@ async function load() {
 
   const counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
 
-  const stringifiers = fromKeys(attrs, (name) => {
-    const attribute = corpora.getReduceAttrs()[name]
-    if (attribute) return { token: getStringifier(attribute), list: getListStringifier(attribute) }
-    return { token: String }
-  })
-
   const result = await processStatisticsResult(
     corpora.stringify(false),
     counts,
     attrs,
     ignoreCase,
     cqpValue,
-    stringifiers,
+    stringifiers.value,
     postprocess,
   )
 
@@ -159,11 +166,12 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
 
 function getSubqueries() {
   const ignoreCase = !!stats_reduce_insensitive.value.length
+  const cqpStringifiers = mapValues(stringifiers.value, (s) => s.cqp)
 
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
-    const cqp = getCqp(row.statsValues, ignoreCase)
+    const cqp = getCqp(row.statsValues, ignoreCase, cqpStringifiers)
     const label = stats_reduce.value.map((attr) => row.formattedValue[attr]).join(", ")
     subqueries.push([cqp, label])
   }

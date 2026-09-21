@@ -11,19 +11,8 @@ import {
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { ListStringifier, Stringifier } from "@/attributes/attributes.types"
+import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
 import { joinWords } from "../corpora/attribute"
-
-export type StatisticsStringifier = (values: string[], ignoreCase: boolean) => string
-
-const customFunctions: Record<string, StatisticsStringifier> = {}
-
-// TODO NPEGL
-// try {
-//   customFunctions = require("custom/statistics.js").default
-// } catch (error) {
-//   console.log("No module for statistics functions available")
-// }
 
 export function processStatisticsResult(
   originalCorpora: string,
@@ -84,10 +73,16 @@ export function processStatisticsResult(
   })
 }
 
-export function getCqp(hitValues: Record<string, string[]>[], ignoreCase: boolean): string {
+export function getCqp(
+  hitValues: Record<string, string[]>[],
+  ignoreCase: boolean,
+  cqpStringifiers: Record<string, CqpStringifier | undefined>,
+): string {
   const tokens = hitValues
     .map((token) =>
-      Object.entries(token).map(([attr, values]) => reduceCqp(attr, values, ignoreCase)),
+      Object.entries(token).map(([attr, values]) =>
+        reduceCqp(attr, values, ignoreCase, cqpStringifiers[attr]),
+      ),
     )
     .map((conditions) => "[" + conditions.join(" & ") + "]")
 
@@ -96,17 +91,19 @@ export function getCqp(hitValues: Record<string, string[]>[], ignoreCase: boolea
   return `<match> ${tokens.join(" ")} []{0,} </match>`
 }
 
+/** Build a CQP condition for an attribute and a (set of) values */
 function reduceCqp(
   name: string,
   /** `values` is multiple if multiple result rows were grouped into one, e.g. ranked or MWE */
   values: string[],
   ignoreCase: boolean,
+  cqpStringifier?: CqpStringifier,
 ): string {
   // Note: undefined if name is `word`
   const attr = corpusSelection.getReduceAttrs()[name]
 
   // Use named CQP'ifier from custom config code. It must escape values as regex.
-  if (attr?.stats_cqp) return customFunctions[attr.stats_cqp]!(values, ignoreCase)
+  if (cqpStringifier) return cqpStringifier(values, ignoreCase)
 
   const cqpName = attr ? prefixAttr(attr) : name
 

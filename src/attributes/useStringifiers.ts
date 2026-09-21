@@ -1,4 +1,4 @@
-import type { ListStringifier, Stringifier } from "./attributes.types"
+import type { CqpStringifier, ListStringifier, Stringifier } from "./attributes.types"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
@@ -14,6 +14,8 @@ export function useStringifiers() {
   const customStringifiers = inject(injectionKeys.attribute.stringifiers, {})
   /** Custom list stringifiers possibly provided by instance plugin */
   const customListStringifiers = inject(injectionKeys.attribute.listStringifiers, {})
+  /** Custom CQP stringifiers possibly provided by instance plugin */
+  const customCqpStringifiers = inject(injectionKeys.attribute.cqpStringifiers, {})
 
   /** Get default or custom stringifier for the given attribute */
   function getStringifier(attribute: Attribute): Stringifier {
@@ -40,5 +42,14 @@ export function useStringifiers() {
     return customListStringifiers[attribute.stats_stringify || ""]
   }
 
-  return { getStringifier, getListStringifier }
+  /** Get optional custom CQP stringifier for the given attribute */
+  function getCqpStringifier(attribute: Attribute): CqpStringifier | undefined {
+    return customCqpStringifiers[attribute.stats_cqp || ""]
+  }
+
+  return {
+    getStringifier,
+    getListStringifier,
+    getCqpStringifier,
+  }
 }
