@@ -33,7 +33,7 @@ const store = useAppStore()
 const { t } = useI18n()
 
 let grid: StatisticsGrid | undefined
-const gridEl = useTemplateRef("grid")
+const gridEl = useTemplateRef("gridEl")
 const isVisible = useElementVisibility(gridEl)
 const { lang, statsRelative } = storeToRefs(store)
 let distributionDialog: ConfirmDialog | undefined
@@ -118,7 +118,7 @@ function onDistributionClick(row: Row): void {
 
 <template>
   <div>
-    <div ref="grid" style="height: 90svh" />
+    <div ref="gridEl" style="height: 90svh" />
     <ModalDialog
       :title="t('result.statistics.distributions.title')"
       :size="params.corpora.length > 10 ? 'lg' : 'md'"
