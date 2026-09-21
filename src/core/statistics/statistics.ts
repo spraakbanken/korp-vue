@@ -12,6 +12,7 @@ import { corpusSelection } from "../corpora/corpusListing"
 import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { Stringifier } from "@/attributes/attributes.types"
+import { joinWords } from "../corpora/attribute"
 
 export type StatisticsStringifier = (values: string[], ignoreCase: boolean) => string
 
@@ -67,8 +68,7 @@ export function processStatisticsResult(
           const stringifier = stringifiers[attr] || String
           const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
           const wordsFormatted = words.map(stringifier)
-          // Join with spaces and then squash redundant and surrounding space.
-          row.formattedValue[attr] = wordsFormatted.join(" ").trim().replace(/\s+/g, " ")
+          row.formattedValue[attr] = joinWords(wordsFormatted)
         }
       }
 

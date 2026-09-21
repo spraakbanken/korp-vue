@@ -1,9 +1,8 @@
 import type { Stringifier } from "./attributes.types"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
-import { escape } from "lodash-es"
-import { useLocale } from "@/i18n/useLocale"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
+import { stringifyValue } from "@/core/corpora/attribute"
 
 /**
  * Get a stringifier for the given attribute config.
@@ -11,8 +10,6 @@ import type { Attribute } from "@/core/config/corpusConfigRaw.types"
  * Custom stringifiers can be added using `provide`. For the sidebar, advanced output can be implemented as a formatter component instead.
  */
 export function useStringifiers() {
-  const { locObj } = useLocale()
-
   /** Custom stringifiers possibly provided by instance plugin */
   const customStringifiers = inject(injectionKeys.attribute.stringifiers, {})
 
@@ -31,17 +28,9 @@ export function useStringifiers() {
   }
 
   /** Handles a few standard attribute stringification cases */
-  const getDefaultStringifier: (attribute: Attribute) => Stringifier = (attribute) => (str) => {
-    // Escape characters in raw value that could break HTML, like "<" and "&"
-    str = escape(str)
-
-    // For ranked attributes, remove the ":<score>" suffix
-    if (attribute.ranked) str = str.replace(/:.*/, "")
-
-    // If the attribute has a translation table, look up the value there
-    if (attribute.translation) str = locObj(attribute.translation[str])
-
-    return str
+  function getDefaultStringifier(attribute: Attribute): Stringifier {
+    const { ranked, translation } = attribute
+    return (str) => stringifyValue(str, ranked, translation)
   }
 
   return getStringifier
