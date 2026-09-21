@@ -24,33 +24,35 @@ function select(corpusId: string) {
 <template>
   <div v-if="recentUpdates.length">
     <h4>{{ $t("frontpage.updates") }}</h4>
-    <ul class="list-unstyled">
-      <li
-        v-for="corpus in isExpanded ? recentUpdates : recentUpdates.slice(0, COLLAPSED_MAX)"
-        :key="corpus.id"
-        class="mb-2"
-      >
-        <div class="d-flex justify-content-between align-items-baseline">
-          <div>
-            <i18n-t scope="global" keypath="frontpage.updates.item">
-              <template #title>
-                <strong>{{ locObj(corpus.title) }}</strong>
-              </template>
-            </i18n-t>
-            <button class="btn btn-link icon-link btn-sm ms-1" @click="select(corpus.id)">
-              <fa-icon icon="fa-regular fa-square-check" />
-              {{ $t("frontpage.updates.select") }}
-            </button>
-          </div>
-
-          <small class="text-nowrap">
+    <table class="table table-sm table-flush align-middle">
+      <thead>
+        <tr>
+          <th>{{ $t("corpus") }}</th>
+          <th>{{ $t("corpus.info.updated") }}</th>
+          <th class="text-center">{{ $t("frontpage.updates.select") }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="corpus in isExpanded ? recentUpdates : recentUpdates.slice(0, COLLAPSED_MAX)"
+          :key="corpus.id"
+        >
+          <td>
+            {{ locObj(corpus.title) }}
+          </td>
+          <td>
             <time datetime="{{ corpus.info.Updated }}">
               {{ locDate(String(corpus.info.Updated)) }}
             </time>
-          </small>
-        </div>
-      </li>
-    </ul>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-secondary btn-sm icon-link" @click="select(corpus.id)">
+              {{ $t("frontpage.updates.select") }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="text-center">
       <button

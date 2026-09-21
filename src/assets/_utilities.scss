@@ -29,6 +29,19 @@
   text-align: right;
 }
 
+// Remove table side paddings
+.table-flush {
+  th,
+  td {
+    &:first-child {
+      padding-inline-start: 0;
+    }
+    &:last-child {
+      padding-inline-end: 0;
+    }
+  }
+}
+
 // Max-width by breakpoint: fluid until breakpoint, then fixed max-width
 @each $name, $width in $grid-breakpoints {
   .w-max-#{$name} {
