@@ -32,7 +32,7 @@ function getVariant(severity: Severity) {
       v-for="message in messages"
       :key="message.id"
       role="alert"
-      class="alert d-flex align-items-center gap-4 shadow-lg pe-auto bg-body border-2"
+      class="alert d-flex align-items-center gap-4 shadow-lg pe-auto border-2"
       :class="`alert-${getVariant(message.severity)}`"
     >
       <div>
@@ -44,7 +44,7 @@ function getVariant(severity: Severity) {
           v-if="isProblem(message.severity)"
           src="@/assets/korp_fail.svg"
           role="presentation"
-          class="d-block mx-auto mt-3"
+          class="d-block mx-auto mt-3 drop-shadow-danger"
           style="height: 8rem"
         />
       </div>

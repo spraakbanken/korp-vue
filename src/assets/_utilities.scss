@@ -62,3 +62,11 @@
     color: inherit;
   }
 }
+
+@each $state in map-keys($theme-colors) {
+  @include color-mode(dark) {
+    .drop-shadow-#{$state} {
+      filter: drop-shadow(0 0 0.2rem var(--bs-#{$state}-text-emphasis));
+    }
+  }
+}

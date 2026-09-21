@@ -14,8 +14,13 @@ matomo.value?.trackEvent("Error", "Shown", `${props.message} ${props.details} ${
 </script>
 
 <template>
-  <div class="alert alert-danger bg-white border-2 d-flex align-items-center gap-4">
-    <img src="@/assets/korp_fail.svg" role="presentation" class="d-block" style="height: 8rem" />
+  <div class="alert alert-danger border-2 d-flex align-items-center gap-4">
+    <img
+      src="@/assets/korp_fail.svg"
+      role="presentation"
+      class="d-block drop-shadow-danger"
+      style="height: 8rem"
+    />
 
     <div>
       <h4 class="alert-heading">{{ message }}</h4>
