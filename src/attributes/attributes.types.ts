@@ -1,2 +1,8 @@
-/** A stringifier takes an input string and formats it, possibly adding HTML */
-export type Stringifier = (input: string) => string
+/** Format an attribute value as HTML */
+export type Stringifier = (str: string) => string
+
+/** Format values for a given attribute, for a series of tokens, as HTML */
+export type ListStringifier = (strs: string[]) => string
+
+/** Build a CQP condition for a set of values of a given attribute */
+export type CqpStringifier = (values: string[], ignoreCase?: boolean) => string

@@ -20,7 +20,7 @@ defineEmits<{
 }>()
 
 const { locale, t } = useI18n()
-const getStringifier = useStringifiers()
+const { getStringifier } = useStringifiers()
 
 const valuesHtml = computed(() =>
   props.item.values.flatMap(({ attribute, tokens }) =>

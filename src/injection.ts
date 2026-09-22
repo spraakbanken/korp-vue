@@ -2,11 +2,12 @@ import { defineAsyncComponent, inject, type Component, type InjectionKey, type R
 import { mapValues } from "lodash-es"
 import type { AuthModule } from "./core/auth"
 import type { RowToken } from "./core/kwic/kwic"
-import type { Stringifier } from "./attributes/attributes.types"
+import type { CqpStringifier, ListStringifier, Stringifier } from "./attributes/attributes.types"
 import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
 import type { Reader } from "./results/text/text"
+import type { StatisticsPostprocessor } from "./core/statistics/statistics.types"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -33,7 +34,10 @@ export const injectionKeys = {
   attribute: {
     formatters: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Formatter>>>,
     stringifiers: Symbol() as InjectionKey<Record<string, Stringifier>>,
+    listStringifiers: Symbol() as InjectionKey<Record<string, ListStringifier>>,
+    cqpStringifiers: Symbol() as InjectionKey<Record<string, CqpStringifier>>,
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
+  statisticsPostprocess: Symbol() as InjectionKey<StatisticsPostprocessor>,
 }

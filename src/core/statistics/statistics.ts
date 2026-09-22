@@ -4,24 +4,15 @@ import {
   isTotalRow,
   type Dataset,
   type SearchParams,
+  type StatisticsPostprocessor,
   type StatisticsProcessed,
   type StatisticsWorkerMessage,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { Stringifier } from "@/attributes/attributes.types"
-
-export type StatisticsStringifier = (values: string[], ignoreCase: boolean) => string
-
-const customFunctions: Record<string, StatisticsStringifier> = {}
-
-// TODO NPEGL
-// try {
-//   customFunctions = require("custom/statistics.js").default
-// } catch (error) {
-//   console.log("No module for statistics functions available")
-// }
+import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
+import { joinWords } from "../corpora/attribute"
 
 export function processStatisticsResult(
   originalCorpora: string,
@@ -29,7 +20,8 @@ export function processStatisticsResult(
   reduceVals: string[],
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
-  stringifiers: Record<string, Stringifier>,
+  stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
+  postprocess?: StatisticsPostprocessor,
 ): Promise<StatisticsProcessed> {
   const corpora = Object.keys(data.corpora)
 
@@ -62,29 +54,35 @@ export function processStatisticsResult(
       for (const row of rows) {
         if (isTotalRow(row)) continue
         for (const attr of reduceVals) {
-          const stringifier = stringifiers[attr] || String
+          const stringifier = stringifiers[attr]?.token || String
+          const listStringifier = stringifiers[attr]?.list
           const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
-          const wordsFormatted = words.map(stringifier)
-          // Join with spaces and then squash redundant and surrounding space.
-          row.formattedValue[attr] = wordsFormatted.join(" ").trim().replace(/\s+/g, " ")
+          const formatted = listStringifier
+            ? listStringifier(words)
+            : joinWords(words.map(stringifier))
+          row.formattedValue[attr] = formatted
         }
       }
 
       let processed: StatisticsProcessed = { rows, params }
 
-      if (settings["statistics_postprocess"]) {
-        processed = settings["statistics_postprocess"](processed)
-      }
+      if (postprocess) processed = postprocess(processed)
 
       resolve(processed)
     }
   })
 }
 
-export function getCqp(hitValues: Record<string, string[]>[], ignoreCase: boolean): string {
+export function getCqp(
+  hitValues: Record<string, string[]>[],
+  ignoreCase: boolean,
+  cqpStringifiers: Record<string, CqpStringifier | undefined>,
+): string {
   const tokens = hitValues
     .map((token) =>
-      Object.entries(token).map(([attr, values]) => reduceCqp(attr, values, ignoreCase)),
+      Object.entries(token).map(([attr, values]) =>
+        reduceCqp(attr, values, ignoreCase, cqpStringifiers[attr]),
+      ),
     )
     .map((conditions) => "[" + conditions.join(" & ") + "]")
 
@@ -93,17 +91,19 @@ export function getCqp(hitValues: Record<string, string[]>[], ignoreCase: boolea
   return `<match> ${tokens.join(" ")} []{0,} </match>`
 }
 
+/** Build a CQP condition for an attribute and a (set of) values */
 function reduceCqp(
   name: string,
   /** `values` is multiple if multiple result rows were grouped into one, e.g. ranked or MWE */
   values: string[],
   ignoreCase: boolean,
+  cqpStringifier?: CqpStringifier,
 ): string {
   // Note: undefined if name is `word`
   const attr = corpusSelection.getReduceAttrs()[name]
 
   // Use named CQP'ifier from custom config code. It must escape values as regex.
-  if (attr?.stats_cqp) return customFunctions[attr.stats_cqp]!(values, ignoreCase)
+  if (cqpStringifier) return cqpStringifier(values, ignoreCase)
 
   const cqpName = attr ? prefixAttr(attr) : name
 
@@ -144,7 +144,6 @@ export function createStatisticsCsv(
 
   const output = data.map((row) => {
     // One cell per grouped attribute
-    // TODO Should isPhraseLevelDisjunction be handled here?
     const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]!))
     const corpusIds = Object.keys(corpusTitles)
     const frequencies = corpusIds.map((id) => row.count[id.toUpperCase()]![frequencyIndex])

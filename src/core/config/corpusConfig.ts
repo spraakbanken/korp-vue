@@ -79,6 +79,7 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
     // TODO Move into config
     if (attributes["lemma"]) attributes["lemma"].stringify = "lemma"
     if (attributes["compwf"]) attributes["compwf"].stringify = "compwf"
+    if (attributes["e_cat"]) attributes["e_cat"].escape = false
 
     return {
       ...omit(corpus, "pos_attributes", "limited_access"),

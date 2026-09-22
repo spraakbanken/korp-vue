@@ -16,6 +16,8 @@ import { storeToRefs } from "pinia"
 import { onMounted, reactive, shallowRef, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import CorpusDistributionChart from "./CorpusDistributionChart.vue"
+import { useStringifiers } from "@/attributes/useStringifiers.ts"
+import { fromKeys } from "@/core/util.ts"
 
 const props = defineProps<{
   attributes: string[]
@@ -30,6 +32,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useAppStore()
+const { getCqpStringifier } = useStringifiers()
 const { t } = useI18n()
 
 let grid: StatisticsGrid | undefined
@@ -98,16 +101,20 @@ function onValueClick(row: Row, corpusId?: string) {
 
 /** Create sub query for a given value row */
 function buildExampleCqp(row: SingleRow) {
+  const corpora = corpusListing.pick(props.params.corpora)
+  const attrs = corpora.getReduceAttrs()
+  const cqpStringifiers = fromKeys(props.attributes, (attr) => getCqpStringifier(attrs[attr]))
+
   // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
   if ("isPhraseLevelDisjunction" in row && row.isPhraseLevelDisjunction) {
     // In this case the statsValues array is one level deeper
     const statsValues = row.statsValues as unknown as Record<string, string[]>[][]
-    const tokens = statsValues.map((vals) => getCqp(vals, props.params.ignoreCase))
+    const tokens = statsValues.map((vals) => getCqp(vals, props.params.ignoreCase, cqpStringifiers))
     return tokens.join(" | ")
   }
 
   // Normal case
-  return getCqp(row.statsValues, props.params.ignoreCase)
+  return getCqp(row.statsValues, props.params.ignoreCase, cqpStringifiers)
 }
 
 function onDistributionClick(row: Row): void {
