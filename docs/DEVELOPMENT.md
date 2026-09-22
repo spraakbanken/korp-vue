@@ -72,7 +72,7 @@ For instance, this is needed in Språkbanken's Mink mode, using SB-Auth with the
    ```
 3. Set these environment variables in `.env` or otherwise:
    ```ini
-   KORP_HOST=korpdev.spraakbanken.gu.se
+   DEV_HOST=korpdev.spraakbanken.gu.se
    DEV_HTTPS_KEY=_wildcard.spraakbanken.gu.se-key.pem
    DEV_HTTPS_CERT=_wildcard.spraakbanken.gu.se.pem
    ```

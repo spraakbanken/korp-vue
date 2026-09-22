@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
     server: {
       // Remap hostname and enable HTTPS, in order for authentication to work.
       // Map this hostname to 127.0.0.1 in /etc/hosts.
-      host: env.KORP_HOST,
+      host: env.DEV_HOST,
       https: getHttpsOptions(),
     },
     css: {

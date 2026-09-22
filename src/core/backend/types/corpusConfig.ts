@@ -4,7 +4,6 @@ import type { CorpusConfigRaw } from "@/core/config/corpusConfigRaw.types"
 export type CorpusConfigParams = {
   mode: string
   corpus?: string
-  include_lab?: string
 }
 
 export type CorpusConfigResponse = CorpusConfigRaw
