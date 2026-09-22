@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
 import { corpusListing } from "@/core/corpora/corpusListing"
-import { getCqp } from "@/core/statistics/statistics"
+import { getRowCqp } from "@/core/statistics/statistics"
 import {
   isTotalRow,
   type Row,
@@ -103,18 +103,11 @@ function onValueClick(row: Row, corpusId?: string) {
 function buildExampleCqp(row: SingleRow) {
   const corpora = corpusListing.pick(props.params.corpora)
   const attrs = corpora.getReduceAttrs()
-  const cqpStringifiers = fromKeys(props.attributes, (attr) => getCqpStringifier(attrs[attr]))
-
-  // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
-  if ("isPhraseLevelDisjunction" in row && row.isPhraseLevelDisjunction) {
-    // In this case the statsValues array is one level deeper
-    const statsValues = row.statsValues as unknown as Record<string, string[]>[][]
-    const tokens = statsValues.map((vals) => getCqp(vals, props.params.ignoreCase, cqpStringifiers))
-    return tokens.join(" | ")
-  }
-
-  // Normal case
-  return getCqp(row.statsValues, props.params.ignoreCase, cqpStringifiers)
+  const cqpStringifiers = fromKeys(
+    props.attributes,
+    (attr) => attrs[attr] && getCqpStringifier(attrs[attr]),
+  )
+  return getRowCqp(row, props.params.ignoreCase, cqpStringifiers)
 }
 
 function onDistributionClick(row: Row): void {

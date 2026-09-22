@@ -1,9 +1,12 @@
 import { compact } from "lodash-es"
 import type { CountsMerged } from "../backend/types/count"
 import {
+  isPhraseLevelDisjunctionRow,
+  isStandardSingleRow,
   isTotalRow,
   type Dataset,
   type SearchParams,
+  type SingleRow,
   type StatisticsPostprocessor,
   type StatisticsProcessed,
   type StatisticsWorkerMessage,
@@ -56,7 +59,11 @@ export function processStatisticsResult(
         for (const attr of reduceVals) {
           const stringifier = stringifiers[attr]?.token || String
           const listStringifier = stringifiers[attr]?.list
-          const words = compact(row.statsValues.map((word) => word[attr]?.[0]))
+          const words = compact(
+            isStandardSingleRow(row)
+              ? row.statsValues.map((word) => word[attr]?.[0])
+              : row.statsValues.map((words) => words[0][attr]?.[0]),
+          )
           const formatted = listStringifier
             ? listStringifier(words)
             : joinWords(words.map(stringifier))
@@ -71,6 +78,21 @@ export function processStatisticsResult(
       resolve(processed)
     }
   })
+}
+
+export function getRowCqp(
+  row: SingleRow,
+  ignoreCase: boolean,
+  cqpStringifiers: Record<string, CqpStringifier | undefined>,
+): string {
+  // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
+  if (isPhraseLevelDisjunctionRow(row)) {
+    // In this case the statsValues array is one level deeper
+    return row.statsValues.map((values) => getCqp(values, ignoreCase, cqpStringifiers)).join(" | ")
+  }
+
+  // Normal case
+  return getCqp(row.statsValues, ignoreCase, cqpStringifiers)
 }
 
 export function getCqp(

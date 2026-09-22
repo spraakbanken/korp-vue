@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { NoSupportedCorporaError, StatsProxy } from "@/core/backend/proxy/StatsProxy"
-import { createStatisticsCsv, getCqp, processStatisticsResult } from "@/core/statistics/statistics"
+import {
+  createStatisticsCsv,
+  getRowCqp,
+  processStatisticsResult,
+} from "@/core/statistics/statistics"
 import { isTotalRow, type Row } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
@@ -9,7 +13,7 @@ import { computed, inject, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "../useDynamicTabs"
 import StatisticsGrid from "./StatisticsGrid.vue"
-import { debounce, isEqual, mapValues, pickBy } from "lodash-es"
+import { debounce, isEqual, mapValues } from "lodash-es"
 import StatisticsAttributeSelector from "./StatisticsAttributeSelector.vue"
 import { storeToRefs } from "pinia"
 import HelpBadge from "@/components/HelpBadge.vue"
@@ -172,7 +176,7 @@ function getSubqueries() {
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
-    const cqp = getCqp(row.statsValues, ignoreCase, cqpStringifiers)
+    const cqp = getRowCqp(row, ignoreCase, cqpStringifiers)
     const label = stats_reduce.value.map((attr) => row.formattedValue[attr]).join(", ")
     subqueries.push([cqp, label])
   }

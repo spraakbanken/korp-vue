@@ -1,7 +1,7 @@
 import type { Labeled, LangString } from "@/core/model/locale"
 import type { Attribute } from "./corpusConfigRaw.types"
 import type { Store } from "../model/store"
-import type { StatisticsPostprocessor, StatisticsProcessed } from "../statistics/statistics.types"
+import type { StatisticsPostprocessor } from "../statistics/statistics.types"
 import type { OperatorKorp } from "../cqp/cqp.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
