@@ -12,7 +12,7 @@ const examples = settings.frontpage?.examples
 
 <template>
   <div class="container mt-5">
-    <div class="row gap-5">
+    <div class="row column-gap-5">
       <div v-if="settings.description || settings.mode_description" class="col-md mb-5">
         <div v-if="settings.description" v-html="locObj(settings.description)"></div>
 
@@ -25,7 +25,7 @@ const examples = settings.frontpage?.examples
       <SearchExamples class="col-md mb-5" v-if="examples" :items="examples" />
     </div>
 
-    <div class="row gap-5">
+    <div class="row column-gap-5">
       <CorpusUpdates v-if="settings.frontpage?.corpus_updates" class="col-md mb-5" />
       <NewsDesk v-if="settings.news_url" class="col-md mb-5" />
     </div>

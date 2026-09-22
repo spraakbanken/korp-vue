@@ -26,12 +26,12 @@ const isParallel = !!settings["parallel"]
 <template>
   <header class="bg-body-tertiary pb-3 mb-2">
     <!-- Top row -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-md">
       <div class="container-fluid">
         <!-- Button to toggle collapsed menu -->
         <button
           type="button"
-          class="navbar-toggler order-1"
+          class="navbar-toggler order-1 ms-auto"
           data-bs-toggle="collapse"
           data-bs-target="#collapsible-navigation"
           aria-controls="collapsible-navigation"
@@ -44,7 +44,7 @@ const isParallel = !!settings["parallel"]
         <!-- Menu content, collapsed on small screen -->
         <div class="collapse navbar-collapse" id="collapsible-navigation">
           <div class="row flex-grow-1">
-            <div class="col-lg-4">
+            <div class="col-md-4">
               <div class="navbar-nav">
                 <!-- Links -->
                 <a
@@ -60,13 +60,13 @@ const isParallel = !!settings["parallel"]
               </div>
             </div>
 
-            <div class="col-lg-4">
+            <div class="col-md-4">
               <div class="navbar-nav justify-content-center">
                 <ModeSelector />
               </div>
             </div>
 
-            <div class="col-lg-4">
+            <div class="col-md-4">
               <div class="navbar-nav justify-content-end">
                 <!-- Login/logout -->
                 <component :is="auth?.statusComponent" />
@@ -83,10 +83,10 @@ const isParallel = !!settings["parallel"]
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row mb-3 px-2 align-items-center">
-        <BrandPrimary class="col-6 col-lg-4" />
-        <BrandSecondary class="col-6 col-lg-4 order-lg-1 text-end" />
-        <CorpusSelector class="col-12 col-lg-4" />
+      <div class="row mb-3 align-items-center">
+        <BrandPrimary class="col-sm-6 text-center text-sm-start col-lg-3 ps-4" />
+        <BrandSecondary class="pt-3 text-center col-sm-6 text-sm-end pt-lg-0 col-lg-3 order-lg-1" />
+        <CorpusSelector class="pt-3 col-lg-6 pt-lg-0" />
       </div>
 
       <SearchParallel v-if="isParallel" />
