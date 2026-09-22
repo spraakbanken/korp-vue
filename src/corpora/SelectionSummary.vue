@@ -17,7 +17,7 @@ const { formatLargeNumber } = useLocale()
   <div>
     <div :class="{ 'text-danger': !store.corpus.length }">
       {{
-        $t("corpus.selection.summary", store.corpus.length, {
+        $t("corpus.selection.summary", totalCorpora, {
           named: {
             selected: $n(store.corpus.length),
             total: $n(totalCorpora),

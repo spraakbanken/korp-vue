@@ -92,7 +92,7 @@ async function showDialog(messageNew: string) {
 </script>
 
 <template>
-  <ModalDialog :title="$t('corpus.selection.validation.dialog.title')" @setup="onDialogReady">
+  <ModalDialog :title="$t('corpus.selection')" @setup="onDialogReady">
     {{ message }}
   </ModalDialog>
 </template>

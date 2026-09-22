@@ -28,27 +28,17 @@ const currentModeLabel = computed(() =>
 </script>
 
 <template>
-  <!-- Bootstrap will ignore `dropdown-center` inside a navbar, unfortunately -->
   <div class="dropdown">
     <button
       id="mode-dropdown"
       type="button"
-      class="nav-link dropdown-toggle"
+      class="btn btn-secondary dropdown-toggle"
       data-bs-toggle="dropdown"
       aria-expanded="false"
     >
-      {{ $t("nav.mode") }}:
       {{ currentModeLabel }}
     </button>
-    <ul
-      role="menu"
-      class="dropdown-menu"
-      aria-labelledby="mode-dropdown
-    "
-    >
-      <li>
-        <h6 class="dropdown-header">{{ $t("nav.modes") }}</h6>
-      </li>
+    <ul role="menu" class="dropdown-menu" aria-labelledby="mode-dropdown">
       <li v-for="{ mode, label } in lists.primary" :key="mode" role="menuitemradio">
         <a class="dropdown-item" :href="`?mode=${mode}`" :class="{ active: mode == currentMode }">
           {{ locObj(label) }}

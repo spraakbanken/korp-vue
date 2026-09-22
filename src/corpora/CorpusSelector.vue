@@ -11,6 +11,7 @@ import { getTimeData } from "@/core/backend/timedata"
 import { initCorpusStructure } from "@/core/corpora/corpora"
 import CorpusSelectorTree from "./CorpusSelectorTree.vue"
 import SelectionSummary from "./SelectionSummary.vue"
+import ModeSelector from "@/page/header/ModeSelector.vue"
 
 const root = reactive(initCorpusStructure(corpusListing.corpora.filter((corpus) => !corpus.hide)))
 
@@ -54,16 +55,32 @@ function selectNone() {
   <div class="d-flex justify-content-center">
     <CorpusSelectionDialog @resolve="resolveValidation" />
 
-    <div class="card p-2 flex-row align-items-center gap-2">
-      <fa-icon icon="fa-solid fa-book" />
-      <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
-      <button
-        class="btn btn-primary btn-sm stretched-link"
-        data-bs-toggle="modal"
-        data-bs-target="#corpus-selector"
-      >
-        {{ $t("corpus.selection.label") }}
-      </button>
+    <div class="card flex-row">
+      <!-- Mode selector -->
+      <div class="vstack py-2 px-3">
+        <div class="text-center fw-bold small text-muted">{{ $t("nav.mode") }}</div>
+        <div class="flex-grow-1 hstack">
+          <ModeSelector />
+        </div>
+      </div>
+
+      <div class="vr" />
+
+      <!-- Corpus selector -->
+      <div class="vstack py-2 px-3 position-relative">
+        <div class="text-center fw-bold small text-muted">{{ $t("corpus.selection") }}</div>
+        <div class="flex-grow-1 hstack gap-3">
+          <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
+
+          <button
+            class="btn btn-primary stretched-link"
+            data-bs-toggle="modal"
+            data-bs-target="#corpus-selector"
+          >
+            {{ $t("corpus.selection.label") }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <ModalDialog id="corpus-selector" :title="$t('corpora')">

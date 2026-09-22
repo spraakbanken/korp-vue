@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useAuth } from "../../auth/useAuth"
-import ModeSelector from "./ModeSelector.vue"
 import LanguageSelector from "./LanguageSelector.vue"
 import CorpusSelector from "@/corpora/CorpusSelector.vue"
 import SearchPanel from "@/search/SearchPanel.vue"
@@ -32,7 +31,7 @@ const isParallel = !!settings["parallel"]
         <!-- Button to toggle collapsed menu -->
         <button
           type="button"
-          class="navbar-toggler order-1 ms-auto"
+          class="navbar-toggler ms-auto"
           data-bs-toggle="collapse"
           data-bs-target="#collapsible-navigation"
           aria-controls="collapsible-navigation"
@@ -44,39 +43,30 @@ const isParallel = !!settings["parallel"]
 
         <!-- Menu content, collapsed on small screen -->
         <div class="collapse navbar-collapse" id="collapsible-navigation">
-          <div class="row flex-grow-1">
-            <div class="col-md-4">
-              <div class="navbar-nav">
-                <!-- Links -->
-                <a
-                  v-for="(link, i) in links"
-                  :key="i"
-                  :href="locObj(link.url)"
-                  :target="link.external !== false ? '_blank' : ''"
-                  :title="locObj(link.title)"
-                  class="nav-link"
-                >
-                  {{ locObj(link.label) }}
-                </a>
-              </div>
-            </div>
+          <div class="navbar-nav">
+            <!-- Links -->
+            <a
+              v-for="(link, i) in links"
+              :key="i"
+              :href="locObj(link.url)"
+              :target="link.external !== false ? '_blank' : ''"
+              :title="locObj(link.title)"
+              class="nav-link"
+            >
+              {{ locObj(link.label) }}
+            </a>
+          </div>
 
-            <div class="col-md-4">
-              <div class="navbar-nav justify-content-center">
-                <ModeSelector />
-              </div>
-            </div>
+          <!-- Middle spacer -->
+          <div class="flex-grow-1" />
 
-            <div class="col-md-4">
-              <div class="navbar-nav justify-content-end align-items-start">
-                <!-- Login/logout -->
-                <component :is="auth?.statusComponent" />
+          <div class="navbar-nav align-items-baseline">
+            <!-- Login/logout -->
+            <component :is="auth?.statusComponent" />
 
-                <LanguageSelector />
-                <DarkModeToggle />
-                <HelpMenu />
-              </div>
-            </div>
+            <LanguageSelector />
+            <DarkModeToggle />
+            <HelpMenu />
           </div>
         </div>
       </div>
@@ -84,10 +74,10 @@ const isParallel = !!settings["parallel"]
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row mb-3 align-items-center">
-        <BrandPrimary class="col-sm-6 text-center text-sm-start col-lg-3 ps-4" />
-        <BrandSecondary class="pt-3 text-center col-sm-6 text-sm-end pt-lg-0 col-lg-3 order-lg-1" />
-        <CorpusSelector class="pt-3 col-lg-6 pt-lg-0" />
+      <div class="row mb-4 align-items-center">
+        <BrandPrimary class="col-sm-6 text-center text-sm-start col-xl-3 ps-4" />
+        <BrandSecondary class="pt-3 text-center col-sm-6 text-sm-end pt-xl-0 col-xl-3 order-xl-1" />
+        <CorpusSelector class="pt-3 col-xl-6 pt-xl-0" />
       </div>
 
       <SearchParallel v-if="isParallel" />
