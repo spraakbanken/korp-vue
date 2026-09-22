@@ -70,6 +70,7 @@ const stringifiers = computed(() => {
   const attrs = activeSearch.value.corpora.getReduceAttrs()
   return fromKeys(stats_reduce.value, (name) => {
     const attribute = attrs[name]
+    if (!attribute) return { token: String }
     return {
       token: getStringifier(attribute) || String,
       list: getListStringifier(attribute),
