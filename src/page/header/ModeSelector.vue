@@ -36,6 +36,7 @@ const currentModeLabel = computed(() =>
       data-bs-toggle="dropdown"
       aria-expanded="false"
     >
+      {{ $t("nav.mode") }}:
       {{ currentModeLabel }}
     </button>
     <ul

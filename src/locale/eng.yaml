@@ -9,6 +9,7 @@ gui.language: User interface language
 loading: Loading…
 more: More
 nav.help: Help
+nav.mode: Mode
 nav.modes: Modes
 nav.toggle: Toggle navigation
 search: Search
