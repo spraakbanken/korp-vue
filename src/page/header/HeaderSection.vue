@@ -48,13 +48,14 @@ const isParallel = !!settings["parallel"]
 
             <!-- Links -->
             <a
-              v-for="({ url, label, title }, i) in links"
+              v-for="(link, i) in links"
               :key="i"
-              :href="locObj(url)"
-              :title="locObj(title)"
+              :href="locObj(link.url)"
+              :target="link.external !== false ? '_blank' : ''"
+              :title="locObj(link.title)"
               class="nav-link"
             >
-              {{ locObj(label) }}
+              {{ locObj(link.label) }}
             </a>
 
             <!-- Spacer -->

@@ -52,8 +52,8 @@ export type InstanceConfig = {
     [mode: string]: { url?: string; site?: number }
   }
   navigation?: {
-    help_links?: { label: LangString; title?: LangString; url: LangString }[]
-    links?: { label: LangString; title?: LangString; url: LangString }[]
+    help_links?: NavigationLink[]
+    links?: NavigationLink[]
   }
   news_url?: string
   reduce_word_attribute_selector: "union" | "intersection"
@@ -68,6 +68,13 @@ export type InstanceConfig = {
   word_picture?: boolean
   word_picture_tagset?: Record<string, string>
   word_picture_conf?: Record<string, WordPictureDef[]>
+}
+
+export type NavigationLink = {
+  label: LangString
+  title?: LangString
+  url: LangString
+  external?: boolean
 }
 
 export type SearchExample = {
