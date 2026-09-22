@@ -144,7 +144,6 @@ export function createStatisticsCsv(
 
   const output = data.map((row) => {
     // One cell per grouped attribute
-    // TODO Should isPhraseLevelDisjunction be handled here?
     const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]!))
     const corpusIds = Object.keys(corpusTitles)
     const frequencies = corpusIds.map((id) => row.count[id.toUpperCase()]![frequencyIndex])
