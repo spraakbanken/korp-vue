@@ -43,30 +43,39 @@ const isParallel = !!settings["parallel"]
 
         <!-- Menu content, collapsed on small screen -->
         <div class="collapse navbar-collapse" id="collapsible-navigation">
-          <div class="navbar-nav flex-grow-1">
-            <ModeSelector class="me-auto" />
+          <div class="row flex-grow-1">
+            <div class="col-lg-4">
+              <div class="navbar-nav">
+                <!-- Links -->
+                <a
+                  v-for="(link, i) in links"
+                  :key="i"
+                  :href="locObj(link.url)"
+                  :target="link.external !== false ? '_blank' : ''"
+                  :title="locObj(link.title)"
+                  class="nav-link"
+                >
+                  {{ locObj(link.label) }}
+                </a>
+              </div>
+            </div>
 
-            <!-- Links -->
-            <a
-              v-for="(link, i) in links"
-              :key="i"
-              :href="locObj(link.url)"
-              :target="link.external !== false ? '_blank' : ''"
-              :title="locObj(link.title)"
-              class="nav-link"
-            >
-              {{ locObj(link.label) }}
-            </a>
+            <div class="col-lg-4">
+              <div class="navbar-nav justify-content-center">
+                <ModeSelector />
+              </div>
+            </div>
 
-            <!-- Spacer -->
-            <div class="flex-grow-1" />
+            <div class="col-lg-4">
+              <div class="navbar-nav justify-content-end">
+                <!-- Login/logout -->
+                <component :is="auth?.statusComponent" />
 
-            <!-- Login/logout -->
-            <component :is="auth?.statusComponent" />
+                <LanguageSelector />
 
-            <LanguageSelector />
-
-            <HelpMenu />
+                <HelpMenu />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +83,7 @@ const isParallel = !!settings["parallel"]
 
     <!-- Main row -->
     <section class="container-fluid">
-      <div class="row mt-2 mb-3 px-2 align-items-center">
+      <div class="row mb-3 px-2 align-items-center">
         <BrandPrimary class="col-6 col-lg-4" />
         <BrandSecondary class="col-6 col-lg-4 order-lg-1 text-end" />
         <CorpusSelector class="col-12 col-lg-4" />

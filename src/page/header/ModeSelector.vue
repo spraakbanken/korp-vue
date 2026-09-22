@@ -28,6 +28,7 @@ const currentModeLabel = computed(() =>
 </script>
 
 <template>
+  <!-- Bootstrap will ignore `dropdown-center` inside a navbar, unfortunately -->
   <div class="dropdown">
     <button
       id="mode-dropdown"
