@@ -173,7 +173,7 @@ watch(showPos, () =>
                 class="text-dark"
                 :style="{ backgroundColor: column.config.color }"
               >
-                <table class="m-1">
+                <table class="m-1 font-family-data">
                   <WordpicRow
                     v-for="(row, j) in column.rows.slice(0, limit)"
                     :key="j"
