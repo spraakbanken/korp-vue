@@ -22,3 +22,9 @@
 .text-end {
   text-align: end !important;
 }
+
+table,
+[role="grid"] {
+  // Make number size equal
+  font-variant-numeric: tabular-nums;
+}
