@@ -16,6 +16,7 @@ import { compareLabels, locObj } from "@/core/i18n"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { objectIntersection, objectUnion } from "@/core/util"
+import { timeseriesToTuples } from "../backend/timedata"
 
 export type AttributeOption = Attribute & {
   group: "word" | "pos" | "struct"
@@ -250,9 +251,10 @@ export class CorpusSet {
 
   /** First and last year with data */
   getYearRange(): [number, number] | undefined {
-    // Find years that have non-zero counts in each corpus
-    const pairs = this.corpora.flatMap((corpus) => Object.entries(corpus.time || {}))
-    const years = pairs.filter(([, count]) => count > 0).map(([year]) => Number(year))
+    // Find years represented in each corpus
+    const years = this.corpora.flatMap((corpus) =>
+      timeseriesToTuples(corpus.time).map(([year]) => year),
+    )
     // Get first and last year
     if (!years.length) return undefined
     return [Math.min(...years), Math.max(...years)]

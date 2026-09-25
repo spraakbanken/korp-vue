@@ -1,13 +1,24 @@
-import { assignWith, memoize, omit, pickBy, range } from "lodash-es"
-import type { Histogram } from "./types"
-import { korpRequest } from "./common"
+import { assignWith, memoize, partition, pickBy, range, sumBy } from "lodash-es"
+import { client, KorpBackendError } from "./common"
 import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
+import type { components } from "./types/openapi-types"
+import { auth } from "../auth"
 
 export type TimeData = {
-  byYear: [number, number][]
+  byYear: YearPoint[]
   undated: number
 }
+
+/** Numeric data by year. */
+export type YearSeries = Record<number, number>
+
+/** Numeric data for a specific year. */
+export type YearPoint = [number, number]
+
+type DatedPeriod = components["schemas"]["TokenDistributionPeriod"]
+type UndatedPeriod = components["schemas"]["UndatedTokenDistributionPeriod"]
+const isDated = (period: DatedPeriod | UndatedPeriod): period is DatedPeriod => "start" in period
 
 /**
  * Time data, if available.
@@ -20,72 +31,70 @@ export let timeData: TimeData | undefined
 export const getTimeData: () => Promise<TimeData | undefined> = memoize(async () => {
   if (!settings.has_timespan) return undefined
 
-  const corpus = corpusListing.stringify()
-  if (!corpus) return undefined
+  const corpora = corpusListing.corpora
+    .filter((corpus) => !corpus.protected || auth.getCredentials().includes(corpus.id))
+    .map((corpus) => corpus.id)
+  if (!corpora.length) return undefined
 
-  const data = await korpRequest("timespan", { granularity: "y", corpus })
+  const { error, data } = await client.GET("/token-distribution", {
+    params: { query: { corpora, granularity: "year" } },
+  })
 
-  const rest = data.combined[""] || 0
-  delete data.combined[""]
+  if (error) throw new KorpBackendError(error.title, error.detail)
 
-  expandTimeStruct(data.combined)
+  const { dated, undated } = normalizeYearDistribution(data.combined!)
 
   // Re-structure the combined counts as year-count tuples for plotting
-  const combined: [number, number][] = Object.entries(data.combined)
-    .filter(([key, val]) => key && val)
-    .map(([key, val]) => [parseInt(key), val])
-  combined.sort((a, b) => a[0] - b[0])
-  if (combined.length == 0) return { byYear: [], undated: 0 }
-
-  addToCorpora(data.corpora)
+  const byYear: YearPoint[] = timeseriesToTuples(dated)
 
   // Store time data for non-async use
-  timeData = { byYear: combined, undated: rest }
-  return timeData
-})
+  timeData = { byYear, undated }
 
-/** Add each missing year with the previous year's value */
-function expandTimeStruct(struct: Histogram): void {
-  const years = Object.keys(struct)
-    .filter((key) => key !== "")
-    .map(Number)
-  if (!years.length) return
-
-  const minYear = Math.min(...years)
-  const maxYear = Math.max(...years)
-
-  if (Number.isNaN(maxYear) || Number.isNaN(minYear)) {
-    console.log("expandTimestruct broken, years:", years)
-    return
-  }
-
-  let prevCount = struct[`${minYear}`]
-  for (const year of range(minYear, maxYear)) {
-    if (struct[`${year}`] == undefined) struct[`${year}`] = prevCount
-    else prevCount = struct[`${year}`]
-  }
-}
-
-/** Add time data to corpora */
-function addToCorpora(dataByCorpus: Record<string, Histogram>) {
-  for (const [id, struct] of Object.entries(dataByCorpus)) {
-    const corpus = settings.corpora[id.toLowerCase()]
-    expandTimeStruct(struct)
-    corpus.non_time = struct[""]
-    corpus.time = omit(struct, "")
+  // Add to corpora
+  // TODO Do not mutate
+  for (const [id, periods] of Object.entries(data.corpora!)) {
+    const corpus = corpusListing.get(id)
+    const { dated, undated } = normalizeYearDistribution(periods)
+    corpus.time = dated
+    corpus.non_time = undated
     // Enable the special date interval search attribute for corpora that have some timestamped data
     if (Object.keys(corpus.time).length > 1) {
       corpus.common_attributes ??= {}
       corpus.common_attributes.date_interval = true
     }
   }
-
   // Update list of common attributes
   corpusListing.updateAttributes()
+
+  return timeData
+})
+
+function normalizeYearDistribution(periods: (DatedPeriod | UndatedPeriod)[]) {
+  const [datedPeriods, undatedPeriods] = partition(periods, isDated)
+  const undated = sumBy(undatedPeriods, (period) => period.tokens)
+
+  const dated: Record<number, number> = {}
+  for (const period of datedPeriods) {
+    if (!period.tokens) continue
+    const startYear = parseInt(period.start.slice(0, 4))
+    const endYear = parseInt(period.end.slice(0, 4))
+    const years = range(startYear, endYear + 1)
+    for (const year of years) dated[year] = period.tokens
+  }
+
+  return { dated, undated }
+}
+
+/** Convert time series to year-count tuples */
+export function timeseriesToTuples(series?: YearSeries): YearPoint[] {
+  return Object.entries(series || {})
+    .filter(([, count]) => count > 0)
+    .map(([year, count]) => [parseInt(year), count] as YearPoint)
+    .sort((a, b) => a[0] - b[0])
 }
 
 /** Data size per year of all corpora. */
-export const getTimeDataPairs = (): [number, number][] => timeData!.byYear
+export const getTimeDataPairs = (): YearPoint[] => timeData!.byYear
 
 /** Get data size per year of all corpora. */
 export const getSeries = () => Object.fromEntries(getTimeDataPairs()) as YearSeries
@@ -101,6 +110,3 @@ export function getSeriesSelected() {
     (sum: number | undefined, value: number) => (sum || 0) + value,
   )
 }
-
-/** Numeric data by year. */
-export type YearSeries = Record<number, number>
