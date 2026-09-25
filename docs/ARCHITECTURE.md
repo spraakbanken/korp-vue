@@ -148,7 +148,7 @@ using the `useReactiveCorpusSelection` composable
 
 #### Time data
 
-Time data is loaded with the `timespan` backend command,
+Time data is loaded with the `token-distribution` backend command,
 and contains token counts per corpus and year.
 It is used for:
 
