@@ -40,6 +40,7 @@
     "leaflet-providers": "^3.0.0",
     "leaflet.markercluster": "^1.5.3",
     "lodash-es": "^4.18.1",
+    "openapi-fetch": "^0.17.0",
     "peggy": "^5.1.0",
     "pinia": "^4.0.3",
     "slickgrid": "^5.19.0",
