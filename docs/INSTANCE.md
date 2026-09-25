@@ -84,7 +84,7 @@ The first few settings are needed at initialization time, and thus must be speci
     - **hint**: String or translation object. Can contain HTML.
 - **get_corpus_ids** - Async function returning a list of strings. The corpus ids are passed as the `corpus=` param to the `<korp_backend_url>/corpus_config?mode=<mode>` call, see the [`corpus_config`](https://ws.spraakbanken.gu.se/docs/korp#tag/Information/paths/~1corpus_config/get) API.
 - **group_statistics** - List of attribute names. Attributes that either have a rank or a numbering used for multi-word units. For example, removing `:2` from `ta_bort..vbm.1:2`, to get the lemgram of this word: `ta_bort..vbm.1`.
-- **has_timespan** - Boolean. If the backend supports the `timespan` call, used in corpus chooser for example. Default: `true`
+- **has_timespan** - Boolean. If the backend supports the `token-distribution` call, used in corpus chooser for example. Default: `true`
 - **hits_per_page_values** - Array of integer. The available page sizes. Default: `[25, 50, 75, 100]`
 - **hits_per_page_default** - Integer. The preselected page size. Default: `hits_per_page_values[0]`
 - **input_case_insensitive_default** - Boolean. Decides if the simple search input should be case-insensitive by default.
