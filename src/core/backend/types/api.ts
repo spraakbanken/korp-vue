@@ -3,7 +3,6 @@ import type { CorpusConfigParams, CorpusConfigResponse } from "./corpusConfig"
 import type { CorpusInfoParams, CorpusInfoResponse } from "./corpusInfo"
 import type { CountParams, CountResponse } from "./count"
 import type { CountTimeParams, CountTimeResponse } from "./countTime"
-import type { LemgramCountParams, LemgramCountResponse } from "./lemgramCount"
 import type { LoglikeParams, LoglikeResponse } from "./loglike"
 import type { QueryParams, QueryResponse } from "./query"
 import type { RelationsParams, RelationsResponse } from "./relations"
@@ -31,10 +30,6 @@ export type API = {
   count_time: {
     params: CountTimeParams
     response: CountTimeResponse
-  }
-  lemgram_count: {
-    params: LemgramCountParams
-    response: LemgramCountResponse
   }
   loglike: {
     params: LoglikeParams
