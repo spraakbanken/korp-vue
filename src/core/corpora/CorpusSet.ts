@@ -72,7 +72,7 @@ export class CorpusSet {
   }
 
   getTokenCount(): number {
-    return sum(this.map((corpus) => parseInt(corpus.info.Size || "0")))
+    return sum(this.map((corpus) => corpus.info.size))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- lang param is used in subclass
@@ -262,7 +262,7 @@ export class CorpusSet {
 
   getTimeRange(): [Date, Date] | undefined {
     const dateStrings = compact(
-      this.corpora.flatMap((corpus) => [corpus.info.FirstDate, corpus.info.LastDate]),
+      this.corpora.flatMap((corpus) => [corpus.info.first_date, corpus.info.last_date]),
     )
     if (!dateStrings.length) return undefined
     const dates = dateStrings.sort().map((d) => new Date(d))
@@ -272,7 +272,7 @@ export class CorpusSet {
   /** Percentage of data that is undated. */
   getUndatedRatio(): number {
     const non_time = sum(this.map((corpus) => corpus.non_time || 0))
-    const totalsize = sum(this.map((corpus) => Number(corpus.info.Size) || 0))
+    const totalsize = sum(this.map((corpus) => Number(corpus.info.size) || 0))
     return non_time / totalsize
   }
 

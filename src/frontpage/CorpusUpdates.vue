@@ -13,8 +13,8 @@ const { locObj, locDate } = useLocale()
 const store = useAppStore()
 
 const recentUpdates = corpusListing.corpora
-  .filter((corpus) => corpus.info.Updated && isRecent(new Date(corpus.info.Updated), LIMIT_DAYS))
-  .sort((a, b) => new Date(b.info.Updated!).getTime() - new Date(a.info.Updated!).getTime())
+  .filter((corpus) => corpus.info.updated && isRecent(new Date(corpus.info.updated), LIMIT_DAYS))
+  .sort((a, b) => new Date(b.info.updated!).getTime() - new Date(a.info.updated!).getTime())
 
 function select(corpusId: string) {
   store.corpus = [corpusId]
@@ -41,8 +41,8 @@ function select(corpusId: string) {
             {{ locObj(corpus.title) }}
           </td>
           <td>
-            <time datetime="{{ corpus.info.Updated }}">
-              {{ locDate(String(corpus.info.Updated)) }}
+            <time datetime="{{ corpus.info.updated }}">
+              {{ locDate(String(corpus.info.updated)) }}
             </time>
           </td>
           <td class="text-center">

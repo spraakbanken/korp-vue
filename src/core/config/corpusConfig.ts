@@ -1,5 +1,5 @@
 import { keyBy, mapValues, omit, pick } from "lodash-es"
-import { korpRequest } from "../backend/common"
+import { client, KorpBackendError } from "../backend/common"
 import currentMode from "../corpora/mode"
 import { fromKeys } from "../util"
 import type { InstanceConfig } from "./instanceConfig.types"
@@ -23,26 +23,27 @@ export async function loadCorpusConfig(settings: InstanceConfig) {
 /** Fetches corpus config from the backend. */
 async function loadRawCorpusConfig(settings: InstanceConfig): Promise<CorpusConfigRaw> {
   // The corpora to include are normally given by the mode config, but allow defining it elsewhere (used by Mink)
-  const corpusIds = settings.get_corpus_ids ? await settings.get_corpus_ids() : undefined
+  const corpora = settings.get_corpus_ids ? await settings.get_corpus_ids() : undefined
 
-  const config = await korpRequest("corpus_config", {
-    mode: currentMode,
-    corpus: corpusIds?.join(",") || undefined,
+  const { data, error } = await client.GET("/corpora/config", {
+    params: { query: { mode: currentMode, corpora } },
   })
 
-  return config
+  if (error) throw new KorpBackendError(error.title, error.detail)
+
+  return data as unknown as CorpusConfigRaw
 }
 
 /** Fetches corpus info (date range etc for each corpus). */
-async function loadCorpusInfo(corpusIds: string[]): Promise<InfoData> {
-  if (!corpusIds.length) return {}
+async function loadCorpusInfo(corpora: string[]): Promise<InfoData> {
+  if (!corpora.length) return {}
 
-  const params = { corpus: corpusIds.map((id) => id.toUpperCase()).join(",") }
-  const data = await korpRequest("corpus_info", params)
+  const { data, error } = await client.GET("/corpora/info", { params: { query: { corpora } } })
+  if (error) throw new KorpBackendError(error.title, error.detail)
 
-  return fromKeys(corpusIds, (corpusId) => ({
-    info: data.corpora[corpusId.toUpperCase()].info,
-    private_struct_attributes: data.corpora[corpusId.toUpperCase()].attrs.s.filter(
+  return fromKeys(corpora, (corpusId) => ({
+    info: data.corpora[corpusId].info,
+    private_struct_attributes: data.corpora[corpusId].attrs.structural.filter(
       (name) => name.indexOf("__") !== -1,
     ),
   }))
@@ -93,7 +94,7 @@ export function transformConfig(config: CorpusConfigRaw, infos: InfoData): Corpu
       within: contextWithinFix(corpus["within"]),
       info: infos[corpus.id].info,
       private_struct_attributes: infos[corpus.id].private_struct_attributes,
-      protected: infos[corpus.id]?.info.Protected === "true",
+      protected: !!infos[corpus.id]?.info.protected,
     }
   }
 

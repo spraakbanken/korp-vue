@@ -55,24 +55,24 @@ const corpusId = computed(() =>
 
       <table class="table table-sm my-3 w-auto">
         <tbody>
-          <tr v-if="corpus.info.Size">
+          <tr v-if="corpus.info.size">
             <th>{{ $t("corpus.info.size") }}</th>
-            <td class="ps-2 text-end">{{ $n(parseInt(corpus.info.Size)) }}</td>
+            <td class="ps-2 text-end">{{ $n(corpus.info.size) }}</td>
           </tr>
-          <tr v-if="corpus.info.Sentences">
+          <tr v-if="corpus.info.sentences">
             <th>{{ $t("corpus.info.sentences") }}</th>
-            <td class="ps-2 text-end">{{ $n(parseInt(corpus.info.Sentences)) }}</td>
+            <td class="ps-2 text-end">{{ $n(corpus.info.sentences) }}</td>
           </tr>
-          <tr v-if="corpus.info.FirstDate && corpus.info.LastDate">
+          <tr v-if="corpus.info.first_date && corpus.info.last_date">
             <th>{{ $t("corpus.info.timespan") }}</th>
             <td class="ps-2 text-end">
-              {{ $d(new Date(corpus.info.FirstDate)) }} –
-              {{ $d(new Date(corpus.info.LastDate)) }}
+              {{ $d(new Date(corpus.info.first_date)) }} –
+              {{ $d(new Date(corpus.info.last_date)) }}
             </td>
           </tr>
-          <tr v-if="corpus.info.Updated">
+          <tr v-if="corpus.info.updated">
             <th>{{ $t("corpus.info.updated") }}</th>
-            <td class="ps-2 text-end">{{ $d(new Date(corpus.info.Updated)) }}</td>
+            <td class="ps-2 text-end">{{ $d(new Date(corpus.info.updated)) }}</td>
           </tr>
         </tbody>
       </table>

@@ -34,9 +34,8 @@ export const isFolder = (object: ChooserFolder | Corpus): object is ChooserFolde
 
 export const initCorpusStructure = (allCorpora: Corpus[]): ChooserFolderRoot => {
   for (const corpus of allCorpora) {
-    const tokens = parseInt(corpus.info.Size || "0")
-    corpus.tokens = tokens
-    corpus.sentences = parseInt(corpus.info.Sentences || "0")
+    corpus.tokens = corpus.info.size
+    corpus.sentences = corpus.info.sentences
   }
 
   /* recursive function to set the structure and compute
@@ -265,8 +264,8 @@ export function getSizeInfo(corpus: Corpus): CorpusSizeInfo[] {
       const linkedCorpus = settings.corpora[linkedCorpusId]
       infos.push({
         lang: linkedCorpus.lang!,
-        tokens: parseInt(linkedCorpus.info.Size!) || 0,
-        sentences: parseInt(linkedCorpus.info.Sentences!) || 0,
+        tokens: linkedCorpus.info.size || 0,
+        sentences: linkedCorpus.info.sentences || 0,
       })
     }
   }
