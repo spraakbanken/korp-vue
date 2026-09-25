@@ -11,6 +11,8 @@ import type {
 import { omitBy, pickBy, uniq } from "lodash-es"
 import { buildUrl, toFormData } from "@/core/util"
 import { auth } from "@/core/auth"
+import createClient from "openapi-fetch"
+import type { paths } from "./types/openapi-types"
 
 type RequestOptions<K extends keyof API> = {
   /** Abort signal to cancel the request */
@@ -18,6 +20,9 @@ type RequestOptions<K extends keyof API> = {
   /** Callback to visualize progress and paged data (will be called with full response too) */
   onProgress?: ProgressHandler<K>
 }
+
+/** Client for the Korp backend OpenAPI spec */
+export const client = createClient<paths>({ baseUrl: "https://ws.spraakbanken.gu.se/ws/korp/v9" })
 
 export async function korpRequest<K extends keyof API>(
   endpoint: K,
