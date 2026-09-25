@@ -1,3 +1,4 @@
+import type { components } from "../backend/types/openapi-types"
 import type { LangString } from "../model/locale"
 import type {
   Attribute,
@@ -6,7 +7,6 @@ import type {
   CustomAttribute,
   Folder,
 } from "./corpusConfigRaw.types"
-import type { CorpusInfoInfo } from "@/core/backend/types/corpusInfo"
 
 /** Config as transformed after being fetched from backend */
 export type CorpusConfig = Omit<CorpusConfigRaw, "attributes" | "corpora" | "label"> & {
@@ -31,7 +31,7 @@ export type Corpus<T extends CorpusRaw = CorpusRaw> = Omit<
   private_struct_attributes: string[]
   within: Record<string, string>
   context: Record<string, string>
-  info: CorpusInfoInfo
+  info: components["schemas"]["CorpusWorkbenchInfo"]
   protected?: boolean
   common_attributes?: Record<string, true>
   time?: Record<number, number>
