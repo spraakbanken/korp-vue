@@ -1,6 +1,4 @@
 import type { AttrValuesParams, AttrValuesResponseDeep, AttrValuesResponseFlat } from "./attrValues"
-import type { CorpusConfigParams, CorpusConfigResponse } from "./corpusConfig"
-import type { CorpusInfoParams, CorpusInfoResponse } from "./corpusInfo"
 import type { CountParams, CountResponse } from "./count"
 import type { CountTimeParams, CountTimeResponse } from "./countTime"
 import type { LoglikeParams, LoglikeResponse } from "./loglike"
@@ -14,14 +12,6 @@ export type API = {
     params: AttrValuesParams
     // Depth of data structure depends on amount of attributes in the `attr` param
     response: AttrValuesResponseFlat | AttrValuesResponseDeep
-  }
-  corpus_config: {
-    params: CorpusConfigParams
-    response: CorpusConfigResponse
-  }
-  corpus_info: {
-    params: CorpusInfoParams
-    response: CorpusInfoResponse
   }
   count: {
     params: CountParams
