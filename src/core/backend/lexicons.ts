@@ -1,6 +1,5 @@
-import { omit } from "lodash-es"
 import * as karp from "@/core/services/karp"
-import { korpRequest } from "./common"
+import { client, KorpBackendError } from "./common"
 
 export type LemgramCount = { lemgram: string; count: number }
 
@@ -10,7 +9,7 @@ export type SenseResult = { sense: string; desc: string }
 export async function getLemgrams(
   wf: string,
   resources: string[],
-  corporaIDs: string[],
+  corpora: string[],
   count = false,
 ): Promise<LemgramCount[]> {
   // If no morphology specified, default to SALDO
@@ -20,14 +19,13 @@ export async function getLemgrams(
 
   if (!count) return lemgrams.map((lemgram) => ({ lemgram, count: -1 }))
 
-  const data = await korpRequest("lemgram_count", {
-    lemgram: lemgrams.join(","),
-    count: "lemgram",
-    corpus: corporaIDs.join(","),
+  const { data, error } = await client.GET("/lexeme-counts", {
+    params: { query: { lexemes: lemgrams, corpora } },
   })
-  const counts = omit(data, "time")
 
-  return lemgrams.map((lemgram) => ({ lemgram, count: counts[lemgram] || 0 }))
+  if (error) throw new KorpBackendError(error.title, error.detail)
+
+  return lemgrams.map((lemgram) => ({ lemgram, count: data.lexeme_counts[lemgram] || 0 }))
 }
 
 /** Look up SALDO senses of lemgrams of a given wordform. */
