@@ -11,7 +11,7 @@ import type {
 import { omitBy, pickBy, uniq } from "lodash-es"
 import { buildUrl, toFormData } from "@/core/util"
 import { auth } from "@/core/auth"
-import createClient from "openapi-fetch"
+import createClient, { type Middleware } from "openapi-fetch"
 import type { paths } from "./types/openapi-types"
 
 type RequestOptions<K extends keyof API> = {
@@ -23,6 +23,27 @@ type RequestOptions<K extends keyof API> = {
 
 /** Client for the Korp backend OpenAPI spec */
 export const client = createClient<paths>({ baseUrl: "https://ws.spraakbanken.gu.se/ws/korp/v9" })
+
+const convertToPostMiddleware: Middleware = {
+  onRequest({ request, params }) {
+    // settings.backendURLMaxLength = 1000
+    if (request.url.length > settings.backendURLMaxLength) {
+      return new Request(request.url.replace(/\?.*/, ""), {
+        ...request,
+        method: "POST",
+        headers: { ...request.headers, "Content-Type": "application/json" },
+        body: JSON.stringify(params.query),
+      })
+    }
+  },
+}
+
+client.use(convertToPostMiddleware)
+
+export function selectMethod(endpoint: string, params: Record<string, unknown>) {
+  const url = buildUrl("https://ws.spraakbanken.gu.se/ws/korp/v9/" + endpoint, params)
+  return url.length > settings.backendURLMaxLength ? "POST" : "GET"
+}
 
 export async function korpRequest<K extends keyof API>(
   endpoint: K,
