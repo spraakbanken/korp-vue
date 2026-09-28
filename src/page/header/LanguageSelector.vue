@@ -12,8 +12,6 @@ const matomo = useMatomo()
 
 const { lang } = storeToRefs(store)
 
-matomo.value?.trackEvent("UI", "Locale init", lang.value)
-
 watch(lang, () => matomo.value?.trackEvent("UI", "Locale change", lang.value))
 </script>
 

@@ -196,8 +196,6 @@ function createExport() {
     t("result.statistics.total"),
   )
 }
-
-watch(rowsSelected, () => matomo.value?.trackEvent("Statistics", "Change row selection"))
 </script>
 
 <template>
