@@ -9,8 +9,8 @@ import { regescape } from "../util"
 /** Get the dataset options of an attribute. */
 export function getDatasetOptions(
   attribute: Attribute,
+  sort = true,
   lang?: string,
-  sort?: boolean,
 ): [string, string][] {
   const dataset = attribute.dataset ?? []
   const translation = attribute.translation || {}
