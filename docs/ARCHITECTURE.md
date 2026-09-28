@@ -489,15 +489,6 @@ try {
 <ErrorBox v-if="errorMessage" v-bind="errorMessage" />
 ```
 
-#### Floating errors
-
-Use the _message store_ (`useMessageStore`)
-to show a floating error message in the top-center of the screen.
-This is useful when there isn't a certain location to show the error.
-
-Uncaught errors and rejections are caught by listeners set in `App.vue`,
-and displayed using the message store.
-
 ### Icons
 
 The FontAwesome icon library is used to clarify functionality where appropriate.
