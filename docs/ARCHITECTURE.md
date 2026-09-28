@@ -458,6 +458,17 @@ To output the standard CQP format, use `stringify(query, true)`.
 
 ### Errors
 
+Catch errors at points where they can be handled,
+for example by using a fallback value or choosing a different strategy.
+
+If the intented workflow was significantly changed, show a warning message to the user.
+
+As a last resort, abort the workflow and show an error message to the user.
+
+A warning or error message should be friendly and helpful.
+It should try to explain what went wrong, what happened instead,
+and how to prevent it from happening again.
+
 #### Errors in place of content
 
 Use the `ErrorBox` component to show an error message in place of expected content.

@@ -150,6 +150,7 @@ search.extended.repeat: Upprepa
 search.extended.repeat.help: Matcha flera token som uppfyller samma villkor
 search.extended.repeat.min: Minst
 search.extended.repeat.max: Högst
+search.extended.syntax_error: "Angiven sökfråga kunde inte tolkas: {message}"
 
 search.advanced: Avancerad
 search.advanced.current_query: "Aktuell sökfråga i {0}:"

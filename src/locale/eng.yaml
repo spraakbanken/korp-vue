@@ -149,6 +149,7 @@ search.extended.repeat: Repeat
 search.extended.repeat.help: Match multiple tokens meeting the same conditions
 search.extended.repeat.min: At least
 search.extended.repeat.max: At most
+search.extended.syntax_error: "The given query could not be parsed: {message}"
 
 search.advanced: Advanced
 search.advanced.current_query: "Current search query in {0}:"

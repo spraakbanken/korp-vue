@@ -12,7 +12,6 @@ import QueryBuilder from "./QueryBuilder.vue"
 import SaveSearchButton from "../SaveSearchButton.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import useSearchStore from "../useSearchStore"
-import useMessageStore from "@/store/useMessageStore"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import { useI18n } from "vue-i18n"
 import { useMatomo } from "vue3-matomo"
@@ -20,8 +19,8 @@ import { useMatomo } from "vue3-matomo"
 const store = useAppStore()
 const { search, cqp } = storeToRefs(store)
 const searchStore = useSearchStore()
-const { addMessage } = useMessageStore()
 const corpusSelection = useReactiveCorpusSelection()
+const error = ref<string>()
 const { t, te } = useI18n()
 const matomo = useMatomo()
 
@@ -40,6 +39,7 @@ const isFreeOrderCompatible = computed(() => {
 
 // React to the `search` param being changed, at first load or later
 watchImmediate([search, cqp], () => {
+  error.value = undefined
   // For extended, `search` is just `"cqp"` and the actual CQP is in `cqp`
   const [type, value] = splitFirst("|", store.search || "")
   if (type != "cqp" || value) return
@@ -51,7 +51,8 @@ watchImmediate([search, cqp], () => {
       matomo.value?.trackEvent("Search", "Submit search", "Extended")
       searchStore.commitQuery(tokens.value)
     } catch (e) {
-      addMessage("error", e instanceof Error ? e.message : String(e))
+      if (e instanceof SyntaxError)
+        error.value = t("search.extended.syntax_error", { message: e.message })
       console.error(e)
     }
   }
@@ -59,6 +60,7 @@ watchImmediate([search, cqp], () => {
 
 /** Handle clicking the Search button */
 function submit() {
+  error.value = undefined
   store.in_order = !freeOrder.value || !isFreeOrderCompatible.value
   store.cqp = stringify(tokens.value)
   store.search = "cqp"
@@ -144,6 +146,10 @@ function formatWithin(key: string) {
           <em>{{ $t("search.free_order") }}</em>
         </template>
       </i18n-t>
+    </div>
+
+    <div v-if="error" class="alert alert-danger m-0">
+      {{ error }}
     </div>
   </form>
 </template>
