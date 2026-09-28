@@ -1,6 +1,5 @@
-import { watchImmediate } from "@vueuse/core"
 import { mapValues } from "lodash-es"
-import { reactive, readonly } from "vue"
+import { reactive, readonly, watch } from "vue"
 import { useDark } from "./useDark"
 
 /**
@@ -22,7 +21,7 @@ export function useTheme() {
   }
 
   // Update values whenever light/dark theme is changed
-  watchImmediate(isDark, () => Object.assign(values, getValues()))
+  watch(isDark, () => Object.assign(values, getValues()), { flush: "post" })
 
   return readonly(values)
 }
