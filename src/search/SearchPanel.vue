@@ -8,8 +8,10 @@ import settings from "@/core/config"
 import SearchAdvanced from "./SearchAdvanced.vue"
 import SearchCompare from "./SearchCompare.vue"
 import useSearchHistory from "./useSearchHistory"
+import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection.ts"
 
 const store = useAppStore()
+const corpusSelection = useReactiveCorpusSelection()
 const { clearHistory, historyOptions, isCurrentSearch, restoreFromHistory } = useSearchHistory()
 
 const { search_tab } = storeToRefs(store)
@@ -83,7 +85,10 @@ function selectTab(key: number) {
       >
         <div
           class="tab-pane"
-          :class="{ 'show active': search_tab == tabOptions.indexOf('simple') }"
+          :class="{
+            'show active': search_tab == tabOptions.indexOf('simple'),
+            'opacity-50 pe-none': !corpusSelection.corpora.length,
+          }"
           id="search-tabs-pane-simple"
           role="tabpanel"
           aria-labelledby="search-tabs-tab-simple"
@@ -94,7 +99,10 @@ function selectTab(key: number) {
 
         <div
           class="tab-pane"
-          :class="{ 'show active': search_tab == tabOptions.indexOf('extended') }"
+          :class="{
+            'show active': search_tab == tabOptions.indexOf('extended'),
+            'opacity-50 pe-none': !corpusSelection.corpora.length,
+          }"
           id="search-tabs-pane-extended"
           role="tabpanel"
           aria-labelledby="search-tabs-tab-extended"
@@ -105,7 +113,10 @@ function selectTab(key: number) {
 
         <div
           class="tab-pane"
-          :class="{ 'show active': search_tab == tabOptions.indexOf('advanced') }"
+          :class="{
+            'show active': search_tab == tabOptions.indexOf('advanced'),
+            'opacity-50 pe-none': !corpusSelection.corpora.length,
+          }"
           id="search-tabs-pane-advanced"
           role="tabpanel"
           aria-labelledby="search-tabs-tab-advanced"
