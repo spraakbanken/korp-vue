@@ -47,7 +47,7 @@ const { activeSearch } = storeToRefs(useSearchStore())
 const { getStringifier, getListStringifier, getCqpStringifier } = useStringifiers()
 const matomo = useMatomo()
 
-const postprocess = inject(injectionKeys.statisticsPostprocess)
+const postprocess = inject(injectionKeys.statisticsPostprocess, undefined)
 const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const isLimited = ref(false)
 const unsupportedRatio = ref(0)
