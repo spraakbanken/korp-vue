@@ -88,7 +88,7 @@ function download() {
             <!-- Submit button -->
             <button type="submit" class="btn btn-primary btn-sm">
               <fa-icon icon="fa-solid fa-download" />
-              {{ $t("result.export.action") }}
+              {{ $t("save") }}
             </button>
           </div>
         </div>
@@ -105,7 +105,7 @@ function download() {
 
             <button type="submit" class="btn btn-primary btn-sm d-block ms-auto">
               <fa-icon icon="fa-solid fa-download" />
-              {{ $t("result.export.action") }}
+              {{ $t("save") }}
             </button>
           </div>
         </template>

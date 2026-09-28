@@ -224,7 +224,7 @@ result.legend: Legend
 
 result.compare.column_heading: Prominent in {label}
 
-result.export.action: Save
+result.export.action: Export
 result.export.table: Table
 result.export.table.help: Save displayed data as a table in a CSV file, compatible with spreadsheet applications.
 result.export.table.separator: Separator

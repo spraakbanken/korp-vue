@@ -45,7 +45,7 @@ async function save() {
     data-bs-auto-close="outside"
     aria-expanded="false"
   >
-    {{ $t("save") }}
+    {{ $t("search.compare.submit") }}
   </button>
 
   <div class="dropdown-menu p-2" style="width: 20em">

@@ -225,7 +225,7 @@ result.legend: Förklaring
 
 result.compare.column_heading: Utmärkande för {label}
 
-result.export.action: Spara
+result.export.action: Exportera
 result.export.table: Tabell
 result.export.table.help: Spara visad data som tabell i en CSV-fil. Filen kan till exempel öppnas som kalkylark.
 result.export.table.separator: Avskiljare
