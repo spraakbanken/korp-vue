@@ -13,6 +13,7 @@ const helpLinks = computed(() => settings.navigation?.help_links || [])
     <button
       id="help-dropdown"
       type="button"
+      :title="$t('nav.help')"
       class="nav-link dropdown-toggle"
       data-bs-toggle="dropdown"
       aria-expanded="false"

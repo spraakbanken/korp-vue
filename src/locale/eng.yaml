@@ -6,6 +6,7 @@ error.backend: Server returned {type}
 error.heading: An error has occurred.
 error.footer: If you have questions, or you want to report a bug, please contact info{'@'}sprakbanken.se.
 gui.language: User interface language
+gui.color_mode: Color theme
 loading: Loading…
 more: More
 nav.help: Help

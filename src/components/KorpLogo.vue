@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import ColorSchemeImg from "@/components/ColorSchemeImg.vue"
+import { useDark } from "./useDark"
 import korpLogo from "@/assets/korp.svg"
 import korpLogoLight from "@/assets/korp-light.svg"
+
+const isDark = useDark()
 </script>
 
 <template>
-  <ColorSchemeImg :dark-src="korpLogoLight" :light-src="korpLogo" alt="Korp logo" />
+  <img :src="isDark ? korpLogoLight : korpLogo" alt="Korp logo" />
 </template>

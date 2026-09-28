@@ -6,6 +6,7 @@ error.backend: Servern gav felet {type}
 error.heading: Ett fel har uppstått.
 error.footer: Om du har frågor eller vill rapportera en bugg, kontakta gärna info{'@'}sprakbanken.se.
 gui.language: Gränssnittsspråk
+gui.color_mode: Färgtema
 loading: Laddar…
 more: Fler
 nav.help: Hjälp

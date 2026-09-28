@@ -9,6 +9,7 @@ import settings from "@/core/config"
 import SearchParallel from "@/search/SearchParallel.vue"
 import { computed } from "vue"
 import { useLocale } from "@/i18n/useLocale"
+import DarkModeToggle from "./DarkModeToggle.vue"
 
 const auth = useAuth()
 const { locObj } = useLocale()
@@ -72,7 +73,7 @@ const isParallel = !!settings["parallel"]
                 <component :is="auth?.statusComponent" />
 
                 <LanguageSelector />
-
+                <DarkModeToggle />
                 <HelpMenu />
               </div>
             </div>

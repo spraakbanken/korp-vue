@@ -1,6 +1,7 @@
-import { useDark, watchImmediate } from "@vueuse/core"
+import { watchImmediate } from "@vueuse/core"
 import { mapValues } from "lodash-es"
 import { reactive, readonly } from "vue"
+import { useDark } from "./useDark"
 
 /**
  * Computed CSS property values for a few predefined Bootstrap variables.

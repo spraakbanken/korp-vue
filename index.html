@@ -7,9 +7,9 @@
     <title>Korp</title>
 
     <style type="text/css">
-      /* Avoid white background being default until Bootstrap notices dark mode. */
+      /* Avoid white background being default until VueUse notices dark mode. */
       @media (prefers-color-scheme: dark) {
-        body {
+        :root:not([data-bs-theme]) body {
           background-color: #212529;
         }
       }

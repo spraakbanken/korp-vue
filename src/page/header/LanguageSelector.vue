@@ -23,6 +23,7 @@ watch(lang, () => matomo.value?.trackEvent("UI", "Locale change", lang.value))
       class="nav-link dropdown-toggle"
       type="button"
       id="language-dropdown"
+      :title="$t('gui.language')"
       data-bs-toggle="dropdown"
       aria-expanded="false"
       aria-labelledby="gui-language-label"
