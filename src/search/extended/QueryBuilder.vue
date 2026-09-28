@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useTemplateRef } from "vue"
-import { useToggle } from "@vueuse/core"
+import { useCounter, useToggle } from "@vueuse/core"
 import { vOnClickOutside } from "@vueuse/components"
 import { createCondition, hasMultipleTokenConditions } from "@/core/cqp/cqp"
 import {
@@ -26,8 +26,12 @@ import("@vueuse/integrations/useSortable").then(({ useSortable }) => {
     draggable: ".card",
     filter: ".card .card",
     preventOnFilter: false,
+    onEnd: () => counter.inc(),
   })
 })
+
+/** A counter to force re-rendering of list items */
+const counter = useCounter()
 
 const createToken = (): CqpToken => ({ and_block: [[createCondition("")]] })
 
@@ -37,6 +41,7 @@ function addToken() {
 
 function removeItem(index: number) {
   tokens.value.splice(index, 1)
+  counter.inc()
 }
 
 /** Add a boundary token, e.g. sentence start */
@@ -58,7 +63,11 @@ function addBoundary(start: boolean) {
 
 <template>
   <div ref="row" class="hstack flex-wrap gap-3">
-    <div v-for="(token, i) in tokens" :key="i" class="card flex-shrink-0 p-2 bg-info-subtle">
+    <div
+      v-for="(token, i) in tokens"
+      :key="`${counter.get()} ${i}`"
+      class="card flex-shrink-0 p-2 bg-info-subtle"
+    >
       <QueryToken
         v-if="isCqpToken(token)"
         v-model="token.and_block"
