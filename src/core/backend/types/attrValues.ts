@@ -34,4 +34,4 @@ export type AttrValuesResponseFlat = {
 export type AttrValues = { [attrPath: string]: RecursiveRecord<number> }
 
 // This version of TypeScript has a problem with recursive types, so we have to use {[_]:_} syntax here?
-export type RecursiveRecord<T> = Record<string, T> | { [k: string]: RecursiveRecord<T> }
+export type RecursiveRecord<T> = { [k: string]: T | RecursiveRecord<T> }
