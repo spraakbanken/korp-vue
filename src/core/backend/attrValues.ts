@@ -1,10 +1,7 @@
 import { memoize, uniq } from "lodash-es"
-import type {
-  AttrValuesResponseDeep,
-  AttrValuesResponseFlat,
-  RecursiveRecord,
-} from "./types/attrValues"
-import { korpRequest } from "./common"
+import type { RecursiveRecord } from "./types/attrValues"
+import { client, KorpBackendError } from "./common"
+import type { components } from "./types/openapi-types"
 
 /** Find which unique values occur and count them. */
 export const countAttrValues: (
@@ -16,14 +13,23 @@ export const countAttrValues: (
   async (corpora, attrs, split = []) => {
     // Join attributes as a hierarchical path that shapes the response
     const attributePath = attrs.join(">")
-    const data = (await korpRequest("attr_values", {
-      corpus: corpora.join(","),
-      attr: attributePath,
-      count: true,
-      per_corpus: false,
-      split: split.join(",") || undefined,
-    })) as AttrValuesResponseDeep
-    return data.combined[attributePath]!
+    const { data, error } = await client.GET("/attribute-values", {
+      params: {
+        query: {
+          corpora,
+          attributes: [attributePath],
+          include_combined: true,
+          include_counts: true,
+          split,
+        },
+      },
+    })
+
+    if (error) throw new KorpBackendError(error.title, error.detail)
+
+    // The attribute path makes the response a nested object,
+    // and `include_counts` produces objects of counts instead of arrays of values
+    return data.combined![attributePath]! as components["schemas"]["AttributeValuesWithCounts"]
   },
   // Memoize based on the values of all arguments
   (...args) => JSON.stringify(args),
@@ -38,13 +44,21 @@ export const getAttrValues: (
   ranked?: boolean,
 ) => Promise<string[]> = memoize(
   async (corpora, attr, split, ranked) => {
-    const data = (await korpRequest("attr_values", {
-      corpus: corpora.join(","),
-      attr: attr,
-      per_corpus: false,
-      split: split ? attr : undefined,
-    })) as AttrValuesResponseFlat
-    const values = data.combined[attr]!
+    const { data, error } = await client.GET("/attribute-values", {
+      params: {
+        query: {
+          corpora,
+          attributes: [attr],
+          include_combined: true,
+          split: split ? [attr] : undefined,
+        },
+      },
+    })
+
+    if (error) throw new KorpBackendError(error.title, error.detail)
+
+    // With no `include_counts` param, the response is a flat list of values
+    const values = data?.combined![attr] as string[]
     // If attribute is ranked, strip ":<rank>" suffix
     if (ranked) return uniq(values.map((value) => value.replace(/:.*$/, "")))
     return values
