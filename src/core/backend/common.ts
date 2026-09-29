@@ -22,7 +22,9 @@ type RequestOptions<K extends keyof API> = {
 }
 
 /** Client for the Korp backend OpenAPI spec */
-export const client = createClient<paths>({ baseUrl: "https://ws.spraakbanken.gu.se/ws/korp/v9" })
+export const client = createClient<paths, "application/json">({
+  baseUrl: "https://ws.spraakbanken.gu.se/ws/korp/v9",
+})
 
 const convertToPostMiddleware: Middleware = {
   onRequest({ request, params }) {

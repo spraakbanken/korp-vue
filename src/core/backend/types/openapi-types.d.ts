@@ -1867,6 +1867,18 @@ export interface components {
        * @default true
        */
       expand_prequeries: boolean
+      /**
+       * Include Combined
+       * @description Whether to include results merged across all selected corpora in the `combined` field.
+       * @default true
+       */
+      include_combined: boolean
+      /**
+       * Include Per Corpus
+       * @description Whether to include separate results for each selected corpus in the `corpora` field.
+       * @default true
+       */
+      include_per_corpus: boolean
     }
     /**
      * CorpusFrequenciesResponse
@@ -1875,13 +1887,16 @@ export interface components {
     CorpusFrequenciesResponse: {
       /**
        * Corpora
-       * @description Statistics per corpus.
+       * @description Statistics per corpus. Omitted when `include_per_corpus=false`.
        */
-      corpora: {
+      corpora?: {
         [key: string]: components["schemas"]["FrequencyStatistics"]
       }
-      /** @description Combined statistics for all corpora. */
-      combined: components["schemas"]["FrequencyStatistics"]
+      /**
+       * Combined
+       * @description Combined statistics for all corpora. Omitted when `include_combined=false`.
+       */
+      combined?: components["schemas"]["FrequencyStatistics"]
       /**
        * Elapsed
        * @description Time taken to process the request in seconds.
@@ -2422,6 +2437,18 @@ export interface components {
        * @default true
        */
       expand_prequeries: boolean
+      /**
+       * Include Combined
+       * @description Whether to include results merged across all selected corpora in the `combined` field.
+       * @default true
+       */
+      include_combined: boolean
+      /**
+       * Include Per Corpus
+       * @description Whether to include separate results for each selected corpus in the `corpora` field.
+       * @default true
+       */
+      include_per_corpus: boolean
     }
     /**
      * FrequenciesResponse
@@ -2430,16 +2457,16 @@ export interface components {
     FrequenciesResponse: {
       /**
        * Corpora
-       * @description Statistics per corpus, always as arrays. The main query is first, followed by `subcqp` results.
+       * @description Statistics per corpus, always as arrays. Omitted when `include_per_corpus=false`. The main query is first, followed by `subcqp` results.
        */
-      corpora: {
+      corpora?: {
         [key: string]: components["schemas"]["FrequencyStatistics"][]
       }
       /**
        * Combined
-       * @description Combined statistics for all corpora, always as an array with the main query first.
+       * @description Combined statistics for all corpora, always as an array with the main query first. Omitted when `include_combined=false`.
        */
-      combined: components["schemas"]["FrequencyStatistics"][]
+      combined?: components["schemas"]["FrequencyStatistics"][]
       /**
        * Elapsed
        * @description Time taken to process the request in seconds.
@@ -3823,6 +3850,104 @@ export interface components {
       /** Context */
       ctx?: Record<string, never>
     }
+    /**
+     * StreamCompleteEvent
+     * @description Final event in a streamed response.
+     */
+    StreamCompleteEvent: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      event: "complete"
+      /**
+       * Ok
+       * @description Whether the operation completed without a streamed error.
+       */
+      ok: boolean
+      /**
+       * Elapsed
+       * @description Time taken to process the request in seconds.
+       */
+      elapsed: number
+    }
+    /**
+     * StreamErrorEvent
+     * @description Failure encountered after a streamed response started.
+     */
+    StreamErrorEvent: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      event: "error"
+      error: components["schemas"]["ErrorResponse"]
+    }
+    /**
+     * StreamKeepaliveEvent
+     * @description Keepalive emitted while a streamed response is otherwise idle.
+     */
+    StreamKeepaliveEvent: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      event: "keepalive"
+    }
+    /**
+     * StreamProgressEvent
+     * @description Progress made while producing a streamed response.
+     */
+    StreamProgressEvent: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      event: "progress"
+      /**
+       * Completed
+       * @description Number of completed work items.
+       */
+      completed: number
+      /**
+       * Total
+       * @description Total number of expected work items.
+       */
+      total: number
+      /**
+       * Corpus
+       * @description Corpus whose work item completed.
+       */
+      corpus?: string | null
+      /**
+       * Corpora
+       * @description Corpora covered by the operation, present in initial events.
+       */
+      corpora?: string[] | null
+      /**
+       * Hits
+       * @description Hits found for the completed corpus, when known.
+       */
+      hits?: number | null
+    }
+    /**
+     * StreamResultEvent
+     * @description One result fragment from a streamed response.
+     */
+    StreamResultEvent: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      event: "result"
+      /**
+       * Data
+       * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
+       */
+      data: {
+        [key: string]: unknown
+      }
+    }
   }
   responses: never
   parameters: never
@@ -3857,160 +3982,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["InfoResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4075,160 +4055,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusInfoResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4295,160 +4130,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusInfoResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4523,160 +4213,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["AttrValuesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4752,160 +4297,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["AttrValuesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -4981,166 +4381,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusConfigResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Request validation or preflight processing failed. */
@@ -5201,166 +4447,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusConfigResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Request validation or preflight processing failed. */
@@ -5467,160 +4559,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ConcordanceResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -5696,160 +4643,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ConcordanceResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -5947,160 +4749,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ConcordanceSampleResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -6176,160 +4833,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ConcordanceSampleResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -6409,6 +4921,10 @@ export interface operations {
         max_values_per_set?: string[]
         /** @description When several `cqp` parameters are supplied, choose whether each intermediate result should be expanded to its containing `within` context before the next query is executed. Enabled by default; disabling it runs the next query only on the exact tokens matched by the previous query. */
         expand_prequeries?: boolean
+        /** @description Whether to include results merged across all selected corpora in the `combined` field. */
+        include_combined?: boolean
+        /** @description Whether to include separate results for each selected corpus in the `corpora` field. */
+        include_per_corpus?: boolean
         /** @description Whether to use caching for the request. */
         cache?: boolean
         /** @description Whether to include debug information in responses. */
@@ -6431,160 +4947,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FrequenciesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -6660,160 +5031,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FrequenciesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -6889,6 +5115,10 @@ export interface operations {
         max_values_per_set?: string[]
         /** @description When several `cqp` parameters are supplied, choose whether each intermediate result should be expanded to its containing `within` context before the next query is executed. Enabled by default; disabling it runs the next query only on the exact tokens matched by the previous query. */
         expand_prequeries?: boolean
+        /** @description Whether to include results merged across all selected corpora in the `combined` field. */
+        include_combined?: boolean
+        /** @description Whether to include separate results for each selected corpus in the `corpora` field. */
+        include_per_corpus?: boolean
         /** @description Whether to use caching for the request. */
         cache?: boolean
         /** @description Whether to include debug information in responses. */
@@ -6911,160 +5141,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusFrequenciesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7140,160 +5225,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CorpusFrequenciesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7389,160 +5329,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FrequenciesTimeResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7618,160 +5413,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FrequenciesTimeResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -7857,166 +5507,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["TokenDistributionResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Access to a requested corpus was denied. */
@@ -8086,166 +5582,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["TokenDistributionResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Access to a requested corpus was denied. */
@@ -8341,160 +5683,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["LogLikelihoodResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -8570,160 +5767,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["LogLikelihoodResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -8799,166 +5851,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["LexemeCountResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Access to a requested corpus was denied. */
@@ -9028,166 +5926,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["LexemeCountResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Access to a requested corpus was denied. */
@@ -9281,160 +6025,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -9510,160 +6109,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -9761,160 +6215,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -9990,160 +6299,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -10227,160 +6391,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsSentencesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -10456,160 +6475,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsSentencesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -10693,160 +6567,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsSentencesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -10922,160 +6651,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["RelationsSentencesResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -11138,166 +6722,12 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["CacheResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
       /** @description Request validation or preflight processing failed. */
@@ -11354,15 +6784,6 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["HealthResponse"]
-        }
-      }
-      /** @description The request or CQP query was invalid. */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"]
         }
       }
       /** @description Request validation or preflight processing failed. */
@@ -11425,160 +6846,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["OptimizeResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
@@ -11645,160 +6921,15 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["OptimizeResponse"]
-          "application/x-ndjson": {
-            $defs: {
-              /**
-               * ErrorResponse
-               * @description Problem Details-style error returned by the API.
-               */
-              ErrorResponse: {
-                /**
-                 * Code
-                 * @description Stable Korp machine-readable error identifier.
-                 */
-                code: string
-                /**
-                 * Title
-                 * @description Short human-readable summary of the problem type.
-                 */
-                title: string
-                /**
-                 * Status
-                 * @description HTTP status associated with the error.
-                 */
-                status: number
-                /**
-                 * Detail
-                 * @description Human-readable details about this occurrence of the problem.
-                 */
-                detail: string
-                /**
-                 * Field
-                 * @description Related request field, when known.
-                 */
-                field?: string
-                /**
-                 * Errors
-                 * @description Structured parameter errors supplied when request validation fails.
-                 */
-                errors?: {
-                  [key: string]: unknown
-                }[]
-                /**
-                 * Traceback
-                 * @description Traceback lines, included only when server-side traceback exposure and request debug mode are enabled.
-                 */
-                traceback?: string[]
-              }
-              /**
-               * StreamCompleteEvent
-               * @description Final event in a streamed response.
-               */
-              StreamCompleteEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "complete"
-                /**
-                 * Ok
-                 * @description Whether the operation completed without a streamed error.
-                 */
-                ok: boolean
-                /**
-                 * Elapsed
-                 * @description Time taken to process the request in seconds.
-                 */
-                elapsed: number
-              }
-              /**
-               * StreamErrorEvent
-               * @description Failure encountered after a streamed response started.
-               */
-              StreamErrorEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "error"
-                error: $defs["ErrorResponse"]
-              }
-              /**
-               * StreamKeepaliveEvent
-               * @description Keepalive emitted while a streamed response is otherwise idle.
-               */
-              StreamKeepaliveEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "keepalive"
-              }
-              /**
-               * StreamProgressEvent
-               * @description Progress made while producing a streamed response.
-               */
-              StreamProgressEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "progress"
-                /**
-                 * Completed
-                 * @description Number of completed work items.
-                 */
-                completed: number
-                /**
-                 * Total
-                 * @description Total number of expected work items.
-                 */
-                total: number
-                /**
-                 * Corpus
-                 * @description Corpus whose work item completed.
-                 */
-                corpus?: string | null
-                /**
-                 * Corpora
-                 * @description Corpora covered by the operation, present in initial events.
-                 */
-                corpora?: string[] | null
-                /**
-                 * Hits
-                 * @description Hits found for the completed corpus, when known.
-                 */
-                hits?: number | null
-              }
-              /**
-               * StreamResultEvent
-               * @description One result fragment from a streamed response.
-               */
-              StreamResultEvent: {
-                /**
-                 * Event
-                 * @constant
-                 */
-                event: "result"
-                /**
-                 * Data
-                 * @description Non-empty fragment of the ordinary JSON response. Each top-level key may occur in only one result event. The `elapsed` key is reserved for the complete event.
-                 */
-                data: {
-                  [key: string]: unknown
-                }
-              }
-            }
-          } & (
-            | $defs["StreamProgressEvent"]
-            | $defs["StreamResultEvent"]
-            | $defs["StreamErrorEvent"]
-            | $defs["StreamCompleteEvent"]
-            | $defs["StreamKeepaliveEvent"]
-          )
+          "application/x-ndjson":
+            | components["schemas"]["StreamProgressEvent"]
+            | components["schemas"]["StreamResultEvent"]
+            | components["schemas"]["StreamErrorEvent"]
+            | components["schemas"]["StreamCompleteEvent"]
+            | components["schemas"]["StreamKeepaliveEvent"]
         }
       }
-      /** @description The request or CQP query was invalid. */
+      /** @description Corpus Workbench rejected the query or command. */
       400: {
         headers: {
           [name: string]: unknown
