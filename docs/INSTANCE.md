@@ -37,8 +37,6 @@ However, frontend-related parts of the corpus config are covered here.
 
 ### Instance config reference
 
-> TODO Review, update
-
 The first few settings are needed at initialization time, and thus must be specified in `config.yml` or `<mode>_mode.js`.
 
 - **korp_backend_url** - String. _Required during init._ URL to Korp's backend
@@ -55,12 +53,10 @@ The first few settings are needed at initialization time, and thus must be speci
   - **chooser_right** - String. HTML content for a logo to the right of the corpus chooser: Default: empty.
     The HTML content can refer to image files in the `app/img/` directory of the configuration as `img/`_file_.
     If you wish to use the the [plain Korp logo](../app/img/korp.svg) (or other images in this repository) differently from the default, you should copy it to the configuration.
-- **auth_module** - String or object. See [Authentication](#authentication)
 - **autocomplete** - Boolean. If enabled, the Simple search input will use [Karp](https://spraakbanken.gu.se/en/tools/karp) to autocomplete lemgrams.
 - **common_struct_types** - Object with attribute name as a key and attribute definition as value. Attributes
   that may be added automatically to a corpus. See [backend documentation](https://github.com/spraakbanken/korp-backend)
   for more information about how to define attributes.
-- **config_dependent_on_authentication** - Boolean. If true, backend config will not be fetched until login check has finished.
 - **corpus_info_link** - Object. Use this to render a link for each corpus in the corpus chooser.
   - **url_template** - String or translation object. A URL containing a token "%s", which will be replaced with the corpus id.
   - **label** - String or translation object. The label is the the same for all corpora.
@@ -85,7 +81,6 @@ The first few settings are needed at initialization time, and thus must be speci
 
 - **default_language** - String. The default interface language. Default: `"eng"`
 - **description** - String. Any HTML content to show on frontpage until search is made.
-- **enable_frontend_kwic_download** - Boolean. Frontend download. Gives CSV created by same data as available in the KWIC.
 - **frontpage** - Object. Settings for what to show under the search form until a search is made.
   - **corpus_updates** - Boolean. Enables a listing of most recently updated corpora.
   - **examples** - List of objects. A random selection of three of these are shown on the frontpage as search links.
@@ -97,9 +92,7 @@ The first few settings are needed at initialization time, and thus must be speci
 - **has_timespan** - Boolean. If the backend supports the `timespan` call, used in corpus chooser for example. Default: `true`
 - **hits_per_page_values** - Array of integer. The available page sizes. Default: `[25, 50, 75, 100]`
 - **hits_per_page_default** - Integer. The preselected page size. Default: `hits_per_page_values[0]`
-- **initialization_checks** - Async function. Implement this to do customized async initialization when setting initial corpus selection. Return true to skip standard selection processing afterwards.
 - **input_case_insensitive_default** - Boolean. Decides if the simple search input should be case-insensitive by default.
-- **iso_languages** - A map of two-letter ISO language codes to three-letter. Only used for fixing old links. Default: See `settings.js`
 - **map_center** - See [Map](#map)
 - **map_enabled** - Boolean. See [Map](#map)
 - **matomo** - Object. Enable analytics with a [Matomo](https://matomo.org/) instance.
@@ -113,13 +106,14 @@ The first few settings are needed at initialization time, and thus must be speci
       production:
         site: 2
     ```
+- **navigation** - Object. Optional keys `link` and `help_links`, each a list of navigation links.
+  A navigation link is an object with required `label` and `url`, and optional `title` and `external` flag.
 - **news_url** - See [News widget](#news-widget)
 - **reduce_word_attribute_selector** - String, `union` / `intersection`. For the "compile based on" configuration in statistics, show all selected corpora _word_ attributes or only the attributes common to selected corpora. **Warning:** if set to `"union"`, the statistics call will fail if user selects an attribute that is not supported by a selected corpus.
 - **reduce_struct_attribute_selector** - Same as **reduce_word_attribute_selector**, but for structural attributes.
 - **statistics** - Boolean. Enable statistics search. Default: `true`
 - **statistics_case_insensitive_default** - Boolean. Decides if the "Group by" option should be case-insensitive by default.
 - **statistics_limit** - Boolean. Maximum number of rows to retrieve for statistics. Some accuracy is lost for large results, but it can save the browser from crashing.
-- **statistics_postprocess** - Function. Allows post-processing of the statistics result.
 - **visible_modes** - Integer. The number of modes to show links to. If there are more modes than this value, the rest will be added to a drop-down. Default: `6`
 - **word_label** - Translation object. Translations for "word". Add if you need support for other languages. Default:
   ```yaml
@@ -131,8 +125,6 @@ The first few settings are needed at initialization time, and thus must be speci
 - **word_picture_conf** - See [Word picture](#word-picture)
 
 ### Attribute config reference
-
-> TODO Review, update
 
 Corpora and their attributes are configured in the backend,
 but most of the available settings are frontend related.
@@ -162,8 +154,6 @@ The following settings are available for `pos_attributes` and `struct_attributes
 - **pattern**: HTML snippet with placeholders for replacing values. Available is `key` (attribute name) and `value`.
   Also works for sets. Example: `'<p style="margin-left: 5px;"><%=val.toLowerCase()%></p>'`
 - **sidebar_component**: See [Customizing sidebar](#customizing-sidebar).
-- **sidebar_info_url**: `string` (URL). If defined and non-empty, add an info symbol ⓘ for the attribute in the
-  sidebar, linking to the given URL. This can be used to link to an explanation page for morphosyntactic tags, for example.
 - **sidebar_hide_label**: `boolean`. If `true`, do not show the localized attribute label and the colon following it in the
   sidebar, only the attribute value. This can be used, for example, if the `pattern` for the attribute includes the label but
   the label should be shown in the attribute lists of the extended search or statistics.

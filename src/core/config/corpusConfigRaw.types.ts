@@ -63,12 +63,9 @@ export type Folder = {
 
 export type Attribute = {
   dataset?: Record<string, string> | string[]
-  /** Handled by CorpusListing */
-  disabled?: true
   display_type?: "hidden"
   escape?: boolean
   extended_component?: MaybeWithOptions
-  extended_template?: string
   external_search?: string
   group_by?: "group_by" | "group_by_struct"
   hide_compare?: boolean
@@ -76,7 +73,6 @@ export type Attribute = {
   hide_sidebar?: boolean
   hide_statistics?: boolean
   internal_search?: boolean
-  is?: string
   is_struct_attr?: boolean
   label: LangString
   name: string
@@ -86,7 +82,6 @@ export type Attribute = {
   pattern?: string
   ranked?: boolean
   sidebar_component?: MaybeWithOptions
-  sidebar_info_url?: string
   sidebar_hide_label?: boolean
   stats_cqp?: string
   stats_stringify?: string

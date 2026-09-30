@@ -1,7 +1,6 @@
 import type { Labeled, LangString } from "@/core/model/locale"
 import type { Attribute } from "./corpusConfigRaw.types"
 import type { Store } from "../model/store"
-import type { StatisticsPostprocessor } from "../statistics/statistics.types"
 import type { OperatorKorp } from "../cqp/cqp.types"
 
 /** Frontend settings as can be loaded from configuration directory. */
@@ -21,11 +20,6 @@ export type InstanceConfig = {
   default_reading_context: string
   default_within?: Record<string, string>
   description?: LangString
-  download_cgi_script?: string
-  download_formats: string[]
-  download_format_params: Record<string, Record<string, string | number>>
-  enable_backend_kwic_download?: boolean
-  enable_frontend_kwic_download?: boolean
   frontpage?: {
     corpus_updates?: boolean
     examples?: SearchExample[]
@@ -37,14 +31,8 @@ export type InstanceConfig = {
   input_case_insensitive_default?: boolean
   korp_backend_url: string
   languages: Labeled[]
-  logo?: {
-    korp?: string
-    organization?: string
-    chooser_right?: string
-  }
   map_center?: { lat: number; lng: number; zoom: number }
   map_enabled?: boolean
-  markup: Record<string, string>
   matomo?: {
     url?: string
     site?: number
@@ -61,8 +49,6 @@ export type InstanceConfig = {
   statistics?: boolean
   statistics_case_insensitive_default?: boolean
   statistics_limit?: number
-  statistics_postprocess?: StatisticsPostprocessor
-  urnResolver?: string
   visible_modes: number
   word_label: Record<string, string>
   word_picture?: boolean
