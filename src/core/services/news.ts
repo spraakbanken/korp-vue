@@ -1,8 +1,7 @@
 import { load } from "js-yaml"
 import settings from "@/core/config"
 import type { LangString } from "../model/locale"
-import { once } from "lodash-es"
-import { compareLabels } from "../i18n"
+import { once, sortBy } from "lodash-es"
 
 export function isEnabled(): boolean {
   return !!settings.news_url
@@ -24,7 +23,7 @@ export const fetchNews = once(async (): Promise<NewsItem[]> => {
     .filter((item) => item.created >= oneYearAgo)
 
   // Sort newest first
-  return items.sort(compareLabels((item) => item.created))
+  return sortBy(items, "created").reverse()
 })
 
 function modifyYear(date: Date, years: number) {
