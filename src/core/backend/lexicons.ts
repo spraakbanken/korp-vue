@@ -1,5 +1,5 @@
 import * as karp from "@/core/services/karp"
-import { client, KorpBackendError } from "./common"
+import { backendRequest } from "./client"
 
 export type LemgramCount = { lemgram: string; count: number }
 
@@ -19,11 +19,7 @@ export async function getLemgrams(
 
   if (!count) return lemgrams.map((lemgram) => ({ lemgram, count: -1 }))
 
-  const { data, error } = await client.GET("/lexeme-counts", {
-    params: { query: { lexemes: lemgrams, corpora } },
-  })
-
-  if (error) throw new KorpBackendError(error.title, error.detail)
+  const data = await backendRequest("/lexeme-counts", { lexemes: lemgrams, corpora })
 
   return lemgrams.map((lemgram) => ({ lemgram, count: data.lexeme_counts[lemgram] || 0 }))
 }
