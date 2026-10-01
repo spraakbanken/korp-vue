@@ -1,5 +1,5 @@
 import { assignWith, memoize, partition, pickBy, range, sumBy } from "lodash-es"
-import { client, KorpBackendError } from "./common"
+import { backendRequest } from "./client"
 import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
 import type { components } from "./types/openapi-types"
@@ -36,11 +36,7 @@ export const getTimeData: () => Promise<TimeData | undefined> = memoize(async ()
     .map((corpus) => corpus.id)
   if (!corpora.length) return undefined
 
-  const { error, data } = await client.GET("/token-distribution", {
-    params: { query: { corpora, granularity: "year" } },
-  })
-
-  if (error) throw new KorpBackendError(error.title, error.detail)
+  const data = await backendRequest("/token-distribution", { corpora, granularity: "year" })
 
   const { dated, undated } = normalizeYearDistribution(data.combined!)
 
