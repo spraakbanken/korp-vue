@@ -1,6 +1,6 @@
 import { memoize, uniq } from "lodash-es"
 import type { RecursiveRecord } from "./types/attrValues"
-import { client, KorpBackendError } from "./common"
+import { backendRequest } from "./client"
 import type { components } from "./types/openapi-types"
 
 /** Find which unique values occur and count them. */
@@ -13,19 +13,13 @@ export const countAttrValues: (
   async (corpora, attrs, split = []) => {
     // Join attributes as a hierarchical path that shapes the response
     const attributePath = attrs.join(">")
-    const { data, error } = await client.GET("/attribute-values", {
-      params: {
-        query: {
-          corpora,
-          attributes: [attributePath],
-          include_combined: true,
-          include_counts: true,
-          split,
-        },
-      },
+    const data = await backendRequest("/attribute-values", {
+      corpora,
+      attributes: [attributePath],
+      include_combined: true,
+      include_counts: true,
+      split,
     })
-
-    if (error) throw new KorpBackendError(error.title, error.detail)
 
     // The attribute path makes the response a nested object,
     // and `include_counts` produces objects of counts instead of arrays of values
@@ -44,18 +38,12 @@ export const getAttrValues: (
   ranked?: boolean,
 ) => Promise<string[]> = memoize(
   async (corpora, attr, split, ranked) => {
-    const { data, error } = await client.GET("/attribute-values", {
-      params: {
-        query: {
-          corpora,
-          attributes: [attr],
-          include_combined: true,
-          split: split ? [attr] : undefined,
-        },
-      },
+    const data = await backendRequest("/attribute-values", {
+      corpora,
+      attributes: [attr],
+      include_combined: true,
+      split: split ? [attr] : undefined,
     })
-
-    if (error) throw new KorpBackendError(error.title, error.detail)
 
     // With no `include_counts` param, the response is a flat list of values
     const values = data?.combined![attr] as string[]
