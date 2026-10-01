@@ -50,7 +50,7 @@ async function save() {
 
   <div class="dropdown-menu p-2" style="width: 20em">
     <form @submit.prevent="save()">
-      <p class="text-muted">{{ $t("search.save.help") }}</p>
+      <p class="font-body">{{ $t("search.save.help") }}</p>
       <div class="form-label">
         {{ $t("search.save.save_as") }}
       </div>

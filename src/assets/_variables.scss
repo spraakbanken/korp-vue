@@ -3,7 +3,19 @@
 
 $spacer: 0.8rem;
 
+// Use Jost by default
 $font-family-base: "Jost Variable", sans-serif;
+// Use sans-serif for data and tables
+$input-font-family: "Noto Sans", sans-serif;
+
+// Compensate for Jost's low x-height
+$font-size-root: 1rem;
+$font-size-base: 1.17rem;
+$input-btn-font-size: $font-size-root;
+
+// Default is 700
+$font-weight-bold: 600;
+$btn-font-weight: 500;
 
 // Override minimum contrast level for Bootstrap's automatic text color calculation against a given background color.
 // Bootstrap's algorithm seems to fall short for some colors, including our primary and secondary.

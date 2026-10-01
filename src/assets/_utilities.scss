@@ -1,13 +1,43 @@
 :root {
-  --font-family-data: sans-serif;
+  --font-family-base: #{$font-family-base};
+  // Font for data/tables
+  --font-family-data: #{$input-font-family};
+  // Font for body text
+  --font-family-body: "Noto Serif", sans-serif;
 }
 
 .cursor-pointer {
   cursor: pointer;
 }
 
-.font-family-data {
+// Use sans and adjust size
+.font-data {
   font-family: var(--font-family-data);
+  font-size: #{$font-size-root};
+}
+
+// Use serif and adjust size
+.font-body {
+  font-family: var(--font-family-body);
+  font-size: #{$font-size-root};
+}
+
+// Reset font for headings and UI elements under data/body font
+.font-data,
+.font-body {
+  :is(h1, h2, h3, h4, h5, h6),
+  :is(th, .card-subtitle, .btn, .badge) {
+    font-family: var(--font-family-base);
+  }
+
+  :is(th, .card-subtitle, .btn) {
+    font-size: #{$font-size-base};
+  }
+
+  &:is(.badge, .small),
+  :is(.badge, .small) {
+    font-size: calc(0.75 * #{$font-size-base});
+  }
 }
 
 // Link-like text
@@ -17,10 +47,6 @@
     text-decoration: underline;
     cursor: pointer;
   }
-}
-
-.btn {
-  font-weight: 600;
 }
 
 // Align text specifically to the right, for example for numbers in a table.

@@ -47,14 +47,14 @@ watch(isVisible, () => {
 
 <template>
   <div class="text-center">
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto font-data">
       <svg ref="svg" class="deptreeSvg"></svg>
     </div>
     <div class="mt-2">
       <template v-if="selection">
+        {{ locObj(selection.attr.label) }}:
         <strong class="text-info small">{{ selection.key }}</strong>
-        ({{ locObj(selection.attr.label) }}):
-        {{ getStringifier(selection.attr)(selection.key) }}
+        ({{ getStringifier(selection.attr)(selection.key) }})
       </template>
       <template v-else>&nbsp;</template>
     </div>
@@ -72,6 +72,7 @@ watch(isVisible, () => {
 }
 .deptreeSvg .UPOS,
 .deptreeSvg .DEPREL {
+  font-family: var(--font-family-base);
   font-weight: bold;
   fill: var(--bs-info);
   font-size: 0.8em;

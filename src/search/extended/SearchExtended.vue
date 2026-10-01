@@ -102,13 +102,13 @@ function formatWithin(key: string) {
     <QueryBuilder v-model="tokens" class="justify-content-center" />
 
     <!-- Instructions -->
-    <div class="small text-muted text-center">
+    <div class="text-muted text-center font-body">
       {{ $t("search.extended.instructions") }}
     </div>
 
-    <div class="hstack justify-content-center gap-2 align-items-baseline">
+    <div class="hstack justify-content-center gap-2">
       <!-- "Free order" option -->
-      <div class="form-check">
+      <div class="form-check mb-0">
         <input
           type="checkbox"
           id="search-extended-free-order"

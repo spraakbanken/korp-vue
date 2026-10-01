@@ -99,7 +99,7 @@ onUnmounted(() => {
     />
 
     <!-- Dropdown -->
-    <ul class="dropdown-menu" ref="menuEl" style="min-width: 100%">
+    <ul ref="menuEl" class="dropdown-menu font-data" style="min-width: 100%">
       <li v-if="isLoading" class="dropdown-item disabled">
         {{ $t("loading") }}
       </li>

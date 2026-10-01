@@ -57,7 +57,7 @@ async function send() {
     @close="errorMessage = ''"
     @submit="send()"
   >
-    <p>{{ $t("auth.description") }}</p>
+    <p class="font-body">{{ $t("auth.description") }}</p>
 
     <div class="row mb-2">
       <div class="col">

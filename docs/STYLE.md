@@ -50,7 +50,11 @@ Use the `useBootstrapThemeVar` composable to make colors and other CSS variables
 
 ### Typography
 
-The **font** is [Jost](https://indestructibletype.com/Jost.html) for headings and `sans-serif` for everything else.
+Use these **fonts**:
+
+- [Jost](https://indestructibletype.com/Jost.html) for headings and UI elements
+- Noto Sans for displaying data, especially tabular data
+- Noto Serif for body text
 
 Use **links** if clicking means changing the page, use **button** if clicking triggers a change on the same page.
 

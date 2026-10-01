@@ -173,7 +173,7 @@ watch(showPos, () =>
                 class="text-dark"
                 :style="{ backgroundColor: column.config.color }"
               >
-                <table class="m-1 font-family-data">
+                <table class="m-1 font-data">
                   <WordpicRow
                     v-for="(row, j) in column.rows.slice(0, limit)"
                     :key="j"
@@ -190,7 +190,7 @@ watch(showPos, () =>
       </div>
     </ResultsDisplay>
 
-    <HelpBox>
+    <HelpBox class="font-body">
       <p>{{ $t("result.wordpic.description") }}</p>
       <p class="mb-0">{{ $t("result.wordpic.description.result") }}</p>
     </HelpBox>

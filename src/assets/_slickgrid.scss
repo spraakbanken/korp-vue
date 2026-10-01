@@ -8,7 +8,7 @@
 }
 
 .slick-viewport {
-  font-family: var(--font-family-data);
+  @extend .font-data;
 }
 
 .slick-pane {

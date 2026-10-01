@@ -71,7 +71,7 @@ function removeSearchLocal(search: SavedSearch) {
 
 <template>
   <form class="w-max-md vstack gap-4" @submit.prevent="submit()">
-    <div>{{ $t("search.compare.help") }}</div>
+    <div class="font-body">{{ $t("search.compare.help") }}</div>
 
     <div class="row row-gap-2">
       <div class="col-sm-6 col-md-4">

@@ -63,7 +63,7 @@ function download() {
         </h6>
 
         <div class="card-body p-2 vstack gap-2">
-          <p class="m-0">{{ $t("result.export.table.help") }}</p>
+          <p class="m-0 font-body">{{ $t("result.export.table.help") }}</p>
 
           <!-- Custom content -->
           <slot />
@@ -101,7 +101,7 @@ function download() {
             {{ $t("result.export.json") }}
           </h6>
           <div class="card-body p-2 vstack gap-2">
-            <p class="m-0">{{ $t("result.export.json.help") }}</p>
+            <p class="m-0 font-body">{{ $t("result.export.json.help") }}</p>
 
             <button type="submit" class="btn btn-primary btn-sm d-block ms-auto">
               <fa-icon icon="fa-solid fa-download" />

@@ -7,6 +7,8 @@ import { getInstanceConfig } from "@/core/config/instanceConfig"
 import App from "@/App.vue"
 import "@/assets/styles.scss"
 import "@fontsource-variable/jost"
+import "@fontsource-variable/noto-sans"
+import "@fontsource-variable/noto-serif"
 import { createVueMatomo } from "vue3-matomo"
 
 // Get URL parameters

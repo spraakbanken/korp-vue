@@ -11,7 +11,7 @@ const examples = settings.frontpage?.examples
 </script>
 
 <template>
-  <div class="container mt-5">
+  <div class="container mt-5 font-body">
     <div class="row column-gap-5">
       <div v-if="settings.description || settings.mode_description" class="col-md mb-5">
         <div v-if="settings.description" v-html="locObj(settings.description)"></div>

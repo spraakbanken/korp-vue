@@ -29,7 +29,7 @@ const corpusId = computed(() =>
       <button class="btn btn-close ms-auto align-self-center" @click="$emit('close')"></button>
     </div>
     <div class="card-body">
-      <div v-if="corpus.description" v-html="locObj(corpus.description)"></div>
+      <div v-if="corpus.description" v-html="locObj(corpus.description)" class="font-body"></div>
 
       <div v-if="corpus.protected" class="my-3">
         <template v-if="!auth.hasCredential(corpus.id)">

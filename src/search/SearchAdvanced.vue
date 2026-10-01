@@ -55,8 +55,10 @@ function submit() {
         v-model="cqpLocal"
       />
 
-      <details class="text-muted">
-        <summary class="my-1">{{ $t("search.advanced.help.heading") }}</summary>
+      <details class="text-muted font-body">
+        <summary class="my-1">
+          <h6 class="d-inline">{{ $t("search.advanced.help.heading") }}</h6>
+        </summary>
 
         <p>{{ $t("search.advanced.help.summary") }}</p>
 
