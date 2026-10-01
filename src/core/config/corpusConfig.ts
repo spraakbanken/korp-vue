@@ -1,5 +1,5 @@
 import { keyBy, mapValues, omit, pick } from "lodash-es"
-import { client, KorpBackendError } from "../backend/common"
+import { backendRequest } from "../backend/client"
 import currentMode from "../corpora/mode"
 import { fromKeys } from "../util"
 import type { InstanceConfig } from "./instanceConfig.types"
@@ -25,11 +25,7 @@ async function loadRawCorpusConfig(settings: InstanceConfig): Promise<CorpusConf
   // The corpora to include are normally given by the mode config, but allow defining it elsewhere (used by Mink)
   const corpora = settings.get_corpus_ids ? await settings.get_corpus_ids() : undefined
 
-  const { data, error } = await client.GET("/corpora/config", {
-    params: { query: { mode: currentMode, corpora } },
-  })
-
-  if (error) throw new KorpBackendError(error.title, error.detail)
+  const data = await backendRequest("/corpora/config", { mode: currentMode, corpora })
 
   return data as unknown as CorpusConfigRaw
 }
@@ -38,8 +34,7 @@ async function loadRawCorpusConfig(settings: InstanceConfig): Promise<CorpusConf
 async function loadCorpusInfo(corpora: string[]): Promise<InfoData> {
   if (!corpora.length) return {}
 
-  const { data, error } = await client.GET("/corpora/info", { params: { query: { corpora } } })
-  if (error) throw new KorpBackendError(error.title, error.detail)
+  const data = await backendRequest("/corpora/info", { corpora })
 
   return fromKeys(corpora, (corpusId) => ({
     info: data.corpora[corpusId].info,
