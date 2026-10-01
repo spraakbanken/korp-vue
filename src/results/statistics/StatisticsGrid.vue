@@ -51,7 +51,7 @@ onMounted(() => {
 // Update grid size when window is resized, unless not currently visible
 watch(
   [reactive(useWindowSize()), isVisible],
-  throttle(() => isVisible && grid?.resizeCanvas(), 100),
+  throttle(() => isVisible && grid?.resize(), 100),
   { flush: "post" },
 )
 

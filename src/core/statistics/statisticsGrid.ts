@@ -39,7 +39,8 @@ export class StatisticsGrid extends SlickGrid<Row> {
     super(el, data, columns as Column<Row>[], {
       enableCellNavigation: false,
       enableColumnReorder: false,
-      forceFitColumns: true,
+      // forceFitColumns would prevent manual resizing;
+      // instead, call this.resize() when container size may have changed
     })
 
     this.setSelectionModel(new SlickRowSelectionModel({ selectActiveRow: false }))
@@ -48,7 +49,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
       setSelectedRows(args.rows.map((i) => this.getDataItem(i))),
     )
     this.setSelectedRows([0])
-    this.resizeCanvas()
+    this.resize()
     this.refreshColumns()
 
     this.onSort.subscribe((e, sort) => {
@@ -87,6 +88,12 @@ export class StatisticsGrid extends SlickGrid<Row> {
       if (column.getName) column.name = column.toolTip = column.getName(this.getLang())
     })
     this.setColumns(columns as Column<Row>[])
+  }
+
+  /** Autosize columns */
+  resize() {
+    this.resizeCanvas()
+    this.autosizeColumns()
   }
 }
 
