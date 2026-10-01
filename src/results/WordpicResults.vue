@@ -101,7 +101,7 @@ watch(showPos, () =>
 
       <label class="d-flex gap-2 align-items-baseline">
         {{ $t("result.wordpic.limit") }}:
-        <select class="form-select form-select-sm w-auto" v-model="limit">
+        <select class="form-select form-select-sm w-auto text-end" v-model="limit">
           <option v-for="n in LIMITS" :key="n" :value="n">{{ n }}</option>
         </select>
       </label>

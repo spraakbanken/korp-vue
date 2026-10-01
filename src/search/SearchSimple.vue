@@ -93,7 +93,7 @@ function submit() {
 </script>
 
 <template>
-  <form @submit.prevent="submit" class="vstack gap-4">
+  <form @submit.prevent="submit" class="vstack gap-3">
     <!-- Global filters bar -->
     <GlobalFilters />
 

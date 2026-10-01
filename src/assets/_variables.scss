@@ -1,6 +1,8 @@
 // Bootstrap's default values are set with `!default`, so we can replace them by assigning custom values before importing them.
 // This however means we cannot use other variables, like `$body-color`, because they are not defined yet.
 
+$spacer: 0.8rem;
+
 $font-family-base: "Jost Variable", sans-serif;
 
 // Override minimum contrast level for Bootstrap's automatic text color calculation against a given background color.
@@ -26,3 +28,6 @@ $link-hover-color: $orange;
 
 $navbar-light-hover-color: $primary;
 $navbar-light-active-color: $primary;
+
+$form-select-indicator-padding: 1.75rem;
+$form-select-bg-position: right 0.4rem center;

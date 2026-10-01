@@ -30,7 +30,7 @@ watchImmediate(
       <tbody>
         <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">
           <tr v-if="isCorpusHeading(row)">
-            <td colspan="3" class="bg-body-tertiary">
+            <td colspan="3" class="bg-body-tertiary p-1">
               <h3 class="d-inline-block position-sticky start-50 translate-middle-x my-1 fs-5">
                 {{ locObj(row.newCorpus) }}
               </h3>
@@ -44,3 +44,10 @@ watchImmediate(
     </table>
   </div>
 </template>
+
+<style scoped>
+/* Copy Bootstrap's cell selector, decrease padding */
+table > :not(caption) > * > * {
+  padding: 0.1rem;
+}
+</style>
