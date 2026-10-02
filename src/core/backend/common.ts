@@ -35,7 +35,7 @@ export async function korpRequest<K extends keyof API>(
   const response = await fetch(url, request)
 
   // If progress handler given, parse response data as it comes in
-  const json = await readIncrementally(response, (json) => {
+  const json = await readIncrementally(response.body!, (json) => {
     if (options.onProgress) {
       const progress = calcProgress<K>(json)
       if (progress) options.onProgress(progress)
@@ -65,11 +65,11 @@ function selectHttpMethod(
 }
 
 /** Read and handle a HTTP response body as it comes in */
-async function readIncrementally(
-  response: Response,
+export async function readIncrementally(
+  body: ReadableStream,
   handle: (content: string) => void,
 ): Promise<string> {
-  const reader = response.body!.getReader()
+  const reader = body.getReader()
   let content = ""
   while (true) {
     // If done, `value` is empty
