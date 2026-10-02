@@ -5,11 +5,11 @@ import { useI18n } from "vue-i18n"
 import { formatDecimals } from "@/core/i18n"
 import { createKeyValueHtml } from "@/core/util"
 import { useStringifiers } from "@/attributes/useStringifiers"
-import { computed } from "vue"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import { getEmptyValueHtml } from "./formatter"
+import EmptyValue from "./EmptyValue.vue"
 
 const props = defineProps<{
+  attributes: Record<string, Attribute>
   item: CompareItem
   max: number
   left?: boolean
@@ -19,17 +19,8 @@ defineEmits<{
   (e: "select", item: CompareItem): void
 }>()
 
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 const { getStringifier } = useStringifiers()
-
-const valuesHtml = computed(() =>
-  props.item.values.flatMap(({ attribute, tokens }) =>
-    tokens.map((token) => formatToken(token, attribute)),
-  ),
-)
-
-const formatToken = (token: string, attribute?: Attribute) =>
-  token ? (attribute ? getStringifier(attribute)(token) : token) : getEmptyValueHtml(t)
 </script>
 
 <template>
@@ -43,7 +34,18 @@ const formatToken = (token: string, attribute?: Attribute) =>
 
     <div class="hstack align-items-baseline position-relative z-1">
       <!-- Value string -->
-      <span class="link flex-grow-1" @click="$emit('select', item)" v-html="valuesHtml.join(' ')">
+      <span class="link flex-grow-1" @click="$emit('select', item)">
+        <div v-for="(tokens, attr) in item.values" :key="attr">
+          <template v-for="(token, i) in tokens" :key="i">
+            <span
+              v-if="attributes[attr] && token"
+              v-html="getStringifier(attributes[attr])(token)"
+            />
+            <span v-else-if="token">{{ token }}</span>
+            <EmptyValue v-else />
+            {{}}
+          </template>
+        </div>
       </span>
 
       <!-- Frequency -->
