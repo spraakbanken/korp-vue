@@ -1,7 +1,6 @@
 import type { AttrValuesParams, AttrValuesResponseDeep, AttrValuesResponseFlat } from "./attrValues"
 import type { CountParams, CountResponse } from "./count"
 import type { CountTimeParams, CountTimeResponse } from "./countTime"
-import type { LoglikeParams, LoglikeResponse } from "./loglike"
 import type { QueryParams, QueryResponse } from "./query"
 import type { RelationsParams, RelationsResponse } from "./relations"
 import type { RelationsSentencesParams, RelationsSentencesResponse } from "./relations-sentences"
@@ -20,10 +19,6 @@ export type API = {
   count_time: {
     params: CountTimeParams
     response: CountTimeResponse
-  }
-  loglike: {
-    params: LoglikeParams
-    response: LoglikeResponse
   }
   query: {
     params: QueryParams

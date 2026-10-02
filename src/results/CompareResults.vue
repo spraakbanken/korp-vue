@@ -38,6 +38,7 @@ function clickItem(side: 0 | 1, item: CompareItem) {
             <CompareRow
               v-for="item in result.tables.negative"
               :key="item.key"
+              :attributes="task.attributes"
               :item
               :max="result.max"
               left
@@ -51,6 +52,7 @@ function clickItem(side: 0 | 1, item: CompareItem) {
             <CompareRow
               v-for="item in result.tables.positive"
               :key="item.key"
+              :attributes="task.attributes"
               :item
               :max="result.max"
               @select="() => clickItem(1, item)"
