@@ -1,11 +1,12 @@
-import { groupBy, pick, range, sumBy, uniq, zip } from "lodash-es"
+import { groupBy, mapValues, pick, range, sumBy, uniq, zip } from "lodash-es"
 import type { Attribute } from "../config/corpusConfigRaw.types"
 import { corpusListing } from "../corpora/corpusListing"
 import { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
-import { korpRequest } from "../backend/common"
 import { ExampleTask } from "./ExampleTask"
-import { prefixAttr } from "../config"
+import settings, { prefixAttr } from "../config"
+import { backendRequestStream } from "../backend/client"
+import { splitSuffix } from "../util"
 
 export type SavedSearch = {
   label: string
@@ -20,12 +21,6 @@ export type CompareResult = {
 
 export type CompareTables = { positive: CompareItem[]; negative: CompareItem[] }
 
-type CompareItemRaw = {
-  value: string
-  loglike: number
-  abs: number
-}
-
 export type CompareItem = {
   /** Value of given attribute without probability suffixes */
   key: string
@@ -34,13 +29,9 @@ export type CompareItem = {
   /** Absolute frequency */
   abs: number
   /** Values of given attribute, as found including probability suffixes */
-  elems: string[]
-  values: AttributeValues[]
-}
-
-export type AttributeValues = {
-  attribute?: Attribute
-  tokens: string[]
+  elems: Record<string, string[]>[]
+  /** Values simplified for grouping */
+  values: Record<string, string[]>
 }
 
 export class CompareTask extends TaskBase<CompareResult> {
@@ -70,56 +61,60 @@ export class CompareTask extends TaskBase<CompareResult> {
 
     const [reduceStruct, reducePos] = this.cl.partitionAttrs(this.reduce)
 
-    const split = this.reduce.filter((r) => this.attributes[r]?.type === "set").join(",")
+    const split = this.reduce.filter((r) => this.attributes[r]?.type === "set")
 
     const rankedReduce = this.reduce.filter((item) => this.cl.getAttributes()[item]?.ranked)
-    const top = rankedReduce.map((item) => item + ":1").join(",")
 
-    const params = {
-      group_by: reducePos.join(),
-      group_by_struct: reduceStruct.join(),
-      set1_corpus: corpora1.join(",").toUpperCase(),
+    const data = await backendRequestStream("/log-likelihood", {
+      group_by: reducePos,
+      group_by_struct: reduceStruct,
+      set1_corpora: corpora1,
       set1_cqp: this.cmp1.cqp,
-      set2_corpus: corpora2.join(",").toUpperCase(),
+      set2_corpora: corpora2,
       set2_cqp: this.cmp2.cqp,
-      max: 50,
+      max_results: 50,
+      max_values_per_set: rankedReduce,
       split,
-      top,
-    }
+    })
 
-    const data = await korpRequest("loglike", params)
-
-    const objs: CompareItemRaw[] = Object.entries(data.loglike).map(([key, value]) => ({
-      value: key,
-      loglike: value,
-      abs: (value > 0 ? data.set2[key] : data.set1[key]) || 0,
-    }))
-
+    type ItemRaw = (typeof data.results)[0]
     type Polarity = "positive" | "negative"
-    const tables = groupBy(objs, (obj) => (obj.loglike > 0 ? "positive" : "negative")) as Record<
-      Polarity,
-      CompareItemRaw[]
-    >
+
+    const tables = groupBy(data.results, (item) =>
+      item.score > 0 ? "positive" : "negative",
+    ) as Record<Polarity, ItemRaw[]>
 
     let max = 0
-    const groupAndSum = (table: CompareItemRaw[]): CompareItem[] => {
-      // Merge items that are different only by probability suffix ":<number>"
-      const groups = groupBy(table, (obj) => obj.value.replace(/(:.+?)(\/|$| )/g, "$2"))
-      const res = Object.entries(groups).map(([key, items]): CompareItem => {
+    const groupAndSum = (table: ItemRaw[]): CompareItem[] => {
+      // Simplify values and group by them
+      type CompareItemGroup = { values: CompareItem["values"]; items: ItemRaw[] }
+      const itemsGrouped = table.reduce(
+        (acc: Record<string, CompareItemGroup>, item) => {
+          const value = mapValues(item.value, (values, attr) =>
+            settings.group_statistics.includes(attr)
+              ? values.map((value) => splitSuffix(value)[0])
+              : values,
+          )
+          const key = Object.values(value).flat().join()
+          acc[key] ??= { values: value, items: [] }
+          acc[key].items.push(item)
+          return acc
+        },
+        {} as Record<string, CompareItemGroup>,
+      )
+
+      const res = Object.entries(itemsGrouped).map(([key, { values, items }]): CompareItem => {
         // Add up similar items.
-        // Slash separates attributes, space separates tokens.
-        const values = key
-          .split("/")
-          .map((tokens) => tokens.split(" "))
-          .map((tokens, i) => ({ tokens, attribute: this.attributes[this.reduce[i]!] }))
-        const loglike = sumBy(items, "loglike")
-        const abs = sumBy(items, "abs")
+        // TODO Really sum loglike scores?
+        const loglike = sumBy(items, "score")
+        const abs = sumBy(items, items[0].score < 0 ? "set1" : "set2")
         const elems = items.map((item) => item.value)
         max = Math.max(max, Math.abs(loglike))
         return { key, loglike, abs, elems, values }
       })
       return res.sort((a, b) => Math.abs(b.loglike) - Math.abs(a.loglike))
     }
+
     const positive = groupAndSum(tables.positive)
     const negative = groupAndSum(tables.negative)
 
@@ -136,41 +131,19 @@ export class CompareTask extends TaskBase<CompareResult> {
   }
 
   buildItemCqp(row: CompareItem) {
-    // If the grouping attribute is positional, the value is a space-separated list, otherwise it's a single value.
-    const parseToken = (value: string, i: number) =>
-      CorpusSet.isStruct(this.attributes[this.reduce[i]]) ? [value] : value.split(" ")
-
-    const splitTokens = row.elems.map((elem) => elem.split("/").map(parseToken))
-
     // number of tokens in search
-    const tokenLength = splitTokens[0][0].length
+    const tokenLength = Math.max(...Object.values(row.elems[0]).flatMap((tokens) => tokens.length))
 
-    // transform result from grouping on attribute to grouping on token place
-    const tokens = range(0, tokenLength).map((tokenIdx) =>
-      this.reduce.map((reduceAttr, attrIdx) =>
-        uniq(splitTokens.map((res) => res[attrIdx][tokenIdx])),
-      ),
-    )
-
-    const cqps = tokens.map((token) => {
-      const cqpAnd = range(0, token.length).map((attrI) => {
-        let type: string | undefined
-        let val: string
-        let attrKey = this.reduce[attrI]
+    const cqps = range(0, tokenLength).map((tokenIdx) => {
+      const token = this.reduce.map((attr) => uniq(row.elems.map((res) => res[attr][tokenIdx])))
+      const cqpAnd = this.reduce.map((name, attrI) => {
         const attrVal = token[attrI]
-
-        if (attrKey.includes("_.")) {
-          console.log("error, attribute key contains _.")
-        }
-
-        const attribute = this.attributes[attrKey]
-        if (attribute) {
-          type = attribute.type
-          attrKey = prefixAttr(attribute)
-        }
+        const attribute = this.attributes[name]
+        const type = attribute.type
 
         const op = type === "set" ? "contains" : "="
 
+        let val: string
         if (type === "set" && attrVal.length > 1) {
           // Assemble variants for each position in the token
           const transpose = <T>(matrix: T[][]) => zip(...matrix) as T[][]
@@ -184,7 +157,8 @@ export class CompareTask extends TaskBase<CompareResult> {
         }
 
         const isEmptySet = type === "set" && (val === "|" || val === "")
-        return isEmptySet ? `ambiguity(${attrKey}) = 0` : `${attrKey} ${op} "${val}"`
+        const cqpName = prefixAttr(attribute)
+        return isEmptySet ? `ambiguity(${cqpName}) = 0` : `${cqpName} ${op} "${val}"`
       })
 
       return `[${cqpAnd.join(" & ")}]`
