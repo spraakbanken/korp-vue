@@ -1,7 +1,7 @@
 import { memoize, uniq } from "lodash-es"
 import type { RecursiveRecord } from "./types/attrValues"
 import { backendRequest } from "./client"
-import type { components } from "./types/openapi-types"
+import type { AttributeValuesWithCounts } from "./korp-api"
 
 /** Find which unique values occur and count them. */
 export const countAttrValues: (
@@ -23,7 +23,7 @@ export const countAttrValues: (
 
     // The attribute path makes the response a nested object,
     // and `include_counts` produces objects of counts instead of arrays of values
-    return data.combined![attributePath]! as components["schemas"]["AttributeValuesWithCounts"]
+    return data.combined![attributePath]! as AttributeValuesWithCounts
   },
   // Memoize based on the values of all arguments
   (...args) => JSON.stringify(args),

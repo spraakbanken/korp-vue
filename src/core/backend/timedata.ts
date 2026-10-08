@@ -2,7 +2,7 @@ import { assignWith, memoize, partition, pickBy, range, sumBy } from "lodash-es"
 import { backendRequest } from "./client"
 import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
-import type { components } from "./types/openapi-types"
+import type { TokenDistributionPeriod, UndatedTokenDistributionPeriod } from "./korp-api"
 import { auth } from "../auth"
 
 export type TimeData = {
@@ -16,9 +16,9 @@ export type YearSeries = Record<number, number>
 /** Numeric data for a specific year. */
 export type YearPoint = [number, number]
 
-type DatedPeriod = components["schemas"]["TokenDistributionPeriod"]
-type UndatedPeriod = components["schemas"]["UndatedTokenDistributionPeriod"]
-const isDated = (period: DatedPeriod | UndatedPeriod): period is DatedPeriod => "start" in period
+type Period = TokenDistributionPeriod | UndatedTokenDistributionPeriod
+
+const isDated = (period: Period): period is TokenDistributionPeriod => "start" in period
 
 /**
  * Time data, if available.
@@ -65,7 +65,7 @@ export const getTimeData: () => Promise<TimeData | undefined> = memoize(async ()
   return timeData
 })
 
-function normalizeYearDistribution(periods: (DatedPeriod | UndatedPeriod)[]) {
+function normalizeYearDistribution(periods: Period[]) {
   const [datedPeriods, undatedPeriods] = partition(periods, isDated)
   const undated = sumBy(undatedPeriods, (period) => period.tokens)
 

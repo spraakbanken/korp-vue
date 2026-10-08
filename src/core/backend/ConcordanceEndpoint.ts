@@ -2,7 +2,7 @@ import { getDefaultWithin } from "../config"
 import { corpusListing } from "../corpora/corpusListing"
 import { expandCqp } from "../cqp/cqp"
 import { EndpointBase } from "./EndpointBase"
-import type { components } from "./types/openapi-types"
+import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "./korp-api"
 
 export type ConcordanceParams = {
   corpora: string[]
@@ -15,13 +15,13 @@ export type ConcordanceParams = {
   /** Enable to reuse the pagination state from the last request, causing backend to skip counting hits per corpora. */
   reuseCounts?: boolean
   randomSeed?: number
-  sort?: components["schemas"]["ConcordanceRequest"]["sort"]
+  sort?: ConcordanceRequest["sort"]
 }
 
 export type ConcordanceData = {
   distribution: HitsDistribution[]
   hits: number
-  kwic: components["schemas"]["KWICRow"][]
+  kwic: KwicRow[]
 }
 
 export type HitsDistribution = {
@@ -70,7 +70,7 @@ export class ConcordanceEndpoint extends EndpointBase<
     })
   }
 
-  processResponse(data: components["schemas"]["ConcordanceResponse"]) {
+  processResponse(data: ConcordanceResponse) {
     this.paginationState = data.pagination_state
 
     // Reshape hit distribution as ordered list
