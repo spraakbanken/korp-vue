@@ -1,8 +1,9 @@
-import { mapKeys, omit } from "lodash-es"
-import type { ApiKwic, KwicMatch, Token } from "../backend/types"
+import { mapKeys, mapValues, omit } from "lodash-es"
+import type { Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"
+import type { components } from "../backend/types/openapi-types"
 
 export type Row = KwicRow | LinkedKwicRow | CorpusHeading
 
@@ -16,7 +17,7 @@ export type KwicRow = {
   /** Attribute values for the context (e.g. sentence) */
   structs: Record<string, string | null>
   /** Specifies the position of the match in the context. If `in_order` is false, `match` will consist of a list of match objects, one per highlighted word */
-  match: KwicMatch[]
+  match: components["schemas"]["KWICRow"]["matches"]
   /** The id of a linked row, if any */
   link?: string
 }
@@ -57,6 +58,14 @@ export type LinkedKwicToken = Token & {
   attrs: Record<string, string | null>
 }
 
+/** Specific typing for `token.structs` */
+type TokenStructs = {
+  /** The names of structs closed by this token */
+  close?: string[]
+  /** For each struct this token opens, a map of struct attributes and values */
+  open?: Record<string, Record<string, string>>[]
+}
+
 /** A token and its context */
 export type RowToken = KwicRowToken | LinkedKwicRowToken
 export type KwicRowToken = { row: KwicRow; token: KwicToken }
@@ -78,7 +87,7 @@ export type HitsPictureItem = {
 }
 
 /** Transform backend KWIC data to be easier to use in frontend code */
-export function massageData(rows: ApiKwic[]): Row[] {
+export function massageData(rows: components["schemas"]["KWICRow"][]): Row[] {
   let counter = 1
   const getId = () => `kwic${counter++}`
 
@@ -107,8 +116,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
     // When using `in_order=false`, there are multiple matches
     // Otherwise, cast single match to array for consistency
-    const matches = !(row.match instanceof Array) ? [row.match] : row.match
-    const isMatch = (i: number) => matches.some(({ start, end }) => start <= i && i < end)
+    const isMatch = (i: number) => row.matches.some(({ start, end }) => start <= i && i < end)
 
     // Copy struct attributes to tokens
     /** Currently open structural elements (e.g. `<ne>`) */
@@ -116,8 +124,10 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
     // Process the tokens of this row
     const tokens: KwicToken[] = row.tokens.map((token, i) => {
+      const structs: TokenStructs = token?.structs || {}
+
       // For each new structural element this token opens, add it to currentStruct
-      for (const structItem of token.structs?.open || []) {
+      for (const structItem of structs.open || []) {
         // structItem is an object with a single key
         const [key, struct] = Object.entries(structItem)[0]!
 
@@ -133,18 +143,20 @@ export function massageData(rows: ApiKwic[]): Row[] {
       const structAttrs: Record<string, string> = Object.assign({}, ...Object.values(currentStruct))
 
       // For each struct this token closes, remove it from currentStruct
-      for (const structItem of token.structs?.close || []) delete currentStruct[structItem]
+      for (const structItem of structs.close || []) delete currentStruct[structItem]
+
+      const tokenAttrs = mapValues(omit(token, "structs"), castAttrValue)
 
       // Output token
       const tokenOut: KwicToken = {
         id: getId(),
-        word: token.word,
         position: i,
         // Copy positional attributes
         attrs: {
-          ...omit(token, "structs"),
+          ...tokenAttrs,
           ...structAttrs,
         },
+        word: token.word || "—",
         _match: isMatch(i),
         _matchSentence: isMatchSentence(i),
       }
@@ -157,7 +169,7 @@ export function massageData(rows: ApiKwic[]): Row[] {
       corpus: mainCorpusId,
       tokens,
       structs: { ...row.structs },
-      match: matches,
+      match: row.matches,
     }
     output.push(rowOut)
 
@@ -167,9 +179,9 @@ export function massageData(rows: ApiKwic[]): Row[] {
 
       const tokens = tokensAligned.map((token, i) => ({
         id: getId(),
-        word: token.word,
+        word: token.word || "—",
         position: i,
-        attrs: omit(token, "structs"),
+        attrs: mapValues(omit(token, "structs"), castAttrValue),
       }))
 
       const id = getId()
@@ -191,22 +203,26 @@ export function massageData(rows: ApiKwic[]): Row[] {
   return output
 }
 
+/** Type-cast an attribute value to string or null */
+const castAttrValue = (value: unknown): string | null => (value == null ? null : String(value))
+
 /** Find span of sentence containing the match */
 // This is used in context mode to highlight the sentence.
-function findMatchSentence(row: ApiKwic): [number, number] {
-  const matches = Array.isArray(row.match) ? row.match : [row.match]
-  let start = matches[0]!.start
-  let end = matches[matches.length - 1]!.end
+function findMatchSentence(row: components["schemas"]["KWICRow"]): [number, number] {
+  let start = row.matches[0]!.start
+  let end = row.matches[row.matches.length - 1]!.end
 
   for (; start >= 0; start--) {
     const token = row.tokens[start]
-    const sentenceOpen = (token?.structs?.open || []).some((attr) => attr.sentence)
+    const structs: TokenStructs = token?.structs || {}
+    const sentenceOpen = (structs.open || []).some((attr) => attr.sentence)
     if (sentenceOpen) break
   }
 
   for (; end < row.tokens.length; end++) {
     const token = row.tokens[end]
-    const closed = token?.structs?.close || []
+    const structs: TokenStructs = token?.structs || {}
+    const closed = structs.close || []
     if (closed.includes("sentence")) break
   }
 
