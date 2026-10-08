@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { KwicProxy } from "@/core/backend/proxy/KwicProxy"
 import { useAppStore } from "@/store/useAppStore"
 import { syncRef, watchImmediate } from "@vueuse/core"
 import { storeToRefs } from "pinia"
 import { computed, ref, watch } from "vue"
 import settings from "@/core/config"
-import { debounce } from "lodash-es"
+import { clone, debounce } from "lodash-es"
+import { ConcordanceEndpoint, type ConcordanceParams } from "@/core/backend/ConcordanceEndpoint"
 import type { QueryParamSort } from "@/core/backend/types/query"
+import type { DataHandler, ProgressHandler } from "@/core/backend/client.types"
+import { corpusSelection } from "@/core/corpora/corpusListing"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
@@ -37,7 +39,7 @@ const hpp = ref(store.hpp)
 const pageLocal = ref(1)
 const sort = ref<QueryParamSort>(store.sort)
 
-const proxy = new KwicProxy()
+const endpoint = new ConcordanceEndpoint()
 
 // Store uses 0-based page index, UI uses 1-based page index
 syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } })
@@ -46,26 +48,17 @@ async function load(updating = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
   // Only new searches report progress
-  incremental.value = !updating
+  incremental.value = !updating && corpusSelection.corpora.length > 1
 
   // Set up progress handler
   let hasFirstPage = false
   // Remember if the current running request will be shown in reading mode
   const isReadingNew = context.value || !store.in_order
-  proxy.setProgressHandler((report) => {
-    // Since `data` is a shallowRef, make sure to replace the object.
-    data.value = { distribution: [], hits: 0, kwic: [], ...data.value }
-    // Show first KWIC page when available
-    if (!hasFirstPage && "kwic" in report.data && report.data.kwic) {
-      data.value.kwic = report.data.kwic
-      hasFirstPage = true
-      isReading.value = isReadingNew
-    }
-    if (report.hits !== null) data.value.hits = report.hits
-    progress.value = report.percent
-  })
 
-  return proxy.makeRequest(activeSearch.value.cqp, store.hpp, {
+  const params: ConcordanceParams = {
+    corpora: corpusSelection.getIds(),
+    cqp: activeSearch.value.cqp,
+    limit: store.hpp,
     reuseCounts: updating,
     isReading: store.reading_mode,
     defaultWithin: store.within,
@@ -73,10 +66,36 @@ async function load(updating = false) {
     freeOrder: !store.in_order,
     randomSeed: store.random_seed,
     sort: store.sort,
-  })
+  }
+
+  const onData: DataHandler<"/concordance"> = (partial) => {
+    // Since `data` is a shallowRef, make sure to replace the object.
+    data.value = clone(data.value) || { distribution: [], hits: 0, kwic: [] }
+    // Show first KWIC page when available
+    if (!hasFirstPage && "kwic" in partial && partial.kwic) {
+      data.value.kwic = partial.kwic
+      hasFirstPage = true
+      isReading.value = isReadingNew
+    }
+  }
+
+  const onProgress: ProgressHandler = (percent, hits) => {
+    // Since `data` is a shallowRef, make sure to replace the object.
+    data.value = clone(data.value) || { distribution: [], hits: 0, kwic: [] }
+    if (hits != undefined) data.value.hits = hits
+    progress.value = percent
+  }
+
+  const result = updating
+    ? await endpoint.query(params)
+    : await endpoint.stream(params, onProgress, onData)
+
+  isReading.value = isReadingNew
+
+  return result
 }
 
-const { data, loadResult } = useResult(progress, load, proxy)
+const { data, loadResult, state } = useResult(progress, load, endpoint)
 
 const distribution = computed(() => data.value?.distribution)
 const hitsCount = computed(() => data.value?.hits || 0)
@@ -114,7 +133,9 @@ const onOptionsChange = debounce(() => {
 
 watch(pageLocal, () => {
   matomo.value?.trackEvent("KWIC", "Change page")
-  loadResult(true)
+  // Updating only makes sense if the search has finished
+  const updating = state.value != "loading"
+  loadResult(updating)
 })
 
 watch(context, () =>
@@ -167,7 +188,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </label>
 
       <template #end>
-        <KwicExportButton :kwic :proxy :totalHits="hitsCount" />
+        <KwicExportButton :kwic :proxy="endpoint" :totalHits="hitsCount" />
       </template>
     </OptionsBar>
 

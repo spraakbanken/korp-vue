@@ -188,16 +188,15 @@ export class CorpusSet {
       }
     }
     return {
-      context: compact(output).join(),
+      context: compact(output),
       default_context: prefer,
     }
   }
 
   /**
-   * Calculate `within` parameter for the corpora, as a comma-separated list of corpora differing from the
-   * given default.
+   * Calculate `within` parameter for the corpora, as a list of corpora differing from the given default.
    */
-  getWithinParam(defaultWithin?: string): string | undefined {
+  getWithinParam(defaultWithin?: string): string[] | undefined {
     const output: string[] = []
     for (const corpus of this.corpora) {
       const withins = Object.keys(corpus.within)
@@ -205,7 +204,7 @@ export class CorpusSet {
         output.push(corpus.id.toUpperCase() + ":" + withins[0])
       }
     }
-    return output.join() || undefined
+    return output || undefined
   }
 
   getCommonWithins(): Record<string, string> {
@@ -231,21 +230,24 @@ export class CorpusSet {
     return withins
   }
 
+  // TODO Rename to buildConcordanceAttributeParams
   buildShowParams() {
-    const show: string[] = ["sentence"]
-    const show_struct: string[] = []
+    const attributes: string[] = ["sentence"]
+    const struct_attributes: string[] = []
 
     for (const corpus of this.corpora) {
-      show.push(...Object.keys(corpus.within).map((key) => key.split(" ").pop()!))
-      show.push(...Object.keys(corpus.attributes))
-
-      show_struct.push(...Object.keys(corpus["struct_attributes"]))
-      if (corpus["reading_mode"]) show_struct.push("text__id")
+      // Extract more struct names from the within setting
+      attributes.push(...Object.keys(corpus.within).map((key) => key.split(" ").pop()!))
+      // Add names of configured attributes
+      attributes.push(...Object.keys(corpus.attributes))
+      struct_attributes.push(...Object.keys(corpus["struct_attributes"]))
+      // Text id is required if reading mode is enabled
+      if (corpus["reading_mode"]) struct_attributes.push("text__id")
     }
 
     return {
-      show: uniq(show).join(),
-      show_struct: uniq(show_struct).join(),
+      attributes: uniq(attributes),
+      struct_attributes: uniq(struct_attributes),
     }
   }
 
