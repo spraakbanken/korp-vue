@@ -384,6 +384,18 @@ Clicking a value opens a dynamic _Example KWIC_ tab with the occurrences of that
 
 ## Concepts
 
+### Korp backend API
+
+[korp-backend](https://github.com/spraakbanken/) uses OpenAPI
+to document available endpoints, their expected parameters and response structure.
+These structures are converted to TypeScript types and placed in this codebase
+using the following command:
+
+```sh
+npx openapi-typescript https://ws.spraakbanken.gu.se/ws/korp/v9/openapi.json \
+  --root-types --root-types-no-schema-prefix -o src/core/backend/korp-api.d.ts
+```
+
 ### Corpus listing and selection
 
 The `corpusListing` and `corpusSelection` objects are global instances of the `CorpusSet` class.

@@ -2,7 +2,7 @@ import createClient, { type Middleware } from "openapi-fetch"
 import { omit, pick } from "lodash-es"
 import settings from "../config"
 import { KorpBackendError } from "./common"
-import type { paths } from "./types/openapi-types"
+import type { paths } from "./korp-api"
 import type {
   ClientParams,
   ClientPaths,
