@@ -1,5 +1,12 @@
 import type { Client, ClientPathsWithMethod } from "openapi-fetch"
-import type { components, paths } from "./types/openapi-types"
+import type {
+  paths,
+  StreamCompleteEvent,
+  StreamErrorEvent,
+  StreamKeepaliveEvent,
+  StreamProgressEvent,
+  StreamResultEvent,
+} from "./korp-api"
 
 /** The paths this client can handle */
 export type ClientPaths = ClientPathsWithMethod<Client<paths, "application/json">, "get">
@@ -10,11 +17,11 @@ export type ClientResponse<TPath extends ClientPaths> =
   paths[TPath]["get"]["responses"][200]["content"]["application/json"]
 
 export type StreamEvent =
-  | components["schemas"]["StreamProgressEvent"]
-  | components["schemas"]["StreamResultEvent"]
-  | components["schemas"]["StreamErrorEvent"]
-  | components["schemas"]["StreamCompleteEvent"]
-  | components["schemas"]["StreamKeepaliveEvent"]
+  | StreamProgressEvent
+  | StreamResultEvent
+  | StreamErrorEvent
+  | StreamCompleteEvent
+  | StreamKeepaliveEvent
 
 /** Additional request options */
 export type RequestOptions = {

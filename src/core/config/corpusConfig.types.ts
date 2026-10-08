@@ -1,4 +1,4 @@
-import type { components } from "../backend/types/openapi-types"
+import type { CorpusWorkbenchInfo } from "../backend/korp-api"
 import type { LangString } from "../model/locale"
 import type {
   Attribute,
@@ -31,7 +31,7 @@ export type Corpus<T extends CorpusRaw = CorpusRaw> = Omit<
   private_struct_attributes: string[]
   within: Record<string, string>
   context: Record<string, string>
-  info: components["schemas"]["CorpusWorkbenchInfo"]
+  info: CorpusWorkbenchInfo
   protected?: boolean
   common_attributes?: Record<string, true>
   time?: Record<number, number>
