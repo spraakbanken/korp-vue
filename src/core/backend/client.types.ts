@@ -1,5 +1,5 @@
 import type { Client, ClientPathsWithMethod } from "openapi-fetch"
-import type { components, paths } from "./openapi-types"
+import type { components, paths } from "./types/openapi-types"
 
 /** The paths this client can handle */
 export type ClientPaths = ClientPathsWithMethod<Client<paths, "application/json">, "get">

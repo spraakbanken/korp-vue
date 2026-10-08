@@ -124,7 +124,7 @@ export class CorpusSetParallel extends CorpusSet {
   }
 
   /** Get the within and context queries */
-  getAttributeQuery(attr: "context" | "within"): string {
+  getAttributeQuery(attr: "context" | "within"): string[] {
     const struct = this.getLinksFromLangs()
     const output: string[][] = struct.map((corps) => {
       const [main, ...others] = corps
@@ -137,7 +137,7 @@ export class CorpusSetParallel extends CorpusSet {
       })
     })
 
-    return output.join(",")
+    return output.flat()
   }
 
   getContextParams() {
@@ -147,7 +147,7 @@ export class CorpusSetParallel extends CorpusSet {
     }
   }
 
-  getWithinParam(): string {
+  getWithinParam(): string[] {
     return this.getAttributeQuery("within")
   }
 

@@ -1,7 +1,7 @@
 import createClient, { type Middleware } from "openapi-fetch"
 import { omit, pick } from "lodash-es"
 import settings from "../config"
-import { KorpBackendError, readIncrementally } from "./common"
+import { KorpBackendError } from "./common"
 import type { paths } from "./types/openapi-types"
 import type {
   ClientParams,
@@ -11,7 +11,7 @@ import type {
   ProgressHandler,
   RequestOptions,
   StreamEvent,
-} from "./types/client.types"
+} from "./client.types"
 import { corpusListing } from "../corpora/corpusListing"
 
 /** Client for the Korp backend OpenAPI spec */
@@ -98,53 +98,59 @@ export async function backendRequestStream<TPath extends ClientPaths>(
   let percent = 0
   const finalData = {}
 
-  await readIncrementally(
-    body,
-    parseNdjson((event) => {
-      if (event.event == "result") {
-        // Add new data to final object and call data handler
-        Object.assign(finalData, event.data)
-        onData?.(event.data as Partial<ClientResponse<TPath>>)
-      }
+  await readNdjsonStream<StreamEvent>(body, (event) => {
+    if (event.event == "result") {
+      // Add new data to final object and call data handler
+      Object.assign(finalData, event.data)
+      onData?.(event.data as Partial<ClientResponse<TPath>>)
+    }
 
-      if (event.event == "progress" && onProgress) {
-        // Calculate progress
-        // `corpora` is the list of corpora to be processed: get and store total token count
-        if (event.corpora) totalSize = corpusListing.pick(event.corpora).getTokenCount()
-        // `corpus` is a corpus that has been processed: add its size as percentage of the total
-        if (totalSize && event.corpus) {
-          const size = corpusListing.get(event.corpus)?.info.size || 0
-          percent += (size / totalSize) * 100
-        }
-        if (event.hits) hits += event.hits
-        onProgress(percent, hits)
+    if (event.event == "progress" && onProgress) {
+      // Calculate progress
+      // `corpora` is the list of corpora to be processed: get and store total token count
+      if (event.corpora) totalSize = corpusListing.pick(event.corpora).getTokenCount()
+      // `corpus` is a corpus that has been processed: add its size as percentage of the total
+      if (totalSize && event.corpus) {
+        const size = corpusListing.get(event.corpus)?.info.size || 0
+        percent += (size / totalSize) * 100
       }
+      if (event.hits) hits += event.hits
+      onProgress(percent, hits)
+    }
 
-      if (event.event == "error") throw new KorpBackendError(event.error.title, event.error.detail)
-    }),
-  )
+    if (event.event == "error") throw new KorpBackendError(event.error.title, event.error.detail)
+  })
 
   return finalData
 }
 
-/** Parse a chunk of NDJSON data and handle each event */
-function parseNdjson(handleEvent: (event: StreamEvent) => void) {
-  let line = ""
-  return (chunk: string) => {
-    chunk.split("\n").forEach((json) => {
-      // End of stream?
-      if (!json) {
-        if (line) console.error("Incomplete JSON line at end of stream")
-        return
-      }
-      // Add chunk to line buffer
-      line += json
+/** Read and handle a NDJSON stream */
+export async function readNdjsonStream<TEvent>(
+  stream: ReadableStream,
+  handleEvent: (event: TEvent) => void,
+): Promise<void> {
+  const reader = stream.getReader()
+  // Store incomplete JSON line possibly remaining from last chunk */
+  let incomplete = ""
+  // Read the stream
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    const chunk = new TextDecoder("utf-8").decode(value)
+    // Add incomplete part of previous chunk
+    const chunkFull = incomplete + chunk
+    incomplete = ""
+    // Parse each line as an event
+    chunkFull.split("\n").forEach((line) => {
+      // End of chunk
+      if (!line) return
+      // Parse and handle event
       try {
         const event = JSON.parse(line)
-        line = ""
         handleEvent(event)
       } catch {
         // JSON was not complete, wait for next chunk to complete the line
+        incomplete = line
       }
     })
   }

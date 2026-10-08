@@ -73,7 +73,7 @@ export type KwicMatch = {
   /** End position of the match within the context */
   end: number
   /** Global corpus position of the match */
-  position: number
+  position: number | undefined
 }
 
 export type Token = {
