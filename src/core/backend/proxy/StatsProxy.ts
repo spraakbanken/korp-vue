@@ -55,7 +55,7 @@ export class StatsProxy extends ProxyBase<"count"> {
 
     let within = corpora.getWithinParam(defaultWithin)
     // Replace "ABC-aa|ABC-bb:link" with "ABC-aa:link"
-    if (settings.parallel) within = within?.replace(/\|.*?:/g, ":")
+    if (settings.parallel) within = within?.map((w) => w.replace(/\|.*?:/g, ":"))
 
     const split = options.filter((option) => option.type == "set").map((option) => option.name)
     // For ranked attributes, only count the top-ranking value in a token.
