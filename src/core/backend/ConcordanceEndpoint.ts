@@ -6,7 +6,7 @@ import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "./korp-ap
 
 export type ConcordanceParams = {
   corpora: string[]
-  cqp: string
+  cqp: string[]
   defaultWithin?: string
   display?: "kwic" | "context" | "text"
   freeOrder?: boolean
@@ -56,8 +56,9 @@ export class ConcordanceEndpoint extends EndpointBase<
 
     return Promise.resolve({
       corpora,
-      cqp: [expandCqp(cqp)],
+      cqp,
       default_within: defaultWithin,
+      expand_prequeries: cqp.length > 1 ? false : undefined,
       within: cl.getWithinParam(defaultWithin),
       ...cl.getContextParams(display),
       ...cl.buildShowParams(display == "text"),
