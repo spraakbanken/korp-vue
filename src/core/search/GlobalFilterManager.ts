@@ -1,6 +1,6 @@
 import { cloneDeep, isEqual, mapValues, pickBy } from "lodash-es"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"
-import type { RecursiveRecord } from "@/core/backend/types/attrValues"
+import type { AttributeValuesWithCounts } from "@/core/backend/korp-api"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { countAttrValues } from "@/core/backend/attrValues"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
@@ -18,7 +18,7 @@ export type FilterData = {
 
 export class GlobalFilterManager {
   attrs: Attribute[] = []
-  data: RecursiveRecord<number> = {}
+  data: AttributeValuesWithCounts = {}
   filters: Record<string, FilterData> = {}
   private static instance: GlobalFilterManager
 
@@ -113,7 +113,7 @@ export class GlobalFilterManager {
   /** Recursive helper for `updateData` */
   private collectAndSum(
     attrs: string[],
-    elements: RecursiveRecord<number>,
+    elements: AttributeValuesWithCounts,
     parentSelected: boolean,
   ): [number, boolean] {
     const [attrInit, ...attrTail] = attrs

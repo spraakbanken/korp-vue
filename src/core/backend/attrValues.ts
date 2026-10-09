@@ -1,5 +1,4 @@
 import { memoize, uniq } from "lodash-es"
-import type { RecursiveRecord } from "./types/attrValues"
 import { backendRequest } from "./client"
 import type { AttributeValuesWithCounts } from "./korp-api"
 
@@ -9,7 +8,7 @@ export const countAttrValues: (
   attrs: string[],
   /** Attributes whose values should be split by "|" */
   split?: string[],
-) => Promise<RecursiveRecord<number>> = memoize(
+) => Promise<AttributeValuesWithCounts> = memoize(
   async (corpora, attrs, split = []) => {
     // Join attributes as a hierarchical path that shapes the response
     const attributePath = attrs.join(">")

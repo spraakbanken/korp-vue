@@ -355,6 +355,7 @@ stat.freq: absolut frekvens
 stat.freq_relative: relativ frekvens
 stat.loglike: log-likelihood
 stat.mi: LMI
+stat.rmi: Relativ LMI
 
 tag.sentence: mening
 tag.paragraph: stycke

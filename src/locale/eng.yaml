@@ -354,6 +354,7 @@ stat.freq: absolute frequency
 stat.freq_relative: relative frequency
 stat.loglike: log-likelihood
 stat.mi: LMI
+stat.rmi: Relative LMI
 
 tag.sentence: sentence
 tag.paragraph: paragraph
