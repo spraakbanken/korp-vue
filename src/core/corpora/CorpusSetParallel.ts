@@ -36,6 +36,22 @@ export class CorpusSetParallel extends CorpusSet {
     super.pickFrom(source, idsAll)
   }
 
+  getIds(uppercase = false, onlyMain = false): string[] {
+    const maybeToUpper = (id: string) => (uppercase ? id.toUpperCase() : id)
+    const lists = this.getLinksFromLangs()
+
+    if (onlyMain) {
+      // Select corpora in the first search language
+      const corpora = lists.flat().filter((item) => item.lang === this.langs[0])
+      return corpora.map((corpus) => maybeToUpper(corpus.id))
+    }
+
+    // Format pairs like X-SV|X-DA, X-SV|X-EN...
+    return lists.flatMap(([main, ...others]) =>
+      others.map((other) => maybeToUpper(`${main.id}|${other.id}`)),
+    )
+  }
+
   setLangs(langs: string[]): void {
     this.langs = [...langs]
   }
@@ -152,19 +168,7 @@ export class CorpusSetParallel extends CorpusSet {
   }
 
   stringify(onlyMain?: boolean): string {
-    const lists = this.getLinksFromLangs()
-
-    if (onlyMain) {
-      // Select corpora in the first search language
-      const corpora = lists.flat().filter((item) => item.lang === this.langs[0])
-      return corpora.map((corpus) => corpus.id.toUpperCase()).join()
-    }
-
-    // Format pairs like X-SV|X-DA,X-SV|X-EN...
-    return lists
-      .flatMap(([main, ...others]) => others.map((other) => `${main.id}|${other.id}`))
-      .join()
-      .toUpperCase()
+    return this.getIds(true, onlyMain).join()
   }
 
   get(corpusID: string): PCorpus {

@@ -1,8 +1,8 @@
-import type { CountsMerged } from "../backend/types/count"
+import type { FrequenciesData } from "../backend/FrequenciesEndpoint"
 
 export type StatisticsWorkerMessage = {
   type: "korpStatistics"
-  data: CountsMerged
+  data: FrequenciesData
   groupStatistics: string[]
 }
 
@@ -16,7 +16,7 @@ export type StatisticsPostprocessor = (data: StatisticsProcessed) => StatisticsP
 export type SearchParams = {
   reduceVals: string[]
   ignoreCase: boolean
-  originalCorpora: string
+  originalCorpora: string[]
   corpora: string[]
   prevNonExpandedCQP: string
 }
@@ -35,7 +35,7 @@ export type StandardSingleRow = RowBase & {
   /** Plain-text representations of each attribute value */
   plainValue: Record<string, string>
   /** For each match token, a record of non-simplified attr values, e.g. ["foo:12", "foo:34"] */
-  statsValues: Record<string, string[]>[]
+  statsValues: Record<string, null | string[]>[]
 }
 
 /**

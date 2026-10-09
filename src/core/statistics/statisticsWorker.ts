@@ -6,8 +6,8 @@ import type {
   TotalRow,
   StatisticsWorkerMessage,
 } from "./statistics.types"
-import type { StatsRow } from "../backend/types/count"
 import { splitSuffix } from "../util"
+import type { FrequencyRow } from "../backend/korp-api"
 
 /*
     This is optimized code for transforming the statistics data.
@@ -17,6 +17,9 @@ import { splitSuffix } from "../util"
 const isStatisticsMessageEvent = (e: MessageEvent): e is MessageEvent<StatisticsWorkerMessage> =>
   e.data.type === "korpStatistics"
 
+/** Represents `null` in keys used for grouping rows */
+const NULL_PLACEHOLDER = "_NULL"
+
 onmessage = function (e) {
   // Ignore messages sent by Webpack dev server.
   if (!isStatisticsMessageEvent(e)) return
@@ -24,12 +27,11 @@ onmessage = function (e) {
   const message = e.data
   const { combined, corpora } = message.data
 
-  const simplifyValue = function (values: string[] | string, attr: string): string {
+  const simplifyValue = function (values: (string | null)[], attr: string): string {
     if (message.groupStatistics.includes(attr))
       // For these attrs, ":" must only be used when merging is desired, e.g. for ranking or MWE indexing.
-      values = (values as string[]).map((value) => splitSuffix(value)[0])
-    // for struct attributes only a value is sent, not list
-    return Array.isArray(values) ? values.join(" ") : values
+      values = values.map((value) => splitSuffix(value || NULL_PLACEHOLDER)[0])
+    return values.join(" ")
   }
 
   /**
@@ -38,13 +40,13 @@ onmessage = function (e) {
    * it removes suffixes `:<rank/numbering>` from
    * attributes that are in `group_statistics` in config.yml
    */
-  const simplifyHitString = (item: StatsRow): string =>
+  const simplifyHitString = (item: FrequencyRow): string =>
     Object.entries(item.value)
       .map(([attr, values]) => simplifyValue(values, attr))
       .join("/")
 
   // Group data by simplified values, e.g. "foo:12" and "foo:34" under "foo"
-  const groupedRows = groupBy(combined.rows, (item) => simplifyHitString(item))
+  const groupedRows = groupBy(combined.rows || [], (item) => simplifyHitString(item))
   const rowIds = Object.keys(groupedRows)
   // Pre-allocate array for performance
   const dataset: Dataset = new Array(rowIds.length + 1)
@@ -67,27 +69,25 @@ onmessage = function (e) {
   for (let i = 0; i < rowIds.length; i++) {
     const rowId = rowIds[i]
     /** Actual (pre grouping) values by attribute per token, used for creating sub CQPs. */
-    const statsValues: Record<string, string[]>[] = []
+    const statsValues: Record<string, null | string[]>[] = []
     const plainValue: Record<string, string> = {}
 
     for (const row of groupedRows[rowId]) {
       // Walk through original values, e.g. "foo:12" and "foo:34"
-      for (const [reduceVal, terms] of Object.entries(row.value)) {
-        // Mostly array, but some structural attrs are single strings
-        if (!Array.isArray(terms)) {
-          statsValues[0] ??= {}
-          statsValues[0][reduceVal] = [terms]
-        } else {
-          // The array has one value per word in match
-          terms.forEach((term, idx) => {
-            statsValues[idx] ??= {}
-            statsValues[idx][reduceVal] ??= []
-            if (!statsValues[idx][reduceVal].includes(term)) {
-              statsValues[idx][reduceVal].push(term)
+      for (const [attr, terms] of Object.entries(row.value)) {
+        // The array has one value per word in match
+        terms.forEach((term, idx) => {
+          statsValues[idx] ??= {}
+          if (term == null) {
+            statsValues[idx][attr] = null
+          } else {
+            statsValues[idx][attr] ??= []
+            if (!statsValues[idx][attr].includes(term)) {
+              statsValues[idx][attr].push(term)
             }
-          })
-        }
-        plainValue[reduceVal] = simplifyValue(terms, reduceVal)
+          }
+        })
+        plainValue[attr] = simplifyValue(terms, attr)
       }
     }
 
@@ -106,7 +106,7 @@ onmessage = function (e) {
   self.postMessage(dataset)
 }
 
-const sumByAbsRel = (rows: StatsRow[]): AbsRelSeq => [
+const sumByAbsRel = (rows: FrequencyRow[]): AbsRelSeq => [
   sumBy(rows, "absolute"),
   sumBy(rows, "relative"),
 ]
