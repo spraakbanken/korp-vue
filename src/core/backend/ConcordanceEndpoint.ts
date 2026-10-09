@@ -8,8 +8,8 @@ export type ConcordanceParams = {
   corpora: string[]
   cqp: string
   defaultWithin?: string
+  display?: "kwic" | "context" | "text"
   freeOrder?: boolean
-  isReading?: boolean
   limit: number
   page?: number
   /** Enable to reuse the pagination state from the last request, causing backend to skip counting hits per corpora. */
@@ -42,10 +42,10 @@ export class ConcordanceEndpoint extends EndpointBase<
       corpora,
       cqp,
       defaultWithin = getDefaultWithin(),
+      display,
       freeOrder,
-      isReading,
       limit,
-      page = 1,
+      page = 0,
       reuseCounts,
       randomSeed,
       sort,
@@ -59,11 +59,11 @@ export class ConcordanceEndpoint extends EndpointBase<
       cqp: [expandCqp(cqp)],
       default_within: defaultWithin,
       within: cl.getWithinParam(defaultWithin),
-      ...cl.getContextParams(!!isReading),
-      ...cl.buildShowParams(),
-      free_order: freeOrder,
+      ...cl.getContextParams(display),
+      ...cl.buildShowParams(display == "text"),
+      free_order: freeOrder || undefined,
       random_seed: randomSeed,
-      sort: sort || undefined,
+      sort,
       pagination_state: this.paginationState,
       limit,
       offset: limit * page,
