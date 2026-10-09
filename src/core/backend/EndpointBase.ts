@@ -26,21 +26,23 @@ export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> ex
 
   /** Make a request to the API endpoint */
   async query(params: TParams): Promise<TData> {
-    const requestParams = await this.processParams(params)
+    this.lastParams = await this.processParams(params)
     const options = { abortSignal: this.getAbortSignal() }
-    const data = await backendRequest(this.path, requestParams, options)
+    const data = await backendRequest(this.path, this.lastParams, options)
+    this.lastResponse = data
     return this.processResponse(data)
   }
 
   /** Make a request to the API endpoint, streaming progress and partial data */
   async stream(
     params: TParams,
-    onProgress?: (progress: number) => void,
+    onProgress?: (percent: number) => void,
     onData?: (data: ClientResponse<TPath>) => void,
   ): Promise<TData> {
-    const requestParams = await this.processParams(params)
+    this.lastParams = await this.processParams(params)
     const options = { abortSignal: this.getAbortSignal() }
-    const data = await backendRequestStream(this.path, requestParams, onProgress, onData, options)
+    const data = await backendRequestStream(this.path, this.lastParams, onProgress, onData, options)
+    this.lastResponse = data
     return this.processResponse(data)
   }
 }
