@@ -5,12 +5,11 @@ import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
 import { corpusSelection } from "@/core/corpora/corpusListing"
-import type { RelationsResponse } from "@/core/backend/korp-api"
+import type { DependencyRelationMeasure, RelationsResponse } from "@/core/backend/korp-api"
 import {
   DependencyRelationsEndpoint,
   type DependencyRelationsParams,
 } from "@/core/backend/DependencyRelationsEndpoint"
-import type { RelationsSort } from "@/core/backend/types/relations"
 import { formatWordOrLemgram, parseWordQuery, type MatchedRelation } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
@@ -38,8 +37,8 @@ const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const limit = ref(LIMITS[0])
 const rawResponse = ref<RelationsResponse>()
 const showPos = ref(false)
-const sort = ref<RelationsSort>("mi")
-const sortLocal = ref<RelationsSort>("mi")
+const sort = ref<DependencyRelationMeasure>("mi")
+const sortLocal = ref<DependencyRelationMeasure>("mi")
 
 const endpoint = new DependencyRelationsEndpoint()
 

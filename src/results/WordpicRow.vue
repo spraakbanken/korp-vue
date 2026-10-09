@@ -1,27 +1,33 @@
 <script setup lang="ts">
-import type { RelationsSort } from "@/core/backend/types/relations"
 import { formatDecimals } from "@/core/i18n"
-import { formatWordOrLemgram, type MatchedRelation } from "@/core/wordpic"
+import { formatWordOrLemgram, MEASURES, type MatchedRelation } from "@/core/wordpic"
 import { computed } from "vue"
 import { useI18n } from "vue-i18n"
 import { vPopover } from "@/bootstrap"
 import { mapKeys } from "lodash-es"
-import { createKeyValueHtml } from "@/core/util"
+import type { DependencyRelationMeasure } from "@/core/backend/korp-api"
+import { createKeyValueHtml, fromKeys } from "@/core/util"
 import { getEmptyValueHtml } from "./formatter"
 
 const { locale, t } = useI18n()
 
 const props = defineProps<{
   row: MatchedRelation
-  sort: RelationsSort
+  sort: DependencyRelationMeasure
   showPos?: boolean
 }>()
 
 const stats = computed(() => {
-  return {
-    freq: String(props.row.freq),
-    mi: formatDecimals(props.row.mi, 2),
+  const converters: Record<DependencyRelationMeasure, (x: number) => string> = {
+    freq: String,
+    freq_relative: (x) => formatDecimals(x, 2),
+    mi: (x) => formatDecimals(x, 2),
+    rmi: (x) => formatDecimals(x, 2),
   }
+
+  return fromKeys([...MEASURES], (measure) =>
+    props.row[measure] != null ? converters[measure](props.row[measure]) : undefined,
+  )
 })
 
 const valueHtml = computed(() => {
