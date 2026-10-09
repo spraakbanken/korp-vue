@@ -1,8 +1,8 @@
 import { fill } from "lodash-es"
 import { isCorpusHeading, isKwic, type CorpusHeading, type KwicRow, type Row } from "./kwic"
-import type { QueryParams } from "../backend/types/query"
-import type { RelationsSentencesParams } from "../backend/types/relations-sentences"
 import { locObj } from "../i18n"
+import type { ConcordanceRequest } from "../backend/korp-api"
+import type { ClientParams } from "../backend/client.types"
 
 export type ExportType = "kwic" | "annotations"
 
@@ -11,28 +11,29 @@ type AnnotationsRow = KwicRow | CorpusHeading
 
 type TableRow = (string | number)[]
 
-export type KwicParams = QueryParams | RelationsSentencesParams
+export type KwicParams =
+  ClientParams<"/concordance"> | ClientParams<"/dependency-relations/sentences">
+
+const isConcordanceParams = (params: KwicParams): params is ConcordanceRequest => "cqp" in params
 
 const emptyRow = (length: number) => fill(new Array(length), "")
 
 const padRows = (data: string[], length: number) =>
   data.map((value) => [value, ...emptyRow(length - 1)])
 
-const isQueryParams = (params: KwicParams): params is QueryParams => "cqp" in params
-
 function* createSearchInfo(requestInfo: KwicParams, totalHits: number) {
-  if (isQueryParams(requestInfo)) {
-    yield `## CQP query: ${requestInfo.cqp}`
-    if (requestInfo.cqp2) yield `## CQP query 2: ${requestInfo.cqp2}`
-    if (requestInfo.cqp3) yield `## CQP query 3: ${requestInfo.cqp3}`
+  if (isConcordanceParams(requestInfo)) {
+    const cqps = [...requestInfo.cqp]
+    yield `## CQP query: ${cqps.shift()}`
+    for (let i = 0; i < cqps.length; i++) yield `## CQP query ${i + 1}: ${cqps[i]}`
     yield `## context: ${requestInfo.default_context}`
     yield `## within: ${requestInfo.default_within}`
     yield `## sorting: ${requestInfo.sort || "none"}`
   } else {
     yield `## CQP query: N/A`
   }
-  yield `## start: ${requestInfo.start}`
-  yield `## end: ${requestInfo.end}`
+  yield `## offset: ${requestInfo.offset}`
+  yield `## limit: ${requestInfo.limit}`
   yield `## Total hits: ${totalHits}`
 }
 
