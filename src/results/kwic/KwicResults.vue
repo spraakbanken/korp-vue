@@ -58,9 +58,9 @@ async function load(updating = false) {
   const params: ConcordanceParams = {
     corpora: corpusSelection.getIds(),
     cqp: activeSearch.value.cqp,
+    display: store.reading_mode ? "context" : "kwic",
     limit: store.hpp,
     reuseCounts: updating,
-    isReading: store.reading_mode,
     defaultWithin: store.within,
     page: store.page,
     freeOrder: !store.in_order,
