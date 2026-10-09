@@ -1,5 +1,4 @@
 import { compact } from "lodash-es"
-import type { CountsMerged } from "../backend/types/count"
 import {
   isPhraseLevelDisjunctionRow,
   isStandardSingleRow,
@@ -16,17 +15,18 @@ import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
 import { joinWords } from "../corpora/attribute"
+import type { FrequenciesData } from "../backend/FrequenciesEndpoint"
 
 export function processStatisticsResult(
-  originalCorpora: string,
-  data: CountsMerged,
+  originalCorpora: string[],
+  data: FrequenciesData,
   reduceVals: string[],
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
   stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
   postprocess?: StatisticsPostprocessor,
 ): Promise<StatisticsProcessed> {
-  const corpora = Object.keys(data.corpora)
+  const corpora = Object.keys(data.corpora || {})
 
   const params: SearchParams = {
     reduceVals,
@@ -96,15 +96,18 @@ export function getRowCqp(
 }
 
 export function getCqp(
-  hitValues: Record<string, string[]>[],
+  hitValues: Record<string, null | string[]>[],
   ignoreCase: boolean,
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
   const tokens = hitValues
     .map((token) =>
-      Object.entries(token).map(([attr, values]) =>
-        reduceCqp(attr, values, ignoreCase, cqpStringifiers[attr]),
-      ),
+      Object.entries(token).map(([name, values]) => {
+        if (values) return reduceCqp(name, values, ignoreCase, cqpStringifiers[name])
+        // Handle null value
+        const attribute = corpusSelection.getReduceAttrs()[name]
+        return `${attribute ? prefixAttr(attribute) : name} = "__UNDEF__"`
+      }),
     )
     .map((conditions) => "[" + conditions.join(" & ") + "]")
 
@@ -163,9 +166,9 @@ export function createStatisticsCsv(
 
   const output = data.map((row) => {
     // One cell per grouped attribute
-    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]!))
+    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]))
     const corpusIds = Object.keys(corpusTitles)
-    const frequencies = corpusIds.map((id) => row.count[id.toUpperCase()]![frequencyIndex])
+    const frequencies = corpusIds.map((id) => row.count[id][frequencyIndex])
     return [...attrValues, row.total[frequencyIndex], ...frequencies]
   })
 

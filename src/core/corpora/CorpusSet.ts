@@ -51,15 +51,16 @@ export class CorpusSet {
     return cl
   }
 
-  /** Corpus ids, in lowercase by default */
-  getIds(uppercase = false): string[] {
-    return this.map((corpus) => (uppercase ? corpus.id.toUpperCase() : corpus.id))
-  }
-
   /** Replace all our elements with selected ones from another set */
   pickFrom(source: CorpusSet, ids: string[]) {
     this.corpora = source.corpora.filter((corpus) => ids.includes(corpus.id))
     this.updateAttributes()
+  }
+
+  /** Corpus ids, in lowercase by default */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- onlyMain param is used in subclass
+  getIds(uppercase = false, onlyMain?: boolean): string[] {
+    return this.map((corpus) => (uppercase ? corpus.id.toUpperCase() : corpus.id))
   }
 
   map<T>(f: (corpus: Corpus) => T): T[] {
@@ -162,7 +163,7 @@ export class CorpusSet {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- onlyMain param is used in subclass
   stringify(onlyMain?: boolean): string {
-    return this.map((corpus) => corpus.id.toUpperCase()).join()
+    return this.getIds(true).join()
   }
 
   getWithinKeys(): string[] {
