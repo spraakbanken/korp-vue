@@ -1,6 +1,5 @@
 import { getDefaultWithin } from "../config"
 import { corpusListing } from "../corpora/corpusListing"
-import { expandCqp } from "../cqp/cqp"
 import { EndpointBase } from "./EndpointBase"
 import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "./korp-api"
 
@@ -61,7 +60,7 @@ export class ConcordanceEndpoint extends EndpointBase<
       expand_prequeries: cqp.length > 1 ? false : undefined,
       within: cl.getWithinParam(defaultWithin),
       ...cl.getContextParams(display),
-      ...cl.buildShowParams(display == "text"),
+      ...cl.buildConcordanceAttributeParams(display == "text"),
       free_order: freeOrder || undefined,
       random_seed: randomSeed,
       sort,

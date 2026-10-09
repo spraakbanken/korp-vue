@@ -189,7 +189,7 @@ watch(sort, () => matomo.value?.trackEvent("KWIC", "Change sort", sort.value || 
       </label>
 
       <template #end>
-        <KwicExportButton :kwic :proxy="endpoint" :totalHits="hitsCount" />
+        <KwicExportButton :kwic :endpoint :totalHits="hitsCount" />
       </template>
     </OptionsBar>
 

@@ -235,8 +235,7 @@ export class CorpusSet {
     return withins
   }
 
-  // TODO Rename to buildConcordanceAttributeParams
-  buildShowParams(includeWhitespace = false) {
+  buildConcordanceAttributeParams(includeWhitespace = false) {
     const attributes: string[] = ["sentence"]
     const struct_attributes: string[] = []
 
