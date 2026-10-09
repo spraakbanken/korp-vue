@@ -1,10 +1,16 @@
 import { isEqual, once } from "lodash-es"
 import type { WordPictureDef, WordPictureDefItem } from "./config/instanceConfig.types"
-import type { Relation } from "./backend/types/relations"
 import { getWordPictureConfig } from "./config"
 import { Lemgram } from "./lemgram"
+import { isCqpToken, type CqpQuery } from "./cqp/cqp.types"
+import { parse } from "./cqp/cqp"
+import { regescape, unregescape } from "./util"
+import type { RelationRow, TermType } from "./backend/korp-api"
 
-export type WordType = "word" | "lemgram"
+export type WordQuery = {
+  type: TermType
+  word: string
+}
 
 export type WordPictureData = WordPictureSection[]
 
@@ -32,17 +38,47 @@ export type WordPictureColumn = {
   rows: MatchedRelation[]
 }
 
-export type MatchedRelation = Relation & {
+export type MatchedRelation = RelationRow & {
   /** True if the search word matches `dep` instead of `head`. */
   reverse: boolean
   /** Copy of `head` or `dep`, whichever matches the search word. */
   match: string
-  matchpos: string
+  match_pos: string
   /** Copy of `head` or `dep`, whichever doesn't match the search word. */
   other: string
-  otherpos: string
+  other_pos: string
   /** Copy of `depextra` if the search word matches `head` – a preposition or other string to show together with the related word */
   prefix?: string
+}
+
+/** Parse and check if a query can be used for word picture. */
+export function parseWordQuery(cqp: string): WordQuery {
+  let tokens: CqpQuery
+  try {
+    tokens = parse<CqpQuery>(cqp)
+  } catch (error) {
+    throw new RelationsParseError(String(error))
+  }
+
+  if (tokens.length != 1 || !isCqpToken(tokens[0]))
+    throw new RelationsParseError("Must be single token")
+  const conditions = tokens[0].and_block
+  if (conditions[0]?.length != 1) throw new RelationsParseError("Must have a single condition")
+  const condition = conditions[0][0]!
+
+  const isWord = condition.type == "word" && condition.op == "="
+  const isLemgram = condition.type == "lex" && condition.op == "contains"
+  if (!isWord && !isLemgram) throw new RelationsParseError(`Attribute/operator not allowed`)
+
+  if (!condition.val) throw new RelationsParseError("Condition value must not be empty")
+
+  if (condition.val != regescape(unregescape(condition.val)))
+    throw new RelationsParseError("Condition value must not contain regex patterns")
+
+  return {
+    type: isWord ? "word" : "lexeme",
+    word: condition.val as string,
+  }
 }
 
 export class WordPicture {
@@ -52,29 +88,29 @@ export class WordPicture {
 
   constructor(
     readonly query: string,
-    readonly type: WordType,
-    itemsRaw: Relation[],
+    readonly type: TermType,
+    itemsRaw: RelationRow[],
   ) {
-    const convertItem = (item: Relation): MatchedRelation | undefined => {
-      const { head, headpos, dep, deppos, depextra } = item
+    const convertItem = (item: RelationRow): MatchedRelation | undefined => {
+      const { head, head_pos, dependent, dependent_pos, dependent_extra } = item
       if (query == head)
         return {
           ...item,
           reverse: false,
           match: head,
-          matchpos: headpos,
-          other: dep,
-          otherpos: deppos,
-          prefix: depextra,
+          match_pos: head_pos,
+          other: dependent,
+          other_pos: dependent_pos,
+          prefix: dependent_extra,
         }
-      if (query == dep)
+      if (query == dependent)
         return {
           ...item,
           reverse: true,
-          match: dep,
-          matchpos: deppos,
+          match: dependent,
+          match_pos: dependent_pos,
           other: head,
-          otherpos: headpos,
+          other_pos: head_pos,
         }
       console.warn("Unmatched relations item", item)
     }
@@ -82,11 +118,11 @@ export class WordPicture {
     for (const itemRaw of itemsRaw) {
       const item = convertItem(itemRaw)
       if (!item) continue
-      const { match, matchpos, rel, reverse } = item
+      const { match, match_pos: matchpos, relation, reverse } = item
       // Skip relations that are not configured
       if (!this.config[matchpos]) continue
       // Store items by category
-      const id = this.getColumnId(matchpos, rel, reverse)
+      const id = this.getColumnId(matchpos, relation, reverse)
       this.items[id] ??= []
       this.items[id].push(item)
       // Store distinct section headings
@@ -134,11 +170,11 @@ export class WordPicture {
   *generateCsv(): Generator<string[]> {
     const fields: (keyof MatchedRelation)[] = [
       "head",
-      "headpos",
-      "dep",
-      "deppos",
-      "rel",
-      "depextra",
+      "head_pos",
+      "dependent",
+      "dependent_pos",
+      "relation",
+      "dependent_extra",
       "freq",
       "mi",
     ]
@@ -166,3 +202,5 @@ export function formatWordOrLemgram(
   // Not a lemgram, return word, optionally with POS
   return showPos ? `${word} (${t(`pos.${pos.toLowerCase()}`)})` : word
 }
+
+export class RelationsParseError extends Error {}

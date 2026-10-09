@@ -2,7 +2,7 @@ import { ref } from "vue"
 import type { ErrorMessage } from "./ErrorBox.vue"
 import { KorpBackendError } from "@/core/backend/common"
 import { useI18n } from "vue-i18n"
-import { RelationsParseError } from "@/core/backend/proxy/RelationsProxy"
+import { RelationsParseError } from "@/core/wordpic.ts"
 
 /** Interprets and holds an error, suitable for use with the `ErrorBox` component. */
 export default function useError() {

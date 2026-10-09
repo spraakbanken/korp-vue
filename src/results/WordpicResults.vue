@@ -4,9 +4,14 @@ import { computed, onMounted, ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { debounce } from "lodash-es"
-import { RelationsProxy } from "@/core/backend/proxy/RelationsProxy"
-import type { RelationsResponse, RelationsSort } from "@/core/backend/types/relations"
-import { formatWordOrLemgram, type MatchedRelation } from "@/core/wordpic"
+import { corpusSelection } from "@/core/corpora/corpusListing"
+import type { RelationsResponse } from "@/core/backend/korp-api"
+import {
+  DependencyRelationsEndpoint,
+  type DependencyRelationsParams,
+} from "@/core/backend/DependencyRelationsEndpoint"
+import type { RelationsSort } from "@/core/backend/types/relations"
+import { formatWordOrLemgram, parseWordQuery, type MatchedRelation } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import { WordpicExampleTask } from "@/core/task/WordpicExampleTask"
@@ -36,24 +41,30 @@ const showPos = ref(false)
 const sort = ref<RelationsSort>("mi")
 const sortLocal = ref<RelationsSort>("mi")
 
-const proxy = new RelationsProxy().setProgressHandler((report) => {
-  progress.value = report.percent
-})
+const endpoint = new DependencyRelationsEndpoint()
 
 onMounted(() => matomo.value?.trackEvent("Wordpic", "Activate"))
 
 async function load() {
-  const query = RelationsProxy.parseCqp(cqp.value)
-  const result = await proxy.makeRequest(query.type, query.word, sortLocal.value)
+  const params: DependencyRelationsParams = {
+    corpora: corpusSelection.getIds(),
+    query: parseWordQuery(cqp.value),
+    sort: sortLocal.value,
+  }
 
-  rawResponse.value = proxy.getResponse()
+  const result =
+    corpusSelection.corpora.length > 1
+      ? await endpoint.stream(params, (percent) => (progress.value = percent))
+      : await endpoint.query(params)
+
+  rawResponse.value = endpoint.getResponse()
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
   sort.value = sortLocal.value
 
   return result
 }
 
-const { data, loadResult } = useResult(progress, load, proxy)
+const { data, loadResult } = useResult(progress, load, endpoint)
 
 // Start watching the active search query
 watchImmediate(activeSearch, () => loadResult())
@@ -64,7 +75,7 @@ const onOptionsChange = debounce(() => {
 }, UPDATE_DELAY_MS)
 
 function onClickRow(row: MatchedRelation): void {
-  const task = new WordpicExampleTask(activeSearch.value!.corpora, row.source.join())
+  const task = new WordpicExampleTask(activeSearch.value!.corpora, row.sources.join())
   createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Wordpic", "Subsearch")
 }
