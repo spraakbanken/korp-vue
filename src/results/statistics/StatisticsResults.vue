@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NoSupportedCorporaError, StatsProxy } from "@/core/backend/proxy/StatsProxy"
+import { FrequenciesEndpoint, NoSupportedCorporaError } from "@/core/backend/FrequenciesEndpoint"
 import {
   createStatisticsCsv,
   getRowCqp,
@@ -27,7 +27,7 @@ import { locObj, percentage } from "@/core/i18n"
 import { useStringifiers } from "@/attributes/useStringifiers"
 import { fromKeys } from "@/core/util"
 import settings from "@/core/config"
-import type { CountResponse } from "@/core/backend/types/count"
+import type { FrequenciesResponse } from "@/core/backend/korp-api"
 import useSearchStore from "@/search/useSearchStore"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { useMatomo } from "vue3-matomo"
@@ -52,14 +52,12 @@ const cqp = computed(() => activeSearch.value?.cqp || "[]")
 const isLimited = ref(false)
 const unsupportedRatio = ref(0)
 const unsupportedAttributes = ref<AttributeOption[]>([])
-const rawResponse = ref<CountResponse>()
+const rawResponse = ref<FrequenciesResponse>()
 const rowsSelected = ref<Row[]>([])
 let withinSearched: string | null = null
 const { statsRelative } = storeToRefs(store)
 
-const proxy = new StatsProxy().setProgressHandler((report) => {
-  progress.value = report.percent
-})
+const endpoint = new FrequenciesEndpoint()
 
 /** Number of statistics rows except the totals row */
 const rowCount = computed(() => data.value && data.value.rows.length - 1)
@@ -98,10 +96,13 @@ async function load() {
   // Statistics does not support parallel queries
   const cqpValue = settings.parallel ? cqp.value.replace(/\:LINKED_CORPUS.*/, "") : cqp.value
 
-  const counts = await proxy.makeRequest(cqpValue, attrs, withinSearched, ignoreCase)
+  const counts = await endpoint.stream(
+    { attrs, cqp: cqpValue, defaultWithin: withinSearched, ignoreCase },
+    (percent) => (progress.value = percent),
+  )
 
   const result = await processStatisticsResult(
-    corpora.stringify(false),
+    corpora.getIds(false, false),
     counts,
     attrs,
     ignoreCase,
@@ -110,10 +111,11 @@ async function load() {
     postprocess,
   )
 
-  rawResponse.value = proxy.getResponse()
-  isLimited.value = !!settings["statistics_limit"] && counts.combined.rows.length < counts.count
-  unsupportedRatio.value = proxy.unsupportedRatio
-  unsupportedAttributes.value = proxy.unsupportedAttributes
+  rawResponse.value = endpoint.getResponse()
+  isLimited.value =
+    !!settings["statistics_limit"] && counts.combined.rows.length < counts.combined.total_rows
+  unsupportedRatio.value = endpoint.unsupportedRatio
+  unsupportedAttributes.value = endpoint.unsupportedAttributes
 
   return result
 }
@@ -123,7 +125,7 @@ function onError(error: unknown) {
   return error
 }
 
-const { data, loadResult } = useResult(progress, load, proxy, onError)
+const { data, loadResult } = useResult(progress, load, endpoint, onError)
 
 // Start watching search query
 watchImmediate(activeSearch, () => loadResult())
@@ -140,7 +142,7 @@ function onClickValue(corpusIds: string[], subcqp?: string) {
   const cqps = [cqp.value]
   if (subcqp) cqps.push(subcqp)
 
-  const within = proxy.getParams()?.default_within
+  const within = endpoint.getParams()?.default_within
   const task = new ExampleTask(corpusIds, cqps, within)
   createTab(() => t("result.kwic"), task)
   matomo.value?.trackEvent("Statistics", "Subsearch")
@@ -224,7 +226,7 @@ function createExport() {
           name="statistics"
           :get-rows="createExport"
           :json="rawResponse"
-          endpoint="count"
+          endpoint="frequencies"
         />
       </template>
     </OptionsBar>

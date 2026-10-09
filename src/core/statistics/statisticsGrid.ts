@@ -124,7 +124,7 @@ function createColumns(
   )
 
   // This sorting will not react to language change, but that's quite alright, we like columns staying in place.
-  corpora.sort(compareLabels((id) => locObj(settings.corpora[id.toLowerCase()]!.title)))
+  corpora.sort(compareLabels((id) => locObj(settings.corpora[id].title)))
 
   const minWidth = 100
   const dir = settings["dir"] ? `dir="${settings["dir"]}"` : ""

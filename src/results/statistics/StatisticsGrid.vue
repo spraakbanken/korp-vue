@@ -59,7 +59,7 @@ watch(
 async function renderGrid() {
   if (!gridEl.value) throw new Error("Grid element missing")
 
-  const corpusIds = corpusListing.pick(props.params.corpora).stringify(true).split(",")
+  const corpusIds = corpusListing.pick(props.params.corpora).getIds(false, true)
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule
@@ -89,9 +89,9 @@ function onValueClick(row: Row, corpusId?: string) {
   const corpusIdsWithHits = corpusId
     ? [corpusId]
     : Object.keys(row.count).filter((id) => row.count[id]![0] > 0)
-  const corpusIds = props.params.originalCorpora
-    .split(",")
-    .filter((linkId) => corpusIdsWithHits.includes(linkId.split("|").shift()!))
+  const corpusIds = props.params.originalCorpora.filter((linkId) =>
+    corpusIdsWithHits.includes(linkId.split("|").shift()!),
+  )
 
   // Add a subquery CQP matching a value row
   const cqp = !isTotalRow(row) ? buildExampleCqp(row) : undefined
