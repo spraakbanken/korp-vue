@@ -17,7 +17,7 @@ export class ExampleTask extends TaskBase<ConcordanceData> {
     this.corpora = corpusListing.pick(corpusIds)
   }
 
-  abort(): void {
+  abort() {
     this.endpoint.abort()
   }
 
@@ -27,7 +27,7 @@ export class ExampleTask extends TaskBase<ConcordanceData> {
     reuseCounts: boolean,
     isReading: boolean,
   ): Promise<ConcordanceData> {
-    return this.endpoint.stream({
+    return this.endpoint.query({
       corpora: this.corpusIds,
       cqp: this.cqps,
       display: isReading ? "context" : "kwic",

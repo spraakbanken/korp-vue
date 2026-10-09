@@ -62,7 +62,7 @@ watch(page, () => loadResult(true))
       </label>
 
       <template #end>
-        <KwicExportButton :kwic :proxy="task.endpoint" :totalHits="hitsCount" />
+        <KwicExportButton :kwic :endpoint="task.endpoint" :totalHits="hitsCount" />
       </template>
     </OptionsBar>
 
