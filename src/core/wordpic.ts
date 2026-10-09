@@ -51,6 +51,8 @@ export type MatchedRelation = RelationRow & {
   prefix?: string
 }
 
+export const MEASURES = ["freq", "freq_relative", "mi", "rmi"] as const
+
 /** Parse and check if a query can be used for word picture. */
 export function parseWordQuery(cqp: string): WordQuery {
   let tokens: CqpQuery
@@ -175,8 +177,7 @@ export class WordPicture {
       "dependent_pos",
       "relation",
       "dependent_extra",
-      "freq",
-      "mi",
+      ...MEASURES,
     ]
     // Header row
     yield fields

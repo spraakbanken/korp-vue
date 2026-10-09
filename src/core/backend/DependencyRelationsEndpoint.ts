@@ -2,12 +2,12 @@ import { unregescape } from "../util"
 import { WordPicture, type WordQuery } from "../wordpic"
 import type { ClientResponse } from "./client.types"
 import { EndpointBase } from "./EndpointBase"
-import type { Measures } from "./korp-api"
+import type { DependencyRelationMeasure } from "./korp-api"
 
 export type DependencyRelationsParams = {
   corpora: string[]
   query: WordQuery
-  sort: Measures
+  sort: DependencyRelationMeasure
 }
 
 export class DependencyRelationsEndpoint extends EndpointBase<
