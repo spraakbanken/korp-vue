@@ -25,7 +25,7 @@ const stats = computed(() => {
 })
 
 const valueHtml = computed(() => {
-  const { other, otherpos, prefix } = props.row
+  const { other, other_pos: otherpos, prefix } = props.row
   if (!other) return getEmptyValueHtml(t)
   const main = formatWordOrLemgram(other, otherpos, t, props.showPos)
   return `${prefix || ""} ${main}`
