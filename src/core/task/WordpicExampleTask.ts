@@ -1,24 +1,30 @@
-import type { QueryData } from "../backend/proxy/QueryProxyBase"
-import { RelationsSentencesProxy } from "../backend/proxy/RelationsSentencesProxy"
+import type { ConcordanceData } from "../backend/ConcordanceEndpoint"
+import { DependencyRelationsSentencesEndpoint } from "../backend/DependencyRelationsSentencesEndpoint"
 import type { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
 
-export class WordpicExampleTask extends TaskBase<QueryData> {
-  readonly isReadingInit = false // Context param is not supported by /relations_sentences
-  readonly proxy = new RelationsSentencesProxy()
+export class WordpicExampleTask extends TaskBase<ConcordanceData> {
+  readonly isReadingInit = false
+  readonly endpoint = new DependencyRelationsSentencesEndpoint()
 
   constructor(
     readonly corpora: CorpusSet,
-    readonly source: string,
+    readonly sources: string[],
   ) {
     super()
   }
 
-  abort(): void {
-    this.proxy.abort()
+  abort() {
+    this.endpoint.abort()
   }
 
-  send(page: number, hpp: number): Promise<QueryData> {
-    return this.proxy.makeRequest(this.source, page, hpp)
+  send(page: number, limit: number) {
+    return this.endpoint.query({
+      context: this.isReadingInit,
+      corpora: this.corpora.getIds(),
+      limit,
+      page,
+      sources: this.sources,
+    })
   }
 }

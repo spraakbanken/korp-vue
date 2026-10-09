@@ -3,21 +3,21 @@ import { reactive, ref } from "vue"
 import ExportButton from "../ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
-import type { QueryProxyBase } from "@/core/backend/proxy/QueryProxyBase"
-import type { RelationsSentencesProxy } from "@/core/backend/proxy/RelationsSentencesProxy"
+import type { ConcordanceEndpoint } from "@/core/backend/ConcordanceEndpoint"
+import type { DependencyRelationsSentencesEndpoint } from "@/core/backend/DependencyRelationsSentencesEndpoint"
 
 const exportType = ref<ExportType>("kwic")
 
 const props = defineProps<{
   kwic?: Row[]
-  proxy: QueryProxyBase | RelationsSentencesProxy
+  endpoint: ConcordanceEndpoint | DependencyRelationsSentencesEndpoint
   totalHits: number
 }>()
 
-const proxy = reactive(props.proxy)
+const proxy = reactive(props.endpoint)
 
 function getRows() {
-  return transformData(exportType.value, props.kwic!, props.proxy.getParams()!, props.totalHits)
+  return transformData(exportType.value, props.kwic!, props.endpoint.getParams()!, props.totalHits)
 }
 </script>
 
