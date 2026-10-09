@@ -1,34 +1,25 @@
 import { TaskBase } from "./TaskBase"
 import type { Corpus } from "@/core/config/corpusConfig.types"
+import { ConcordanceEndpoint } from "../backend/ConcordanceEndpoint"
 import { massageData, type KwicRow } from "../kwic/kwic"
-import { korpRequest } from "../backend/common"
-import { CorpusSet } from "../corpora/CorpusSet"
 
 export class TextTask extends TaskBase<KwicRow> {
-  readonly corpusSet: CorpusSet
+  protected endpoint = new ConcordanceEndpoint()
+
   constructor(
     readonly corpus: Corpus,
     readonly textId: string,
   ) {
     super()
-    this.corpusSet = new CorpusSet([corpus])
   }
 
   async send(): Promise<KwicRow> {
-    const showParams = this.corpusSet.buildShowParams()
-    // Include whitespace
-    showParams.show += ",_head,_tail"
-
-    const params = {
-      corpus: this.corpus.id.toUpperCase(),
+    const data = await this.endpoint.query({
+      corpora: [this.corpus.id],
       cqp: `[_.text__id = "${this.textId}" & lbound(text)]`,
-      default_context: "1 text",
-      ...showParams,
-      end: 0,
-    }
-
-    const abortSignal = this.getAbortSignal()
-    const data = await korpRequest("query", params, { abortSignal })
+      display: "text",
+      limit: 1,
+    })
 
     // The data is just one long KWIC row.
     const kwic = massageData(data.kwic)[1] as KwicRow
@@ -38,5 +29,9 @@ export class TextTask extends TaskBase<KwicRow> {
       token._matchSentence = true
     })
     return kwic
+  }
+
+  abort() {
+    this.endpoint.abort()
   }
 }

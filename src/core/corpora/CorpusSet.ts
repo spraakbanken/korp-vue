@@ -170,13 +170,17 @@ export class CorpusSet {
     return union(...struct)
   }
 
-  getContextParams(isReading: boolean) {
-    const prefer = isReading
-      ? settings["default_reading_context"]
-      : settings["default_overview_context"]
-    const avoid = isReading
-      ? settings["default_overview_context"]
-      : settings["default_reading_context"]
+  getContextParams(display: "kwic" | "context" | "text" = "kwic") {
+    if (display == "text") return { default_context: "1 text" }
+
+    const prefer =
+      display == "context"
+        ? settings["default_reading_context"]
+        : settings["default_overview_context"]
+    const avoid =
+      display == "context"
+        ? settings["default_overview_context"]
+        : settings["default_reading_context"]
     const output: string[] = []
     for (const corpus of this.corpora) {
       const contexts = Object.keys(corpus.context)
@@ -231,7 +235,7 @@ export class CorpusSet {
   }
 
   // TODO Rename to buildConcordanceAttributeParams
-  buildShowParams() {
+  buildShowParams(includeWhitespace = false) {
     const attributes: string[] = ["sentence"]
     const struct_attributes: string[] = []
 
@@ -244,6 +248,8 @@ export class CorpusSet {
       // Text id is required if reading mode is enabled
       if (corpus["reading_mode"]) struct_attributes.push("text__id")
     }
+
+    if (includeWhitespace) attributes.push("_head", "_tail")
 
     return {
       attributes: uniq(attributes),
