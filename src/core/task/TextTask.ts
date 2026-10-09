@@ -16,7 +16,7 @@ export class TextTask extends TaskBase<KwicRow> {
   async send(): Promise<KwicRow> {
     const data = await this.endpoint.query({
       corpora: [this.corpus.id],
-      cqp: `[_.text__id = "${this.textId}" & lbound(text)]`,
+      cqp: [`[_.text__id = "${this.textId}" & lbound(text)]`],
       display: "text",
       limit: 1,
     })

@@ -9,6 +9,7 @@ import { ConcordanceEndpoint, type ConcordanceParams } from "@/core/backend/Conc
 import type { QueryParamSort } from "@/core/backend/types/query"
 import type { DataHandler, ProgressHandler } from "@/core/backend/client.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
+import { expandCqp } from "@/core/cqp/cqp"
 import KwicResultsContent from "./KwicResultsContent.vue"
 import HelpBadge from "@/components/HelpBadge.vue"
 import OptionsBar from "@/components/OptionsBar.vue"
@@ -57,7 +58,7 @@ async function load(updating = false) {
 
   const params: ConcordanceParams = {
     corpora: corpusSelection.getIds(),
-    cqp: activeSearch.value.cqp,
+    cqp: [expandCqp(activeSearch.value.cqp)],
     display: store.reading_mode ? "context" : "kwic",
     limit: store.hpp,
     reuseCounts: updating,
