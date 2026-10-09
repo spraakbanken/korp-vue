@@ -1,25 +1,39 @@
-import ProxyBase from "./ProxyBase"
-import type { CountParams, CountsMerged } from "../types/count"
-import { corpusSelection } from "@/core/corpora/corpusListing"
-import settings from "@/core/config"
-import { expandCqp } from "@/core/cqp/cqp"
-import type { AttributeOption } from "@/core/corpora/CorpusSet"
+import { mapValues } from "lodash-es"
+import settings from "../config"
+import { corpusSelection } from "../corpora/corpusListing"
+import type { AttributeOption } from "../corpora/CorpusSet"
+import { expandCqp } from "../cqp/cqp"
+import { EndpointBase } from "./EndpointBase"
+import type { FrequenciesResponse, FrequencyStatistics } from "./korp-api"
 
-export class StatsProxy extends ProxyBase<"count"> {
-  protected readonly endpoint = "count"
+export type FrequenciesParams = {
+  cqp: string
+  attrs: string[]
+  defaultWithin?: string
+  ignoreCase?: boolean
+}
+
+export type FrequenciesData = {
+  corpora: Record<string, FrequencyStatistics>
+  combined: FrequencyStatistics
+}
+
+export class FrequenciesEndpoint extends EndpointBase<
+  "/frequencies",
+  FrequenciesParams,
+  FrequenciesData
+> {
+  protected readonly path = "/frequencies"
   /** This is needed so that the statistics view will know what the original LINKED corpora was in parallel */
-  originalCorpora: string = ""
+  originalCorpora: string[] = []
   /** Percentage of selected materials that do not support selected attributes */
   unsupportedRatio: number = 0
   /** Attributes that are not supported by all selected corpora */
   unsupportedAttributes: AttributeOption[] = []
 
-  protected buildParams(
-    cqp: string,
-    attrs: string[],
-    defaultWithin?: string,
-    ignoreCase?: boolean,
-  ): CountParams {
+  processParams(params: FrequenciesParams) {
+    const { cqp, attrs, defaultWithin, ignoreCase } = params
+
     // Get selected attribute options
     const options = corpusSelection
       .getAttributeGroupsStatistics()
@@ -49,7 +63,7 @@ export class StatsProxy extends ProxyBase<"count"> {
     const corpora = corpusSelection.pick(supportedCorpora)
 
     // Preserve corpora links when in parallel, for use in subsearch
-    this.originalCorpora = corpora.stringify(false)
+    this.originalCorpora = corpora.getIds(false, false)
 
     const [groupByStruct, groupBy] = corpora.partitionAttrs(attrs)
 
@@ -61,32 +75,27 @@ export class StatsProxy extends ProxyBase<"count"> {
     // For ranked attributes, only count the top-ranking value in a token.
     const top = options.filter((option) => option.ranked).map((option) => option.name)
 
-    const params: CountParams = {
-      group_by: groupBy.join(),
-      group_by_struct: groupByStruct.join(),
-      cqp: expandCqp(cqp),
-      corpus: corpora.stringify(true),
-      end: settings["statistics_limit"] ? settings["statistics_limit"] - 1 : undefined,
-      ignore_case: ignoreCase ? "word" : undefined,
-      incremental: true,
-      split: split.join(),
-      top: top.join(),
+    return Promise.resolve({
+      corpora: corpora.getIds(false, true),
+      cqp: [expandCqp(cqp)],
+      group_by: groupBy,
+      group_by_struct: groupByStruct,
+      limit: settings["statistics_limit"] ?? 0,
+      ignore_case: ignoreCase ? ["word"] : undefined,
+      split: split,
+      max_values_per_set: top,
       default_within: defaultWithin,
       within,
-    }
-
-    return params
+    })
   }
 
-  async makeRequest(
-    cqp: string,
-    attrs: string[],
-    defaultWithin?: string,
-    ignoreCase?: boolean,
-  ): Promise<CountsMerged> {
-    const params = this.buildParams(cqp, attrs, defaultWithin, ignoreCase)
-    // We know it's the merged type, not split, because we are not using `subcqp{N}` params.
-    return (await this.send(params)) as CountsMerged
+  processResponse(data: FrequenciesResponse) {
+    // We only use one CQP, so take the first set of rows
+    // The include params are true by default, so we know both `combined` and `corpora` are present
+    return Promise.resolve({
+      corpora: mapValues(data.corpora!, (stats) => stats[0]),
+      combined: data.combined![0],
+    })
   }
 }
 
