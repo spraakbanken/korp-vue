@@ -59,7 +59,7 @@ watch(
 async function renderGrid() {
   if (!gridEl.value) throw new Error("Grid element missing")
 
-  const corpusIds = corpusListing.pick(props.params.corpora).getIds(false, true)
+  const corpusIds = corpusListing.pick(props.params.corpora).getIds(true)
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule

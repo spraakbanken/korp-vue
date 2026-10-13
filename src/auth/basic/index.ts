@@ -65,7 +65,7 @@ const authBasic = ({ showRemember = true, defaultRemember = false }): BasicAuthM
   attemptLogin: () => attemptLogin.start(),
   getAuthorizationHeader: (): Record<string, string> =>
     creds.value ? { Authorization: `Basic ${creds.value.auth}` } : {},
-  hasCredential: (corpusId) => creds.value?.credentials?.includes(corpusId.toUpperCase()) || false,
+  hasCredential: (corpusId) => creds.value?.credentials?.includes(corpusId) || false,
   getCredentials: () => creds.value?.credentials || [],
   getUsername: () => creds.value!.name,
   isLoggedIn: () => !!creds.value,
