@@ -1,5 +1,5 @@
 import { last, minBy } from "lodash-es"
-import type { Granularity, NumericString } from "../backend/types"
+import type { NumericString } from "../backend/types"
 import type { Point, Series } from "../task/TrendTask"
 import {
   addToDate,
@@ -10,19 +10,6 @@ import {
   LEVELS,
   type Level,
 } from "../time"
-
-/**
- * Mapping from long to short form of granularities.
- * We use the long form here, and Korp API uses the short form.
- */
-export const GRANULARITIES: Record<Level, Granularity> = {
-  year: "y",
-  month: "m",
-  day: "d",
-  hour: "h",
-  minute: "n",
-  second: "s",
-}
 
 /** Find a date granularity level that gives a good number of time units in a given range. */
 export function findOptimalLevel(from: Date, to: Date): Level {

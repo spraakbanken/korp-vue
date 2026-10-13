@@ -338,7 +338,7 @@ end
 
 ##### Trend graph
 
-The trend graph uses the `count_time` command to get frequencies by time period.
+The trend graph uses the `/frequencies/time` command to get frequencies by time period.
 It uses the Chart.js library to show an interactive line/bar chart.
 
 Clicking a time point opens a dynamic _Example KWIC_ tab with results for that time point.

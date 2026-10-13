@@ -127,7 +127,7 @@ watch(showPos, () =>
           name="wordpic"
           :get-rows="createExport"
           :json="rawResponse"
-          endpoint="relations"
+          endpoint="dependency-relations"
         />
       </template>
     </OptionsBar>
