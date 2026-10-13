@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import type { HitsDistribution } from "@/core/backend/proxy/QueryProxyBase"
+import type { HitsDistribution } from "@/core/backend/ConcordanceEndpoint"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useLocale } from "@/i18n/useLocale"
 import { sumBy } from "lodash-es"

@@ -1,7 +1,6 @@
 import type { ErrorMessage } from "@/components/ErrorBox.vue"
 import useError from "@/components/useError"
 import type Abortable from "@/core/backend/abortable"
-import { isAbortError } from "@/core/backend/proxy/ProxyBase"
 import { useEventListener } from "@vueuse/core"
 import { provide, ref, shallowRef, type InjectionKey, type Ref } from "vue"
 
@@ -49,7 +48,7 @@ export function useResult<T>(
       progress.value = undefined
       // Do not set the "aborted" state here, because this can happen also if just
       // issuing a new search while the previous is still loading.
-      if (isAbortError(error)) return
+      if (error instanceof Error && error.name == "AbortError") return
 
       state.value = "error"
       if (onError) error = onError(error)
