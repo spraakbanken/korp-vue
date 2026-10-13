@@ -1,4 +1,4 @@
-import type { QueryParamSort } from "@/core/backend/types/query"
+import type { ConcordanceRequest } from "@/core/backend/korp-api"
 
 /** Stored state. */
 export type Store = {
@@ -39,7 +39,7 @@ export type Store = {
   /** Active search tab */
   search_tab: number
   /** Search result order */
-  sort: QueryParamSort
+  sort: ConcordanceRequest["sort"]
   /** Attributes on which to aggregate counts in statistics query */
   stats_reduce: string[]
   /** Attributes on which to aggregate counts, case-insensitively, in statistics query */
