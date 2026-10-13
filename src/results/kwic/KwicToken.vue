@@ -25,7 +25,7 @@ const spaceBefore = computed(() => {
   // Null means no space
   if (attrs._head === null) return ""
   // Default to a single space, except for punctuation tokens
-  if (isKwicRowToken(props.rowToken) && isPunctuation(props.rowToken.token.word)) return ""
+  if (isPunctuation(props.rowToken.token.word)) return ""
   return " "
 })
 

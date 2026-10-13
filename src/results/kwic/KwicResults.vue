@@ -87,7 +87,7 @@ async function load(updating = false) {
     progress.value = percent
   }
 
-  const result = updating
+  const result = !incremental.value
     ? await endpoint.query(params)
     : await endpoint.stream(params, onProgress, onData)
 
