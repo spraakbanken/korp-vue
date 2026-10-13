@@ -1,5 +1,4 @@
 import { last, minBy } from "lodash-es"
-import type { NumericString } from "../backend/types"
 import type { Point, Series } from "../task/TrendTask"
 import {
   addToDate,
@@ -102,18 +101,6 @@ export function formatCqpDate(datetime: Date): { date: string; time: string } {
     .slice(sepPos + 1)
     .replace(/\D/g, "")
   return { date, time }
-}
-
-/** Parse a numeric date string into a Date object */
-export function parseDate(time: NumericString): Date {
-  let iso = ""
-  if (time.length >= 4) iso += time.slice(0, 4)
-  if (time.length >= 6) iso += "-" + time.slice(4, 6)
-  if (time.length >= 8) iso += "-" + time.slice(6, 8)
-  if (time.length >= 10) iso += "T" + time.slice(8, 10) + ":00"
-  if (time.length >= 12) iso = iso.slice(0, -3) + ":" + time.slice(10, 12)
-  if (time.length >= 14) iso += ":" + time.slice(12, 14)
-  return new Date(iso)
 }
 
 /** Replace a part of the graph with new data (of a higher/lower resolution) */
