@@ -1,9 +1,10 @@
-import { korpRequest } from "../backend/common"
 import { compact } from "lodash-es"
 import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "../corpora/corpusListing"
-import type { CountParams, StatsRow } from "../backend/types/count"
+import { backendRequest } from "../backend/client"
+import type { FrequencyRow } from "../backend/korp-api"
+import type { ClientParams } from "../backend/client.types"
 
 export type MapAttribute = { label: string; corpora: string[] }
 
@@ -31,28 +32,27 @@ export class MapTask extends TaskBase<MapSeries[]> {
     const cl = corpusListing.pick(this.corpora)
     const within = cl.getWithinParam(this.within)
 
-    const params: CountParams = {
-      group_by_struct: this.label,
-      cqp: this.cqp,
-      corpus: this.corpora.join(","),
-      incremental: true,
-      split: this.label,
-      relative_to_struct: this.relative ? this.label : undefined,
+    const params: ClientParams<"/frequencies"> = {
+      group_by_struct: [this.label],
+      cqp: [this.cqp],
+      corpora: this.corpora,
+      include_combined: true,
+      include_per_corpus: false,
+      limit: 0,
+      split: [this.label],
+      relative_to_struct: this.relative ? [this.label] : undefined,
       default_within: this.within,
+      subcqp: Object.keys(this.cqpExprs),
       within,
     }
 
-    Object.keys(this.cqpExprs).forEach((cqp, i) => (params[`subcqp${i}`] = cqp))
-
     const abortSignal = this.getAbortSignal()
-    const data = await korpRequest("count", params, { abortSignal })
+    const data = await backendRequest("/frequencies", params, { abortSignal })
 
-    // Normalize data to the split format.
-    const combined = Array.isArray(data.combined) ? data.combined : [data.combined]
     // If multiple series, ignore the totals.
-    if (combined.length > 1) combined.shift()
+    if (data.combined!.length > 1) data.combined!.shift()
 
-    this.data = combined.map((res) => ({
+    this.data = data.combined!.map((res) => ({
       // The totals row has no `cqp` property.
       label: res.cqp ? this.cqpExprs[res.cqp]! : "Σ",
       cqp: res.cqp || this.cqp,
@@ -66,7 +66,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     return !!this.data?.some((series) => series.points.length > 0)
   }
 
-  getPoint(row: StatsRow): Point | undefined {
+  getPoint(row: FrequencyRow): Point | undefined {
     const value = Object.values(row.value)[0]?.[0]
     if (!value) return
     const [name, countryCode, lat, lng] = value.split(";") as [string, string, string, string]
