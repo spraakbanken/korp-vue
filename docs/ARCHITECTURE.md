@@ -39,21 +39,21 @@ Some of the sub-directories are:
 
 ```sh
 ├── src
-│   ├── assets          # Images etc, subject to Vite asset handling
-│   ├── auth            # Authentication services
-│   ├── components      # Reusable Vue components and composables
-│   ├── core            # Core code is not dependent on Vue
-│   │   ├── backend     # Code for using the Korp API
-│   │   │   └── proxy   # Proxies add parameter/response handling to API endpoints
-│   │   ├── config      # Code for reading frontend settings and corpus config
-│   │   ├── cqp         # Parses and serializes to the CQP query language
-│   │   └── task        # Task classes define most result types: maps, trend graphs etc
-│   ├── i18n            # Code for showing the UI in a chosen language
-│   ├── locale          # UI strings in English and Swedish
-│   ├── page            # Components that build up the page layout (header, etc)
-│   ├── results         # Result-related components
-│   ├── search          # Search-related components
-│   └── store           # Pinia stores for app state
+│   ├── assets            # Images etc, subject to Vite asset handling
+│   ├── auth              # Authentication services
+│   ├── components        # Reusable Vue components and composables
+│   ├── core              # Core code is not dependent on Vue
+│   │   ├── backend       # Code for using the Korp API
+│   │   │   └── endpoints # Parameter/response handling for API endpoints
+│   │   ├── config        # Code for reading frontend settings and corpus config
+│   │   ├── cqp           # Parses and serializes to the CQP query language
+│   │   └── task          # Task classes define most result types: maps, trend graphs etc
+│   ├── i18n              # Code for showing the UI in a chosen language
+│   ├── locale            # UI strings in English and Swedish
+│   ├── page              # Components that build up the page layout (header, etc)
+│   ├── results           # Result-related components
+│   ├── search            # Search-related components
+│   └── store             # Pinia stores for app state
 ```
 
 The code is divided into **Core code** and **View code**:
@@ -114,10 +114,11 @@ The root component first just shows an animation to indicate that the app is loa
 It immediately calls `init()` of the `useInit` composable, wherein:
 
 1. The configured **authentication module** is loaded and checks if the user is logged in
-2. **Corpus config** is fetched from the backend and merged into the global `settings` object
-3. The global **corpus listing** object is created from the corpus config
-4. **Time data** starts loading in the background
-5. The **app store** is created and its state is synced from URL parameters
+2. The Korp backend API client is initialized
+3. **Corpus config** is fetched from the backend and merged into the global `settings` object
+4. The global **corpus listing** object is created from the corpus config
+5. **Time data** starts loading in the background
+6. The **app store** is created and its state is synced from URL parameters
 
 Once this is done, the animation is replaced with the main **page layout**:
 
@@ -148,7 +149,7 @@ using the `useReactiveCorpusSelection` composable
 
 #### Time data
 
-Time data is loaded with the `token-distribution` backend command,
+Time data is loaded with the `/token-distribution` backend command,
 and contains token counts per corpus and year.
 It is used for:
 
@@ -265,7 +266,8 @@ a button in the sidebar will open a dynamic _Reading mode_ tab with the full doc
 #### Statistics
 
 The statistics response is processed to merged rows where values differ only by rank suffix.
-This happens in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API), `@/core/statistics/statisticsWorker`,
+This happens in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API),
+`@/core/statistics/statisticsWorker`,
 to avoid freezing the main thread.
 
 The table can get very large, and it is shown in a grid that only renders the content of the current scroll viewport.
@@ -281,7 +283,7 @@ the _Trend graph_ and _Map_ buttons can be used to open corresponding dynamic ta
 
 In code, we prefer the term _wordpic_ for simplicity.
 
-The `relations` backend command returns a list of relation objects.
+The `/dependency-relations` backend command returns a list of relation objects.
 These are restructured as a multi-dimensional list ordered by
 _sections_ (word + POS), tables and columns.
 
@@ -345,7 +347,7 @@ Clicking a time point opens a dynamic _Example KWIC_ tab with results for that t
 
 ##### Map
 
-The map uses the `count` backend endpoint, just like statistics,
+The map uses the `/frequencies` backend endpoint, just like statistics,
 but with specific parameters and response handling.
 
 Clicking a marker's info box opens a dynamic _Example KWIC_ tab with results for that location.
@@ -359,7 +361,7 @@ Most notably, the result options are fewer.
 
 In code, we prefer the term `Text` for simplicity.
 
-This uses the `query` command, like the KWIC results,
+This uses the `/concordance` command, like the KWIC results,
 but retrieves only a single row with all tokens of a given text ID.
 Tokens are displayed with reconstructed surrounding whitespace.
 
@@ -384,9 +386,9 @@ Clicking a value opens a dynamic _Example KWIC_ tab with the occurrences of that
 
 ## Concepts
 
-### Korp backend API
+### Korp backend API client
 
-[korp-backend](https://github.com/spraakbanken/) uses OpenAPI
+[korp-backend](https://github.com/spraakbanken/korp-backend) uses OpenAPI
 to document available endpoints, their expected parameters and response structure.
 These structures are converted to TypeScript types and placed in this codebase
 using the following command:
@@ -394,7 +396,19 @@ using the following command:
 ```sh
 npx openapi-typescript https://ws.spraakbanken.gu.se/ws/korp/v9/openapi.json \
   --root-types --root-types-no-schema-prefix -o src/core/backend/korp-api.d.ts
+npm run fix # Format generated code
 ```
+
+Some API endpoints can report loading progress in a streamed NDJSON (aka JSONL) response:
+
+| Style  | Response | Client function                                   | `Endpoint` method                             |
+| ------ | -------- | ------------------------------------------------- | --------------------------------------------- |
+| Direct | JSON     | `backendQuery(path, params)`                      | `endpoint.query(params)`                      |
+| Stream | NDJSON   | `backendStream(path, params, onProgress, onData)` | `endpoint.stream(params, onProgress, onData)` |
+
+In either case, the request is initially constructed using the `GET` method.
+If the URL ends up too long to be safely sent over HTTP,
+the request is converted to a `POST` and the params are moved into the request body.
 
 ### Corpus listing and selection
 
