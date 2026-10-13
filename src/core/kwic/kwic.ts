@@ -86,7 +86,7 @@ export function massageData(rows: ApiKwicRow[]): Row[] {
   const output: Row[] = []
 
   for (const row of rows) {
-    const corpusId = row.corpus.toLowerCase()
+    const corpusId = row.corpus
     const [mainCorpusId, id] = settings.parallel ? splitFirst("|", corpusId) : [corpusId, corpusId]
 
     const corpus = settings.corpora[id]!

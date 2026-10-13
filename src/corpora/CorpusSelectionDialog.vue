@@ -26,8 +26,7 @@ async function onDialogReady(dialogNew: ConfirmDialog) {
 
 /** Interactively check that the corpus selection in the store is valid. */
 async function validateCorpusSelection(ids: string[], skipLogin = false): Promise<string[]> {
-  const isDenied = (corpus?: Corpus) =>
-    corpus?.protected && !auth.hasCredential(corpus.id.toUpperCase())
+  const isDenied = (corpus?: Corpus) => corpus?.protected && !auth.hasCredential(corpus.id)
 
   // If no id is given, use default
   if (!ids.length) {

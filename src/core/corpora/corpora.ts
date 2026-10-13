@@ -187,7 +187,7 @@ export const updateLimitedAccess = (node: ChooserFolder, credentials: string[] =
     }
   }
   for (const corpus of node.corpora) {
-    corpus.userHasAccess = !corpus.protected || credentials.includes(corpus.id.toUpperCase())
+    corpus.userHasAccess = !corpus.protected || credentials.includes(corpus.id)
     if (corpus.userHasAccess) {
       limitedAccess = false
     }
@@ -207,8 +207,7 @@ export const filterCorporaOnCredentials = (
   const selection: string[] = []
   for (const corpus of Object.values(settings.corpora)) {
     const shouldSelect =
-      corporaIds.includes(corpus.id) &&
-      (!corpus.protected || credentials.includes(corpus.id.toUpperCase()))
+      corporaIds.includes(corpus.id) && (!corpus.protected || credentials.includes(corpus.id))
     corpus.selected = shouldSelect
     if (shouldSelect) selection.push(corpus.id)
   }
