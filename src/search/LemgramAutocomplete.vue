@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AutocompleteInput from "@/components/AutocompleteInput.vue"
-import { getLemgrams, type LemgramCount } from "@/core/backend/lexicons"
+import { getLemgrams, type LemgramCount } from "@/core/services/lexicons"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { Lemgram } from "@/core/lemgram"
 import { debounceAsync } from "@/core/util"

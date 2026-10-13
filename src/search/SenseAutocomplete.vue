@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AutocompleteInput from "@/components/AutocompleteInput.vue"
-import { getSenses } from "@/core/backend/lexicons"
+import { getSenses } from "@/core/services/lexicons"
 import { Saldo } from "@/core/saldo"
 import { debounceAsync } from "@/core/util"
 import { compact, memoize } from "lodash-es"

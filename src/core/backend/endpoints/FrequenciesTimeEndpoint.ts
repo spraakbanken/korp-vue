@@ -1,9 +1,9 @@
-import type { CorpusSet } from "../corpora/CorpusSet"
-import { dateEndOf, dateStartOf, isDated, type Level } from "../time"
+import type { CorpusSet } from "@/core/corpora/CorpusSet"
+import { dateEndOf, dateStartOf, isDated, type Level } from "@/core/time"
+import { expandCqp } from "@/core/cqp/cqp"
+import { fillMissingDate } from "@/core/trend/util"
+import type { FrequenciesTimeResponse, FrequencyTimePeriod } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
-import { expandCqp } from "../cqp/cqp"
-import { fillMissingDate } from "../trend/util"
-import type { FrequenciesTimeResponse, FrequencyTimePeriod } from "./korp-api"
 
 export type FrequenciesTimeParams = {
   defaultWithin?: string

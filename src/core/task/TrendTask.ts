@@ -1,7 +1,7 @@
 import { type Level } from "@/core/time"
 import { TaskBase } from "./TaskBase"
 import type { CorpusSet } from "../corpora/CorpusSet"
-import { FrequenciesTimeEndpoint } from "../backend/FrequenciesTimeEndpoint"
+import { FrequenciesTimeEndpoint } from "../backend/endpoints/FrequenciesTimeEndpoint"
 import type { ProgressHandler } from "../backend/client.types"
 
 export type TrendResult = {

@@ -15,7 +15,7 @@ import { regescape, splitSuffix } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
 import { joinWords } from "../corpora/attribute"
-import type { FrequenciesData } from "../backend/FrequenciesEndpoint"
+import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
 
 export function processStatisticsResult(
   originalCorpora: string[],

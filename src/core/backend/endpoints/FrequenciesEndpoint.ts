@@ -1,10 +1,10 @@
 import { mapValues } from "lodash-es"
-import settings from "../config"
-import { corpusSelection } from "../corpora/corpusListing"
-import type { AttributeOption } from "../corpora/CorpusSet"
-import { expandCqp } from "../cqp/cqp"
+import settings from "@/core/config"
+import { corpusSelection } from "@/core/corpora/corpusListing"
+import type { AttributeOption } from "@/core/corpora/CorpusSet"
+import { expandCqp } from "@/core/cqp/cqp"
+import type { FrequenciesResponse, FrequencyStatistics } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
-import type { FrequenciesResponse, FrequencyStatistics } from "./korp-api"
 
 export type FrequenciesParams = {
   cqp: string

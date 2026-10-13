@@ -1,4 +1,4 @@
-import type { FrequenciesData } from "../backend/FrequenciesEndpoint"
+import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
 
 export type StatisticsWorkerMessage = {
   type: "korpStatistics"
