@@ -1,4 +1,4 @@
-import createClient, { type Middleware } from "openapi-fetch"
+import createClient, { type Client, type Middleware } from "openapi-fetch"
 import { omit, pick } from "lodash-es"
 import settings from "../config"
 import type { paths } from "./korp-api"
@@ -13,10 +13,14 @@ import type {
 } from "./client.types"
 import { corpusListing } from "../corpora/corpusListing"
 
-/** Client for the Korp backend OpenAPI spec */
-export const client = createClient<paths, "application/json">({
-  baseUrl: "https://ws.spraakbanken.gu.se/ws/korp/v9",
-})
+/** Client for the Korp backend */
+export let client: Client<paths, "application/json">
+
+/** Initialize client for the Korp backend OpenAPI spec */
+export function createKorpClient(baseUrl: string) {
+  client = createClient({ baseUrl })
+  client.use(convertToPostMiddleware)
+}
 
 /** Middleware to convert GET to POST if url is too long */
 const convertToPostMiddleware: Middleware = {
@@ -41,8 +45,6 @@ const convertToPostMiddleware: Middleware = {
   },
 }
 
-client.use(convertToPostMiddleware)
-
 export async function backendRequest<TPath extends ClientPaths>(
   path: TPath,
   params: ClientParams<TPath> = {},
@@ -57,7 +59,7 @@ export async function backendRequest<TPath extends ClientPaths>(
 
   const { data, error } = await client.GET(
     path,
-    // @ts-expect-error TODO Get the params right
+    // @ts-expect-error TODO Get the params type right
     init,
   )
 
@@ -83,7 +85,7 @@ export async function backendRequestStream<TPath extends ClientPaths>(
 
   const { data, error } = await client.GET(
     path,
-    // @ts-expect-error TODO Get the params right
+    // @ts-expect-error TODO Get the params type right
     init,
   )
 
@@ -147,9 +149,11 @@ export async function readNdjsonStream<TEvent>(
       try {
         const event = JSON.parse(line)
         handleEvent(event)
-      } catch {
-        // JSON was not complete, wait for next chunk to complete the line
-        incomplete = line
+      } catch (error) {
+        if (error instanceof SyntaxError)
+          // JSON was not complete, wait for next chunk to complete the line
+          incomplete = line
+        else throw error
       }
     })
   }
