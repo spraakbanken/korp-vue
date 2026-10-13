@@ -2,7 +2,7 @@ import { compact } from "lodash-es"
 import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "../corpora/corpusListing"
-import { backendRequest } from "../backend/client"
+import { backendQuery } from "../backend/client"
 import type { FrequencyRow } from "../backend/korp-api"
 import type { ClientParams } from "../backend/client.types"
 
@@ -47,7 +47,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     }
 
     const abortSignal = this.getAbortSignal()
-    const data = await backendRequest("/frequencies", params, { abortSignal })
+    const data = await backendQuery("/frequencies", params, { abortSignal })
 
     // If multiple series, ignore the totals.
     if (data.combined!.length > 1) data.combined!.shift()

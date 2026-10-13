@@ -3,8 +3,8 @@ import { reactive, ref } from "vue"
 import ExportButton from "../ExportButton.vue"
 import { transformData, type ExportType } from "@/core/kwic/export"
 import type { Row } from "@/core/kwic/kwic"
-import type { ConcordanceEndpoint } from "@/core/backend/ConcordanceEndpoint"
-import type { DependencyRelationsSentencesEndpoint } from "@/core/backend/DependencyRelationsSentencesEndpoint"
+import type { ConcordanceEndpoint } from "@/core/backend/endpoints/ConcordanceEndpoint.ts"
+import type { DependencyRelationsSentencesEndpoint } from "@/core/backend/endpoints/DependencyRelationsSentencesEndpoint"
 
 const exportType = ref<ExportType>("kwic")
 

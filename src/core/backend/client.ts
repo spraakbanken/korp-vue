@@ -45,7 +45,7 @@ const convertToPostMiddleware: Middleware = {
   },
 }
 
-export async function backendRequest<TPath extends ClientPaths>(
+export async function backendQuery<TPath extends ClientPaths>(
   path: TPath,
   params: ClientParams<TPath> = {},
   options: RequestOptions = {},
@@ -68,7 +68,7 @@ export async function backendRequest<TPath extends ClientPaths>(
   return data
 }
 
-export async function backendRequestStream<TPath extends ClientPaths>(
+export async function backendStream<TPath extends ClientPaths>(
   path: TPath,
   params: ClientParams<TPath> = {},
   onProgress?: ProgressHandler,

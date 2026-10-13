@@ -5,7 +5,10 @@ import { storeToRefs } from "pinia"
 import { computed, ref, watch } from "vue"
 import settings from "@/core/config"
 import { clone, debounce } from "lodash-es"
-import { ConcordanceEndpoint, type ConcordanceParams } from "@/core/backend/ConcordanceEndpoint"
+import {
+  ConcordanceEndpoint,
+  type ConcordanceParams,
+} from "@/core/backend/endpoints/ConcordanceEndpoint.ts"
 import type { ConcordanceRequest } from "@/core/backend/korp-api"
 import type { DataHandler, ProgressHandler } from "@/core/backend/client.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"

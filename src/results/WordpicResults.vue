@@ -9,7 +9,7 @@ import type { DependencyRelationMeasure, RelationsResponse } from "@/core/backen
 import {
   DependencyRelationsEndpoint,
   type DependencyRelationsParams,
-} from "@/core/backend/DependencyRelationsEndpoint"
+} from "@/core/backend/endpoints/DependencyRelationsEndpoint"
 import { formatWordOrLemgram, parseWordQuery, type MatchedRelation } from "@/core/wordpic"
 import WordpicRow from "./WordpicRow.vue"
 import HelpBadge from "@/components/HelpBadge.vue"

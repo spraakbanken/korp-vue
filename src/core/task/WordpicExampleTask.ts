@@ -1,5 +1,5 @@
-import type { ConcordanceData } from "../backend/ConcordanceEndpoint"
-import { DependencyRelationsSentencesEndpoint } from "../backend/DependencyRelationsSentencesEndpoint"
+import type { ConcordanceData } from "../backend/endpoints/ConcordanceEndpoint"
+import { DependencyRelationsSentencesEndpoint } from "../backend/endpoints/DependencyRelationsSentencesEndpoint"
 import type { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
 
