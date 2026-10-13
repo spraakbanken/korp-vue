@@ -33,7 +33,7 @@ attribute_type.pos: Positional attributes
 attribute_type.struct: Structural attributes
 
 auth.login: Log in
-auth.logout: Log out {name}
+auth.logout: Log out
 auth.description: An account is only necessary if you need to access protected corpora. To apply for access, email info{'@'}sprakbanken.se and let us know what corpora you are interested in.
 auth.email: Email
 auth.password: Password

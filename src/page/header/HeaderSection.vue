@@ -68,7 +68,7 @@ const isParallel = !!settings["parallel"]
             </div>
 
             <div class="col-md-4">
-              <div class="navbar-nav justify-content-end">
+              <div class="navbar-nav justify-content-end align-items-start">
                 <!-- Login/logout -->
                 <component :is="auth?.statusComponent" />
 
