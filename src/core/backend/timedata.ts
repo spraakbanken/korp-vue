@@ -4,6 +4,7 @@ import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
 import type { TokenDistributionPeriod, UndatedTokenDistributionPeriod } from "./korp-api"
 import { auth } from "../auth"
+import { isDated } from "../time"
 
 export type TimeData = {
   byYear: YearPoint[]
@@ -17,8 +18,6 @@ export type YearSeries = Record<number, number>
 export type YearPoint = [number, number]
 
 type Period = TokenDistributionPeriod | UndatedTokenDistributionPeriod
-
-const isDated = (period: Period): period is TokenDistributionPeriod => "start" in period
 
 /**
  * Time data, if available.
@@ -66,7 +65,7 @@ export const getTimeData: () => Promise<TimeData | undefined> = memoize(async ()
 })
 
 function normalizeYearDistribution(periods: Period[]) {
-  const [datedPeriods, undatedPeriods] = partition(periods, isDated)
+  const [datedPeriods, undatedPeriods] = partition(periods, isDated<TokenDistributionPeriod>)
   const undated = sumBy(undatedPeriods, (period) => period.tokens)
 
   const dated: Record<number, number> = {}

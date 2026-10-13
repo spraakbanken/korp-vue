@@ -22,7 +22,13 @@ function getRows() {
 </script>
 
 <template>
-  <ExportButton :disabled="!kwic" name="kwic" :getRows :json="proxy.getResponse()" endpoint="query">
+  <ExportButton
+    :disabled="!kwic"
+    name="kwic"
+    :getRows
+    :json="proxy.getResponse()"
+    endpoint="concordance"
+  >
     <div class="text-nowrap">
       <div v-for="option in ['kwic', 'annotations']" :key="option" class="form-check">
         <input
