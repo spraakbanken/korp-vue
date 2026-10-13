@@ -8,7 +8,6 @@ export type InstanceConfig = {
   autocomplete?: boolean
   backendURLMaxLength: number
   common_struct_types?: Record<string, Attribute>
-  get_corpus_ids?: () => Promise<string[]>
   corpus_info_link?: {
     url_template: string
     label: LangString
@@ -24,6 +23,7 @@ export type InstanceConfig = {
     corpus_updates?: boolean
     examples?: SearchExample[]
   }
+  get_corpus_ids?: () => Promise<string[]>
   group_statistics: string[]
   has_timespan: boolean
   hits_per_page_values: number[]

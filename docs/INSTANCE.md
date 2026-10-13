@@ -47,13 +47,8 @@ The first few settings are needed at initialization time, and thus must be speci
   - value: swe
     label: Svenska
   ```
-- **logo** - Object. _Optional, but must be set during init._ Specify site-specific logos.
-  - **korp** - String. HTML content for the Korp logo to the left of the corpus chooser. Default: [plain Korp logo](../app/img/korp.svg).
-  - **organization** - String. HTML content for the organization logo(s) on the top right of the Korp window. Default: empty.
-  - **chooser_right** - String. HTML content for a logo to the right of the corpus chooser: Default: empty.
-    The HTML content can refer to image files in the `app/img/` directory of the configuration as `img/`_file_.
-    If you wish to use the the [plain Korp logo](../app/img/korp.svg) (or other images in this repository) differently from the default, you should copy it to the configuration.
 - **autocomplete** - Boolean. If enabled, the Simple search input will use [Karp](https://spraakbanken.gu.se/en/tools/karp) to autocomplete lemgrams.
+- **backendURLMaxLength** - Number. How long a Korp backend request URL may be before switching to `POST`. Defaults to 8100.
 - **common_struct_types** - Object with attribute name as a key and attribute definition as value. Attributes
   that may be added automatically to a corpus. See [backend documentation](https://github.com/spraakbanken/korp-backend)
   for more information about how to define attributes.
