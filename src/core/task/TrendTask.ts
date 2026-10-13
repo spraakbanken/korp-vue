@@ -1,12 +1,8 @@
-import type { CountTimeParams, CountTimeResponse } from "../backend/types/countTime"
-import { dateEndOf, dateStartOf, type Level } from "@/core/time"
-import { fillMissingDate, GRANULARITIES, parseDate } from "../trend/util"
+import { type Level } from "@/core/time"
 import { TaskBase } from "./TaskBase"
-import type { NumericString, ProgressHandler } from "../backend/types"
-import { padStart } from "lodash-es"
-import { expandCqp } from "../cqp/cqp"
-import { korpRequest } from "../backend/common"
 import type { CorpusSet } from "../corpora/CorpusSet"
+import { FrequenciesTimeEndpoint } from "../backend/FrequenciesTimeEndpoint"
+import type { ProgressHandler } from "../backend/client.types"
 
 export type TrendResult = {
   series: Series[]
@@ -32,7 +28,7 @@ export type Point<TEmpty extends boolean = false> = {
 }
 
 export class TrendTask extends TaskBase<TrendResult> {
-  public response: CountTimeResponse | undefined = undefined
+  protected endpoint = new FrequenciesTimeEndpoint()
 
   constructor(
     readonly cqp: string,
@@ -48,56 +44,31 @@ export class TrendTask extends TaskBase<TrendResult> {
     level: Level,
     from: Date,
     to: Date,
-    onProgress: ProgressHandler<"count_time">,
+    onProgress: ProgressHandler,
   ): Promise<TrendResult> {
-    this.abort()
-
-    const formatDate = (d: Date) => d.toISOString().replace(/\D/g, "").slice(0, 14) as NumericString
-
-    const padLength = String(this.subqueries.length).length
-    const subcqps = Object.fromEntries(
-      this.subqueries.map(([cqp], i) => [`subcqp${padStart(String(i), padLength, "0")}`, cqp]),
+    const response = await this.endpoint.stream(
+      {
+        cqp: this.cqp,
+        subqueries: this.subqueries,
+        defaultWithin: this.defaultWithin,
+        corpusSet: this.corpusSet,
+        level,
+        from,
+        to,
+      },
+      onProgress,
     )
 
-    const params: CountTimeParams = {
-      cqp: expandCqp(this.cqp),
-      default_within: this.defaultWithin,
-      corpus: this.corpusSet.stringify(),
-      granularity: GRANULARITIES[level],
-      from: formatDate(dateStartOf(from, level)),
-      to: formatDate(dateEndOf(to, level)),
-      incremental: true,
-      per_corpus: false,
-      ...subcqps,
-    }
-
-    const abortSignal = this.getAbortSignal()
-    this.response = await korpRequest("count_time", params, { abortSignal, onProgress })
-
-    // Process response data
-    const labels = Object.fromEntries(this.subqueries)
-    // Response data is array iff subcqps were used; ensure array for consistency
-    const seriesRaw = Array.isArray(this.response.combined)
-      ? this.response.combined
-      : [this.response.combined]
-    const series: Series[] = seriesRaw.map((series) => {
-      const entries = Object.entries(series.relative) as [NumericString, number | null][]
-      const points: Point[] = entries.map(
-        ([timestamp, frequency]) =>
-          ({
-            x: parseDate(timestamp),
-            y: frequency,
-            absolute: series.absolute[timestamp],
-          }) as Point,
-      )
-      return {
-        points: fillMissingDate(points, level),
-        // Label and subcqp only present for subquery rows, not the total row
-        label: "cqp" in series ? labels[series.cqp] : undefined,
-        subcqp: "cqp" in series ? series.cqp : undefined,
-      }
+    // Add labels to series
+    response.series.forEach((series) => {
+      const subquery = this.subqueries.find(([subcqp]) => subcqp == series.subcqp)
+      series.label = subquery?.[1]
     })
 
-    return { series, level }
+    return response
+  }
+
+  getResponse() {
+    return this.endpoint.getResponse()
   }
 }

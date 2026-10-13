@@ -8,6 +8,11 @@ export type Level = "year" | "month" | "day" | "hour" | "minute" | "second"
 /** Granularities by descending size order */
 export const LEVELS: Level[] = ["year", "month", "day", "hour", "minute", "second"]
 
+/** Type-guard for a dated period */
+export const isDated = <TDated extends { start: unknown; end: unknown }>(
+  period: TDated | object,
+): period is TDated => "start" in period
+
 /** Modify a date by a given amount and time level */
 export function addToDate(date: Date, amount: number, level: Level): Date {
   const newDate = new Date(date)
