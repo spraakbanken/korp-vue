@@ -6,9 +6,10 @@ import {
   getTimeCqp,
   spliceGraphData,
 } from "@/core/trend/util"
-import { computed, onMounted, reactive, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import TrendGraph from "./TrendGraph.vue"
 import { cloneDeep, compact } from "lodash-es"
+import type { FrequenciesTimeResponse } from "@/core/backend/korp-api.js"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useDynamicTabs } from "@/results/useDynamicTabs"
 import { useI18n } from "vue-i18n"
@@ -35,7 +36,7 @@ const matomo = useMatomo()
 
 /** What time span to show in main chart */
 const range = ref<Range>()
-const reactiveTask = reactive(props.task)
+const response = ref<FrequenciesTimeResponse>()
 const series = ref<Series[]>([])
 const undatedRatio = props.task.corpusSet.getUndatedRatio()
 const view = ref<"line" | "bar" | "table">("line")
@@ -48,7 +49,9 @@ onMounted(() => {
 async function load() {
   const { from, to } = getRange()
   const levelNew = findOptimalLevel(from, to)
-  return await props.task.send(levelNew, from, to, (report) => (progress.value = report.percent))
+  const result = await props.task.send(levelNew, from, to, (percent) => (progress.value = percent))
+  response.value = props.task.getResponse()
+  return result
 }
 
 const { data, loadResult } = useResult(progress, load, props.task)
@@ -152,8 +155,8 @@ function createCsv() {
           :disabled="!series.length"
           name="trend"
           :get-rows="createCsv"
-          :json="reactiveTask.response"
-          endpoint="count_time"
+          :json="response"
+          endpoint="frequencies-time"
         />
       </template>
     </OptionsBar>
