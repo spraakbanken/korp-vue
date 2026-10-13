@@ -38,14 +38,13 @@ export class CorpusSet {
   }
 
   get(key: string): Corpus {
-    const corpus = this.corpora.find((corpus) => corpus.id == key.toLowerCase())
+    const corpus = this.corpora.find((corpus) => corpus.id == key)
     if (!corpus) throw new Error(`No corpus with id ${key}`)
     return corpus
   }
 
   /** Creates a new CorpusSet from an id subset */
   pick(ids: string[]) {
-    ids = ids.map((id) => id.toLowerCase())
     const cl = new CorpusSet()
     cl.pickFrom(this, ids)
     return cl
@@ -59,8 +58,8 @@ export class CorpusSet {
 
   /** Corpus ids, in lowercase by default */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- onlyMain param is used in subclass
-  getIds(uppercase = false, onlyMain?: boolean): string[] {
-    return this.map((corpus) => (uppercase ? corpus.id.toUpperCase() : corpus.id))
+  getIds(onlyMain?: boolean): string[] {
+    return this.map((corpus) => corpus.id)
   }
 
   map<T>(f: (corpus: Corpus) => T): T[] {
@@ -161,11 +160,6 @@ export class CorpusSet {
     )
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- onlyMain param is used in subclass
-  stringify(onlyMain?: boolean): string {
-    return this.getIds(true).join()
-  }
-
   getWithinKeys(): string[] {
     const struct = this.map((corpus) => Object.keys(corpus.within))
     return union(...struct)
@@ -189,7 +183,7 @@ export class CorpusSet {
         if (contexts.length > 1 && contexts.includes(avoid)) {
           contexts.splice(contexts.indexOf(avoid), 1)
         }
-        output.push(corpus.id.toUpperCase() + ":" + contexts[0])
+        output.push(corpus.id + ":" + contexts[0])
       }
     }
     return {
@@ -206,7 +200,7 @@ export class CorpusSet {
     for (const corpus of this.corpora) {
       const withins = Object.keys(corpus.within)
       if (!defaultWithin || !withins.includes(defaultWithin)) {
-        output.push(corpus.id.toUpperCase() + ":" + withins[0])
+        output.push(corpus.id + ":" + withins[0])
       }
     }
     return output || undefined

@@ -63,7 +63,7 @@ export class FrequenciesEndpoint extends EndpointBase<
     const corpora = corpusSelection.pick(supportedCorpora)
 
     // Preserve corpora links when in parallel, for use in subsearch
-    this.originalCorpora = corpora.getIds(false, false)
+    this.originalCorpora = corpora.getIds()
 
     const [groupByStruct, groupBy] = corpora.partitionAttrs(attrs)
 
@@ -76,7 +76,7 @@ export class FrequenciesEndpoint extends EndpointBase<
     const top = options.filter((option) => option.ranked).map((option) => option.name)
 
     return Promise.resolve({
-      corpora: corpora.getIds(false, true),
+      corpora: corpora.getIds(true),
       cqp: [expandCqp(cqp)],
       group_by: groupBy,
       group_by_struct: groupByStruct,

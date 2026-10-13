@@ -12,6 +12,7 @@ import type {
   StreamEvent,
 } from "./client.types"
 import { corpusListing } from "../corpora/corpusListing"
+import { auth } from "../auth"
 
 /** Client for the Korp backend */
 export let client: Client<paths, "application/json">
@@ -53,6 +54,7 @@ export async function backendQuery<TPath extends ClientPaths>(
   const { abortSignal } = options
 
   const init = {
+    headers: auth?.getAuthorizationHeader() || {},
     params: { query: params },
     signal: abortSignal,
   }
@@ -78,6 +80,7 @@ export async function backendStream<TPath extends ClientPaths>(
   const { abortSignal } = options
 
   const init = {
+    headers: auth?.getAuthorizationHeader() || {},
     params: { query: { ...params, stream: true } },
     signal: abortSignal,
     parseAs: "stream",

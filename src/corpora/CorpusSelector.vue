@@ -42,7 +42,7 @@ function resolveValidation(ids: string[]) {
 function selectAll() {
   store.corpus = corpusListing.corpora
     .filter((corpus) => {
-      return !corpus.protected || auth.hasCredential(corpus.id.toUpperCase())
+      return !corpus.protected || auth.hasCredential(corpus.id)
     })
     .map((corpus) => corpus.id)
 }

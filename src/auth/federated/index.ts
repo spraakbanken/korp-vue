@@ -59,7 +59,7 @@ const createAuthFederated = (options: Options): VueAuthModule => {
 
       const credentials = Object.keys(scope.corpora || {})
         .filter((id) => (scope.corpora?.[id] || 0) >= levels["READ"])
-        .map((id) => id.toUpperCase())
+        .map((id) => id)
 
       state = { jwt, username, credentials }
 
@@ -71,7 +71,7 @@ const createAuthFederated = (options: Options): VueAuthModule => {
     attemptLogin: login,
     getAuthorizationHeader: (): Record<string, string> =>
       state ? { Authorization: `Bearer ${state.jwt}` } : {},
-    hasCredential: (corpusId) => (state?.credentials || []).includes(corpusId.toUpperCase()),
+    hasCredential: (corpusId) => (state?.credentials || []).includes(corpusId),
     getCredentials: () => state?.credentials || [],
     getUsername: () => state!.username,
     isLoggedIn: () => !!state,

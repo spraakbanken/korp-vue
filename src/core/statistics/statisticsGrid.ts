@@ -189,7 +189,7 @@ function createColumns(
   corpora.forEach((id) =>
     columns.push({
       id,
-      getName: (lang) => locObj(settings.corpora[id.toLowerCase()]!.title, lang),
+      getName: (lang) => locObj(settings.corpora[id]!.title, lang),
       field: "count",
       sortable: true,
       defaultSortAsc: false,

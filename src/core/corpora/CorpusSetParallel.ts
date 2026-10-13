@@ -16,7 +16,6 @@ export class CorpusSetParallel extends CorpusSet {
   protected langs: string[] = []
 
   pick(ids: string[]): CorpusSetParallel {
-    ids = ids.map((id) => id.toLowerCase())
     const cl = new CorpusSetParallel()
     cl.pickFrom(this, ids)
     cl.setLangs(this.langs)
@@ -36,20 +35,17 @@ export class CorpusSetParallel extends CorpusSet {
     super.pickFrom(source, idsAll)
   }
 
-  getIds(uppercase = false, onlyMain = false): string[] {
-    const maybeToUpper = (id: string) => (uppercase ? id.toUpperCase() : id)
+  getIds(onlyMain = false): string[] {
     const lists = this.getLinksFromLangs()
 
     if (onlyMain) {
       // Select corpora in the first search language
       const corpora = lists.flat().filter((item) => item.lang === this.langs[0])
-      return corpora.map((corpus) => maybeToUpper(corpus.id))
+      return corpora.map((corpus) => corpus.id)
     }
 
     // Format pairs like X-SV|X-DA, X-SV|X-EN...
-    return lists.flatMap(([main, ...others]) =>
-      others.map((other) => maybeToUpper(`${main.id}|${other.id}`)),
-    )
+    return lists.flatMap(([main, ...others]) => others.map((other) => `${main.id}|${other.id}`))
   }
 
   setLangs(langs: string[]): void {
@@ -149,7 +145,7 @@ export class CorpusSetParallel extends CorpusSet {
         // For pivot corpus, use the linked corpus config instead
         const corpus = isPivot ? other : main
         const value = Object.keys(corpus[attr])[0]
-        return `${main.id}|${other.id}`.toUpperCase() + ":" + value
+        return `${main.id}|${other.id}` + ":" + value
       })
     })
 
@@ -165,10 +161,6 @@ export class CorpusSetParallel extends CorpusSet {
 
   getWithinParam(): string[] {
     return this.getAttributeQuery("within")
-  }
-
-  stringify(onlyMain?: boolean): string {
-    return this.getIds(true, onlyMain).join()
   }
 
   get(corpusID: string): PCorpus {
