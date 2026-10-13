@@ -24,6 +24,8 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ### Changed
 
+- Use Korp backend API v9 [#115](https://github.com/spraakbanken/korp-vue/issues/115)
+- Implement progress bar for example KWIC [#40](https://github.com/spraakbanken/korp-vue/issues/40)
 - Using Noto Sans for data and Noto Serif for body text
 - Removed username from logout button to avoid linebreak
 - The Mode selector has moved down next to the corpus selector
