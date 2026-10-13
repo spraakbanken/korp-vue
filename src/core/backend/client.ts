@@ -1,7 +1,6 @@
 import createClient, { type Middleware } from "openapi-fetch"
 import { omit, pick } from "lodash-es"
 import settings from "../config"
-import { KorpBackendError } from "./common"
 import type { paths } from "./korp-api"
 import type {
   ClientParams,
@@ -153,6 +152,16 @@ export async function readNdjsonStream<TEvent>(
         incomplete = line
       }
     })
+  }
+}
+
+export class KorpBackendError extends Error {
+  constructor(
+    public readonly type: string,
+    public readonly value: string,
+  ) {
+    super(`${type}: ${value}`)
+    this.name = "KorpBackendError"
   }
 }
 
