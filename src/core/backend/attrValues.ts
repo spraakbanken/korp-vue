@@ -1,5 +1,5 @@
 import { memoize, uniq } from "lodash-es"
-import { backendRequest } from "./client"
+import { backendQuery } from "./client"
 import type { AttributeValuesWithCounts } from "./korp-api"
 
 /** Find which unique values occur and count them. */
@@ -12,7 +12,7 @@ export const countAttrValues: (
   async (corpora, attrs, split = []) => {
     // Join attributes as a hierarchical path that shapes the response
     const attributePath = attrs.join(">")
-    const data = await backendRequest("/attribute-values", {
+    const data = await backendQuery("/attribute-values", {
       corpora,
       attributes: [attributePath],
       include_combined: true,
@@ -37,7 +37,7 @@ export const getAttrValues: (
   ranked?: boolean,
 ) => Promise<string[]> = memoize(
   async (corpora, attr, split, ranked) => {
-    const data = await backendRequest("/attribute-values", {
+    const data = await backendQuery("/attribute-values", {
       corpora,
       attributes: [attr],
       include_combined: true,

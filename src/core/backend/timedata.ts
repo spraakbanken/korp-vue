@@ -1,5 +1,5 @@
 import { assignWith, memoize, partition, pickBy, range, sumBy } from "lodash-es"
-import { backendRequest } from "./client"
+import { backendQuery } from "./client"
 import settings from "@/core/config"
 import { corpusListing, corpusSelection } from "../corpora/corpusListing"
 import type { TokenDistributionPeriod, UndatedTokenDistributionPeriod } from "./korp-api"
@@ -35,7 +35,7 @@ export const getTimeData: () => Promise<TimeData | undefined> = memoize(async ()
     .map((corpus) => corpus.id)
   if (!corpora.length) return undefined
 
-  const data = await backendRequest("/token-distribution", { corpora, granularity: "year" })
+  const data = await backendQuery("/token-distribution", { corpora, granularity: "year" })
 
   const { dated, undated } = normalizeYearDistribution(data.combined!)
 

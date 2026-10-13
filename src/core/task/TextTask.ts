@@ -1,6 +1,6 @@
 import { TaskBase } from "./TaskBase"
 import type { Corpus } from "@/core/config/corpusConfig.types"
-import { ConcordanceEndpoint } from "../backend/ConcordanceEndpoint"
+import { ConcordanceEndpoint } from "../backend/endpoints/ConcordanceEndpoint"
 import { massageData, type KwicRow } from "../kwic/kwic"
 
 export class TextTask extends TaskBase<KwicRow> {

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { FrequenciesEndpoint, NoSupportedCorporaError } from "@/core/backend/FrequenciesEndpoint"
+import {
+  FrequenciesEndpoint,
+  NoSupportedCorporaError,
+} from "@/core/backend/endpoints/FrequenciesEndpoint.ts"
 import {
   createStatisticsCsv,
   getRowCqp,

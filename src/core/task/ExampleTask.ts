@@ -1,4 +1,4 @@
-import { ConcordanceEndpoint, type ConcordanceData } from "../backend/ConcordanceEndpoint"
+import { ConcordanceEndpoint, type ConcordanceData } from "../backend/endpoints/ConcordanceEndpoint"
 import { corpusListing } from "../corpora/corpusListing"
 import type { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
