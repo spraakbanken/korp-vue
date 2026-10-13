@@ -43,7 +43,7 @@ export type StandardSingleRow = RowBase & {
  * `[T1] [U1] | [T2] [U2]` instead of `[T1 | T2] [U1 | U2]`
  */
 export type PhraseLevelDisjunctionRow = Omit<StandardSingleRow, "statsValues"> & {
-  statsValues: Record<string, string[]>[][]
+  statsValues: Record<string, null | string[]>[][]
   isPhraseLevelDisjunction: true
 }
 

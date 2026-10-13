@@ -1,5 +1,5 @@
 import { keyBy, mapValues, omit, pick } from "lodash-es"
-import { backendRequest } from "../backend/client"
+import { backendRequest, createKorpClient } from "../backend/client"
 import currentMode from "../corpora/mode"
 import { fromKeys } from "../util"
 import type { InstanceConfig } from "./instanceConfig.types"
@@ -15,6 +15,7 @@ import type { Labeled } from "../model/locale"
 type InfoData = Record<string, Pick<Corpus, "info" | "private_struct_attributes">>
 
 export async function loadCorpusConfig(settings: InstanceConfig) {
+  createKorpClient(settings.korp_backend_url)
   const config = await loadRawCorpusConfig(settings)
   const infos = await loadCorpusInfo(Object.keys(config.corpora))
   return transformConfig(config, infos)
