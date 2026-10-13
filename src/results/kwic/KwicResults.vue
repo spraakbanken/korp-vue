@@ -6,7 +6,7 @@ import { computed, ref, watch } from "vue"
 import settings from "@/core/config"
 import { clone, debounce } from "lodash-es"
 import { ConcordanceEndpoint, type ConcordanceParams } from "@/core/backend/ConcordanceEndpoint"
-import type { QueryParamSort } from "@/core/backend/types/query"
+import type { ConcordanceRequest } from "@/core/backend/korp-api"
 import type { DataHandler, ProgressHandler } from "@/core/backend/client.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import { expandCqp } from "@/core/cqp/cqp"
@@ -28,7 +28,7 @@ const store = useAppStore()
 const { activeSearch } = storeToRefs(useSearchStore())
 const matomo = useMatomo()
 
-const sortOptions: QueryParamSort[] = ["", "keyword", "left", "right", "random"]
+const sortOptions: ConcordanceRequest["sort"][] = ["", "keyword", "left", "right", "random"]
 
 const { page } = storeToRefs(store)
 /** Model for the "Show context" option */
@@ -38,7 +38,7 @@ const incremental = ref(false)
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(store.hpp)
 const pageLocal = ref(1)
-const sort = ref<QueryParamSort>(store.sort)
+const sort = ref<ConcordanceRequest["sort"]>(store.sort)
 
 const endpoint = new ConcordanceEndpoint()
 

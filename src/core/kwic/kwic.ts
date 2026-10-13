@@ -1,5 +1,4 @@
 import { mapKeys } from "lodash-es"
-import type { Token } from "../backend/types"
 import type { LangString } from "../model/locale"
 import settings from "../config"
 import { splitFirst } from "../util"
@@ -50,7 +49,7 @@ export type KwicToken = {
   _matchSentence: boolean
 }
 
-export type LinkedKwicToken = Token & {
+export type LinkedKwicToken = {
   /** Unique within this KWIC page */
   id: string
   word: string
