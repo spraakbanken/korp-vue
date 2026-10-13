@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import type { ErrorMessage } from "./ErrorBox.vue"
-import { KorpBackendError } from "@/core/backend/common"
+import { KorpBackendError } from "@/core/backend/client"
 import { useI18n } from "vue-i18n"
 import { RelationsParseError } from "@/core/wordpic.ts"
 
