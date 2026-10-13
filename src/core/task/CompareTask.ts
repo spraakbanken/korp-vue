@@ -5,7 +5,7 @@ import { CorpusSet } from "../corpora/CorpusSet"
 import { TaskBase } from "./TaskBase"
 import { ExampleTask } from "./ExampleTask"
 import settings, { prefixAttr } from "../config"
-import { backendRequestStream } from "../backend/client"
+import { backendStream } from "../backend/client"
 import { splitSuffix } from "../util"
 
 export type SavedSearch = {
@@ -65,7 +65,7 @@ export class CompareTask extends TaskBase<CompareResult> {
 
     const rankedReduce = this.reduce.filter((item) => this.cl.getAttributes()[item]?.ranked)
 
-    const data = await backendRequestStream("/log-likelihood", {
+    const data = await backendStream("/log-likelihood", {
       group_by: reducePos,
       group_by_struct: reduceStruct,
       set1_corpora: corpora1,

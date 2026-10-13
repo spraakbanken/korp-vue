@@ -1,7 +1,7 @@
-import { corpusListing } from "../corpora/corpusListing"
+import { corpusListing } from "@/core/corpora/corpusListing"
 import type { ConcordanceData } from "./ConcordanceEndpoint"
+import type { RelationsSentencesResponse } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
-import type { RelationsSentencesResponse } from "./korp-api"
 
 export type DependencyRelationsSentencesParams = {
   context?: boolean

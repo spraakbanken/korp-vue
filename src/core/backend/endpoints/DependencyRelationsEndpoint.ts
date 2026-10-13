@@ -1,8 +1,8 @@
-import { unregescape } from "../util"
-import { WordPicture, type WordQuery } from "../wordpic"
-import type { ClientResponse } from "./client.types"
+import { unregescape } from "@/core/util"
+import { WordPicture, type WordQuery } from "@/core/wordpic"
+import type { ClientResponse } from "../client.types"
+import type { DependencyRelationMeasure } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
-import type { DependencyRelationMeasure } from "./korp-api"
 
 export type DependencyRelationsParams = {
   corpora: string[]

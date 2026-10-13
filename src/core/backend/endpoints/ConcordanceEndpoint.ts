@@ -1,7 +1,7 @@
-import { getDefaultWithin } from "../config"
-import { corpusListing } from "../corpora/corpusListing"
+import { getDefaultWithin } from "@/core/config"
+import { corpusListing } from "@/core/corpora/corpusListing"
+import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
-import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "./korp-api"
 
 export type ConcordanceParams = {
   corpora: string[]

@@ -1,6 +1,6 @@
-import Abortable from "./abortable"
-import { backendRequest, backendRequestStream } from "./client"
-import type { ClientParams, ClientPaths, ClientResponse } from "./client.types"
+import Abortable from "../abortable"
+import { backendQuery, backendStream } from "../client"
+import type { ClientParams, ClientPaths, ClientResponse } from "../client.types"
 
 /** Base class for making requests to a specific Korp API endpoint */
 export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> extends Abortable {
@@ -28,7 +28,7 @@ export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> ex
   async query(params: TParams): Promise<TData> {
     this.lastParams = await this.processParams(params)
     const options = { abortSignal: this.getAbortSignal() }
-    const data = await backendRequest(this.path, this.lastParams, options)
+    const data = await backendQuery(this.path, this.lastParams, options)
     this.lastResponse = data
     return this.processResponse(data)
   }
@@ -41,7 +41,7 @@ export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> ex
   ): Promise<TData> {
     this.lastParams = await this.processParams(params)
     const options = { abortSignal: this.getAbortSignal() }
-    const data = await backendRequestStream(this.path, this.lastParams, onProgress, onData, options)
+    const data = await backendStream(this.path, this.lastParams, onProgress, onData, options)
     this.lastResponse = data
     return this.processResponse(data)
   }
