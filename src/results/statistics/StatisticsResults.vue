@@ -105,7 +105,7 @@ async function load() {
   )
 
   const result = await processStatisticsResult(
-    corpora.getIds(false, false),
+    corpora.getIds(),
     counts,
     attrs,
     ignoreCase,
