@@ -82,7 +82,6 @@ The first few settings are needed at initialization time, and thus must be speci
     - **label**: String or translation object.
     - **params**: Object. This is translated to URL search params when the link is clicked.
     - **hint**: String or translation object. Can contain HTML.
-- **get_corpus_ids** - Async function returning a list of strings. The corpus ids are passed to the `<korp_backend_url>/corpora/config` call, see the [`/corpora/config`](https://ws.spraakbanken.gu.se/ws/korp/v9/redoc#tag/Corpus-Information/operation/get_corpora_config) API.
 - **group_statistics** - List of attribute names. Attributes that either have a rank or a numbering used for multi-word units. For example, removing `:2` from `ta_bort..vbm.1:2`, to get the lemgram of this word: `ta_bort..vbm.1`.
 - **has_timespan** - Boolean. If the backend supports the `/token-distribution` call, used in corpus chooser for example. Default: `true`
 - **hits_per_page_values** - Array of integer. The available page sizes. Default: `[25, 50, 75, 100]`
