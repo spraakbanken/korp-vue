@@ -2,9 +2,9 @@ import { compact } from "lodash-es"
 import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "../corpora/corpusListing"
-import { backendQuery } from "../backend/client"
+import { backendStream } from "../backend/client"
 import type { FrequencyRow } from "../backend/korp-api"
-import type { ClientParams } from "../backend/client.types"
+import type { ClientParams, ProgressHandler } from "../backend/client.types"
 
 export type MapAttribute = { label: string; corpora: string[] }
 
@@ -28,7 +28,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     super()
   }
 
-  async send(): Promise<MapSeries[]> {
+  async send(onProgress?: ProgressHandler): Promise<MapSeries[]> {
     const cl = corpusListing.pick(this.corpora)
     const within = cl.getWithinParam(this.within)
 
@@ -47,7 +47,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     }
 
     const abortSignal = this.getAbortSignal()
-    const data = await backendQuery("/frequencies", params, { abortSignal })
+    const data = await backendStream("/frequencies", params, onProgress, undefined, { abortSignal })
 
     // If multiple series, ignore the totals.
     if (data.combined!.length > 1) data.combined!.shift()
