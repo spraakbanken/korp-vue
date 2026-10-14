@@ -51,10 +51,7 @@ async function load() {
     sort: sortLocal.value,
   }
 
-  const result =
-    corpusSelection.corpora.length > 1
-      ? await endpoint.stream(params, (percent) => (progress.value = percent))
-      : await endpoint.query(params)
+  const result = await endpoint.stream(params, (percent) => (progress.value = percent))
 
   rawResponse.value = endpoint.getResponse()
   // Sort affects request as well as presentation. Use it for presentation only after response data is ready.
