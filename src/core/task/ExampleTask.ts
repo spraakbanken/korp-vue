@@ -1,3 +1,4 @@
+import type { ProgressHandler } from "../backend/client.types"
 import { ConcordanceEndpoint, type ConcordanceData } from "../backend/endpoints/ConcordanceEndpoint"
 import { corpusListing } from "../corpora/corpusListing"
 import type { CorpusSet } from "../corpora/CorpusSet"
@@ -26,14 +27,18 @@ export class ExampleTask extends TaskBase<ConcordanceData> {
     limit: number,
     reuseCounts: boolean,
     isReading: boolean,
+    onProgress: ProgressHandler,
   ): Promise<ConcordanceData> {
-    return this.endpoint.query({
-      corpora: this.corpusIds,
-      cqp: this.cqps,
-      display: isReading ? "context" : "kwic",
-      page,
-      limit,
-      reuseCounts,
-    })
+    return this.endpoint.stream(
+      {
+        corpora: this.corpusIds,
+        cqp: this.cqps,
+        display: isReading ? "context" : "kwic",
+        page,
+        limit,
+        reuseCounts,
+      },
+      onProgress,
+    )
   }
 }

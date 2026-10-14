@@ -399,7 +399,10 @@ npx openapi-typescript https://ws.spraakbanken.gu.se/ws/korp/v9/openapi.json \
 npm run fix # Format generated code
 ```
 
-Some API endpoints can report loading progress in a streamed NDJSON (aka JSONL) response:
+The API can return responses as a single complete JSON object
+or as continually streamed NDJSON (newline-delimited JSON, aka JSONL).
+Streaming is preferred as the connection is kept alive even if the query takes long.
+Additionally, for some routes, the streamed response can report progress.
 
 | Style  | Response | Client function                                   | `Endpoint` method                             |
 | ------ | -------- | ------------------------------------------------- | --------------------------------------------- |

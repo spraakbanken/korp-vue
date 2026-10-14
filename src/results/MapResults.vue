@@ -63,7 +63,7 @@ onMounted(() => {
 })
 
 async function load() {
-  await props.task.send()
+  await props.task.send((percent) => (progress.value = percent))
   const palette = goldenOklch(theme.primary)
   return props.task.getMarkerGroups(() => palette.next().value!)
 }
@@ -113,7 +113,7 @@ function onMarkerClick(marker: MarkerData) {
       </div>
     </OptionsBar>
 
-    <ResultsDisplay incremental :populated="props.task.hasData()" class="vstack gap-2">
+    <ResultsDisplay incremental :populated="task.hasData()" class="vstack gap-2">
       <!-- Toggleable legend -->
       <SeriesLegend :legend v-model="enabledSeries" />
 

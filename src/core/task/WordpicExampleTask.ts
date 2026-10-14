@@ -19,7 +19,7 @@ export class WordpicExampleTask extends TaskBase<ConcordanceData> {
   }
 
   send(page: number, limit: number) {
-    return this.endpoint.query({
+    return this.endpoint.stream({
       context: this.isReadingInit,
       corpora: this.corpora.getIds(),
       limit,

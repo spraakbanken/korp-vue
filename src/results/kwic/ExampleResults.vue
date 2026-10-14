@@ -23,14 +23,23 @@ const store = useAppStore()
 const hpp = store.hpp
 // Enable context if the task is reading-initialized, otherwise copy the main KWIC option in store
 const context = ref(props.task.isReadingInit || store.reading_mode)
+const incremental = ref(false)
 const isReading = ref(store.reading_mode)
 const page = ref(1)
 
 onMounted(() => loadResult())
 
 async function load(updating = false) {
+  // Only new searches on multiple corpora report progress
+  incremental.value = !updating && props.task.corpora.corpora.length > 1
   const willBeReading = context.value
-  const response = await props.task.send(page.value - 1, hpp, updating, context.value)
+  const response = await props.task.send(
+    page.value - 1,
+    hpp,
+    updating,
+    context.value,
+    (percent) => (progress.value = percent),
+  )
   isReading.value = willBeReading
   return response
 }
@@ -66,7 +75,7 @@ watch(page, () => loadResult(true))
       </template>
     </OptionsBar>
 
-    <ResultsDisplay :populated="!!hitsCount">
+    <ResultsDisplay :incremental :populated="!!hitsCount">
       <KwicResultsContent
         :corpora="task.corpora"
         :distribution

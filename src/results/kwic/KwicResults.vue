@@ -51,7 +51,7 @@ syncRef(page, pageLocal, { transform: { ltr: (v) => v + 1, rtl: (v) => v - 1 } }
 async function load(updating = false) {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
-  // Only new searches report progress
+  // Only new searches on multiple corpora report progress
   incremental.value = !updating && corpusSelection.corpora.length > 1
 
   // Set up progress handler
@@ -90,9 +90,7 @@ async function load(updating = false) {
     progress.value = percent
   }
 
-  const result = !incremental.value
-    ? await endpoint.query(params)
-    : await endpoint.stream(params, onProgress, onData)
+  const result = await endpoint.stream(params, onProgress, onData)
 
   isReading.value = isReadingNew
 
