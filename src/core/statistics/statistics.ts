@@ -137,20 +137,17 @@ function reduceCqp(
   // Escape values for use in CQP regex
   values = values.map(regescape)
   // Combine grouped values
-  const cqpValue = values.length > 1 ? mergeRegex(values) : values[0]
-  // Enclose in quotes and support case-insensitive search
-  let quoted = `'${cqpValue}'`
-  if (name == "word" && ignoreCase) quoted += " %c"
+  const cqpValue = values.length > 1 ? splitSuffix(values[0])[0] + "(:[-0-9\\.]+)*" : values[0]
+  // Support case-insensitive search
+  const flag = name == "word" && ignoreCase ? " %c" : ""
 
   const op = attr?.type === "set" ? "contains" : "="
-  return `${cqpName} ${op} ${quoted}`
-}
 
-/** Merge ["foo:X", "foo:Y"] to "foo:(X|Y)" */
-function mergeRegex(values: string[]): string {
-  const init = splitSuffix(values[0])[0]
-  const tails = values.map((v) => splitSuffix(v)[1])
-  return init + ":(" + tails.join("|") + ")"
+  // For a ranked attribute, only match the first value in the list.
+  // The rank suffix is handled above (replaced with a wildcard or left in place).
+  if (attr?.ranked) return `${cqpName} = '\\|${cqpValue}.*'${flag}`
+
+  return `${cqpName} ${op} '${cqpValue}'${flag}`
 }
 
 export function createStatisticsCsv(
