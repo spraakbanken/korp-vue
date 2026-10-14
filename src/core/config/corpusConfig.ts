@@ -16,18 +16,14 @@ type InfoData = Record<string, Pick<Corpus, "info" | "private_struct_attributes"
 
 export async function loadCorpusConfig(settings: InstanceConfig) {
   createKorpClient(settings.korp_backend_url)
-  const config = await loadRawCorpusConfig(settings)
+  const config = await loadRawCorpusConfig()
   const infos = await loadCorpusInfo(Object.keys(config.corpora))
   return transformConfig(config, infos)
 }
 
 /** Fetches corpus config from the backend. */
-async function loadRawCorpusConfig(settings: InstanceConfig): Promise<CorpusConfigRaw> {
-  // The corpora to include are normally given by the mode config, but allow defining it elsewhere (used by Mink)
-  const corpora = settings.get_corpus_ids ? await settings.get_corpus_ids() : undefined
-
-  const data = await backendQuery("/corpora/config", { mode: currentMode, corpora })
-
+async function loadRawCorpusConfig(): Promise<CorpusConfigRaw> {
+  const data = await backendQuery("/corpora/config", { mode: currentMode })
   return data as unknown as CorpusConfigRaw
 }
 
