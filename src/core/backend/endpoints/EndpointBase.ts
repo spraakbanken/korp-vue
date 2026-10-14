@@ -1,6 +1,12 @@
 import Abortable from "../abortable"
 import { backendQuery, backendStream } from "../client"
-import type { ClientParams, ClientPaths, ClientResponse } from "../client.types"
+import type {
+  ClientParams,
+  ClientPaths,
+  ClientResponse,
+  DataHandler,
+  ProgressHandler,
+} from "../client.types"
 
 /** Base class for making requests to a specific Korp API endpoint */
 export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> extends Abortable {
@@ -36,8 +42,8 @@ export abstract class EndpointBase<TPath extends ClientPaths, TParams, TData> ex
   /** Make a request to the API endpoint, streaming progress and partial data */
   async stream(
     params: TParams,
-    onProgress?: (percent: number) => void,
-    onData?: (data: ClientResponse<TPath>) => void,
+    onProgress?: ProgressHandler,
+    onData?: DataHandler<TPath>,
   ): Promise<TData> {
     this.lastParams = await this.processParams(params)
     const options = { abortSignal: this.getAbortSignal() }
