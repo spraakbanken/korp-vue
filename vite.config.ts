@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     // Configurable base url, should start with slash
-    base: env.BASE || "/korp",
+    base: env.BASE || "/korp/",
     server: {
       // Remap hostname and enable HTTPS, in order for authentication to work.
       // Map this hostname to 127.0.0.1 in /etc/hosts.
