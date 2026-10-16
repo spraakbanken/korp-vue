@@ -109,9 +109,10 @@ export const splitFirst = (sep: string, s: string): [string, string] => {
 
 /** Split a colon-suffixed attribute value: "S:t_Petersburg:18" -> ["S:t_Petersburg", "18"] */
 export const splitSuffix = (s: string): [string, string | undefined] => {
-  const pos = s.lastIndexOf(":")
-  if (pos == -1) return [s, undefined]
-  return [s.slice(0, pos), s.slice(pos + 1)]
+  const match = s.match(/^(.*?)((:[-0-9.]+)*)$/)
+  if (!match) return [s, undefined]
+  const [, main, tail] = match
+  return [main, tail.slice(1)]
 }
 
 /** Escape special characters in a string so it can be safely inserted in a regular expression. */
