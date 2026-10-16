@@ -106,7 +106,9 @@ export function getCqp(
         if (values) return reduceCqp(name, values, ignoreCase, cqpStringifiers[name])
         // Handle null value
         const attribute = corpusSelection.getReduceAttrs()[name]
-        return `${attribute ? prefixAttr(attribute) : name} = "__UNDEF__"`
+        const cqpName = attribute ? prefixAttr(attribute) : name
+        if (attribute?.type === "set") return `ambiguity(${cqpName}) = 0`
+        return `${cqpName} = "__UNDEF__"`
       }),
     )
     .map((conditions) => "[" + conditions.join(" & ") + "]")
