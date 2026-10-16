@@ -3,7 +3,6 @@ import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
 export type StatisticsWorkerMessage = {
   type: "korpStatistics"
   data: FrequenciesData
-  groupStatistics: string[]
 }
 
 export type StatisticsProcessed = {
@@ -32,19 +31,18 @@ export type TotalRow = RowBase & {
 export type StandardSingleRow = RowBase & {
   /** HTML representations of each attribute value */
   formattedValue: Record<string, string>
-  /** Plain-text representations of each attribute value */
-  plainValue: Record<string, string>
-  /** For each match token, a record of non-simplified attr values, e.g. ["foo:12", "foo:34"] */
-  statsValues: Record<string, null | string[]>[]
+  /** Raw attribute values per token */
+  plainValue: Record<string, string | null>[]
 }
 
 /**
  * A statistics row where a disjunction in CQP should be on phrase level:
  * `[T1] [U1] | [T2] [U2]` instead of `[T1 | T2] [U1 | U2]`
  */
-export type PhraseLevelDisjunctionRow = Omit<StandardSingleRow, "statsValues"> & {
-  statsValues: Record<string, null | string[]>[][]
+export type PhraseLevelDisjunctionRow = Omit<StandardSingleRow, "plainValue"> & {
   isPhraseLevelDisjunction: true
+  /** One token sequence for each item in the group */
+  plainValue: Record<string, string | null>[][]
 }
 
 export const isTotalRow = (row: Row): row is TotalRow => row.rowId === 0

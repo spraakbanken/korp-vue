@@ -5,6 +5,7 @@ import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { expandCqp } from "@/core/cqp/cqp"
 import type { FrequenciesResponse, FrequencyStatistics } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
+import type { ClientParams } from "../client.types"
 
 export type FrequenciesParams = {
   cqp: string
@@ -72,10 +73,11 @@ export class FrequenciesEndpoint extends EndpointBase<
     if (settings.parallel) within = within?.map((w) => w.replace(/\|.*?:/g, ":"))
 
     const split = options.filter((option) => option.type == "set").map((option) => option.name)
+    const suffixed = settings.group_statistics.filter((name) => attrs.includes(name))
     // For ranked attributes, only count the top-ranking value in a token.
     const top = options.filter((option) => option.ranked).map((option) => option.name)
 
-    return Promise.resolve({
+    return Promise.resolve(<ClientParams<"/frequencies">>{
       corpora: corpora.getIds(true),
       cqp: [expandCqp(cqp)],
       group_by: groupBy,
@@ -85,6 +87,7 @@ export class FrequenciesEndpoint extends EndpointBase<
       split: split,
       max_values_per_set: top,
       default_within: defaultWithin,
+      strip_suffix: suffixed,
       within,
     })
   }
