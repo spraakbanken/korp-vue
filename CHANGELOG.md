@@ -18,6 +18,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ### Fixed
 
+- Links to Korp can't be opened in browser tabs where Korp is already open [#20](https://github.com/spraakbanken/korp-vue/issues/20)
 - News item sorting
 - Statistics columns resizable
 - Instance config reference

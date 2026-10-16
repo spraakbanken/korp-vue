@@ -17,7 +17,7 @@ const useHistory = once((store: Store) => {
   )
 
   // Restore state when navigating history
-  window.addEventListener("popstate", (event) => store.$patch(event.state))
+  window.addEventListener("popstate", (event) => event.state && store.$patch(event.state))
 })
 
 export default useHistory
