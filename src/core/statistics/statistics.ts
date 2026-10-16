@@ -11,7 +11,7 @@ import {
   type StatisticsWorkerMessage,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
-import { regescape, splitSuffix } from "../util"
+import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
 import { joinWords } from "../corpora/attribute"
@@ -42,8 +42,6 @@ export function processStatisticsResult(
   worker.postMessage({
     type: "korpStatistics",
     data,
-    // Worker code cannot import settings
-    groupStatistics: settings.group_statistics,
   } satisfies StatisticsWorkerMessage)
 
   // Return a promise that resolves when the worker is done
@@ -61,8 +59,8 @@ export function processStatisticsResult(
           const listStringifier = stringifiers[attr]?.list
           const words = compact(
             isStandardSingleRow(row)
-              ? row.statsValues.map((word) => word[attr]?.[0])
-              : row.statsValues.map((words) => words[0][attr]?.[0]),
+              ? row.plainValue.map((word) => word[attr])
+              : row.plainValue.map((words) => words[0][attr]),
           )
           const formatted = listStringifier
             ? listStringifier(words)
@@ -88,22 +86,22 @@ export function getRowCqp(
   // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
   if (isPhraseLevelDisjunctionRow(row)) {
     // In this case the statsValues array is one level deeper
-    return row.statsValues.map((values) => getCqp(values, ignoreCase, cqpStringifiers)).join(" | ")
+    return row.plainValue.map((values) => getCqp(values, ignoreCase, cqpStringifiers)).join(" | ")
   }
 
   // Normal case
-  return getCqp(row.statsValues, ignoreCase, cqpStringifiers)
+  return getCqp(row.plainValue, ignoreCase, cqpStringifiers)
 }
 
 export function getCqp(
-  hitValues: Record<string, null | string[]>[],
+  hitValues: Record<string, null | string>[],
   ignoreCase: boolean,
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
   const tokens = hitValues
     .map((token) =>
-      Object.entries(token).map(([name, values]) => {
-        if (values) return reduceCqp(name, values, ignoreCase, cqpStringifiers[name])
+      Object.entries(token).map(([name, value]) => {
+        if (value) return reduceCqp(name, value, ignoreCase, cqpStringifiers[name])
         // Handle null value
         const attribute = corpusSelection.getReduceAttrs()[name]
         const cqpName = attribute ? prefixAttr(attribute) : name
@@ -121,8 +119,7 @@ export function getCqp(
 /** Build a CQP condition for an attribute and a (set of) values */
 function reduceCqp(
   name: string,
-  /** `values` is multiple if multiple result rows were grouped into one, e.g. ranked or MWE */
-  values: string[],
+  value: string,
   ignoreCase: boolean,
   cqpStringifier?: CqpStringifier,
 ): string {
@@ -130,19 +127,19 @@ function reduceCqp(
   const attr = corpusSelection.getReduceAttrs()[name]
 
   // Use named CQP'ifier from custom config code. It must escape values as regex.
-  if (cqpStringifier) return cqpStringifier(values, ignoreCase)
+  if (cqpStringifier) return cqpStringifier(value, ignoreCase)
 
   const cqpName = attr ? prefixAttr(attr) : name
 
   // Empty value: for multi-value attr, match tokens with 0 values.
   // For structs, use negative container test. For other attrs, compare to empty string. The statistics data doesn't distinguish these.
-  if (values[0] == "")
+  if (value == "")
     return attr?.type == "set" ? `ambiguity(${cqpName}) = 0` : `(!${cqpName} | ${cqpName} = "")`
 
   // Escape values for use in CQP regex
-  values = values.map(regescape)
-  // Combine grouped values
-  const cqpValue = values.length > 1 ? splitSuffix(values[0])[0] + "(:[-0-9\\.]+)*" : values[0]
+  value = regescape(value)
+  // Allow for suffixes
+  if (settings.group_statistics.includes(name)) value += "(:[-0-9\\.]+)*"
   // Support case-insensitive search
   const flag = name == "word" && ignoreCase ? " %c" : ""
 
@@ -150,9 +147,9 @@ function reduceCqp(
 
   // For a ranked attribute, only match the first value in the list.
   // The rank suffix is handled above (replaced with a wildcard or left in place).
-  if (attr?.ranked) return `${cqpName} = '\\|${cqpValue}.*'${flag}`
+  if (attr?.ranked) return `${cqpName} = '\\|${value}.*'${flag}`
 
-  return `${cqpName} ${op} '${cqpValue}'${flag}`
+  return `${cqpName} ${op} '${value}'${flag}`
 }
 
 export function createStatisticsCsv(
@@ -167,8 +164,15 @@ export function createStatisticsCsv(
   const header = [...attrs, totalStr, ...Object.values(corpusTitles)]
 
   const output = data.map((row) => {
-    // One cell per grouped attribute
-    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.plainValue[attr]))
+    // One cell per attribute
+    const attrValues = attrs.map((attr) =>
+      isTotalRow(row)
+        ? "Σ"
+        : row.plainValue
+            .flat()
+            .map((token) => token[attr])
+            .join(" "),
+    )
     const corpusIds = Object.keys(corpusTitles)
     const frequencies = corpusIds.map((id) => row.count[id][frequencyIndex])
     return [...attrValues, row.total[frequencyIndex], ...frequencies]

@@ -5,4 +5,4 @@ export type Stringifier = (str: string) => string
 export type ListStringifier = (strs: string[]) => string
 
 /** Build a CQP condition for a set of values of a given attribute */
-export type CqpStringifier = (values: string[], ignoreCase?: boolean) => string
+export type CqpStringifier = (value: string, ignoreCase?: boolean) => string
