@@ -8,6 +8,22 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - `MINOR` denotes changes that **may affect** the user experience or the development workflow
 - `PATCH` denotes changes that are **insignificant** to the user experience or the develpment workflow
 
+## Unreleased
+
+### Changed
+
+- Using Noto Sans for data and Noto Serif for body text
+- Removed username from logout button to avoid linebreak
+- Default base url now includes trailing slash: `/korp/`
+
+### Fixed
+
+- News item sorting
+- Statistics columns resizable
+- Instance config reference
+- Use wildcard regex for suffixed values in Statistics subsearch
+- Parse only numeric value suffixes
+
 ## 10.0.0 (2016-09-29)
 
 First release of the Vue.js rewrite 🎉
