@@ -8,6 +8,7 @@ import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
 import type { Reader } from "./results/text/text"
 import type { StatisticsPostprocessor } from "./core/statistics/statistics.types"
+import type { Config } from "@/core/config"
 
 /** Load a component which can be overridden by instance config. */
 export const injectComponent = (name: keyof typeof components) =>
@@ -28,6 +29,11 @@ export const componentInjectionKeys = mapValues(
 
 export const injectionKeys = {
   auth: Symbol() as InjectionKey<AuthModule>,
+  hook: {
+    /** Runs awaited in the end of the app initialization procedure */
+    afterInit: Symbol() as InjectionKey<(vars: { settings: Config }) => Promise<void>>,
+    statisticsPostprocess: Symbol() as InjectionKey<StatisticsPostprocessor>,
+  },
   search: {
     widgets: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Widget>>>,
   },
@@ -39,5 +45,4 @@ export const injectionKeys = {
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
-  statisticsPostprocess: Symbol() as InjectionKey<StatisticsPostprocessor>,
 }

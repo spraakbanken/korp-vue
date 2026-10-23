@@ -13,13 +13,15 @@ import type { CorpusParallel } from "./core/config/corpusConfigRaw.types"
 import { loadCorpusConfig } from "./core/config/corpusConfig"
 import { useI18n } from "vue-i18n"
 import settings from "./core/config"
-import { readonly, ref } from "vue"
+import { inject, readonly, ref } from "vue"
+import { injectionKeys } from "./injection"
 
 const initDone = ref(false)
 
 export default function useInit() {
   const auth = useAuth()
   const { locale } = useI18n()
+  const afterInit = inject(injectionKeys.hook.afterInit, undefined)
 
   async function init() {
     // Initialize authentication
@@ -49,6 +51,9 @@ export default function useInit() {
 
     // Keep the lang param in sync with the i18n lib
     syncRef(locale, lang)
+
+    // Call instance plugin hook
+    await afterInit?.({ settings })
 
     initDone.value = true
   }

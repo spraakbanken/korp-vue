@@ -10,6 +10,10 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ## Unreleased
 
+### Added
+
+- Let instance plugin modify corpus config [#119](https://github.com/spraakbanken/korp-vue/issues/119)
+
 ### Changed
 
 - Using Noto Sans for data and Noto Serif for body text
