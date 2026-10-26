@@ -29,6 +29,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - Instance config reference
 - Use wildcard regex for suffixed values in Statistics subsearch
 - Parse only numeric value suffixes
+- RTL in KWIC
 
 ## 10.0.0 (2016-09-29)
 

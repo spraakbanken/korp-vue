@@ -26,7 +26,7 @@ watchImmediate(
     class="w-100 overflow-x-auto"
     v-scroll-to-target="{ watch: () => data, selector: '.kwic-match' }"
   >
-    <table class="table table-sm text-nowrap">
+    <table class="table table-sm text-nowrap" :dir="settings.dir">
       <tbody>
         <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">
           <tr v-if="isCorpusHeading(row)">
@@ -37,8 +37,8 @@ watchImmediate(
             </td>
           </tr>
 
-          <KwicRow v-if="isKwic(row)" :row :dir="settings.dir" />
-          <KwicRowLinked v-if="isLinkedKwic(row)" :row :dir="settings.dir" />
+          <KwicRow v-if="isKwic(row)" :row />
+          <KwicRowLinked v-if="isLinkedKwic(row)" :row />
         </template>
       </tbody>
     </table>
