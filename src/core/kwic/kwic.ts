@@ -53,6 +53,7 @@ export type LinkedKwicToken = Token & {
   /** Unique within this KWIC page */
   id: string
   word: string
+  position: number
   attrs: Record<string, string | null>
 }
 
@@ -164,9 +165,10 @@ export function massageData(rows: ApiKwic[]): Row[] {
     if (row.aligned) {
       const [corpus, tokensAligned] = Object.entries(row.aligned)[0]!
 
-      const tokens = tokensAligned.map((token) => ({
+      const tokens = tokensAligned.map((token, i) => ({
         id: getId(),
         word: token.word,
+        position: i,
         attrs: omit(token, "structs"),
       }))
 
