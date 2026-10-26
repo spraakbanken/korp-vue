@@ -52,6 +52,10 @@ corpus.selection.graph.selected: Valt
 corpus.selection.graph.year: År {year}
 corpus.selection.graph.undated: Odaterat
 corpus.selection.validation.dialog.title: Korpusurval
+corpus.selection.validation.missing: "Följande korpusar är inte tillgängliga, och har tagits bort från urvalet: {ids}"
+corpus.selection.validation.partial_access: "Du saknar tillgång till följande korpusar, och de har tagits bort från urvalet: {ids}"
+corpus.selection.validation.partial_access_login: "Du saknar tillgång till följande korpusar: {ids}. Logga in för att fortsätta."
+corpus.selection.validation.no_access: Du saknar tillgång till alla valda korpusar. Standardurvalet används istället.
 corpus.selection.select_all: Markera alla
 corpus.selection.select_none: Avmarkera
 corpus.selection.summary.selected: Inga korpusar valda | 1 korpus vald | {n} korpusar valda

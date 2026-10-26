@@ -7,6 +7,7 @@ import { getDefaultCorpusSelection } from "@/core/config"
 import type { Corpus } from "@/core/config/corpusConfig.types"
 import { useAuth } from "@/auth/useAuth"
 import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
+import { useI18n } from "vue-i18n"
 
 const emit = defineEmits<{
   (e: "resolve", ids: string[]): void
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 
 const store = useAppStore()
 const auth = useAuth()
+const { t } = useI18n()
 
 const message = ref("")
 let dialog: ConfirmDialog | undefined
@@ -45,7 +47,7 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
     (id) => !corpusListing.corpora.find((corpus) => corpus.id == id),
   )
   if (unrecognizedIds.length) {
-    await showDialog(`Missing: ${unrecognizedIds}, removed.`)
+    await showDialog(t("corpus.selection.validation.missing", { ids: unrecognizedIds.join(", ") }))
     return validateCorpusSelection(ids.filter((id) => !unrecognizedIds.includes(id)))
   }
 
@@ -54,21 +56,24 @@ async function validateCorpusSelection(ids: string[], skipLogin = false): Promis
   if (deniedCorpora.length) {
     if (auth.isLoggedIn() || skipLogin) {
       if (allowedCorpora.length) {
-        // Access denied for some of the corpora
+        // Access denied for some of the corpora, remove those
         await showDialog(
-          `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. They will be deselected.`,
+          t("corpus.selection.validation.partial_access", {
+            ids: deniedCorpora.map((c) => c.id).join(", "),
+          }),
         )
         return validateCorpusSelection(allowedCorpora.map((c) => c.id))
       } else {
-        // Access denied for all corpora
-        await showDialog(
-          `You do not have access to any of the selected corpora. Default corpus selection will be used.`,
-        )
+        // Access denied for all corpora, switch to default selection
+        await showDialog(t("corpus.selection.validation.no_access"))
         return validateCorpusSelection([])
       }
     } else {
+      // Access denied for some of the corpora, ask user to log in
       await showDialog(
-        `You do not have access to these selected corpora: ${deniedCorpora.map((c) => c.id)}. Log in to continue.`,
+        t("corpus.selection.validation.partial_access_login", {
+          ids: deniedCorpora.map((c) => c.id).join(", "),
+        }),
       )
       await auth.attemptLogin()
       // Check again but don't ask for login again if user dismissed it.

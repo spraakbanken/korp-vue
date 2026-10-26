@@ -52,6 +52,10 @@ corpus.selection.graph.selected: Selected
 corpus.selection.graph.year: Year {year}
 corpus.selection.graph.undated: Undated
 corpus.selection.validation.dialog.title: Corpus selection
+corpus.selection.validation.missing: "Some corpora are not available, and were removed from selection: {ids}"
+corpus.selection.validation.partial_access: "You do not have access to the following corpora, and they have been removed from selection: {ids}"
+corpus.selection.validation.partial_access_login: "You do not have access to the following corpora: {ids}. Log in to continue."
+corpus.selection.validation.no_access: You do not have access to any of the selected corpora. Default corpus selection will be used.
 corpus.selection.select_all: Select all
 corpus.selection.select_none: Select none
 corpus.selection.summary.selected: No corpora selected | 1 corpus selected | {n} corpora selected
