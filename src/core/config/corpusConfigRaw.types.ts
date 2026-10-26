@@ -83,6 +83,7 @@ export type Attribute = {
   ranked?: boolean
   sidebar_component?: MaybeWithOptions
   sidebar_hide_label?: boolean
+  sidebar_info_url?: string
   stats_cqp?: string
   stats_stringify?: string
   stringify?: string

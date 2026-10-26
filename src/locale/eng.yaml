@@ -272,6 +272,7 @@ result.pagination.goto: Go to {input} of {total}
 result.reader: Reader
 result.reader.from: Text from {corpus}
 
+result.sidebar.info: About {name}
 result.sidebar.rank_score: Confidence
 result.sidebar.search: Search for this
 result.sidebar.search_karp: Search in Karp

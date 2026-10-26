@@ -273,6 +273,7 @@ result.pagination.goto: Gå till {input} av {total}
 result.reader: Läsläge
 result.reader.from: Text från {corpus}
 
+result.sidebar.info: Om {name}
 result.sidebar.rank_score: Konfidens
 result.sidebar.search: Sök på detta
 result.sidebar.search_karp: Sök i Karp

@@ -32,10 +32,23 @@ function search() {
 
 <template>
   <DetailsDropdown
-    v-if="attribute.ranked || attribute.external_search || attribute.internal_search"
+    v-if="
+      attribute.external_search ||
+      attribute.internal_search ||
+      attribute.ranked ||
+      attribute.sidebar_info_url
+    "
   >
     <table class="table table-sm m-0">
       <tbody>
+        <tr v-if="attribute.sidebar_info_url">
+          <td colspan="2">
+            <a :href="attribute.sidebar_info_url" target="_blank">
+              {{ $t("result.sidebar.info", { name: attribute.name }) }}
+            </a>
+          </td>
+        </tr>
+
         <tr v-if="attribute.ranked">
           <th>{{ $t("result.sidebar.rank_score") }}</th>
           <td style="text-wrap: nowrap">{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
