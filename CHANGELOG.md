@@ -23,6 +23,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ### Fixed
 
+- Dependency tree sometimes not drawn [#56](https://github.com/spraakbanken/korp-vue/issues/56), [#117](https://github.com/spraakbanken/korp-vue/issues/117)
 - Links to Korp can't be opened in browser tabs where Korp is already open [#20](https://github.com/spraakbanken/korp-vue/issues/20)
 - News item sorting
 - Attribute order in KWIC sidebar

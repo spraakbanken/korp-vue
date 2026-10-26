@@ -24,7 +24,8 @@ export function createConll(
 ): string {
   /** Build a token line for the CoNLL format */
   function tokenConll(token: KwicToken): string {
-    const ref = token.attrs[attrMap.ref.name]
+    // The lib chokes on 0-padded string, so parse it as a number
+    const ref = Number(token.attrs[attrMap.ref.name])
     const pos = token.attrs[attrMap.pos.name]
     const head = token.attrs[attrMap.head.name] || "0"
     const rel = token.attrs[attrMap.rel.name]
