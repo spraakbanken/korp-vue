@@ -34,8 +34,8 @@
     font-size: #{$font-size-base};
   }
 
-  &:is(.badge, .small),
-  :is(.badge, .small) {
+  &:is(.badge, .small, .btn.btn-sm),
+  :is(.badge, .small, .btn.btn-sm) {
     font-size: calc(0.75 * #{$font-size-base});
   }
 }
