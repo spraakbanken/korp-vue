@@ -58,10 +58,16 @@ export default function useSearchHistory() {
 
   /** Create a label for a history item */
   function createLabel(state: SearchState): string {
-    if (!state.search) return "–"
-    if (state.search == "cqp") return state.cqp || "–"
-    const [type, value] = splitFirst("|", state.search)
-    return type === "lemgram" ? unregescape(value) : value
+    const query = (() => {
+      if (!state.search) return "–"
+      if (state.search == "cqp") return state.cqp || "–"
+      const [type, value] = splitFirst("|", state.search)
+      return type === "lemgram" ? unregescape(value) : value
+    })()
+    const full = state.corpus.join(", ")
+    const cut = full.slice(0, 40)
+    const corpora = full.length > cut.length ? cut.replace(/,[^,]*$/, ", …") : cut
+    return `${query} (${corpora})`
   }
 
   /** Clear search history */
