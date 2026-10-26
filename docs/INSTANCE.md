@@ -47,7 +47,7 @@ The first few settings are needed at initialization time, and thus must be speci
   - value: swe
     label: Svenska
   ```
-- **autocomplete** - Boolean. If enabled, the Simple search input will use [Karp](https://spraakbanken.gu.se/en/tools/karp) to autocomplete lemgrams.
+- **autocomplete** - Boolean. If enabled, the Simple search input will use [Karp](https://sprakbanken.se/en/platforms/karp) to autocomplete lemgrams.
 - **backendURLMaxLength** - Number. How long a Korp backend request URL may be before switching to `POST`. Defaults to 8100.
 - **common_struct_types** - Object with attribute name as a key and attribute definition as value. Attributes
   that may be added automatically to a corpus. See [backend documentation](https://github.com/spraakbanken/korp-backend)

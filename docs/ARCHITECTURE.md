@@ -364,7 +364,7 @@ but retrieves only a single row with all tokens of a given text ID.
 Tokens are displayed with reconstructed surrounding whitespace.
 
 The backend request is slow, and we generally recommend the
-[Strix](https://spraakbanken.gu.se/en/tools/strix) platform
+[Strix](https://sprakbanken.se/en/platforms/strix) platform
 for document-scope corpus research.
 
 ### Comparison
