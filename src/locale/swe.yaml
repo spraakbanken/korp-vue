@@ -68,7 +68,7 @@ footer.contact.intro: Använder du våra plattformar, datamängder eller analyse
 frontpage.examples: Exempelsökningar
 frontpage.news: Nyheter
 frontpage.updates: Korpusuppdateringar
-frontpage.updates.item: "{title} har uppdaterats"
+frontpage.updates.updated: Uppdaterad
 frontpage.updates.select: Välj
 
 lang.swe: svenska

@@ -68,7 +68,7 @@ footer.contact.intro: Are you using our platforms, datasets or analyses in your 
 frontpage.examples: Search examples
 frontpage.news: News
 frontpage.updates: Corpus updates
-frontpage.updates.item: "{title} was updated"
+frontpage.updates.updated: Updated
 frontpage.updates.select: Select
 
 lang.swe: Swedish

@@ -9,7 +9,7 @@ const COLLAPSED_MAX = 5
 const LIMIT_DAYS = 180
 
 const [isExpanded, toggle] = useToggle()
-const { locObj, locDate } = useLocale()
+const { locObj } = useLocale()
 const store = useAppStore()
 
 const recentUpdates = corpusListing.corpora
@@ -24,12 +24,11 @@ function select(corpusId: string) {
 <template>
   <div v-if="recentUpdates.length">
     <h4>{{ $t("frontpage.updates") }}</h4>
-    <table class="table table-sm table-flush align-middle">
+    <table class="table table-sm table-flush align-middle font-data">
       <thead>
         <tr>
           <th>{{ $t("corpus") }}</th>
-          <th>{{ $t("corpus.info.updated") }}</th>
-          <th class="text-center">{{ $t("frontpage.updates.select") }}</th>
+          <th colspan="2">{{ $t("frontpage.updates.updated") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -42,7 +41,7 @@ function select(corpusId: string) {
           </td>
           <td>
             <time datetime="{{ corpus.info.Updated }}">
-              {{ locDate(String(corpus.info.Updated)) }}
+              {{ corpus.info.Updated }}
             </time>
           </td>
           <td class="text-center">
