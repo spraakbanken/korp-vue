@@ -73,8 +73,11 @@ function identifyAttributes(
     (attr) => attr.display_type != "hidden" && !attr.hide_sidebar,
   )
   // Sort according to order in config
-  const ordering = corpus.value._attributes_order || []
-  return sortBy(attrs, (attr) => (ordering.includes(attr.name) ? -ordering.indexOf(attr.name) : 0))
+  const ordering =
+    corpusKey == "attributes"
+      ? corpus.value._attributes_order
+      : corpus.value._struct_attributes_order
+  return sortBy(attrs, (attr) => ordering.indexOf(attr.name))
 }
 
 function openReadingMode() {
