@@ -30,6 +30,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - Use wildcard regex for suffixed values in Statistics subsearch
 - Parse only numeric value suffixes
 - RTL in KWIC
+- Handle lemgram search URL from v9
 
 ## 10.0.0 (2016-09-29)
 

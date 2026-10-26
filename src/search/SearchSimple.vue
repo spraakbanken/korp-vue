@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue"
 import { useAppStore } from "@/store/useAppStore"
-import { splitFirst } from "@/core/util"
+import { splitFirst, unregescape } from "@/core/util"
 import { storeToRefs } from "pinia"
 import { watchImmediate } from "@vueuse/core"
 import { supportsInOrder } from "@/core/cqp/cqp"
@@ -63,7 +63,8 @@ watchImmediate(search, () => {
   const [type, value] = splitFirst("|", store.search || "")
   if (type != "word" && type != "lemgram") return
 
-  lemgram.value = { type, value }
+  // Support URLs from v9 where the value was escaped
+  lemgram.value = { type, value: unregescape(value) }
 
   // Trigger search
   searchStore.commitQuery(query.value)
