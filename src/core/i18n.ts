@@ -1,5 +1,5 @@
 import type { LangString } from "@/core/model/locale"
-import type { AbsRelSeq } from "@/core/statistics/statistics.types"
+import type { FrequencyCounts } from "./backend/korp-api"
 
 /** Current UI language. */
 let _lang: string
@@ -27,8 +27,8 @@ export function locObj(map?: LangString, lang = _lang): string {
 /**
  * Format frequency as relative or absolute using chosen mode.
  */
-export function formatFrequency(absrel: AbsRelSeq, statsRelative: boolean, lang = _lang) {
-  const [absolute, relative] = absrel
+export function formatFrequency(freq: FrequencyCounts, statsRelative: boolean, lang = _lang) {
+  const { absolute, relative } = freq
   return statsRelative ? formatDecimals(relative, 1) : absolute.toLocaleString(lang)
 }
 

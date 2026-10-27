@@ -100,8 +100,8 @@ export class StatisticsGrid extends SlickGrid<Row> {
 function getSorter(type: string, col: string | number): Comparer<SingleRow> {
   const sorters: Record<string, Comparer<SingleRow>> = {
     hit_value: compareLabels((row) => row.formattedValue[col] || ""),
-    total: (a, b) => a.total[0] - b.total[0],
-    count: (a, b) => (a.count[col]?.[0] || 0) - (b.count[col]?.[0] || 0),
+    total: (a, b) => a.row.combined.absolute - b.row.combined.absolute,
+    count: (a, b) => (a.row.corpora[col]?.absolute || 0) - (b.row.corpora[col]?.absolute || 0),
   }
 
   return sorters[type] || (() => 0)
@@ -178,8 +178,8 @@ function createColumns(
     field: "total",
     sortable: true,
     defaultSortAsc: false,
-    formatter: (row, cell, value) => {
-      return formatFrequency(value, getRelative(), getLang())
+    formatter: (row, cell, value, columnDef, dataContext) => {
+      return formatFrequency(dataContext.row.combined, getRelative(), getLang())
     },
     minWidth,
     cssClass: "total-column text-right link",
@@ -193,8 +193,8 @@ function createColumns(
       field: "count",
       sortable: true,
       defaultSortAsc: false,
-      formatter: (row, cell, value) => {
-        return formatFrequency(value[id], getRelative(), getLang())
+      formatter: (row, cell, value, columnDef, dataContext) => {
+        return formatFrequency(dataContext.row.corpora[id], getRelative(), getLang())
       },
       minWidth,
       cssClass: "text-right link",

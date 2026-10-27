@@ -22,7 +22,7 @@ Chart.register(ArcElement, Tooltip, Legend)
 
 // Look up corpus objects and combine with frequencies
 const stats = computed(() =>
-  Object.entries(props.row.count)
+  Object.entries(props.row.row.corpora)
     .map(([id, count]) => ({
       count,
       title: locObj(corpusListing.get(id).title),
@@ -38,13 +38,13 @@ const data = computed<ChartData<"pie">>(() => {
     datasets: [
       // Outer series: absolute frequencies
       {
-        data: stats.value.map((item) => item.count[0]),
+        data: stats.value.map((item) => item.count.absolute),
         backgroundColor: colors,
         label: t("stat.freq"),
       },
       // Inner series: relative frequencies
       {
-        data: stats.value.map((item) => item.count[1]),
+        data: stats.value.map((item) => item.count.relative),
         backgroundColor: colors.map((c) => `color-mix(${c}, white 40%)`),
         label: t("stat.freq_relative"),
       },
