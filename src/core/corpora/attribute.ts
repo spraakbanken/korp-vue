@@ -1,10 +1,11 @@
-import { escape } from "lodash-es"
+import { compact, escape } from "lodash-es"
 import { prefixAttr } from "../config"
 import type { Attribute } from "../config/corpusConfigRaw.types"
 import type { Condition } from "../cqp/cqp.types"
 import { compareLabels, locObj } from "../i18n"
 import type { LangString, LocMap } from "../model/locale"
 import { regescape } from "../util"
+import type { ListStringifier, Stringifier } from "@/core/corpora/attributes.types"
 
 /** Get the dataset options of an attribute. */
 export function getDatasetOptions(
@@ -27,6 +28,18 @@ export function createAttrCondition(attr: Attribute, val = ""): Condition {
     op: attr.type == "set" ? "contains" : "=",
     val: regescape(val),
   }
+}
+
+/** Use stringifiers to format a sequence of values */
+export function stringifyValues(
+  values: (string | null)[],
+  stringifier?: Stringifier,
+  listStringifier?: ListStringifier,
+): string {
+  stringifier ??= String
+  const words = compact(values)
+  const formatted = listStringifier ? listStringifier(words) : joinWords(words.map(stringifier))
+  return formatted || `<span class="opacity-50">—</span>`
 }
 
 /** Default attribute value stringifier */

@@ -18,11 +18,13 @@ import { useI18n } from "vue-i18n"
 import CorpusDistributionChart from "./CorpusDistributionChart.vue"
 import { useStringifiers } from "@/attributes/useStringifiers.ts"
 import { fromKeys } from "@/core/util.ts"
+import type { ListStringifier, Stringifier } from "@/core/corpora/attributes.types.ts"
 
 const props = defineProps<{
   attributes: string[]
   params: SearchParams
   rows: Row[]
+  stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>
 }>()
 
 const rowsSelected = defineModel<Row[]>({ required: true })
@@ -68,6 +70,7 @@ async function renderGrid() {
     props.rows,
     corpusIds,
     props.attributes,
+    props.stringifiers,
     t("result.statistics.total"),
     () => store.lang,
     () => store.statsRelative,
