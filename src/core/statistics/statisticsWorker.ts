@@ -1,4 +1,3 @@
-import { keyBy, mapValues } from "lodash-es"
 import type {
   AbsRelSeq,
   Dataset,
@@ -6,7 +5,8 @@ import type {
   TotalRow,
   StatisticsWorkerMessage,
 } from "./statistics.types"
-import type { FrequencyRow, FrequencySums } from "../backend/korp-api"
+import type { FrequencyCounts } from "../backend/korp-api"
+import { fromKeys } from "../util"
 
 /*
     This is optimized code for transforming the statistics data.
@@ -21,28 +21,24 @@ onmessage = function (e) {
   if (!isStatisticsMessageEvent(e)) return
 
   const message = e.data
-  const { combined, corpora } = message.data
-
-  // Format all values as strings to use as row keys
-  // The key list is 1:1 to the combined list, but not necessarily to the corpus-specific list
-  const keys = combined.rows.map(createKey)
-  // Key the rows of each corpus, to access them quickly later
-  const rowsKeyed = mapValues(corpora, (data) => keyBy(data.rows, createKey))
+  const { combined, corpora, rows } = message.data
+  const corpusIds = Object.keys(corpora)
 
   // Pre-allocate array for performance
-  const dataset: Dataset = new Array(keys.length + 1)
+  const dataset: Dataset = new Array(rows.length + 1)
 
   dataset[0] = {
     id: "row_total",
-    count: mapValues(corpora, (data) => toAbsRelSeq(data.sums)),
+    count: fromKeys(corpusIds, id => toAbsRelSeq(corpora[id].sums)),
     total: toAbsRelSeq(combined.sums),
     rowId: 0,
   } satisfies TotalRow
 
-  keys.forEach((key, i) => {
+  rows.forEach((row, i) => {
     const plainValue: Record<string, null | string>[] = []
 
-    for (const [attr, terms] of Object.entries(combined.rows[i].value)) {
+    // Transpose value object to array of objects, one per token
+    for (const [attr, terms] of Object.entries(row.value)) {
       terms.forEach((term, j) => {
         plainValue[j] ??= {}
         plainValue[j][attr] = term
@@ -51,8 +47,8 @@ onmessage = function (e) {
 
     dataset[i + 1] = {
       rowId: i + 1,
-      count: mapValues(rowsKeyed, (rows) => toAbsRelSeq(rows[key])),
-      total: toAbsRelSeq(combined.rows[i]),
+      count: fromKeys(corpusIds, id => toAbsRelSeq(row.corpora[id])),
+      total: toAbsRelSeq(row.combined),
       formattedValue: {},
       plainValue,
     } satisfies SingleRow
@@ -64,7 +60,5 @@ onmessage = function (e) {
   self.postMessage(dataset)
 }
 
-const createKey = (row: FrequencyRow): string => JSON.stringify(Object.values(row.value))
-
-const toAbsRelSeq = (row?: FrequencySums): AbsRelSeq =>
+const toAbsRelSeq = (row?: FrequencyCounts): AbsRelSeq =>
   row ? [row.absolute, row.relative] : [0, 0]

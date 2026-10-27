@@ -112,7 +112,7 @@ async function load() {
 
   rawResponse.value = endpoint.getResponse()
   isLimited.value =
-    !!settings["statistics_limit"] && counts.combined.rows.length < counts.combined.total_rows
+    !!settings["statistics_limit"] && counts.rows.length < counts.combined.total_rows
   unsupportedRatio.value = endpoint.unsupportedRatio
   unsupportedAttributes.value = endpoint.unsupportedAttributes
 

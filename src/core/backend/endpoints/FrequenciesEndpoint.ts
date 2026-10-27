@@ -1,11 +1,11 @@
-import { mapValues } from "lodash-es"
 import settings from "@/core/config"
 import { corpusSelection } from "@/core/corpora/corpusListing"
 import type { AttributeOption } from "@/core/corpora/CorpusSet"
 import { expandCqp } from "@/core/cqp/cqp"
-import type { FrequenciesResponse, FrequencyStatistics } from "../korp-api"
+import type { FrequenciesResponse, FrequencyRow, FrequencyStatistics } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
 import type { ClientParams } from "../client.types"
+import type { WithRequired } from "@/core/util"
 
 export type FrequenciesParams = {
   cqp: string
@@ -14,9 +14,12 @@ export type FrequenciesParams = {
   ignoreCase?: boolean
 }
 
-export type FrequenciesData = {
-  corpora: Record<string, FrequencyStatistics>
-  combined: FrequencyStatistics
+// The include params are true by default, so we know both `combined` and `corpora` are present
+export type FrequenciesData = Omit<
+  WithRequired<FrequencyStatistics, "combined" | "corpora">,
+  "rows"
+> & {
+  rows: WithRequired<FrequencyRow, "combined" | "corpora">[]
 }
 
 export class FrequenciesEndpoint extends EndpointBase<
@@ -95,10 +98,7 @@ export class FrequenciesEndpoint extends EndpointBase<
   processResponse(data: FrequenciesResponse) {
     // We only use one CQP, so take the first set of rows
     // The include params are true by default, so we know both `combined` and `corpora` are present
-    return Promise.resolve({
-      corpora: mapValues(data.corpora!, (stats) => stats[0]),
-      combined: data.combined![0],
-    })
+    return Promise.resolve(data.results[0] as FrequenciesData)
   }
 }
 
