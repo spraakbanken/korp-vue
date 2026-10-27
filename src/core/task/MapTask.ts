@@ -3,8 +3,13 @@ import type { MarkerGroup, Point } from "../statistics/map"
 import { TaskBase } from "./TaskBase"
 import { corpusListing } from "../corpora/corpusListing"
 import { backendStream } from "../backend/client"
-import type { FrequencyRow } from "../backend/korp-api"
+import type { FrequencyRow, FrequencyStatistics } from "../backend/korp-api"
 import type { ClientParams, ProgressHandler } from "../backend/client.types"
+import type { WithRequired } from "../util"
+
+type MapFrequencyStatistics = WithRequired<FrequencyStatistics, "combined"> & {
+  rows: WithRequired<FrequencyRow, "combined">[]
+}
 
 export type MapAttribute = { label: string; corpora: string[] }
 
@@ -48,11 +53,12 @@ export class MapTask extends TaskBase<MapSeries[]> {
 
     const abortSignal = this.getAbortSignal()
     const data = await backendStream("/frequencies", params, onProgress, undefined, { abortSignal })
+    const results = data.results as MapFrequencyStatistics[]
 
     // If multiple series, ignore the totals.
-    if (data.combined!.length > 1) data.combined!.shift()
+    if (data.results.length > 1) results.shift()
 
-    this.data = data.combined!.map((res) => ({
+    this.data = results.map((res) => ({
       // The totals row has no `cqp` property.
       label: res.cqp ? this.cqpExprs[res.cqp]! : "Σ",
       cqp: res.cqp || this.cqp,
@@ -66,7 +72,7 @@ export class MapTask extends TaskBase<MapSeries[]> {
     return !!this.data?.some((series) => series.points.length > 0)
   }
 
-  getPoint(row: FrequencyRow): Point | undefined {
+  getPoint(row: MapFrequencyStatistics["rows"][0]): Point | undefined {
     const value = Object.values(row.value)[0]?.[0]
     if (!value) return
     const [name, countryCode, lat, lng] = value.split(";") as [string, string, string, string]
@@ -75,8 +81,8 @@ export class MapTask extends TaskBase<MapSeries[]> {
       countryCode,
       lat: parseFloat(lat),
       lng: parseFloat(lng),
-      abs: row.absolute,
-      rel: row.relative,
+      abs: row.combined.absolute,
+      rel: row.combined.relative,
     }
   }
 
