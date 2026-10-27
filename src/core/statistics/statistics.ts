@@ -1,7 +1,5 @@
-import { compact } from "lodash-es"
 import {
   isPhraseLevelDisjunctionRow,
-  isStandardSingleRow,
   isTotalRow,
   type Dataset,
   type SearchParams,
@@ -13,8 +11,7 @@ import {
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { CqpStringifier, ListStringifier, Stringifier } from "@/attributes/attributes.types"
-import { joinWords } from "../corpora/attribute"
+import type { CqpStringifier } from "@/core/corpora/attributes.types"
 import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
 
 export function processStatisticsResult(
@@ -23,7 +20,6 @@ export function processStatisticsResult(
   reduceVals: string[],
   ignoreCase: boolean,
   prevNonExpandedCQP: string,
-  stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
   postprocess?: StatisticsPostprocessor,
 ): Promise<StatisticsProcessed> {
   const corpora = Object.keys(data.corpora || {})
@@ -50,29 +46,8 @@ export function processStatisticsResult(
       // Terminate worker to free up resources
       worker.terminate()
       const rows = e.data
-
-      // Format the values of the attributes we are reducing by
-      for (const row of rows) {
-        if (isTotalRow(row)) continue
-        for (const attr of reduceVals) {
-          const stringifier = stringifiers[attr]?.token || String
-          const listStringifier = stringifiers[attr]?.list
-          const words = compact(
-            isStandardSingleRow(row)
-              ? row.plainValue.map((word) => word[attr])
-              : row.plainValue.map((words) => words[0][attr]),
-          )
-          const formatted = listStringifier
-            ? listStringifier(words)
-            : joinWords(words.map(stringifier))
-          row.formattedValue[attr] = formatted
-        }
-      }
-
       let processed: StatisticsProcessed = { rows, params }
-
       if (postprocess) processed = postprocess(processed)
-
       resolve(processed)
     }
   })

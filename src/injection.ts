@@ -2,7 +2,7 @@ import { defineAsyncComponent, inject, type Component, type InjectionKey, type R
 import { mapValues } from "lodash-es"
 import type { AuthModule } from "./core/auth"
 import type { RowToken } from "./core/kwic/kwic"
-import type { CqpStringifier, ListStringifier, Stringifier } from "./attributes/attributes.types"
+import type { CqpStringifier, ListStringifier, Stringifier } from "./core/corpora/attributes.types"
 import type { MaybeConfigurable } from "./core/config/config.types"
 import type { Widget } from "./search/extended/widgets/widget"
 import type { Formatter } from "./results/formatter"
