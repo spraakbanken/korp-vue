@@ -91,8 +91,10 @@ export interface paths {
      *     `split` for set-valued CWB attributes whose values should be split on `|` before being included in the result.
      *
      *     Use `include_combined` and `include_per_corpus` to choose whether to include merged values across all selected corpora,
-     *     per-corpus values, or both. With `stream=true`, the response is an NDJSON event stream containing progress events,
-     *     result fragments, and a final completion event.
+     *     per-corpus values, or both.
+     *
+     *     When `stream=true`, this route emits `progress` events. Each event contains the number of completed work items and the
+     *     total number of work items.
      *
      *     ### Example
      *
@@ -119,8 +121,10 @@ export interface paths {
      *     `split` for set-valued CWB attributes whose values should be split on `|` before being included in the result.
      *
      *     Use `include_combined` and `include_per_corpus` to choose whether to include merged values across all selected corpora,
-     *     per-corpus values, or both. With `stream=true`, the response is an NDJSON event stream containing progress events,
-     *     result fragments, and a final completion event.
+     *     per-corpus values, or both.
+     *
+     *     When `stream=true`, this route emits `progress` events. Each event contains the number of completed work items and the
+     *     total number of work items.
      *
      *     ### Example
      *
@@ -225,8 +229,12 @@ export interface paths {
      *     highlighted separately, and the row's `matches` list contains multiple match objects. Free-order searches require
      *     `default_within` or `within`. Not all CQP queries support free-order searches; unsupported queries return an error.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished and the number of hits found in that corpus. If the requested
+     *     number of KWIC rows are reached before all corpora are processed, the stream will emit a partial result object
+     *     containing the requested `kwic` rows, and then continue to emit progress events while remaining corpora are processed.
+     *     Finally, the stream emits a second result object containing the remaining result values, including `total_hits` and
+     *     `hits_by_corpus`.
      *
      *     ### Parallel corpora
      *
@@ -280,8 +288,12 @@ export interface paths {
      *     highlighted separately, and the row's `matches` list contains multiple match objects. Free-order searches require
      *     `default_within` or `within`. Not all CQP queries support free-order searches; unsupported queries return an error.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished and the number of hits found in that corpus. If the requested
+     *     number of KWIC rows are reached before all corpora are processed, the stream will emit a partial result object
+     *     containing the requested `kwic` rows, and then continue to emit progress events while remaining corpora are processed.
+     *     Finally, the stream emits a second result object containing the remaining result values, including `total_hits` and
+     *     `hits_by_corpus`.
      *
      *     ### Parallel corpora
      *
@@ -335,8 +347,10 @@ export interface paths {
      *
      *     The response always contains a `kwic` list. Since the route stops at the first sampled hit, it does not return
      *     `total_hits`, `hits_by_corpus`, or `pagination_state`; those fields would only describe the capped per-corpus sample
-     *     query, not the full
-     *     set of selected corpora.
+     *     query, not the full set of selected corpora.
+     *
+     *     When `stream=true`, this route emits `progress` events for each corpus searched. As the route stops at the first corpus
+     *     with a hit, the result may be returned before every corpus is queried.
      */
     get: operations["get_concordance_sample"]
     put?: never
@@ -353,8 +367,10 @@ export interface paths {
      *
      *     The response always contains a `kwic` list. Since the route stops at the first sampled hit, it does not return
      *     `total_hits`, `hits_by_corpus`, or `pagination_state`; those fields would only describe the capped per-corpus sample
-     *     query, not the full
-     *     set of selected corpora.
+     *     query, not the full set of selected corpora.
+     *
+     *     When `stream=true`, this route emits `progress` events for each corpus searched. As the route stops at the first corpus
+     *     with a hit, the result may be returned before every corpus is queried.
      */
     post: operations["post_concordance_sample"]
     delete?: never
@@ -384,11 +400,15 @@ export interface paths {
      *     `[pos = "JJ"] @[pos = "NN"]`.
      *
      *     Repeat the `cqp` parameter to run prequeries in sequence. Repeat the `subcqp` parameter to add subqueries over the final
-     *     main-query result. `combined` and each entry in `corpora` are always arrays: the first item is the main query result
-     *     and the following items are the subquery results, each with a `cqp` field.
+     *     main-query result. `results` contains the main query first, followed by subquery results with a `cqp` field. Each result
+     *     contains `rows` grouped by the specified attributes, with `combined` frequencies and sparse per-corpus `corpora`
+     *     frequencies. Rows are sorted by combined absolute frequency descending, then grouped value, before applying `offset` and
+     *     `limit`. The result's `combined` and `corpora` metadata contain full unsliced sums and distinct-value counts
+     *     (`total_rows`). `include_combined` and `include_per_corpus` control those fields in both rows and metadata.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished. With `relative_to_struct`, each corpus is queried twice, doubling
+     *     the total work items.
      */
     get: operations["get_frequencies"]
     put?: never
@@ -406,11 +426,15 @@ export interface paths {
      *     `[pos = "JJ"] @[pos = "NN"]`.
      *
      *     Repeat the `cqp` parameter to run prequeries in sequence. Repeat the `subcqp` parameter to add subqueries over the final
-     *     main-query result. `combined` and each entry in `corpora` are always arrays: the first item is the main query result
-     *     and the following items are the subquery results, each with a `cqp` field.
+     *     main-query result. `results` contains the main query first, followed by subquery results with a `cqp` field. Each result
+     *     contains `rows` grouped by the specified attributes, with `combined` frequencies and sparse per-corpus `corpora`
+     *     frequencies. Rows are sorted by combined absolute frequency descending, then grouped value, before applying `offset` and
+     *     `limit`. The result's `combined` and `corpora` metadata contain full unsliced sums and distinct-value counts
+     *     (`total_rows`). `include_combined` and `include_per_corpus` control those fields in both rows and metadata.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished. With `relative_to_struct`, each corpus is queried twice, doubling
+     *     the total work items.
      */
     post: operations["post_frequencies"]
     delete?: never
@@ -435,7 +459,11 @@ export interface paths {
      *     all word forms in a corpus. It uses the same grouping and formatting parameters as `/frequencies`, except it does not
      *     accept `cqp` or `subcqp`.
      *
-     *     If neither `group_by` nor `group_by_struct` is supplied, the route groups by `word`.
+     *     If neither `group_by` nor `group_by_struct` is supplied, the route groups by `word`. The `result` object contains `rows`
+     *     grouped by the specified attributes and full unsliced `combined` and `corpora` metadata. Rows are sorted by combined
+     *     absolute frequency descending, then grouped value, before pagination. Per-corpus row entries are sparse: a missing
+     *     corpus means zero hits for that value. `include_combined` and `include_per_corpus` control those fields in both rows and
+     *     metadata.
      */
     get: operations["get_corpus_frequencies"]
     put?: never
@@ -448,7 +476,11 @@ export interface paths {
      *     all word forms in a corpus. It uses the same grouping and formatting parameters as `/frequencies`, except it does not
      *     accept `cqp` or `subcqp`.
      *
-     *     If neither `group_by` nor `group_by_struct` is supplied, the route groups by `word`.
+     *     If neither `group_by` nor `group_by_struct` is supplied, the route groups by `word`. The `result` object contains `rows`
+     *     grouped by the specified attributes and full unsliced `combined` and `corpora` metadata. Rows are sorted by combined
+     *     absolute frequency descending, then grouped value, before pagination. Per-corpus row entries are sparse: a missing
+     *     corpus means zero hits for that value. `include_combined` and `include_per_corpus` control those fields in both rows and
+     *     metadata.
      */
     post: operations["post_corpus_frequencies"]
     delete?: never
@@ -502,6 +534,9 @@ export interface paths {
      *     Repeat the `subcqp` parameter to add subqueries over the final main-query result. `combined` and each entry in `corpora`
      *     are always arrays: the first item is the main query result and the following items are the subquery results, each with a
      *     `cqp` field.
+     *
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      */
     get: operations["get_frequencies_time"]
     put?: never
@@ -543,6 +578,9 @@ export interface paths {
      *     Repeat the `subcqp` parameter to add subqueries over the final main-query result. `combined` and each entry in `corpora`
      *     are always arrays: the first item is the main query result and the following items are the subquery results, each with a
      *     `cqp` field.
+     *
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      */
     post: operations["post_frequencies_time"]
     delete?: never
@@ -803,8 +841,8 @@ export interface paths {
      *     By default `/dependency-relations` returns overall relation statistics. Set `include_time=true` to also include
      *     time-sliced data in `periods`; use `/dependency-relations/time` when you only want the time-sliced view.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      *
      *     ### Example
      *
@@ -829,8 +867,8 @@ export interface paths {
      *     By default `/dependency-relations` returns overall relation statistics. Set `include_time=true` to also include
      *     time-sliced data in `periods`; use `/dependency-relations/time` when you only want the time-sliced view.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      *
      *     ### Example
      *
@@ -863,8 +901,8 @@ export interface paths {
      *     inside each period; `max_scope=overall` first selects the top overall relations and then returns time data only for
      *     those relations.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      */
     get: operations["get_dependency_relations_time"]
     put?: never
@@ -879,8 +917,8 @@ export interface paths {
      *     inside each period; `max_scope=overall` first selects the top overall relations and then returns time data only for
      *     those relations.
      *
-     *     With `stream=true`, the response is an NDJSON event stream containing progress events, result fragments, and a
-     *     final completion event.
+     *     When `stream=true`, this route emits `progress` events. Each event reports the number of completed and total work items,
+     *     along with the corpus whose processing just finished.
      */
     post: operations["post_dependency_relations_time"]
     delete?: never
@@ -1945,21 +1983,11 @@ export interface components {
     }
     /**
      * CorpusFrequenciesResponse
-     * @description Response model for `/frequencies/corpus` route.
+     * @description Response model for `/frequencies/corpus`.
      */
     CorpusFrequenciesResponse: {
-      /**
-       * Corpora
-       * @description Statistics per corpus. Omitted when `include_per_corpus=false`.
-       */
-      corpora?: {
-        [key: string]: components["schemas"]["FrequencyStatistics"]
-      }
-      /**
-       * Combined
-       * @description Combined statistics for all corpora. Omitted when `include_combined=false`.
-       */
-      combined?: components["schemas"]["FrequencyStatistics"]
+      /** @description Complete-corpus frequency statistics. */
+      result: components["schemas"]["FrequencyStatistics"]
       /**
        * Elapsed
        * @description Time taken to process the request in seconds.
@@ -2518,21 +2546,14 @@ export interface components {
     }
     /**
      * FrequenciesResponse
-     * @description Response model for `/frequencies` route.
+     * @description Response model for `/frequencies`.
      */
     FrequenciesResponse: {
       /**
-       * Corpora
-       * @description Statistics per corpus, always as arrays. Omitted when `include_per_corpus=false`. The main query is first, followed by `subcqp` results.
+       * Results
+       * @description Main-query statistics followed by subquery statistics, each with its CQP string.
        */
-      corpora?: {
-        [key: string]: components["schemas"]["FrequencyStatistics"][]
-      }
-      /**
-       * Combined
-       * @description Combined statistics for all corpora, always as an array with the main query first. Omitted when `include_combined=false`.
-       */
-      combined?: components["schemas"]["FrequencyStatistics"][]
+      results: components["schemas"]["FrequencyStatistics"][]
       /**
        * Elapsed
        * @description Time taken to process the request in seconds.
@@ -2672,6 +2693,38 @@ export interface components {
       }
     }
     /**
+     * FrequencyCounts
+     * @description Absolute and relative frequencies for a grouped value or result sum.
+     */
+    FrequencyCounts: {
+      /**
+       * Absolute
+       * @description Absolute frequency.
+       * @example 598
+       */
+      absolute: number
+      /**
+       * Relative
+       * @description Relative frequency per one million tokens.
+       * @example 13.765536
+       */
+      relative: number
+    }
+    /**
+     * FrequencyMetadata
+     * @description Summary of a full result before pagination.
+     */
+    FrequencyMetadata: {
+      /** @description Frequency sums over the full unsliced result. */
+      sums: components["schemas"]["FrequencyCounts"]
+      /**
+       * Total Rows
+       * @description Number of distinct grouped values before pagination.
+       * @example 241
+       */
+      total_rows: number
+    }
+    /**
      * FrequencyRow
      * @description A grouped frequency row.
      */
@@ -2697,59 +2750,45 @@ export interface components {
         [key: string]: (string | null)[]
       }
       /**
-       * Absolute
-       * @description Absolute frequency.
-       * @example 598
+       * Combined
+       * @description Combined frequencies. Omitted when `include_combined=false`.
        */
-      absolute: number
+      combined?: components["schemas"]["FrequencyCounts"]
       /**
-       * Relative
-       * @description Relative frequency per one million tokens.
-       * @example 13.765536
+       * Corpora
+       * @description Frequencies per corpus. Corpora with zero hits for this value are omitted. Omitted when `include_per_corpus=false`.
        */
-      relative: number
+      corpora?: {
+        [key: string]: components["schemas"]["FrequencyCounts"]
+      }
     }
     /**
      * FrequencyStatistics
-     * @description Frequency statistics for one query or subquery.
+     * @description Statistics grouped by value for one query or subquery.
      */
     FrequencyStatistics: {
       /**
        * Rows
-       * @description Grouped frequency rows.
+       * @description Grouped values sorted by combined absolute frequency descending, then grouped value.
        */
       rows: components["schemas"]["FrequencyRow"][]
-      /** @description Frequency sums over the full unsliced result, before applying `offset` and `limit`. */
-      sums: components["schemas"]["FrequencySums"]
       /**
-       * Total Rows
-       * @description Total number of distinct grouped values before applying `offset` and `limit`.
-       * @example 241
+       * Combined
+       * @description Combined result metadata. Omitted when `include_combined=false`.
        */
-      total_rows: number
+      combined?: components["schemas"]["FrequencyMetadata"]
+      /**
+       * Corpora
+       * @description Metadata for every selected corpus. Omitted when `include_per_corpus=false`.
+       */
+      corpora?: {
+        [key: string]: components["schemas"]["FrequencyMetadata"]
+      }
       /**
        * Cqp
-       * @description Subquery CQP string. Included only for `subcqp` results.
+       * @description Subquery CQP string. Included only for subqueries.
        */
       cqp?: string
-    }
-    /**
-     * FrequencySums
-     * @description Frequency sums for a statistics result.
-     */
-    FrequencySums: {
-      /**
-       * Absolute
-       * @description Absolute frequency sum.
-       * @example 598
-       */
-      absolute: number
-      /**
-       * Relative
-       * @description Relative frequency sum.
-       * @example 13.765536
-       */
-      relative: number
     }
     /**
      * FrequencyTimePeriod
@@ -3661,7 +3700,7 @@ export interface components {
         | components["schemas"]["UndatedFrequencyTimePeriod"]
       )[]
       /** @description Frequency sums over the time series. */
-      sums: components["schemas"]["FrequencySums"]
+      sums: components["schemas"]["FrequencyCounts"]
       /**
        * Cqp
        * @description Subquery CQP string. Included only for `subcqp` results.
@@ -4083,9 +4122,10 @@ export type FrequenciesRequest = components["schemas"]["FrequenciesRequest"]
 export type FrequenciesResponse = components["schemas"]["FrequenciesResponse"]
 export type FrequenciesTimeRequest = components["schemas"]["FrequenciesTimeRequest"]
 export type FrequenciesTimeResponse = components["schemas"]["FrequenciesTimeResponse"]
+export type FrequencyCounts = components["schemas"]["FrequencyCounts"]
+export type FrequencyMetadata = components["schemas"]["FrequencyMetadata"]
 export type FrequencyRow = components["schemas"]["FrequencyRow"]
 export type FrequencyStatistics = components["schemas"]["FrequencyStatistics"]
-export type FrequencySums = components["schemas"]["FrequencySums"]
 export type FrequencyTimePeriod = components["schemas"]["FrequencyTimePeriod"]
 export type Granularity = components["schemas"]["Granularity"]
 export type HttpValidationError = components["schemas"]["HTTPValidationError"]
