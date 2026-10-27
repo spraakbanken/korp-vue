@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { formatFrequency } from "@/core/i18n"
 import { formatDateOnLevel, type Level } from "@/core/time"
-import type { AbsRelSeq } from "@/core/statistics/statistics.types"
 import type { Series } from "@/core/task/TrendTask"
 import { useAppStore } from "@/store/useAppStore"
 import { SlickGrid, type Column } from "slickgrid"
 import { useTemplateRef, watchEffect } from "vue"
 import { useI18n } from "vue-i18n"
+import type { FrequencyCounts } from "@/core/backend/korp-api"
 
 export type TableRow = {
   label: string
   data: {
-    [time: string]: AbsRelSeq
+    [time: string]: FrequencyCounts
   }
 }
 
@@ -48,7 +48,7 @@ watchEffect(() => {
         },
         cssClass: "text-end",
       }
-      tableRow.data[t] = [item.absolute, item.y]
+      tableRow.data[t] = { absolute: item.absolute, relative: item.y }
     }
     rows.push(tableRow)
   }

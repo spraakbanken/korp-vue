@@ -1,4 +1,4 @@
-import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
+import type { FrequenciesData, FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoint"
 
 export type StatisticsWorkerMessage = {
   type: "korpStatistics"
@@ -25,6 +25,7 @@ export type SingleRow = StandardSingleRow | PhraseLevelDisjunctionRow
 
 export type TotalRow = RowBase & {
   id: "row_total"
+  row: Omit<FrequenciesDataRow, "value">
 }
 
 /** A row of frequencies for a given set of attribute values */
@@ -33,6 +34,7 @@ export type StandardSingleRow = RowBase & {
   formattedValue: Record<string, string>
   /** Raw attribute values per token */
   plainValue: Record<string, string | null>[]
+  row: FrequenciesDataRow
 }
 
 /**
@@ -53,11 +55,6 @@ export const isPhraseLevelDisjunctionRow = (row: Row): row is PhraseLevelDisjunc
 
 export type RowBase = {
   rowId: number
-  /** Frequency counts keyed by uppercase corpus id */
-  count: Record<string, AbsRelSeq>
-  total: AbsRelSeq
 }
 
 export type Dataset = Row[]
-
-export type AbsRelSeq = [number, number]
