@@ -1,12 +1,5 @@
-import type {
-  AbsRelSeq,
-  Dataset,
-  SingleRow,
-  TotalRow,
-  StatisticsWorkerMessage,
-} from "./statistics.types"
-import type { FrequencyCounts } from "../backend/korp-api"
-import { fromKeys } from "../util"
+import type { Dataset, SingleRow, TotalRow, StatisticsWorkerMessage } from "./statistics.types"
+import { mapValues } from "lodash-es"
 
 /*
     This is optimized code for transforming the statistics data.
@@ -22,16 +15,17 @@ onmessage = function (e) {
 
   const message = e.data
   const { combined, corpora, rows } = message.data
-  const corpusIds = Object.keys(corpora)
 
   // Pre-allocate array for performance
   const dataset: Dataset = new Array(rows.length + 1)
 
   dataset[0] = {
     id: "row_total",
-    count: fromKeys(corpusIds, id => toAbsRelSeq(corpora[id].sums)),
-    total: toAbsRelSeq(combined.sums),
     rowId: 0,
+    row: {
+      combined: combined.sums,
+      corpora: mapValues(corpora, "sums"),
+    },
   } satisfies TotalRow
 
   rows.forEach((row, i) => {
@@ -47,18 +41,14 @@ onmessage = function (e) {
 
     dataset[i + 1] = {
       rowId: i + 1,
-      count: fromKeys(corpusIds, id => toAbsRelSeq(row.corpora[id])),
-      total: toAbsRelSeq(row.combined),
       formattedValue: {},
       plainValue,
+      row,
     } satisfies SingleRow
   })
 
   // Sort by total counts instead of first corpus counts
-  dataset.sort((a, b) => b.total[0] - a.total[0])
+  dataset.sort((a, b) => b.row.combined.absolute - a.row.combined.absolute)
 
   self.postMessage(dataset)
 }
-
-const toAbsRelSeq = (row?: FrequencyCounts): AbsRelSeq =>
-  row ? [row.absolute, row.relative] : [0, 0]

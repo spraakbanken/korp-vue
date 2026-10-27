@@ -160,7 +160,7 @@ export function createStatisticsCsv(
   totalStr: string,
 ): (string | number)[][] {
   /** Which value to pick from each `[abs, rel]` cell */
-  const frequencyIndex = relative ? 1 : 0
+  const freqKey = relative ? "absolute" : "relative"
   const header = [...attrs, totalStr, ...Object.values(corpusTitles)]
 
   const output = data.map((row) => {
@@ -174,8 +174,8 @@ export function createStatisticsCsv(
             .join(" "),
     )
     const corpusIds = Object.keys(corpusTitles)
-    const frequencies = corpusIds.map((id) => row.count[id][frequencyIndex])
-    return [...attrValues, row.total[frequencyIndex], ...frequencies]
+    const frequencies = corpusIds.map((id) => row.row.corpora[id][freqKey])
+    return [...attrValues, row.row.combined[freqKey], ...frequencies]
   })
 
   return [header, ...output]

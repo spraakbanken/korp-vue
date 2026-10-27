@@ -19,8 +19,10 @@ export type FrequenciesData = Omit<
   WithRequired<FrequencyStatistics, "combined" | "corpora">,
   "rows"
 > & {
-  rows: WithRequired<FrequencyRow, "combined" | "corpora">[]
+  rows: FrequenciesDataRow[]
 }
+
+export type FrequenciesDataRow = WithRequired<FrequencyRow, "combined" | "corpora">
 
 export class FrequenciesEndpoint extends EndpointBase<
   "/frequencies",
