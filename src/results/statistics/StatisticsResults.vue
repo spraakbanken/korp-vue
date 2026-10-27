@@ -37,6 +37,7 @@ import { useMatomo } from "vue3-matomo"
 import { useResult } from "../useResult"
 import ResultsDisplay from "../ResultsDisplay.vue"
 import { injectionKeys } from "@/injection.ts"
+import { stringifyValues } from "@/core/corpora/attribute.ts"
 
 const UPDATE_DELAY_MS = 500
 
@@ -106,7 +107,6 @@ async function load() {
     attrs,
     ignoreCase,
     cqpValue,
-    stringifiers.value,
     postprocess,
   )
 
@@ -182,7 +182,12 @@ function getSubqueries() {
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
     const cqp = getRowCqp(row, ignoreCase, cqpStringifiers)
-    const label = stats_reduce.value.map((attr) => row.formattedValue[attr]).join(", ")
+    const label = stats_reduce.value
+      .map((attr) => {
+        const { token, list } = stringifiers.value[attr] || {}
+        return stringifyValues(row.row.value[attr], token, list)
+      })
+      .join(", ")
     subqueries.push([cqp, label])
   }
   return subqueries
@@ -281,6 +286,7 @@ function createExport() {
         :attributes="stats_reduce"
         :rows="data.rows"
         :params="data.params"
+        :stringifiers
         v-model="rowsSelected"
         @click-value="onClickValue($event.corpusIds, $event.cqp)"
       />

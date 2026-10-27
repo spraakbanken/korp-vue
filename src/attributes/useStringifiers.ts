@@ -1,4 +1,4 @@
-import type { CqpStringifier, ListStringifier, Stringifier } from "./attributes.types"
+import type { CqpStringifier, ListStringifier, Stringifier } from "@/core/corpora/attributes.types"
 import { inject } from "vue"
 import { injectionKeys } from "@/injection"
 import type { Attribute } from "@/core/config/corpusConfigRaw.types"

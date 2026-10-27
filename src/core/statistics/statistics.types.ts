@@ -30,8 +30,6 @@ export type TotalRow = RowBase & {
 
 /** A row of frequencies for a given set of attribute values */
 export type StandardSingleRow = RowBase & {
-  /** HTML representations of each attribute value */
-  formattedValue: Record<string, string>
   /** Raw attribute values per token */
   plainValue: Record<string, string | null>[]
   row: FrequenciesDataRow
@@ -45,6 +43,8 @@ export type PhraseLevelDisjunctionRow = Omit<StandardSingleRow, "plainValue"> & 
   isPhraseLevelDisjunction: true
   /** One token sequence for each item in the group */
   plainValue: Record<string, string | null>[][]
+  /** Original values for all items in the group */
+  values: FrequenciesDataRow["value"][]
 }
 
 export const isTotalRow = (row: Row): row is TotalRow => row.rowId === 0

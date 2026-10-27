@@ -14,6 +14,8 @@ import { compareLabels, formatFrequency, locObj } from "../i18n"
 import type { LangString } from "../model/locale"
 import { icon } from "@fortawesome/fontawesome-svg-core"
 import { faChartPie } from "@fortawesome/free-solid-svg-icons"
+import type { ListStringifier, Stringifier } from "@/core/corpora/attributes.types"
+import { stringifyValues } from "../corpora/attribute"
 
 export class StatisticsGrid extends SlickGrid<Row> {
   constructor(
@@ -21,6 +23,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     data: Dataset,
     corpusIds: string[],
     attrs: string[],
+    stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
     totalsLabel: LangString,
     protected getLang: () => string,
     getRelative: () => boolean,
@@ -31,6 +34,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
     const { columns, checkboxSelector } = createColumns(
       corpusIds,
       attrs,
+      stringifiers,
       totalsLabel,
       getLang,
       getRelative,
@@ -99,7 +103,7 @@ export class StatisticsGrid extends SlickGrid<Row> {
 
 function getSorter(type: string, col: string | number): Comparer<SingleRow> {
   const sorters: Record<string, Comparer<SingleRow>> = {
-    hit_value: compareLabels((row) => row.formattedValue[col] || ""),
+    hit_value: compareLabels((row) => row.row.value[col].join(" ") || ""),
     total: (a, b) => a.row.combined.absolute - b.row.combined.absolute,
     count: (a, b) => (a.row.corpora[col]?.absolute || 0) - (b.row.corpora[col]?.absolute || 0),
   }
@@ -113,6 +117,7 @@ type Comparer<T> = (a: T, b: T) => number
 function createColumns(
   corpora: string[],
   attrs: string[],
+  stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
   totalsLabel: LangString,
   getLang: () => string,
   getRelative: () => boolean,
@@ -147,7 +152,8 @@ function createColumns(
       sortable: true,
       formatter: (row, cell, value, columnDef, data: Row) => {
         if (isTotalRow(data)) return "Σ"
-        const output = data.formattedValue[reduceVal!] || `<span class="opacity-50">—</span>`
+        const { token, list } = stringifiers[reduceVal] || {}
+        const output = stringifyValues(data.row.value[reduceVal], token, list)
         return `<div data-row="${data.rowId}" ${dir}>${output}</div>`
       },
       minWidth,
