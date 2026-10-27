@@ -30,8 +30,6 @@ export type TotalRow = RowBase & {
 
 /** A row of frequencies for a given set of attribute values */
 export type StandardSingleRow = RowBase & {
-  /** Raw attribute values per token */
-  plainValue: Record<string, string | null>[]
   row: FrequenciesDataRow
 }
 
@@ -39,10 +37,8 @@ export type StandardSingleRow = RowBase & {
  * A statistics row where a disjunction in CQP should be on phrase level:
  * `[T1] [U1] | [T2] [U2]` instead of `[T1 | T2] [U1 | U2]`
  */
-export type PhraseLevelDisjunctionRow = Omit<StandardSingleRow, "plainValue"> & {
+export type PhraseLevelDisjunctionRow = StandardSingleRow & {
   isPhraseLevelDisjunction: true
-  /** One token sequence for each item in the group */
-  plainValue: Record<string, string | null>[][]
   /** Original values for all items in the group */
   values: FrequenciesDataRow["value"][]
 }

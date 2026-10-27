@@ -13,6 +13,7 @@ import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { CqpStringifier } from "@/core/corpora/attributes.types"
 import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
+import type { FrequencyRow } from "../backend/korp-api"
 
 export function processStatisticsResult(
   originalCorpora: string[],
@@ -58,14 +59,30 @@ export function getRowCqp(
   ignoreCase: boolean,
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
-  // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
+  const values = valuesByToken(row.row.value)
+
+  // Phrase-level disjunction can be enabled in custom code for constructing cqp like: ([] | [])
   if (isPhraseLevelDisjunctionRow(row)) {
-    // In this case the statsValues array is one level deeper
-    return row.plainValue.map((values) => getCqp(values, ignoreCase, cqpStringifiers)).join(" | ")
+    // In this case create one CQP token sequence for each item in the group
+    return row.values
+      .map((value) => getCqp(valuesByToken(value), ignoreCase, cqpStringifiers))
+      .join(" | ")
   }
 
   // Normal case
-  return getCqp(row.plainValue, ignoreCase, cqpStringifiers)
+  return getCqp(values, ignoreCase, cqpStringifiers)
+}
+
+/** Transpose value object to array of objects, one per token */
+function valuesByToken(values: FrequencyRow["value"]) {
+  const tokens: Record<string, null | string>[] = []
+  for (const [attr, vals] of Object.entries(values)) {
+    vals.forEach((val, j) => {
+      tokens[j] ??= {}
+      tokens[j][attr] = val
+    })
+  }
+  return tokens
 }
 
 export function getCqp(
@@ -140,14 +157,7 @@ export function createStatisticsCsv(
 
   const output = data.map((row) => {
     // One cell per attribute
-    const attrValues = attrs.map((attr) =>
-      isTotalRow(row)
-        ? "Σ"
-        : row.plainValue
-            .flat()
-            .map((token) => token[attr])
-            .join(" "),
-    )
+    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.row.value[attr].join(" ")))
     const corpusIds = Object.keys(corpusTitles)
     const frequencies = corpusIds.map((id) => row.row.corpora[id][freqKey])
     return [...attrValues, row.row.combined[freqKey], ...frequencies]

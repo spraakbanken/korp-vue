@@ -29,18 +29,8 @@ onmessage = function (e) {
   } satisfies TotalRow
 
   rows.forEach((row, i) => {
-    // Transpose value object to array of objects, one per token
-    const plainValue: Record<string, null | string>[] = []
-    for (const [attr, terms] of Object.entries(row.value)) {
-      terms.forEach((term, j) => {
-        plainValue[j] ??= {}
-        plainValue[j][attr] = term
-      })
-    }
-
     dataset[i + 1] = {
       rowId: i + 1,
-      plainValue,
       row,
     } satisfies SingleRow
   })
