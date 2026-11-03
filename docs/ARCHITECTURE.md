@@ -265,11 +265,6 @@ a button in the sidebar will open a dynamic _Reading mode_ tab with the full doc
 
 #### Statistics
 
-The statistics response is processed to merged rows where values differ only by rank suffix.
-This happens in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API),
-`@/core/statistics/statisticsWorker`,
-to avoid freezing the main thread.
-
 The table can get very large, and it is shown in a grid that only renders the content of the current scroll viewport.
 
 Clicking an attribute-value cell opens a dynamic _Example KWIC_ tab for the occurrences of that row.
