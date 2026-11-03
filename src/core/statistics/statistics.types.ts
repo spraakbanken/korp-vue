@@ -23,15 +23,12 @@ export type SearchParams = {
 export type Row = TotalRow | SingleRow
 export type SingleRow = StandardSingleRow | PhraseLevelDisjunctionRow
 
-export type TotalRow = RowBase & {
-  id: "row_total"
-  row: Omit<FrequenciesDataRow, "value">
+export type TotalRow = Omit<FrequenciesDataRow, "value"> & {
+  isTotal: true
 }
 
 /** A row of frequencies for a given set of attribute values */
-export type StandardSingleRow = RowBase & {
-  row: FrequenciesDataRow
-}
+export type StandardSingleRow = FrequenciesDataRow
 
 /**
  * A statistics row where a disjunction in CQP should be on phrase level:
@@ -43,14 +40,10 @@ export type PhraseLevelDisjunctionRow = StandardSingleRow & {
   values: FrequenciesDataRow["value"][]
 }
 
-export const isTotalRow = (row: Row): row is TotalRow => row.rowId === 0
+export const isTotalRow = (row: Row): row is TotalRow => !("value" in row)
 export const isStandardSingleRow = (row: Row): row is StandardSingleRow =>
   !isTotalRow(row) && !("isPhraseLevelDisjunction" in row)
 export const isPhraseLevelDisjunctionRow = (row: Row): row is PhraseLevelDisjunctionRow =>
   !isTotalRow(row) && "isPhraseLevelDisjunction" in row
-
-export type RowBase = {
-  rowId: number
-}
 
 export type Dataset = Row[]

@@ -20,23 +20,17 @@ onmessage = function (e) {
   const dataset: Dataset = new Array(rows.length + 1)
 
   dataset[0] = {
-    id: "row_total",
-    rowId: 0,
-    row: {
-      combined: combined.sums,
-      corpora: mapValues(corpora, "sums"),
-    },
+    combined: combined.sums,
+    corpora: mapValues(corpora, "sums"),
+    isTotal: true,
   } satisfies TotalRow
 
   rows.forEach((row, i) => {
-    dataset[i + 1] = {
-      rowId: i + 1,
-      row,
-    } satisfies SingleRow
+    dataset[i + 1] = row satisfies SingleRow
   })
 
   // Sort by total counts instead of first corpus counts
-  dataset.sort((a, b) => b.row.combined.absolute - a.row.combined.absolute)
+  dataset.sort((a, b) => b.combined.absolute - a.combined.absolute)
 
   self.postMessage(dataset)
 }
