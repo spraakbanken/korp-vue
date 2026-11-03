@@ -8,8 +8,7 @@ import {
   isTotalRow,
   type Dataset,
   type Row,
-  type SearchParams,
-  type StatisticsProcessed,
+  type StatisticsResult,
   type TotalRow,
 } from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
@@ -112,14 +111,6 @@ async function load() {
     (percent) => (progress.value = percent),
   )
 
-  const params: SearchParams = {
-    reduceVals: attrs,
-    ignoreCase,
-    originalCorpora: corpora.getIds(),
-    corpora: Object.keys(counts.corpora || {}),
-    prevNonExpandedCQP: cqpValue,
-  }
-
   // Prepend a row with the totals
   const totalRow: TotalRow = {
     combined: counts.combined.sums,
@@ -129,7 +120,17 @@ async function load() {
 
   const rows: Dataset = [totalRow, ...counts.rows]
 
-  const processed = postprocess ? postprocess({ rows, params }) : { rows, params }
+  const result: StatisticsResult = {
+    rows,
+    reduceVals: attrs,
+    ignoreCase,
+    originalCorpora: corpora.getIds(),
+    corpora: Object.keys(counts.corpora || {}),
+    prevNonExpandedCQP: cqpValue,
+  }
+
+  // Run optional postprocessing hook
+  postprocess?.(result)
 
   rawResponse.value = endpoint.getResponse()
   isLimited.value =
@@ -137,7 +138,7 @@ async function load() {
   unsupportedRatio.value = endpoint.unsupportedRatio
   unsupportedAttributes.value = endpoint.unsupportedAttributes
 
-  return processed
+  return result
 }
 
 function onError(error: unknown) {
@@ -304,8 +305,7 @@ function createExport() {
       <StatisticsGrid
         v-if="data"
         :attributes="stats_reduce"
-        :rows="data.rows"
-        :params="data.params"
+        :result="data"
         :stringifiers
         v-model="rowsSelected"
         @click-value="onClickValue($event.corpusIds, $event.cqp)"
