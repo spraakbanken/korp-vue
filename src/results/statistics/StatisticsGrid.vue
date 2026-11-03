@@ -91,7 +91,7 @@ function onValueClick(row: Row, corpusId?: string) {
   // Unless corpus is given, find which corpora had any hits (uppercase ids)
   const corpusIdsWithHits = corpusId
     ? [corpusId]
-    : Object.keys(row.row.corpora).filter((id) => row.row.corpora[id].absolute > 0)
+    : Object.keys(row.corpora).filter((id) => row.corpora[id].absolute > 0)
   const corpusIds = props.params.originalCorpora.filter((linkId) =>
     corpusIdsWithHits.includes(linkId.split("|").shift()!),
   )

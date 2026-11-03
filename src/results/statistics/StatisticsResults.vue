@@ -193,7 +193,7 @@ function getSubqueries() {
     const label = stats_reduce.value
       .map((attr) => {
         const { token, list } = stringifiers.value[attr] || {}
-        return stringifyValues(row.row.value[attr], token, list)
+        return stringifyValues(row.value[attr], token, list)
       })
       .join(", ")
     subqueries.push([cqp, label])

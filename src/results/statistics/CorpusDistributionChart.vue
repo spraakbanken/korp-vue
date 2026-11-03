@@ -22,7 +22,7 @@ Chart.register(ArcElement, Tooltip, Legend)
 
 // Look up corpus objects and combine with frequencies
 const stats = computed(() =>
-  Object.entries(props.row.row.corpora)
+  Object.entries(props.row.corpora)
     .map(([id, count]) => ({
       count,
       title: locObj(corpusListing.get(id).title),

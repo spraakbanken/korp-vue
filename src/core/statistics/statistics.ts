@@ -59,7 +59,7 @@ export function getRowCqp(
   ignoreCase: boolean,
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
-  const values = valuesByToken(row.row.value)
+  const values = valuesByToken(row.value)
 
   // Phrase-level disjunction can be enabled in custom code for constructing cqp like: ([] | [])
   if (isPhraseLevelDisjunctionRow(row)) {
@@ -157,10 +157,10 @@ export function createStatisticsCsv(
 
   const output = data.map((row) => {
     // One cell per attribute
-    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.row.value[attr].join(" ")))
+    const attrValues = attrs.map((attr) => (isTotalRow(row) ? "Σ" : row.value[attr].join(" ")))
     const corpusIds = Object.keys(corpusTitles)
-    const frequencies = corpusIds.map((id) => row.row.corpora[id][freqKey])
-    return [...attrValues, row.row.combined[freqKey], ...frequencies]
+    const frequencies = corpusIds.map((id) => row.corpora[id][freqKey])
+    return [...attrValues, row.combined[freqKey], ...frequencies]
   })
 
   return [header, ...output]

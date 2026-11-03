@@ -103,9 +103,9 @@ export class StatisticsGrid extends SlickGrid<Row> {
 
 function getSorter(type: string, col: string | number): Comparer<SingleRow> {
   const sorters: Record<string, Comparer<SingleRow>> = {
-    hit_value: compareLabels((row) => row.row.value[col].join(" ") || ""),
-    total: (a, b) => a.row.combined.absolute - b.row.combined.absolute,
-    count: (a, b) => (a.row.corpora[col]?.absolute || 0) - (b.row.corpora[col]?.absolute || 0),
+    hit_value: compareLabels((row) => row.value[col].join(" ") || ""),
+    total: (a, b) => a.combined.absolute - b.combined.absolute,
+    count: (a, b) => (a.corpora[col]?.absolute || 0) - (b.corpora[col]?.absolute || 0),
   }
 
   return sorters[type] || (() => 0)
@@ -132,7 +132,6 @@ function createColumns(
   corpora.sort(compareLabels((id) => locObj(settings.corpora[id].title)))
 
   const minWidth = 100
-  const dir = settings["dir"] ? `dir="${settings["dir"]}"` : ""
   const columns: SlickgridColumn[] = []
 
   const checkboxSelector = new SlickCheckboxSelectColumn({})
@@ -153,8 +152,8 @@ function createColumns(
       formatter: (row, cell, value, columnDef, data: Row) => {
         if (isTotalRow(data)) return "Σ"
         const { token, list } = stringifiers[reduceVal] || {}
-        const output = stringifyValues(data.row.value[reduceVal], token, list)
-        return `<div data-row="${data.rowId}" ${dir}>${output}</div>`
+        const output = stringifyValues(data.value[reduceVal], token, list)
+        return settings.dir ? `<div dir="${settings.dir}">${output}</div>` : output
       },
       minWidth,
       cssClass: "parameter-column link",
@@ -185,7 +184,7 @@ function createColumns(
     sortable: true,
     defaultSortAsc: false,
     formatter: (row, cell, value, columnDef, dataContext) => {
-      return formatFrequency(dataContext.row.combined, getRelative(), getLang())
+      return formatFrequency(dataContext.combined, getRelative(), getLang())
     },
     minWidth,
     cssClass: "total-column text-right link",
@@ -200,7 +199,7 @@ function createColumns(
       sortable: true,
       defaultSortAsc: false,
       formatter: (row, cell, value, columnDef, dataContext) => {
-        return formatFrequency(dataContext.row.corpora[id], getRelative(), getLang())
+        return formatFrequency(dataContext.corpora[id], getRelative(), getLang())
       },
       minWidth,
       cssClass: "text-right link",
