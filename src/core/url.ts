@@ -1,4 +1,4 @@
-import type { ConcordanceRequest } from "@/core/backend/korp-api"
+import type { Store } from "./model/store"
 
 /** Supported parameters for the `?<key>=<value>` part of the URL. */
 export type UrlParams = {
@@ -46,7 +46,7 @@ export type HashParams = {
   /** Current search mode */
   search_tab?: `${number}`
   /** Search result order */
-  sort?: ConcordanceRequest["sort"]
+  sort?: Exclude<Store["sort"], "">
   /** Attributes on which to aggregate counts in statistics query */
   stats_reduce?: string
   /** Attributes on which to aggregate counts, case-insensitively, in statistics query */
