@@ -5,8 +5,8 @@ import { getRowCqp } from "@/core/statistics/statistics"
 import {
   isTotalRow,
   type Row,
-  type SearchParams,
   type SingleRow,
+  type StatisticsResult,
 } from "@/core/statistics/statistics.types"
 import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
@@ -22,8 +22,7 @@ import type { ListStringifier, Stringifier } from "@/core/corpora/attributes.typ
 
 const props = defineProps<{
   attributes: string[]
-  params: SearchParams
-  rows: Row[]
+  result: StatisticsResult
   stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>
 }>()
 
@@ -47,7 +46,7 @@ const distributionRow = shallowRef<Row>()
 // Wait for the grid element ref to be set
 onMounted(() => {
   // (Re)create grid whenever data comes in
-  watchImmediate(() => props.rows, renderGrid)
+  watchImmediate(() => props.result.rows, renderGrid)
 })
 
 // Update grid size when window is resized, unless not currently visible
@@ -61,13 +60,13 @@ watch(
 async function renderGrid() {
   if (!gridEl.value) throw new Error("Grid element missing")
 
-  const corpusIds = corpusListing.pick(props.params.corpora).getIds(true)
+  const corpusIds = corpusListing.pick(props.result.corpora).getIds(true)
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule
   grid = new StatisticsGrid(
     gridEl.value,
-    props.rows,
+    props.result.rows,
     corpusIds,
     props.attributes,
     props.stringifiers,
@@ -92,7 +91,7 @@ function onValueClick(row: Row, corpusId?: string) {
   const corpusIdsWithHits = corpusId
     ? [corpusId]
     : Object.keys(row.corpora).filter((id) => row.corpora[id].absolute > 0)
-  const corpusIds = props.params.originalCorpora.filter((linkId) =>
+  const corpusIds = props.result.originalCorpora.filter((linkId) =>
     corpusIdsWithHits.includes(linkId.split("|").shift()!),
   )
 
@@ -104,13 +103,13 @@ function onValueClick(row: Row, corpusId?: string) {
 
 /** Create sub query for a given value row */
 function buildExampleCqp(row: SingleRow) {
-  const corpora = corpusListing.pick(props.params.corpora)
+  const corpora = corpusListing.pick(props.result.corpora)
   const attrs = corpora.getReduceAttrs()
   const cqpStringifiers = fromKeys(
     props.attributes,
     (attr) => attrs[attr] && getCqpStringifier(attrs[attr]),
   )
-  return getRowCqp(row, props.params.ignoreCase, cqpStringifiers)
+  return getRowCqp(row, props.result.ignoreCase, cqpStringifiers)
 }
 
 function onDistributionClick(row: Row): void {
@@ -124,7 +123,7 @@ function onDistributionClick(row: Row): void {
     <div ref="gridEl" style="height: 90svh" />
     <ModalDialog
       :title="t('result.statistics.distributions.title')"
-      :size="params.corpora.length > 10 ? 'lg' : 'md'"
+      :size="result.corpora.length > 10 ? 'lg' : 'md'"
       @setup="distributionDialog = $event"
     >
       <CorpusDistributionChart v-if="distributionRow" :row="distributionRow" />

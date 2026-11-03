@@ -1,19 +1,16 @@
 import type { FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoint"
 
-export type StatisticsProcessed = {
+export type StatisticsResult = {
   rows: Dataset
-  params: SearchParams
-}
-
-export type StatisticsPostprocessor = (data: StatisticsProcessed) => StatisticsProcessed
-
-export type SearchParams = {
   reduceVals: string[]
   ignoreCase: boolean
   originalCorpora: string[]
   corpora: string[]
   prevNonExpandedCQP: string
 }
+
+/** May modify the statistics result */
+export type StatisticsPostprocessor = (result: StatisticsResult) => void
 
 export type Row = TotalRow | SingleRow
 
