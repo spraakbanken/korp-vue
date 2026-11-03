@@ -3,12 +3,15 @@ import {
   FrequenciesEndpoint,
   NoSupportedCorporaError,
 } from "@/core/backend/endpoints/FrequenciesEndpoint.ts"
+import { createStatisticsCsv, getRowCqp } from "@/core/statistics/statistics"
 import {
-  createStatisticsCsv,
-  getRowCqp,
-  processStatisticsResult,
-} from "@/core/statistics/statistics"
-import { isTotalRow, type Row } from "@/core/statistics/statistics.types"
+  isTotalRow,
+  type Dataset,
+  type Row,
+  type SearchParams,
+  type StatisticsProcessed,
+  type TotalRow,
+} from "@/core/statistics/statistics.types"
 import { ExampleTask } from "@/core/task/ExampleTask"
 import { useAppStore } from "@/store/useAppStore"
 import { watchImmediate } from "@vueuse/core"
@@ -109,14 +112,24 @@ async function load() {
     (percent) => (progress.value = percent),
   )
 
-  const result = processStatisticsResult(
-    corpora.getIds(),
-    counts,
-    attrs,
+  const params: SearchParams = {
+    reduceVals: attrs,
     ignoreCase,
-    cqpValue,
-    postprocess,
-  )
+    originalCorpora: corpora.getIds(),
+    corpora: Object.keys(counts.corpora || {}),
+    prevNonExpandedCQP: cqpValue,
+  }
+
+  // Prepend a row with the totals
+  const totalRow: TotalRow = {
+    combined: counts.combined.sums,
+    corpora: mapValues(counts.corpora, (corpus) => corpus.sums),
+    isTotal: true,
+  }
+
+  const rows: Dataset = [totalRow, ...counts.rows]
+
+  const processed = postprocess ? postprocess({ rows, params }) : { rows, params }
 
   rawResponse.value = endpoint.getResponse()
   isLimited.value =
@@ -124,7 +137,7 @@ async function load() {
   unsupportedRatio.value = endpoint.unsupportedRatio
   unsupportedAttributes.value = endpoint.unsupportedAttributes
 
-  return result
+  return processed
 }
 
 function onError(error: unknown) {
