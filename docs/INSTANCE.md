@@ -249,11 +249,11 @@ word_picture_tagset:
 The values are the actual relations returned by the backend.
 The relation used is determined by `field_reverse` in the column def.
 If `field_reverse` is `false` (default), `dep` is used, else `head`.
-If you find yourself with a table full of the search word just flip the `field_reverse` switch.
 
 `color` determines the background color of the column.
 The last supported attribute is `alt_label`,
-used for when another value than the relation name should be used for the table header.
+used for when another value than the relation name should be used for the table header
+– this is probably what you want when `field_reverse` is true.
 
 #### Map
 
