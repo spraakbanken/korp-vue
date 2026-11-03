@@ -1,52 +1,14 @@
-import { mapValues } from "lodash-es"
 import {
   isPhraseLevelDisjunctionRow,
   isTotalRow,
   type Dataset,
-  type SearchParams,
   type SingleRow,
-  type StatisticsPostprocessor,
-  type StatisticsProcessed,
-  type TotalRow,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
 import type { CqpStringifier } from "@/core/corpora/attributes.types"
-import type { FrequenciesData } from "../backend/endpoints/FrequenciesEndpoint"
 import type { FrequencyRow } from "../backend/korp-api"
-
-export function processStatisticsResult(
-  originalCorpora: string[],
-  data: FrequenciesData,
-  reduceVals: string[],
-  ignoreCase: string[],
-  prevNonExpandedCQP: string,
-  postprocess?: StatisticsPostprocessor,
-): StatisticsProcessed {
-  const corpora = Object.keys(data.corpora || {})
-
-  const params: SearchParams = {
-    reduceVals,
-    ignoreCase,
-    originalCorpora,
-    corpora,
-    prevNonExpandedCQP,
-  }
-
-  const totalRow: TotalRow = {
-    combined: data.combined.sums,
-    corpora: mapValues(data.corpora, (corpus) => corpus.sums),
-    isTotal: true,
-  }
-
-  const rows: Dataset = [totalRow, ...data.rows]
-
-  let processed: StatisticsProcessed = { rows, params }
-  if (postprocess) processed = postprocess(processed)
-
-  return processed
-}
 
 export function getRowCqp(
   row: SingleRow,
