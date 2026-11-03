@@ -1,7 +1,8 @@
 import { getDefaultWithin } from "@/core/config"
 import { corpusListing } from "@/core/corpora/corpusListing"
-import type { ConcordanceRequest, ConcordanceResponse, KwicRow } from "../korp-api"
+import type { ConcordanceResponse, KwicRow } from "../korp-api"
 import { EndpointBase } from "./EndpointBase"
+import type { Store } from "@/core/model/store"
 
 export type ConcordanceParams = {
   corpora: string[]
@@ -14,7 +15,7 @@ export type ConcordanceParams = {
   /** Enable to reuse the pagination state from the last request, causing backend to skip counting hits per corpora. */
   reuseCounts?: boolean
   randomSeed?: number
-  sort?: ConcordanceRequest["sort"]
+  sort?: Store["sort"]
 }
 
 export type ConcordanceData = {
@@ -63,7 +64,7 @@ export class ConcordanceEndpoint extends EndpointBase<
       ...cl.buildConcordanceAttributeParams(display == "text"),
       free_order: freeOrder || undefined,
       random_seed: randomSeed,
-      sort,
+      sort: sort || undefined,
       pagination_state: this.paginationState,
       limit,
       offset: limit * page,

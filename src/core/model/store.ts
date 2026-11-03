@@ -1,5 +1,3 @@
-import type { ConcordanceRequest } from "@/core/backend/korp-api"
-
 /** Stored state. */
 export type Store = {
   /** Selected corpus ids in lowercase */
@@ -39,7 +37,7 @@ export type Store = {
   /** Active search tab */
   search_tab: number
   /** Search result order */
-  sort: ConcordanceRequest["sort"]
+  sort: "keyword" | "left" | "right" | "random" | ""
   /** Attributes on which to aggregate counts in statistics query */
   stats_reduce: string[]
   /** Attributes on which to aggregate counts, case-insensitively, in statistics query */

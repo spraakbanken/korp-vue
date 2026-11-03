@@ -5,10 +5,11 @@ import { storeToRefs } from "pinia"
 import { computed, ref, watch } from "vue"
 import settings from "@/core/config"
 import { clone, debounce } from "lodash-es"
+import type { Store } from "@/core/model/store"
 import {
   ConcordanceEndpoint,
   type ConcordanceParams,
-} from "@/core/backend/endpoints/ConcordanceEndpoint.ts"
+} from "@/core/backend/endpoints/ConcordanceEndpoint"
 import type { ConcordanceRequest } from "@/core/backend/korp-api"
 import type { DataHandler, ProgressHandler } from "@/core/backend/client.types"
 import { corpusSelection } from "@/core/corpora/corpusListing"
@@ -41,7 +42,7 @@ const incremental = ref(false)
 const isReading = ref(store.reading_mode || !store.in_order)
 const hpp = ref(store.hpp)
 const pageLocal = ref(1)
-const sort = ref<ConcordanceRequest["sort"]>(store.sort)
+const sort = ref<Store["sort"]>(store.sort)
 
 const endpoint = new ConcordanceEndpoint()
 
