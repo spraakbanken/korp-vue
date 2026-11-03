@@ -1,3 +1,4 @@
+import { mapValues } from "lodash-es"
 import {
   isPhraseLevelDisjunctionRow,
   isTotalRow,
@@ -6,7 +7,7 @@ import {
   type SingleRow,
   type StatisticsPostprocessor,
   type StatisticsProcessed,
-  type StatisticsWorkerMessage,
+  type TotalRow,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape } from "../util"
@@ -22,7 +23,7 @@ export function processStatisticsResult(
   ignoreCase: string[],
   prevNonExpandedCQP: string,
   postprocess?: StatisticsPostprocessor,
-): Promise<StatisticsProcessed> {
+): StatisticsProcessed {
   const corpora = Object.keys(data.corpora || {})
 
   const params: SearchParams = {
@@ -33,25 +34,18 @@ export function processStatisticsResult(
     prevNonExpandedCQP,
   }
 
-  // Delegate stats processing to a Web Worker for performance
-  const worker = new Worker(new URL("./statisticsWorker", import.meta.url), { type: "module" })
+  const totalRow: TotalRow = {
+    combined: data.combined.sums,
+    corpora: mapValues(data.corpora, (corpus) => corpus.sums),
+    isTotal: true,
+  }
 
-  worker.postMessage({
-    type: "korpStatistics",
-    data,
-  } satisfies StatisticsWorkerMessage)
+  const rows: Dataset = [totalRow, ...data.rows]
 
-  // Return a promise that resolves when the worker is done
-  return new Promise((resolve) => {
-    worker.onmessage = (e: MessageEvent<Dataset>) => {
-      // Terminate worker to free up resources
-      worker.terminate()
-      const rows = e.data
-      let processed: StatisticsProcessed = { rows, params }
-      if (postprocess) processed = postprocess(processed)
-      resolve(processed)
-    }
-  })
+  let processed: StatisticsProcessed = { rows, params }
+  if (postprocess) processed = postprocess(processed)
+
+  return processed
 }
 
 export function getRowCqp(

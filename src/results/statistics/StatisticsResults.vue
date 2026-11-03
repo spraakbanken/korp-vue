@@ -109,7 +109,7 @@ async function load() {
     (percent) => (progress.value = percent),
   )
 
-  const result = await processStatisticsResult(
+  const result = processStatisticsResult(
     corpora.getIds(),
     counts,
     attrs,

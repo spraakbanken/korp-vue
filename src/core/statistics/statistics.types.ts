@@ -1,9 +1,4 @@
-import type { FrequenciesData, FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoint"
-
-export type StatisticsWorkerMessage = {
-  type: "korpStatistics"
-  data: FrequenciesData
-}
+import type { FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoint"
 
 export type StatisticsProcessed = {
   rows: Dataset
@@ -21,11 +16,12 @@ export type SearchParams = {
 }
 
 export type Row = TotalRow | SingleRow
-export type SingleRow = StandardSingleRow | PhraseLevelDisjunctionRow
 
 export type TotalRow = Omit<FrequenciesDataRow, "value"> & {
   isTotal: true
 }
+
+export type SingleRow = StandardSingleRow | PhraseLevelDisjunctionRow
 
 /** A row of frequencies for a given set of attribute values */
 export type StandardSingleRow = FrequenciesDataRow

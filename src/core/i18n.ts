@@ -27,8 +27,12 @@ export function locObj(map?: LangString, lang = _lang): string {
 /**
  * Format frequency as relative or absolute using chosen mode.
  */
-export function formatFrequency(freq: FrequencyCounts, statsRelative: boolean, lang = _lang) {
-  const { absolute, relative } = freq
+export function formatFrequency(
+  freq: FrequencyCounts | undefined,
+  statsRelative: boolean,
+  lang = _lang,
+) {
+  const { absolute, relative } = freq ?? { absolute: 0, relative: 0 }
   return statsRelative ? formatDecimals(relative, 1) : absolute.toLocaleString(lang)
 }
 
