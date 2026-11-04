@@ -26,6 +26,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - In the corpus selector, the corpus details box is now shown inline
 - The sidebar attribute details button does no longer open on hover, only on click
 - Default base url now includes trailing slash: `/korp/`
+- CQP stringifiers removed (Språkbanken's need for them was eliminated by backend changes)
 
 ### Fixed
 

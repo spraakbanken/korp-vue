@@ -2,12 +2,7 @@
 import ModalDialog, { type ConfirmDialog } from "@/components/ModalDialog.vue"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { getRowCqp } from "@/core/statistics/statistics"
-import {
-  isTotalRow,
-  type Row,
-  type SingleRow,
-  type StatisticsResult,
-} from "@/core/statistics/statistics.types"
+import { isTotalRow, type Row, type StatisticsResult } from "@/core/statistics/statistics.types"
 import type { StatisticsGrid } from "@/core/statistics/statisticsGrid"
 import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, useWindowSize, watchImmediate } from "@vueuse/core"
@@ -16,8 +11,6 @@ import { storeToRefs } from "pinia"
 import { computed, onMounted, reactive, shallowRef, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import CorpusDistributionChart from "./CorpusDistributionChart.vue"
-import { useStringifiers } from "@/attributes/useStringifiers.ts"
-import { fromKeys } from "@/core/util.ts"
 import type { ListStringifier, Stringifier } from "@/core/corpora/attributes.types.ts"
 
 const props = defineProps<{
@@ -33,7 +26,6 @@ const emit = defineEmits<{
 }>()
 
 const store = useAppStore()
-const { getCqpStringifier } = useStringifiers()
 const { t } = useI18n()
 
 let grid: StatisticsGrid | undefined
@@ -96,20 +88,9 @@ function onValueClick(row: Row, corpusId?: string) {
   )
 
   // Add a subquery CQP matching a value row
-  const cqp = !isTotalRow(row) ? buildExampleCqp(row) : undefined
+  const cqp = !isTotalRow(row) ? getRowCqp(row, props.result.ignoreCase) : undefined
 
   emit("clickValue", { corpusIds, cqp })
-}
-
-/** Create sub query for a given value row */
-function buildExampleCqp(row: SingleRow) {
-  const corpora = corpusListing.pick(Object.keys(row.corpora))
-  const attrs = corpora.getReduceAttrs()
-  const cqpStringifiers = fromKeys(
-    props.attributes,
-    (attr) => attrs[attr] && getCqpStringifier(attrs[attr]),
-  )
-  return getRowCqp(row, props.result.ignoreCase, cqpStringifiers)
 }
 
 function onDistributionClick(row: Row): void {
