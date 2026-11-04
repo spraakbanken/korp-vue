@@ -1,7 +1,7 @@
 import {
   isPhraseLevelDisjunctionRow,
   isTotalRow,
-  type Dataset,
+  type Row,
   type SingleRow,
 } from "./statistics.types"
 import { corpusSelection } from "../corpora/corpusListing"
@@ -101,7 +101,7 @@ function reduceCqp(
 }
 
 export function createStatisticsCsv(
-  data: Dataset,
+  data: Row[],
   attrs: string[],
   corpusTitles: Record<string, string>,
   relative: boolean,

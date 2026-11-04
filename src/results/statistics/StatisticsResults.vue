@@ -6,7 +6,6 @@ import {
 import { createStatisticsCsv, getRowCqp } from "@/core/statistics/statistics"
 import {
   isTotalRow,
-  type Dataset,
   type Row,
   type StatisticsResult,
   type TotalRow,
@@ -117,7 +116,7 @@ async function load() {
     isTotal: true,
   }
 
-  const rows: Dataset = [totalRow, ...counts.rows]
+  const rows: Row[] = [totalRow, ...counts.rows]
 
   const result: StatisticsResult = {
     rows,
