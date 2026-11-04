@@ -91,6 +91,10 @@ async function load() {
   const attrs = stats_reduce.value
   const ignoreCase = !!stats_reduce_insensitive.value.length
 
+  if (Object.keys(store.cqpParallel).length > 1) {
+    throw new Error(t("result.statistics.parallel_query_not_supported"))
+  }
+
   // Statistics does not support parallel queries
   const cqpValue = settings.parallel ? cqp.value.replace(/\:LINKED_CORPUS.*/, "") : cqp.value
 

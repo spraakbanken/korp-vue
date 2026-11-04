@@ -284,6 +284,7 @@ result.sidebar.search_karp: Search in Karp
 result.statistics: Statistics
 result.statistics.distributions.title: Distribution across corpora
 result.statistics.group_by: Group by
+result.statistics.parallel_query_not_supported: "Statistics does not support parallel queries"
 result.statistics.relative: Show relative frequencies
 result.statistics.relative.help: Relative frequency shows the number of hits per million tokens in selected corpora. This is helpful when comparing searches in corpora of different sizes.
 result.statistics.row_count: "Rows: {count}"

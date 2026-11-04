@@ -285,6 +285,7 @@ result.sidebar.search_karp: Sök i Karp
 result.statistics: Statistik
 result.statistics.distributions.title: Fördelning över korpusar
 result.statistics.group_by: Sammanställ på
+result.statistics.parallel_query_not_supported: "Statistics does not support parallel queries"
 result.statistics.relative: Visa relativa frekvenser
 result.statistics.relative.help: Relativ frekvens visar hur många träffar det finns per miljon token i det valda materialet. Det här måttet underlättar jämförelsen av frekvenser i korpusar av olika storlekar.
 result.statistics.row_count: "Rader: {count}"
