@@ -1,7 +1,9 @@
 import { intersection, merge, pick } from "lodash-es"
 
 /** Makes given properties required */
-export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>
+export type WithRequired<T, K extends keyof T> = { [k in Exclude<keyof T, K>]: T[k] } & {
+  [k in K]-?: T[k]
+}
 
 /** Use html`<div>html here</div>` to enable formatting template strings with Prettier. */
 export const html = String.raw
