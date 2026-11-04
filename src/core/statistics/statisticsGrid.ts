@@ -74,6 +74,18 @@ export class StatisticsGrid extends SlickGrid<Row> {
       this.render()
     })
 
+    function getSorter(type: string, col: string | number): (a: SingleRow, b: SingleRow) => number {
+      if (type == "hit_value") {
+        // Compare by stringified values – potentially heavy
+        const { token, list } = stringifiers[col] || {}
+        return compareLabels((row) => stringifyValues(row.value[col], token, list))
+      }
+      if (type == "total") return (a, b) => a.combined.absolute - b.combined.absolute
+      if (type == "count")
+        return (a, b) => (a.corpora[col]?.absolute || 0) - (b.corpora[col]?.absolute || 0)
+      return () => 0
+    }
+
     this.setSortColumn("total", false)
 
     this.onClick.subscribe((e, args) => {
@@ -100,18 +112,6 @@ export class StatisticsGrid extends SlickGrid<Row> {
     this.autosizeColumns()
   }
 }
-
-function getSorter(type: string, col: string | number): Comparer<SingleRow> {
-  const sorters: Record<string, Comparer<SingleRow>> = {
-    hit_value: compareLabels((row) => row.value[col].join(" ") || ""),
-    total: (a, b) => a.combined.absolute - b.combined.absolute,
-    count: (a, b) => (a.corpora[col]?.absolute || 0) - (b.corpora[col]?.absolute || 0),
-  }
-
-  return sorters[type] || (() => 0)
-}
-
-type Comparer<T> = (a: T, b: T) => number
 
 /** Create SlickGrid column definitions for statistics data. */
 function createColumns(
