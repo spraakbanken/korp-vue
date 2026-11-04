@@ -1,6 +1,7 @@
 import type { Labeled, LangString, LocLangMap, LocMap } from "@/core/model/locale"
 import type { MaybeWithOptions } from "./config.types"
 import type { OperatorKorp } from "../cqp/cqp.types"
+import type { WithRequired } from "../util"
 
 /** Typings for config as fetched from backend. */
 export type CorpusConfigRaw = {
@@ -47,7 +48,7 @@ export type CorpusRaw = {
   within: Labeled[]
 }
 
-export type CorpusParallel = CorpusRaw & Required<Pick<CorpusRaw, "lang" | "linked_to">>
+export type CorpusParallel = WithRequired<CorpusRaw, "lang" | "linked_to">
 
 export type ReadingModeConfig = {
   component: string
