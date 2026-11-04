@@ -90,7 +90,6 @@ const stringifiers = computed(() => {
 async function load() {
   // Empty search is possible when doing comparison first
   if (!activeSearch.value) return
-  const corpora = activeSearch.value.corpora
   withinSearched = store.within
   const attrs = stats_reduce.value
   const ignoreCase = !!stats_reduce_insensitive.value.length
@@ -122,11 +121,8 @@ async function load() {
 
   const result: StatisticsResult = {
     rows,
-    reduceVals: attrs,
     ignoreCase,
-    originalCorpora: corpora.getIds(),
-    corpora: Object.keys(counts.corpora || {}),
-    prevNonExpandedCQP: cqpValue,
+    originalCorpora: endpoint.originalCorpora,
   }
 
   // Run optional postprocessing hook

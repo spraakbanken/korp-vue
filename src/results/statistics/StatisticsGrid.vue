@@ -13,7 +13,7 @@ import { useAppStore } from "@/store/useAppStore"
 import { useElementVisibility, useWindowSize, watchImmediate } from "@vueuse/core"
 import { throttle } from "lodash-es"
 import { storeToRefs } from "pinia"
-import { onMounted, reactive, shallowRef, useTemplateRef, watch } from "vue"
+import { computed, onMounted, reactive, shallowRef, useTemplateRef, watch } from "vue"
 import { useI18n } from "vue-i18n"
 import CorpusDistributionChart from "./CorpusDistributionChart.vue"
 import { useStringifiers } from "@/attributes/useStringifiers.ts"
@@ -43,6 +43,9 @@ const { lang, statsRelative } = storeToRefs(store)
 let distributionDialog: ConfirmDialog | undefined
 const distributionRow = shallowRef<Row>()
 
+/** Get searched corpora from the totals row */
+const corpora = computed(() => Object.keys(props.result.rows[0].corpora))
+
 // Wait for the grid element ref to be set
 onMounted(() => {
   // (Re)create grid whenever data comes in
@@ -60,7 +63,7 @@ watch(
 async function renderGrid() {
   if (!gridEl.value) throw new Error("Grid element missing")
 
-  const corpusIds = corpusListing.pick(props.result.corpora).getIds(true)
+  const corpusIds = corpusListing.pick(corpora.value).getIds(true)
 
   const statisticsGridModule = await import("@/core/statistics/statisticsGrid")
   const { StatisticsGrid } = statisticsGridModule
@@ -87,10 +90,7 @@ watch([lang, statsRelative], () => grid?.refreshColumns())
 
 /** Open a subsearch tab when clicking a frequency value */
 function onValueClick(row: Row, corpusId?: string) {
-  // Unless corpus is given, find which corpora had any hits (uppercase ids)
-  const corpusIdsWithHits = corpusId
-    ? [corpusId]
-    : Object.keys(row.corpora).filter((id) => row.corpora[id].absolute > 0)
+  const corpusIdsWithHits = corpusId ? [corpusId] : Object.keys(row.corpora)
   const corpusIds = props.result.originalCorpora.filter((linkId) =>
     corpusIdsWithHits.includes(linkId.split("|").shift()!),
   )
@@ -103,7 +103,7 @@ function onValueClick(row: Row, corpusId?: string) {
 
 /** Create sub query for a given value row */
 function buildExampleCqp(row: SingleRow) {
-  const corpora = corpusListing.pick(props.result.corpora)
+  const corpora = corpusListing.pick(Object.keys(row.corpora))
   const attrs = corpora.getReduceAttrs()
   const cqpStringifiers = fromKeys(
     props.attributes,
@@ -123,7 +123,7 @@ function onDistributionClick(row: Row): void {
     <div ref="gridEl" style="height: 90svh" />
     <ModalDialog
       :title="t('result.statistics.distributions.title')"
-      :size="result.corpora.length > 10 ? 'lg' : 'md'"
+      :size="corpora.length > 10 ? 'lg' : 'md'"
       @setup="distributionDialog = $event"
     >
       <CorpusDistributionChart v-if="distributionRow" :row="distributionRow" />

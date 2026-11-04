@@ -2,11 +2,8 @@ import type { FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoin
 
 export type StatisticsResult = {
   rows: Dataset
-  reduceVals: string[]
   ignoreCase: boolean
   originalCorpora: string[]
-  corpora: string[]
-  prevNonExpandedCQP: string
 }
 
 /** May modify the statistics result */

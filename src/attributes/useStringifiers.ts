@@ -43,6 +43,7 @@ export function useStringifiers() {
   }
 
   /** Get optional custom CQP stringifier for the given attribute */
+  // TODO Remove cqp stringifier?
   function getCqpStringifier(attribute: Attribute): CqpStringifier | undefined {
     return customCqpStringifiers[attribute.stats_cqp || ""]
   }
