@@ -45,4 +45,5 @@ export const injectionKeys = {
   },
   readers: Symbol() as InjectionKey<Record<string, MaybeConfigurable<Reader>>>,
   selectedToken: Symbol() as InjectionKey<Ref<RowToken | undefined>>,
+  largeNumberFormatter: Symbol() as InjectionKey<(locale: string, n: number) => string>,
 }

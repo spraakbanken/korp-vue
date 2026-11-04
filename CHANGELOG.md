@@ -15,6 +15,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - Let instance plugin modify corpus config [#119](https://github.com/spraakbanken/korp-vue/issues/119)
 - Show corpus ids in search history items
 - Highlight match in dependency tree visualization
+- Configurable formatting of large numbers
 
 ### Changed
 

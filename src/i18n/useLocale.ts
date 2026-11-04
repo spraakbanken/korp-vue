@@ -1,9 +1,20 @@
 import { locObj } from "@/core/i18n"
 import type { LangString } from "@/core/model/locale"
+import { injectionKeys } from "@/injection"
+import { inject } from "vue"
 import { useI18n } from "vue-i18n"
 
 export function useLocale() {
   const { locale } = useI18n()
+  const largeNumberFormatter = inject(injectionKeys.largeNumberFormatter, undefined)
+
+  function formatLargeNumber(n: number) {
+    // Allow instance to override formatting
+    if (largeNumberFormatter) return largeNumberFormatter(locale.value, n)
+    // Fall back to native locale-aware formatting
+    const numberFormat = new Intl.NumberFormat(locale.value, { notation: "compact" })
+    return numberFormat.format(n)
+  }
 
   /**
    * Get translated string from a given object.
@@ -15,7 +26,8 @@ export function useLocale() {
     new Date(date).toLocaleDateString(locale.value, { dateStyle: "long" })
 
   return {
-    locObj: locObj_,
+    formatLargeNumber,
     locDate,
+    locObj: locObj_,
   }
 }

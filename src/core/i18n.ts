@@ -48,16 +48,6 @@ export const percentage = (value: unknown) =>
     maximumSignificantDigits: 2,
   })
 
-/** Format a large number with magnitude abbreviations K, M, G, T */
-export function abbreviateNumber(n: number) {
-  // Find the appropriate abbreviation
-  const abbr = n < 1e3 ? "" : n < 1e6 ? "K" : n < 1e9 ? "M" : n < 1e12 ? "G" : n < 1e15 ? "T" : "P?"
-  // Utilize native locale-aware formatting, but replace the compact notation part with our custom abbreviation
-  // Otherwise, the compact notation for Swedish is "tn", "mn" etc, which is not wrong but we prefer this
-  const parts = new Intl.NumberFormat(getLang(), { notation: "compact" }).formatToParts(n)
-  return parts.map((part) => (part.type == "compact" ? abbr : part.value)).join("")
-}
-
 /** Creates a comparator for sorting items by a given labeling function */
 export function compareLabels<T>(getLabel: (item: T) => string = (x) => String(x)) {
   return (a: T, b: T) => getLabel(a).localeCompare(getLabel(b), getLang())

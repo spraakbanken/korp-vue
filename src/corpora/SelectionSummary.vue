@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { abbreviateNumber } from "@/core/i18n"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
+import { useLocale } from "@/i18n/useLocale"
 
 defineProps<{
   totalCorpora: number
@@ -10,6 +10,7 @@ defineProps<{
 
 const corpusSelection = useReactiveCorpusSelection()
 const store = useAppStore()
+const { formatLargeNumber } = useLocale()
 </script>
 
 <template>
@@ -28,8 +29,8 @@ const store = useAppStore()
       {{
         $t("corpus.selection.summary.tokens", corpusSelection.getTokenCount(), {
           named: {
-            selected: abbreviateNumber(corpusSelection.getTokenCount()),
-            total: abbreviateNumber(totalTokens),
+            selected: formatLargeNumber(corpusSelection.getTokenCount()),
+            total: formatLargeNumber(totalTokens),
           },
         })
       }}
