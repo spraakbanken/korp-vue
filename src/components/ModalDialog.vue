@@ -11,6 +11,8 @@ defineProps<{
   confirmLabel?: string
   /** Disable cancel button, making the modal persist until confirmed */
   disableCancel?: boolean
+  /** Mount content before opening and keep mounted when closed */
+  keepAlive?: boolean
   /** Modal element id attribute, for use with `data-bs-target` on modal toggle. */
   id?: string
   /** Modal title. */
@@ -77,7 +79,7 @@ function close(confirmed: boolean) {
       }"
     >
       <div class="modal-dialog">
-        <div class="modal-content">
+        <div v-if="keepAlive || dialog?.isRevealed.value" class="modal-content">
           <div class="modal-header">
             <h5 v-if="title" class="modal-title" id="login-modal-title">
               {{ title }}
