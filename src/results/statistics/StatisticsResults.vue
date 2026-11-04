@@ -49,7 +49,7 @@ const { stats_reduce, stats_reduce_insensitive } = storeToRefs(store)
 const { t } = useI18n()
 const { createTab } = useDynamicTabs()
 const { activeSearch } = storeToRefs(useSearchStore())
-const { getStringifier, getListStringifier, getCqpStringifier } = useStringifiers()
+const { getStringifier, getListStringifier } = useStringifiers()
 const matomo = useMatomo()
 
 const postprocess = inject(injectionKeys.hook.statisticsPostprocess, undefined)
@@ -81,7 +81,6 @@ const stringifiers = computed(() => {
     return {
       token: getStringifier(attribute) || String,
       list: getListStringifier(attribute),
-      cqp: getCqpStringifier(attribute),
     }
   })
 })
@@ -192,12 +191,10 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
 }
 
 function getSubqueries() {
-  const cqpStringifiers = mapValues(stringifiers.value, (s) => s.cqp)
-
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
-    const cqp = getRowCqp(row, stats_reduce_insensitive.value, cqpStringifiers)
+    const cqp = getRowCqp(row, stats_reduce_insensitive.value)
     const label = stats_reduce.value
       .map((attr) => {
         const { token, list } = stringifiers.value[attr] || {}

@@ -7,26 +7,19 @@ import {
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { CqpStringifier } from "@/core/corpora/attributes.types"
 import type { FrequencyRow } from "../backend/korp-api"
 
-export function getRowCqp(
-  row: SingleRow,
-  ignoreCase: string[],
-  cqpStringifiers: Record<string, CqpStringifier | undefined>,
-): string {
+export function getRowCqp(row: SingleRow, ignoreCase: string[]): string {
   const values = valuesByToken(row.value)
 
   // Phrase-level disjunction can be enabled in custom code for constructing cqp like: ([] | [])
   if (isPhraseLevelDisjunctionRow(row)) {
     // In this case create one CQP token sequence for each item in the group
-    return row.values
-      .map((value) => getCqp(valuesByToken(value), ignoreCase, cqpStringifiers))
-      .join(" | ")
+    return row.values.map((value) => getCqp(valuesByToken(value), ignoreCase)).join(" | ")
   }
 
   // Normal case
-  return getCqp(values, ignoreCase, cqpStringifiers)
+  return getCqp(values, ignoreCase)
 }
 
 /** Transpose value object to array of objects, one per token */
@@ -41,15 +34,11 @@ function valuesByToken(values: FrequencyRow["value"]) {
   return tokens
 }
 
-export function getCqp(
-  hitValues: Record<string, null | string>[],
-  ignoreCase: string[],
-  cqpStringifiers: Record<string, CqpStringifier | undefined>,
-): string {
+export function getCqp(hitValues: Record<string, null | string>[], ignoreCase: string[]): string {
   const tokens = hitValues
     .map((token) =>
       Object.entries(token).map(([name, value]) => {
-        if (value) return reduceCqp(name, value, ignoreCase.includes(name), cqpStringifiers[name])
+        if (value) return reduceCqp(name, value, ignoreCase.includes(name))
         // Handle null value
         const attribute = corpusSelection.getReduceAttrs()[name]
         const cqpName = attribute ? prefixAttr(attribute) : name
@@ -65,18 +54,9 @@ export function getCqp(
 }
 
 /** Build a CQP condition for an attribute and a (set of) values */
-function reduceCqp(
-  name: string,
-  value: string,
-  ignoreCase: boolean,
-  cqpStringifier?: CqpStringifier,
-): string {
+function reduceCqp(name: string, value: string, ignoreCase: boolean): string {
   // Note: undefined if name is `word`
   const attr = corpusSelection.getReduceAttrs()[name]
-
-  // Use named CQP'ifier from custom config code. It must escape values as regex.
-  if (cqpStringifier) return cqpStringifier(value, ignoreCase)
-
   const cqpName = attr ? prefixAttr(attr) : name
 
   // Empty value: for multi-value attr, match tokens with 0 values.
