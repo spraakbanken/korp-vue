@@ -26,12 +26,17 @@ function select(example: SearchExample) {
 <template>
   <section>
     <h4>{{ $t("frontpage.examples") }}</h4>
-    <ul>
-      <li v-for="(example, index) in examples" :key="index">
-        <a href="#" @click.prevent="select(example)">
-          {{ locObj(example.label) }}
-        </a>
-        <template v-if="example.hint"> – <span v-html="locObj(example.hint)" /></template>
+    <ul class="list-unstyled vstack gap-2">
+      <li v-for="(example, index) in examples" :key="index" class="card">
+        <div class="card-body hstack justify-content-between gap-4">
+          <div>
+            <h5 class="fs-6 m-0">{{ locObj(example.label) }}</h5>
+            <div v-if="example.hint" v-html="locObj(example.hint)" class="mt-1" />
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" @click.prevent="select(example)">
+            {{ $t("search") }}
+          </button>
+        </div>
       </li>
     </ul>
   </section>
