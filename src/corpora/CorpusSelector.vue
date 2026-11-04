@@ -5,14 +5,12 @@ import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
 import CorpusSelectionDialog from "./CorpusSelectionDialog.vue"
 import ModalDialog from "@/components/ModalDialog.vue"
-import { ref, reactive, defineAsyncComponent } from "vue"
+import { reactive, defineAsyncComponent } from "vue"
 import { useAuth } from "@/auth/useAuth"
 import { getTimeData } from "@/core/backend/timedata"
 import { initCorpusStructure } from "@/core/corpora/corpora"
 import CorpusSelectorTree from "./CorpusSelectorTree.vue"
 import SelectionSummary from "./SelectionSummary.vue"
-import type { Corpus } from "@/core/config/corpusConfig.types"
-import CorpusDetails from "./CorpusDetails.vue"
 
 const root = reactive(initCorpusStructure(corpusListing.corpora.filter((corpus) => !corpus.hide)))
 
@@ -22,8 +20,6 @@ const auth = useAuth()
 
 const CorpusTimeGraph = defineAsyncComponent(() => import("./CorpusTimeGraph.vue"))
 
-/** Corpus to show details for, if any */
-const corpus = ref<Corpus>()
 const timeData = computedAsync(() => getTimeData())
 
 /** Runs after corpus selection has been checked for access etc. */
@@ -70,7 +66,7 @@ function selectNone() {
       </button>
     </div>
 
-    <ModalDialog id="corpus-selector" :title="$t('corpora')" @close="corpus = undefined">
+    <ModalDialog id="corpus-selector" :title="$t('corpora')">
       <div class="mb-3 hstack gap-2 justify-content-between">
         <SelectionSummary :total-corpora="root.numberOfChildren" :total-tokens="root.tokens" />
 
@@ -88,8 +84,7 @@ function selectNone() {
         </div>
       </div>
 
-      <CorpusDetails v-if="corpus" :corpus @close="corpus = undefined" />
-      <CorpusSelectorTree v-else :node="root" @inspect="corpus = $event" />
+      <CorpusSelectorTree :node="root" />
     </ModalDialog>
   </div>
 </template>

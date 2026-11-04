@@ -4,17 +4,13 @@ import { useAuth } from "@/auth/useAuth"
 import { watch } from "vue"
 import { useLocale } from "@/i18n/useLocale"
 import { useAppStore } from "@/store/useAppStore"
-import type { Corpus } from "@/core/config/corpusConfig.types"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import type { LangString } from "@/core/model/locale"
 import { compareLabels } from "@/core/i18n"
+import CorpusSelectorLeaf from "./CorpusSelectorLeaf.vue"
 
 const props = defineProps<{
   node: ChooserFolder
-}>()
-
-defineEmits<{
-  (e: "inspect", corpus: Corpus): void
 }>()
 
 const { locObj } = useLocale()
@@ -78,20 +74,6 @@ function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
     }
   }
 }
-
-function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
-  if (corpus.protected && !auth.hasCredential(corpus.id)) return
-  // REM: An 'exclusive' click (alt-click or ctrl-click) deselects everything else
-  if (exclusive) {
-    store.corpus = [corpus.id]
-  } else {
-    if (store.corpus.indexOf(corpus.id) !== -1) {
-      store.corpus = store.corpus.filter((corpusId) => corpusId !== corpus.id)
-    } else {
-      store.corpus.push(corpus.id)
-    }
-  }
-}
 </script>
 
 <template>
@@ -136,41 +118,11 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
     </details>
 
     <!-- List of corpora -->
-    <div
+    <CorpusSelectorLeaf
       v-for="corpus in sortOnTitle(props.node.corpora)"
       :key="corpus.id"
-      class="corpus d-flex px-1"
-      :class="{ 'bg-primary-subtle': corpus.selected }"
-    >
-      <label
-        class="flex-grow-1 cursor-pointer"
-        @click.prevent="toggleCorpusSelection(corpus, $event.altKey || $event.ctrlKey)"
-        @keydown.space.prevent="toggleCorpusSelection(corpus, false)"
-      >
-        <fa-icon
-          v-if="corpus.protected && !auth.hasCredential(corpus.id)"
-          icon="fa-solid fa-lock"
-          size="sm"
-          class="me-2 text-danger"
-        />
-        <input
-          v-else
-          type="checkbox"
-          class="form-check-input me-2 pe-none"
-          :checked="corpus.selected"
-        />{{ locObj(corpus.title) }}
-      </label>
-      <fa-icon
-        v-if="corpus.protected && auth.hasCredential(corpus.id)"
-        icon="fa-solid fa-lock-open"
-        class="m-1 text-success"
-      />
-      <fa-icon
-        icon="fa-solid fa-circle-info"
-        class="my-1 text-info cursor-pointer"
-        @click="$emit('inspect', corpus)"
-      />
-    </div>
+      :corpus
+    />
   </div>
 </template>
 

@@ -40,6 +40,7 @@ auth.password: Password
 auth.password.forgotten: Forgot password?
 auth.remember: Remember me
 
+corpus.info.id: Identifier
 corpus.info.sentences: Sentences
 corpus.info.size: Tokens
 corpus.info.timespan: Time span

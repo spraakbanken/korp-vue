@@ -40,6 +40,7 @@ auth.password: Lösenord
 auth.password.forgotten: Glömt lösenordet?
 auth.remember: Kom ihåg mig
 
+corpus.info.id: Identifierare
 corpus.info.sentences: Antal meningar
 corpus.info.size: Antal token
 corpus.info.timespan: Tidsutsträckning
