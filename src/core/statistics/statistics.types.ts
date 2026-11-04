@@ -1,7 +1,7 @@
 import type { FrequenciesDataRow } from "../backend/endpoints/FrequenciesEndpoint"
 
 export type StatisticsResult = {
-  rows: Dataset
+  rows: Row[]
   ignoreCase: string[]
   originalCorpora: string[]
 }
@@ -35,5 +35,3 @@ export const isStandardSingleRow = (row: Row): row is StandardSingleRow =>
   !isTotalRow(row) && !("isPhraseLevelDisjunction" in row)
 export const isPhraseLevelDisjunctionRow = (row: Row): row is PhraseLevelDisjunctionRow =>
   !isTotalRow(row) && "isPhraseLevelDisjunction" in row
-
-export type Dataset = Row[]

@@ -1,6 +1,6 @@
 import { zip } from "lodash-es"
 import "slickgrid/dist/styles/css/slick.grid.css"
-import { isTotalRow, type Dataset, type Row, type SingleRow } from "./statistics.types"
+import { isTotalRow, type Row, type SingleRow } from "./statistics.types"
 import {
   SlickCheckboxSelectColumn,
   SlickGrid,
@@ -20,7 +20,7 @@ import { stringifyValues } from "../corpora/attribute"
 export class StatisticsGrid extends SlickGrid<Row> {
   constructor(
     el: HTMLElement,
-    data: Dataset,
+    data: Row[],
     corpusIds: string[],
     attrs: string[],
     stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
