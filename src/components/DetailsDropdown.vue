@@ -1,25 +1,16 @@
 <script lang="ts" setup>
-import { useId, useTemplateRef } from "vue"
-import { vElementHover } from "@vueuse/components"
+import { useId } from "vue"
 
 const id = useId()
-const toggle = useTemplateRef<HTMLButtonElement>("toggle")
-
-async function onHover(state: boolean) {
-  const Dropdown = await import("bootstrap").then((m) => m.Dropdown)
-  const dropdown = Dropdown.getOrCreateInstance(toggle.value!)
-  if (state) dropdown.show()
-  else dropdown.hide()
-}
 </script>
 
 <template>
-  <div class="dropdown float-end" v-element-hover="[onHover, { delayEnter: 300, delayLeave: 300 }]">
+  <div class="dropdown float-end">
     <button
       type="button"
       :id
       ref="toggle"
-      class="btn btn-link p-0 small lh-1 text-secondary"
+      class="btn btn-link p-0 lh-1 link-secondary"
       data-bs-toggle="dropdown"
       data-bs-auto-close="outside"
       aria-haspopup="true"
@@ -28,7 +19,7 @@ async function onHover(state: boolean) {
     >
       <fa-icon icon="fa-solid fa-ellipsis-vertical" />
     </button>
-    <div class="dropdown-menu card p-2" :aria-labelledby="id">
+    <div class="dropdown-menu card p-2 shadow-sm" :aria-labelledby="id">
       <slot />
     </div>
   </div>

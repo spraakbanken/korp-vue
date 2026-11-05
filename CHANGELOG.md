@@ -22,6 +22,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - Using Noto Sans for data and Noto Serif for body text
 - Removed username from logout button to avoid linebreak
 - In the corpus selector, the corpus details box is now shown inline
+- The sidebar attribute details button does no longer open on hover, only on click
 - Default base url now includes trailing slash: `/korp/`
 
 ### Fixed
