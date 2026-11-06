@@ -33,7 +33,9 @@ function clickItem(side: 0 | 1, item: CompareItem) {
     <ResultsDisplay :populated="!!result?.max">
       <div v-if="result" class="row">
         <div class="col-sm-6">
-          <h3>{{ $t("result.compare.column_heading", { label: task.cmp1.label }) }}</h3>
+          <div class="sticky-top bg-body">
+            <h3>{{ $t("result.compare.column_heading", { label: task.cmp1.label }) }}</h3>
+          </div>
           <ul class="list-group">
             <CompareRow
               v-for="item in result.tables.negative"
@@ -46,7 +48,9 @@ function clickItem(side: 0 | 1, item: CompareItem) {
           </ul>
         </div>
         <div class="col-sm-6">
-          <h3>{{ $t("result.compare.column_heading", { label: task.cmp2.label }) }}</h3>
+          <div class="sticky-top bg-body">
+            <h3>{{ $t("result.compare.column_heading", { label: task.cmp2.label }) }}</h3>
+          </div>
           <ul class="list-group">
             <CompareRow
               v-for="item in result.tables.positive"
