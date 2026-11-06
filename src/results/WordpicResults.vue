@@ -125,12 +125,12 @@ watch(showPos, () =>
     <!-- Wordpic cards -->
     <ResultsDisplay
       incremental
-      :populated="!!data?.getData().length"
+      :populated="!!data?.data.length"
       class="d-flex flex-wrap justify-content-center gap-2"
     >
       <!-- Cards with headings like "dog (noun)"; same word can have multiple POS -->
       <div
-        v-for="section of data?.getData()"
+        v-for="section of data?.data"
         :key="`${section.heading.word} ${section.heading.pos}`"
         class="card p-2 bg-body-tertiary"
       >
@@ -140,7 +140,7 @@ watch(showPos, () =>
         />
 
         <div class="d-flex flex-wrap gap-5">
-          <div v-for="table in section.tables" :key="table.index">
+          <div v-for="table in section.tables.filter((t) => t.max)" :key="table.index">
             <!-- A table header with relation names -->
             <div class="hstack mb-2 justify-content-center">
               <div

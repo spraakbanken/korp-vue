@@ -49,6 +49,7 @@ export class WordPicture {
   readonly config = getWordPictureConfig()
   readonly items: Record<string, MatchedRelation[]> = {}
   readonly headings: WordPictureSectionHeading[] = []
+  readonly data: WordPictureSection[]
 
   constructor(
     readonly query: string,
@@ -93,9 +94,7 @@ export class WordPicture {
       const heading = { word: match, pos: matchpos }
       if (!this.headings.find((h) => isEqual(h, heading))) this.headings.push(heading)
     }
-  }
 
-  getData: () => WordPictureData = once(() => {
     const data = this.headings.map((heading) => {
       const config = this.config[heading.pos]!
       const tables: WordPictureTable[] = config.map((config, index) => {
@@ -107,8 +106,8 @@ export class WordPicture {
           if (col == "_") bin = columnsAfter
           else {
             const id = this.getColumnId(heading.pos, col.rel, !!col.field_reverse)
-            const rows = this.items[id]
-            if (rows) bin.push({ config: col, rel: col.rel, rows })
+            const rows = this.items[id] || []
+            bin.push({ config: col, rel: col.rel, rows })
           }
         }
         const columns = [...columnsBefore, ...columnsAfter]
@@ -118,12 +117,9 @@ export class WordPicture {
       const max = Math.max(...tables.map((table) => table.max))
       return { config, heading, tables, max }
     })
-    // Remove sections with no rows (in case there is data that has no matching config)
-    return data.filter((section) => section.max > 0)
-  })
 
-  getMaxColumnLength(): number {
-    return Math.max(0, ...this.getData().map((section) => section.max))
+    // Remove sections with no rows (in case there is data that has no matching config)
+    this.data = data.filter((section) => section.max > 0)
   }
 
   /** Get a string for the params that identify a word picture column */
