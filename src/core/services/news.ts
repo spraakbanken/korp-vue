@@ -21,6 +21,8 @@ export const fetchNews = once(async (): Promise<NewsItem[]> => {
     .filter((item) => !item.expires || item.expires >= currentDate)
     // Hide old items.
     .filter((item) => item.created >= oneYearAgo)
+    // Hide future items.
+    .filter((item) => item.created <= currentDate)
 
   // Sort newest first
   return sortBy(items, "created").reverse()
