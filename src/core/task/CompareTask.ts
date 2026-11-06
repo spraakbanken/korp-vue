@@ -82,7 +82,7 @@ export class CompareTask extends TaskBase<CompareResult> {
       set1_cqp: this.cmp1.cqp,
       set2_corpus: corpora2.join(",").toUpperCase(),
       set2_cqp: this.cmp2.cqp,
-      max: 50,
+      max: 1000,
       split,
       top,
     }
