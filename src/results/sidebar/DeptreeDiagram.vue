@@ -45,7 +45,7 @@ watch(isVisible, () => {
 
 <template>
   <div class="text-center">
-    <div class="overflow-x-auto font-data">
+    <div class="overflow-x-auto pb-2 font-data">
       <svg ref="svg" class="deptreeSvg"></svg>
     </div>
     <div class="mt-2">
