@@ -15,7 +15,7 @@ export type StatisticsPostprocessor = (data: StatisticsProcessed) => StatisticsP
 
 export type SearchParams = {
   reduceVals: string[]
-  ignoreCase: boolean
+  ignoreCase: string[]
   originalCorpora: string
   corpora: string[]
   prevNonExpandedCQP: string

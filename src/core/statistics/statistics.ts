@@ -21,7 +21,7 @@ export function processStatisticsResult(
   originalCorpora: string,
   data: CountsMerged,
   reduceVals: string[],
-  ignoreCase: boolean,
+  ignoreCase: string[],
   prevNonExpandedCQP: string,
   stringifiers: Record<string, { token: Stringifier; list?: ListStringifier }>,
   postprocess?: StatisticsPostprocessor,
@@ -82,7 +82,7 @@ export function processStatisticsResult(
 
 export function getRowCqp(
   row: SingleRow,
-  ignoreCase: boolean,
+  ignoreCase: string[],
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
   // isPhraseLevelDisjunction can be set in custom code for constructing cqp like: ([] | [])
@@ -97,13 +97,13 @@ export function getRowCqp(
 
 export function getCqp(
   hitValues: Record<string, string[]>[],
-  ignoreCase: boolean,
+  ignoreCase: string[],
   cqpStringifiers: Record<string, CqpStringifier | undefined>,
 ): string {
   const tokens = hitValues
     .map((token) =>
       Object.entries(token).map(([attr, values]) =>
-        reduceCqp(attr, values, ignoreCase, cqpStringifiers[attr]),
+        reduceCqp(attr, values, ignoreCase.includes(attr), cqpStringifiers[attr]),
       ),
     )
     .map((conditions) => "[" + conditions.join(" & ") + "]")
@@ -139,7 +139,7 @@ function reduceCqp(
   // Combine grouped values
   const cqpValue = values.length > 1 ? splitSuffix(values[0])[0] + "(:[-0-9\\.]+)*" : values[0]
   // Support case-insensitive search
-  const flag = name == "word" && ignoreCase ? " %c" : ""
+  const flag = ignoreCase ? " %c" : ""
 
   const op = attr?.type === "set" ? "contains" : "="
 

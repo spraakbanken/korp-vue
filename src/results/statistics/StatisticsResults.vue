@@ -89,7 +89,7 @@ async function load() {
   const corpora = activeSearch.value.corpora
   withinSearched = store.within
   const attrs = stats_reduce.value
-  const ignoreCase = !!stats_reduce_insensitive.value.length
+  const ignoreCase = stats_reduce_insensitive.value
 
   if (Object.keys(store.cqpParallel).length > 1) {
     throw new Error(t("result.statistics.parallel_query_not_supported"))
@@ -174,13 +174,12 @@ function openMapTab(attribute: MapAttributeOption, relative: boolean) {
 }
 
 function getSubqueries() {
-  const ignoreCase = !!stats_reduce_insensitive.value.length
   const cqpStringifiers = mapValues(stringifiers.value, (s) => s.cqp)
 
   const subqueries: [string, string][] = []
   for (const row of rowsSelected.value) {
     if (isTotalRow(row)) continue
-    const cqp = getRowCqp(row, ignoreCase, cqpStringifiers)
+    const cqp = getRowCqp(row, stats_reduce_insensitive.value, cqpStringifiers)
     const label = stats_reduce.value.map((attr) => row.formattedValue[attr]).join(", ")
     subqueries.push([cqp, label])
   }

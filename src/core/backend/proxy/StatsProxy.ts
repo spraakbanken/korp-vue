@@ -18,7 +18,7 @@ export class StatsProxy extends ProxyBase<"count"> {
     cqp: string,
     attrs: string[],
     defaultWithin?: string,
-    ignoreCase?: boolean,
+    ignoreCase?: string[],
   ): CountParams {
     // Get selected attribute options
     const options = corpusSelection
@@ -67,7 +67,7 @@ export class StatsProxy extends ProxyBase<"count"> {
       cqp: expandCqp(cqp),
       corpus: corpora.stringify(true),
       end: settings["statistics_limit"] ? settings["statistics_limit"] - 1 : undefined,
-      ignore_case: ignoreCase ? "word" : undefined,
+      ignore_case: ignoreCase?.join(",") || undefined,
       incremental: true,
       split: split.join(),
       top: top.join(),
@@ -82,7 +82,7 @@ export class StatsProxy extends ProxyBase<"count"> {
     cqp: string,
     attrs: string[],
     defaultWithin?: string,
-    ignoreCase?: boolean,
+    ignoreCase?: string[],
   ): Promise<CountsMerged> {
     const params = this.buildParams(cqp, attrs, defaultWithin, ignoreCase)
     // We know it's the merged type, not split, because we are not using `subcqp{N}` params.

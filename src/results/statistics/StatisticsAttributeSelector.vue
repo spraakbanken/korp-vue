@@ -31,6 +31,10 @@ const selectedAttributes = computed(() =>
   ),
 )
 
+/** List of available attributes whose values may be case-sensitive */
+// Exclude any attribute with a predefined set of values.
+const attributesCased = computed(() => attributes.value.filter((option) => !option.dataset))
+
 // Validate and update selection against incoming changes
 watchImmediate([modelSelected, modelInsensitive, attributes], ([selectedNew], [selectedOld]) => {
   // Deselect removed attributes
@@ -167,10 +171,10 @@ function sortNames(names: string[]) {
             />
 
             <CaseInsensitivityToggle
-              v-if="option.name == 'word'"
+              v-if="attributesCased.includes(option)"
               @click.stop
-              :modelValue="insensitiveLocal.has('word')"
-              @update:modelValue="toggleInsensitive('word')"
+              :modelValue="insensitiveLocal.has(option.name)"
+              @update:modelValue="toggleInsensitive(option.name)"
             />
           </a>
         </li>
