@@ -7,6 +7,8 @@ import { useMatomo } from "vue3-matomo"
 import { useResult } from "./useResult"
 import { onMounted, ref } from "vue"
 import ResultsDisplay from "./ResultsDisplay.vue"
+import OptionsBar from "@/components/OptionsBar.vue"
+import ExportButton from "./ExportButton.vue"
 
 const props = defineProps<{ task: CompareTask }>()
 
@@ -33,6 +35,17 @@ function clickItem(side: 0 | 1, item: CompareItem) {
 
 <template>
   <div class="vstack gap-2">
+    <OptionsBar>
+      <template #end>
+        <ExportButton
+          :disabled="!result"
+          name="comparison"
+          :get-rows="() => task.createCsv(result!)"
+          endpoint="count"
+        />
+      </template>
+    </OptionsBar>
+
     <ResultsDisplay :populated="!!result?.max">
       <div v-if="result" class="row">
         <div class="col-sm-6">
@@ -80,3 +93,10 @@ function clickItem(side: 0 | 1, item: CompareItem) {
     </ResultsDisplay>
   </div>
 </template>
+
+<style scoped>
+.sticky-top {
+  /* Prevent covering dropdowns in the options bar */
+  z-index: 900;
+}
+</style>

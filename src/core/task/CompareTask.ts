@@ -192,4 +192,32 @@ export class CompareTask extends TaskBase<CompareResult> {
 
     return `<match> ${cqps.join(" ")} []{0,} </match>`
   }
+
+  createCsv(result: CompareResult): (string | number)[][] {
+    const metadata = [
+      "Log-likelihood comparison between two frequency searches",
+      "Search query 1 (negative loglike):",
+      `- Corpora: ${this.cmp1.corpora.join(", ")}`,
+      `- CQP: ${this.cmp1.cqp}`,
+      "Search query 2 (positive loglike):",
+      `- Corpora: ${this.cmp2.corpora.join(", ")}`,
+      `- CQP: ${this.cmp2.cqp}`,
+    ].map((line) => [`## ${line}`])
+
+    const rows = [...result.tables.positive, ...result.tables.negative].sort(
+      (a, b) => b.loglike - a.loglike,
+    )
+    const attrs = rows[0].values.map((v) => v.attribute?.name || "word")
+    const header = [...attrs, "loglike", "frequency"]
+
+    const data = rows.map((row) => {
+      const values = attrs.map((attr) => {
+        const item = row.values.find((v) => (v.attribute?.name || "word") == attr)
+        return (item?.tokens || []).map((t) => t || "-").join(" ")
+      })
+      return [...values, row.loglike, row.abs]
+    })
+
+    return [...metadata, header, ...data]
+  }
 }
