@@ -17,7 +17,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <select class="form-select" v-model="model" :disabled="loading">
+  <select :id class="form-select" v-model="model" :disabled="loading">
     <!-- Use `:value="model"` so this option is shown by default -->
     <option v-if="loading" disabled :value="model">{{ $t("loading") }}</option>
     <option v-for="[value, label] in options" :key="value" :value>

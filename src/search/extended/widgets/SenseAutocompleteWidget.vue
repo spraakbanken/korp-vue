@@ -15,5 +15,5 @@ defineProps<WidgetProps>()
 </script>
 
 <template>
-  <SenseAutocomplete v-model="model" />
+  <SenseAutocomplete :id v-model="model" />
 </template>

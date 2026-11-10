@@ -174,6 +174,16 @@ watch(showPos, () =>
                 :style="{ backgroundColor: column.config.color }"
               >
                 <table class="m-1 font-data">
+                  <thead class="visually-hidden">
+                    <tr>
+                      <th>
+                        {{
+                          $t(column.config.alt_label || `rel.${column.config.rel.toLowerCase()}`)
+                        }}
+                      </th>
+                      <th>{{ $t(`stat.${sort}`) }}</th>
+                    </tr>
+                  </thead>
                   <WordpicRow
                     v-for="(row, j) in column.rows.slice(0, limit)"
                     :key="j"

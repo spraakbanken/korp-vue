@@ -53,13 +53,16 @@ corpus.selection.graph.available: Tillgängligt
 corpus.selection.graph.selected: Valt
 corpus.selection.graph.year: År {year}
 corpus.selection.graph.undated: Odaterat
+corpus.selection.label: Ändra
 corpus.selection.validation.missing: "Följande korpusar är inte tillgängliga, och har tagits bort från urvalet: {ids}"
 corpus.selection.validation.partial_access: "Du saknar tillgång till följande korpusar, och de har tagits bort från urvalet: {ids}"
 corpus.selection.validation.partial_access_login: "Du saknar tillgång till följande korpusar: {ids}. Logga in för att fortsätta."
 corpus.selection.validation.no_access: Du saknar tillgång till alla valda korpusar. Standardurvalet används istället.
-corpus.selection.select_all: Markera alla
-corpus.selection.select_none: Avmarkera
-corpus.selection.label: Ändra
+corpus.selection.select_all: Välj alla
+corpus.selection.select_none: Välj inga
+corpus.selection.select_folder: Välj mapp
+corpus.selection.select_corpus: Välj korpus
+corpus.selection.show_info: Visa information
 corpus.selection.summary: "{selected} av {total} korpus | {selected} av {total} korpusar"
 corpus.selection.summary.tokens: "{selected} av {total} token"
 
@@ -130,6 +133,7 @@ search.simple.midfix: innehåller
 search.simple.midfix.help: Tillåt ord som innehåller sökorden.
 search.simple.suffix: slutar med
 search.simple.suffix.help: Tillåt ord som slutar med sökorden.
+search.simple.word_or_lemgram: Ord eller lemgram
 
 search.extended: Utökad
 search.extended.instructions: Bygg en egen sökfråga genom att lägga till lådor för token (ord) och deras matchningsvillkor.
@@ -210,7 +214,6 @@ search.parallel.negative: innehåller inte
 search.parallel.remove_query: Ta bort sökfrågan för detta språk
 
 search.word: Ord
-search.word_or_lemgram: Ord eller lemgram
 search.show_suggestions: Visa förslag
 search.and: och
 search.or: eller
@@ -242,6 +245,9 @@ result.export.json: JSON
 result.export.json.help: Spara resultatet från API-frågan som en JSON-fil, som kan användas till programmering eller felsökning.
 
 result.kwic: KWIC
+result.kwic.column.before: Kontext före
+result.kwic.column.match: Träff
+result.kwic.column.after: Kontext efter
 result.kwic.show_context: Visa kontext
 result.kwic.show_context.help: Som standard visas sökträffar med träfforden centrerade (keyword in context, KWIC). Med detta alternativ påslaget visas de istället med radbrytningar för bättre läsbarhet. Vissa korpusar ger också mer kontext i det läget, typiskt ett helt stycke.
 result.kwic.distribution.goto: Gå till sida {page}

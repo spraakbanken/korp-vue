@@ -93,6 +93,7 @@ function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
           @click.prevent="toggleFolderSelection(folder, $event.altKey || $event.ctrlKey)"
           @keydown.space.prevent="toggleFolderSelection(folder, $event.altKey || $event.ctrlKey)"
         >
+          <span class="visually-hidden">{{ $t("corpus.selection.select_folder") }}</span>
           <input
             type="checkbox"
             :checked="folder.selected !== 'none'"
@@ -103,8 +104,7 @@ function toggleFolderSelection(folder: ChooserFolderSub, exclusive: boolean) {
         <fa-icon
           :icon="`fa-solid ${folder.expanded ? 'fa-folder-open' : 'fa-folder'}`"
           class="me-1 text-warning"
-        />
-        {{ locObj(folder.title) }}
+        />{{ locObj(folder.title) }}
         <span class="text-muted">({{ folder.numberOfChildren }})</span>
       </summary>
 

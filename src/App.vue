@@ -6,13 +6,16 @@ import MainSection from "@/page/MainSection.vue"
 import AppFooter from "@/page/AppFooter.vue"
 import useInit from "@/useInit"
 import AppSplash from "@/page/AppSplash.vue"
+import { useI18n } from "vue-i18n"
 
 const { init, initDone } = useInit()
 const matomo = useMatomo()
+const { locale } = useI18n()
 
 init()
 
 watchEffect(() => matomo.value?.trackPageView())
+watchEffect(() => (document.documentElement.lang = locale.value))
 
 // Catch and show errors from anywhere in the app
 window.addEventListener("unhandledrejection", (event) => {

@@ -55,6 +55,7 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
           type="checkbox"
           class="form-check-input me-2 pe-none"
           :checked="corpus.selected"
+          :aria-label="$t('corpus.selection.select_corpus')"
         />{{ locObj(corpus.title) }}
       </label>
 
@@ -66,6 +67,7 @@ function toggleCorpusSelection(corpus: Corpus, exclusive: boolean) {
       <button
         v-if="!open"
         type="button"
+        :aria-label="$t('corpus.selection.show_info')"
         class="btn btn-link link-secondary p-0"
         @click="open = true"
       >

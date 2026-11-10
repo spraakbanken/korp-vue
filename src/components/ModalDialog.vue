@@ -68,7 +68,7 @@ function close(confirmed: boolean) {
       ref="modalRef"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="login-modal-title"
+      :aria-label="title"
       aria-hidden="true"
       :data-bs-backdrop="disableCancel ? 'static' : undefined"
       :data-bs-keyboard="!disableCancel"

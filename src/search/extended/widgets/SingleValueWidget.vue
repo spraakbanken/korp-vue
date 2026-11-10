@@ -28,5 +28,5 @@ onBeforeUnmount(() => (model.value = ""))
 </script>
 
 <template>
-  <input type="hidden" :value />
+  <input :id type="hidden" :value />
 </template>

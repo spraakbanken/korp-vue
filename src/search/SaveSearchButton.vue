@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSearchStorage } from "./useSearchStorage"
-import { computed, ref, useTemplateRef, watchEffect } from "vue"
+import { computed, ref, useId, useTemplateRef, watchEffect } from "vue"
 import { useReactiveCorpusSelection } from "@/corpora/useReactiveCorpusSelection"
 import type { CqpQuery } from "@/core/cqp/cqp.types"
 import { stringify } from "@/core/cqp/cqp"
@@ -16,6 +16,7 @@ const corpusSelection = useReactiveCorpusSelection()
 const filterManager = useReactiveFilterManager()
 
 const dropdownEl = useTemplateRef("dropdown")
+const id = useId()
 // TODO Prevent duplicate labels
 const label = ref("")
 
@@ -51,11 +52,11 @@ async function save() {
   <div class="dropdown-menu p-2" style="width: 20em">
     <form @submit.prevent="save()">
       <p class="font-body">{{ $t("search.save.help") }}</p>
-      <div class="form-label">
+      <label :for="`${id}-text`" class="form-label">
         {{ $t("search.save.save_as") }}
-      </div>
+      </label>
       <div class="hstack gap-2 align-items-baseline">
-        <input type="text" v-model="label" class="form-control" />
+        <input :id="`${id}-text`" type="text" v-model="label" class="form-control" />
         <input type="submit" class="btn btn-primary" :value="$t('save')" />
       </div>
     </form>

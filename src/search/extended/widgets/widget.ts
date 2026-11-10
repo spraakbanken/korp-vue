@@ -13,6 +13,8 @@ export type Widget<O = Record<string, unknown>> = {
 /** Props passed to a widget component */
 export type WidgetProps<O = Record<string, unknown>> = {
   attribute: Attribute
+  /** HTML id to use on input element, for accessibility */
+  id: string
   operator: OperatorKorp
   options: O
 }

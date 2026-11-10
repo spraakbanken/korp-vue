@@ -27,14 +27,21 @@ watchImmediate(
     v-scroll-to-target="{ watch: () => data, selector: '.kwic-match' }"
   >
     <table class="table table-sm text-nowrap" :dir="settings.dir">
+      <thead class="visually-hidden">
+        <tr>
+          <th scope="col">{{ $t("result.kwic.column.before") }}</th>
+          <th scope="col">{{ $t("result.kwic.column.match") }}</th>
+          <th scope="col">{{ $t("result.kwic.column.after") }}</th>
+        </tr>
+      </thead>
       <tbody>
         <template v-for="(row, i) in data" :key="`${dataCounter} ${i}`">
           <tr v-if="isCorpusHeading(row)">
-            <td colspan="3" class="bg-body-tertiary p-1">
+            <th colspan="3" class="bg-body-tertiary p-1">
               <h3 class="d-inline-block position-sticky start-50 translate-middle-x my-1 fs-5">
                 {{ locObj(row.newCorpus) }}
               </h3>
-            </td>
+            </th>
           </tr>
 
           <KwicRow v-if="isKwic(row)" :row />

@@ -70,7 +70,7 @@ function download() {
 
           <div class="hstack align-items-baseline gap-2">
             <!-- Separator field -->
-            <div class="d-flex align-items-baseline">
+            <label class="d-flex align-items-baseline">
               {{ $t("result.export.table.separator") }}
               <select
                 v-model="separator"
@@ -81,7 +81,7 @@ function download() {
                   {{ option.display }}
                 </option>
               </select>
-            </div>
+            </label>
 
             <div class="flex-grow-1"></div>
 

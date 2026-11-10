@@ -119,7 +119,7 @@ function createCsv() {
     <OptionsBar>
       <div class="hstack gap-2">
         <span id="trend-options-view-label">{{ t("result.trend.view") }}</span>
-        <div class="btn-group" role="group" aria-labelledby="#trend-options-view-label">
+        <div class="btn-group" role="group" aria-labelledby="trend-options-view-label">
           <button
             type="button"
             class="btn btn-secondary"

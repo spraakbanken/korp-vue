@@ -6,6 +6,6 @@ const selfUrl = window.location.href.replace(/#.*/, "")
 
 <template>
   <a :href="selfUrl">
-    <KorpLogo />
+    <h1 class="m-0"><KorpLogo /></h1>
   </a>
 </template>

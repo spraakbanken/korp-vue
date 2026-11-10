@@ -9,6 +9,8 @@ export type Option<T> = { key: string; value: T }
 const model = defineModel<string | T>({ required: true })
 
 const props = defineProps<{
+  /** HTML id for the input element */
+  id?: string
   loadSuggestions: (input: string) => Promise<Option<T>[]>
   /** Report as invalid if no autocompleted value is selected */
   required?: boolean
@@ -85,6 +87,7 @@ onUnmounted(() => {
   <div class="dropdown">
     <!-- Text input -->
     <input
+      :id
       type="text"
       ref="inputEl"
       autocomplete="off"

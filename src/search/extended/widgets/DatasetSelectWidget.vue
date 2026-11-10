@@ -8,7 +8,7 @@ defineProps<WidgetProps>()
 </script>
 
 <template>
-  <select class="form-select" v-model="model">
+  <select :id class="form-select" v-model="model">
     <option v-for="[value, label] in getDatasetOptions(attribute)" :key="value" :value>
       {{ label }}
     </option>

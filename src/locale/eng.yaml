@@ -53,13 +53,16 @@ corpus.selection.graph.available: Available
 corpus.selection.graph.selected: Selected
 corpus.selection.graph.year: Year {year}
 corpus.selection.graph.undated: Undated
+corpus.selection.label: Edit
 corpus.selection.validation.missing: "Some corpora are not available, and were removed from selection: {ids}"
 corpus.selection.validation.partial_access: "You do not have access to the following corpora, and they have been removed from selection: {ids}"
 corpus.selection.validation.partial_access_login: "You do not have access to the following corpora: {ids}. Log in to continue."
 corpus.selection.validation.no_access: You do not have access to any of the selected corpora. Default corpus selection will be used.
 corpus.selection.select_all: Select all
 corpus.selection.select_none: Select none
-corpus.selection.label: Edit
+corpus.selection.select_folder: Select folder
+corpus.selection.select_corpus: Select corpus
+corpus.selection.show_info: Show information
 corpus.selection.summary: "{selected} of {total} corpus | {selected} of {total} corpora"
 corpus.selection.summary.tokens: "{selected} of {total} tokens"
 
@@ -130,6 +133,7 @@ search.simple.midfix: contains
 search.simple.midfix.help: Allow words that contain the search words.
 search.simple.suffix: ends with
 search.simple.suffix.help: Allow words that end with the search words.
+search.simple.word_or_lemgram: Word or lemgram
 
 search.extended: Extended
 search.extended.instructions: Build your own search query by adding boxes for tokens (words) and their match conditions.
@@ -209,7 +213,6 @@ search.parallel.negative: does not contain
 search.parallel.remove_query: Remove the query for this language
 
 search.word: Word
-search.word_or_lemgram: Word or lemgram
 search.show_suggestions: Show suggestions
 search.and: and
 search.or: or
@@ -241,6 +244,9 @@ result.export.json: JSON
 result.export.json.help: Save the API query result as a JSON file, which can be used for programming or debugging.
 
 result.kwic: KWIC
+result.kwic.column.before: Context before
+result.kwic.column.match: Match
+result.kwic.column.after: Context after
 result.kwic.show_context: Show context
 result.kwic.show_context.help: By default, search hits are listed in a keywords-in-context layout (KWIC). Enabling this option will instead show them with wrapped lines, suitable for reading. For some corpora, this also retrieves more of the context, such as a full paragraph.
 result.kwic.distribution.goto: Go to page {page}

@@ -10,6 +10,10 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ## Unreleased
 
+### Added
+
+- Improved accessibility
+
 ## 10.1.0 (2026-11-10)
 
 ### Added

@@ -72,6 +72,7 @@ const widget = computed<Widget>(() => {
 
 const widgetProps = computed<WidgetProps>(() => ({
   attribute: props.attribute,
+  id,
   operator: props.operator,
   options: widget.value.options || {},
 }))
@@ -88,12 +89,6 @@ watch(widget, (widgetNew, widgetOld) => {
 <template>
   <div>
     <label :for="id" class="visually-hidden">{{ $t("search.extended.value") }}</label>
-    <component
-      :is="widget.component"
-      :id
-      v-bind="widgetProps"
-      v-model="model"
-      v-model:flags="flags"
-    />
+    <component :is="widget.component" v-bind="widgetProps" v-model="model" v-model:flags="flags" />
   </div>
 </template>

@@ -31,6 +31,7 @@ onUnmounted(() => {
 <template>
   <div class="hstack gap-1">
     <input
+      :id
       type="text"
       v-model="model"
       :dir="options.dir"

@@ -101,14 +101,16 @@ function submit() {
     <div class="d-flex gap-2 justify-content-center">
       <!-- Word/lemgram input -->
       <template v-if="settings.autocomplete">
-        <label class="visually-hidden">{{ $t("search.word_or_lemgram") }}</label>
-        <LemgramAutocomplete
-          v-if="settings.autocomplete"
-          count
-          :morphologies="corpusSelection.getMorphologies()"
-          :size="30"
-          v-model="lemgram"
-        />
+        <label>
+          <span class="visually-hidden">{{ $t("search.simple.word_or_lemgram") }}</span>
+          <LemgramAutocomplete
+            v-if="settings.autocomplete"
+            count
+            :morphologies="corpusSelection.getMorphologies()"
+            :size="30"
+            v-model="lemgram"
+          />
+        </label>
       </template>
       <template v-else>
         <label class="visually-hidden">{{ $t("search.word") }}</label>

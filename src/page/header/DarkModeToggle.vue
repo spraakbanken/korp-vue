@@ -19,6 +19,5 @@ function toggleDark() {
     @click="toggleDark()"
   >
     <fa-icon icon="fas fa-circle-half-stroke" />
-    <span class="visually-hidden">{{ $t("gui.color_mode") }}</span>
   </button>
 </template>

@@ -50,7 +50,7 @@ function search() {
         </tr>
 
         <tr v-if="attribute.ranked">
-          <th>{{ $t("result.sidebar.rank_score") }}</th>
+          <th scope="row">{{ $t("result.sidebar.rank_score") }}</th>
           <td style="text-wrap: nowrap">{{ Number(item.split(":")[1]).toPrecision(3) }}</td>
         </tr>
 
@@ -71,7 +71,12 @@ function search() {
               target="_blank"
               class="icon-link"
             >
-              <img src="@/assets/karp_icon.svg" alt="Karp icon" style="height: 1em" />
+              <img
+                src="@/assets/karp_icon.svg"
+                alt="Karp icon"
+                style="height: 1em"
+                role="presentation"
+              />
               {{ $t("result.sidebar.search_karp") }}
             </a>
           </td>

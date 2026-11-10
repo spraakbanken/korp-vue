@@ -28,5 +28,5 @@ async function getOptionsMatching(input: string) {
 </script>
 
 <template>
-  <AutocompleteInput v-model="model" :load-suggestions="getOptionsMatching" />
+  <AutocompleteInput :id v-model="model" :load-suggestions="getOptionsMatching" />
 </template>
