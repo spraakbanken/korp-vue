@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, watchImmediate } from "@vueuse/core"
+import settings from "@/core/config"
 import { corpusListing } from "@/core/corpora/corpusListing"
 import { useReactiveCorpusSelection } from "./useReactiveCorpusSelection"
 import { useAppStore } from "@/store/useAppStore"
@@ -57,14 +58,16 @@ function selectNone() {
 
     <div class="card flex-row">
       <!-- Mode selector -->
-      <div class="vstack py-2 px-3">
-        <div class="text-center fw-bold small text-muted">{{ $t("nav.mode") }}</div>
-        <div class="flex-grow-1 hstack">
-          <ModeSelector />
+      <template v-if="settings.modes?.length > 1">
+        <div class="vstack py-2 px-3">
+          <div class="text-center fw-bold small text-muted">{{ $t("nav.mode") }}</div>
+          <div class="flex-grow-1 hstack">
+            <ModeSelector />
+          </div>
         </div>
-      </div>
 
-      <div class="vr" />
+        <div class="vr" />
+      </template>
 
       <!-- Corpus selector -->
       <div class="vstack py-2 px-3 position-relative">
