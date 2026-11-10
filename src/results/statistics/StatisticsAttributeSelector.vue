@@ -153,6 +153,10 @@ function sortNames(names: string[]) {
           >
             {{ locObj(option.label) }}
 
+            <!-- Spacer -->
+            <div class="flex-grow-1" />
+
+            <!-- Unsupported indicator -->
             <fa-icon
               v-if="option.unsupported.length"
               icon="fa-solid fa-ban"
