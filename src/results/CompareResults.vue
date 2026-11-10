@@ -79,7 +79,7 @@ function clickItem(side: 0 | 1, item: CompareItem) {
         </div>
       </div>
 
-      <!-- "View more" button-->
+      <!-- "View more" button -->
       <div v-if="result" class="my-4 hstack justify-content-center">
         <button
           v-if="limit < result.max"

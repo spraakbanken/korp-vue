@@ -10,6 +10,8 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 ## Unreleased
 
+## 10.1.0 (2026-11-10)
+
 ### Added
 
 - Let instance plugin modify corpus config [#119](https://github.com/spraakbanken/korp-vue/issues/119)
@@ -24,6 +26,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 - Using Noto Sans for data and Noto Serif for body text
 - Removed username from logout button to avoid linebreak
+- The Mode selector has moved down next to the corpus selector
 - In the corpus selector, the corpus details box is now shown inline
 - The sidebar attribute details button does no longer open on hover, only on click
 - Default base url now includes trailing slash: `/korp/`
@@ -31,7 +34,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 ### Fixed
 
 - Dependency tree sometimes not drawn [#56](https://github.com/spraakbanken/korp-vue/issues/56), [#117](https://github.com/spraakbanken/korp-vue/issues/117)
-- Links to Korp can't be opened in browser tabs where Korp is already open [#20](https://github.com/spraakbanken/korp-vue/issues/20)
+- React to URL param changes [#20](https://github.com/spraakbanken/korp-vue/issues/20)
 - News item sorting
 - Attribute order in KWIC sidebar
 - Statistics columns resizable
@@ -41,7 +44,7 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 - RTL in KWIC
 - Handle lemgram search URL from v9
 
-## 10.0.0 (2016-09-29)
+## 10.0.0 (2026-09-29)
 
 First release of the Vue.js rewrite 🎉
 
