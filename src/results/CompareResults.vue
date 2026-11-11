@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import type { CompareItem, CompareTask } from "@/core/task/CompareTask"
+import type { LogLikelihoodRow } from "@/core/backend/korp-api"
+import type { CompareTask } from "@/core/task/CompareTask"
 import CompareRow from "./CompareRow.vue"
 import { useDynamicTabs } from "./useDynamicTabs"
 import { useMatomo } from "vue3-matomo"
@@ -26,8 +27,8 @@ onMounted(() => loadResult())
 const load = () => props.task.send()
 const { data: result, loadResult } = useResult(progress, load, props.task)
 
-function clickItem(side: 0 | 1, item: CompareItem) {
-  const exampleTask = props.task.createExampleTask(side, item)
+function clickItem(item: LogLikelihoodRow) {
+  const exampleTask = props.task.createExampleTask(item)
   createTab(() => t("result.kwic"), exampleTask)
   matomo.value?.trackEvent("Compare", "Subsearch")
 }
@@ -54,13 +55,13 @@ function clickItem(side: 0 | 1, item: CompareItem) {
           </div>
           <ul class="list-group">
             <CompareRow
-              v-for="item in result.tables.negative.slice(0, limit)"
-              :key="item.key"
+              v-for="(item, i) in result.negative.slice(0, limit)"
+              :key="i"
               :attributes="task.attributes"
               :item
               :max="result.max"
               left
-              @select="() => clickItem(0, item)"
+              @select="clickItem(item)"
             />
           </ul>
         </div>
@@ -70,12 +71,12 @@ function clickItem(side: 0 | 1, item: CompareItem) {
           </div>
           <ul class="list-group">
             <CompareRow
-              v-for="item in result.tables.positive.slice(0, limit)"
-              :key="item.key"
+              v-for="(item, i) in result.positive.slice(0, limit)"
+              :key="i"
               :attributes="task.attributes"
               :item
               :max="result.max"
-              @select="() => clickItem(1, item)"
+              @select="clickItem(item)"
             />
           </ul>
         </div>

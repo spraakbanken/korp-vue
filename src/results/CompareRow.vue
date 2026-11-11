@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { CompareItem } from "@/core/task/CompareTask"
 import { vPopover } from "@/bootstrap"
 import { useI18n } from "vue-i18n"
+import type { LogLikelihoodRow } from "@/core/backend/korp-api"
 import { formatDecimals } from "@/core/i18n"
 import { createKeyValueHtml } from "@/core/util"
 import { useStringifiers } from "@/attributes/useStringifiers"
@@ -10,17 +10,19 @@ import EmptyValue from "./EmptyValue.vue"
 
 const props = defineProps<{
   attributes: Record<string, Attribute>
-  item: CompareItem
+  item: LogLikelihoodRow
   max: number
   left?: boolean
 }>()
 
 defineEmits<{
-  (e: "select", item: CompareItem): void
+  (e: "select", item: LogLikelihoodRow): void
 }>()
 
 const { locale } = useI18n()
 const { getStringifier } = useStringifiers()
+
+const getFrequency = () => (props.item.score < 0 ? props.item.set1 : props.item.set2)
 </script>
 
 <template>
@@ -29,13 +31,13 @@ const { getStringifier } = useStringifiers()
     <div
       class="position-absolute h-100 top-0"
       :class="left ? 'bg-info-subtle end-0' : 'bg-warning-subtle start-0'"
-      :style="{ width: `${Math.abs(item.loglike / max) * 100}%` }"
+      :style="{ width: `${Math.abs(item.score / max) * 100}%` }"
     ></div>
 
     <div class="hstack align-items-baseline position-relative z-1">
       <!-- Value string -->
       <span class="link flex-grow-1" @click="$emit('select', item)">
-        <div v-for="(tokens, attr) in item.values" :key="attr">
+        <div v-for="(tokens, attr) in item.value" :key="attr">
           <template v-for="(token, i) in tokens" :key="i">
             <span
               v-if="attributes[attr] && token"
@@ -57,14 +59,14 @@ const { getStringifier } = useStringifiers()
         data-bs-html="true"
         :data-bs-content="
           createKeyValueHtml({
-            [$t('stat.freq')]: $n(props.item.abs),
-            [$t('stat.loglike')]: formatDecimals(Math.abs(props.item.loglike), 2),
+            [$t('stat.freq')]: $n(getFrequency()),
+            [$t('stat.loglike')]: formatDecimals(Math.abs(item.score), 2),
           })
         "
         class="text-muted"
         :key="locale"
       >
-        {{ $n(item.abs) }}
+        {{ $n(getFrequency()) }}
       </span>
     </div>
   </li>

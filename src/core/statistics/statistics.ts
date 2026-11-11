@@ -7,7 +7,6 @@ import {
 import { corpusSelection } from "../corpora/corpusListing"
 import { regescape } from "../util"
 import settings, { prefixAttr } from "../config"
-import type { FrequencyRow } from "../backend/korp-api"
 
 export function getRowCqp(row: SingleRow, ignoreCase: string[]): string {
   const values = valuesByToken(row.value)
@@ -23,8 +22,8 @@ export function getRowCqp(row: SingleRow, ignoreCase: string[]): string {
 }
 
 /** Transpose value object to array of objects, one per token */
-function valuesByToken(values: FrequencyRow["value"]) {
-  const tokens: Record<string, null | string>[] = []
+export function valuesByToken<T>(values: Record<string, T[]>): Record<string, T>[] {
+  const tokens: Record<string, T>[] = []
   for (const [attr, vals] of Object.entries(values)) {
     vals.forEach((val, j) => {
       tokens[j] ??= {}
@@ -34,7 +33,10 @@ function valuesByToken(values: FrequencyRow["value"]) {
   return tokens
 }
 
-export function getCqp(hitValues: Record<string, null | string>[], ignoreCase: string[]): string {
+export function getCqp(
+  hitValues: Record<string, null | string>[],
+  ignoreCase: string[] = [],
+): string {
   const tokens = hitValues
     .map((token) =>
       Object.entries(token).map(([name, value]) => {
