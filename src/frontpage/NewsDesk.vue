@@ -25,11 +25,11 @@ const itemsFiltered = computed(() =>
   <div v-if="itemsFiltered?.length">
     <h4>{{ $t("frontpage.news") }}</h4>
 
-    <div class="d-flex flex-wrap gap-4">
+    <div class="d-flex flex-wrap gap-2">
       <article
         v-for="(item, i) in itemsFiltered"
         :key="i"
-        class="flex-grow-1"
+        class="card flex-grow-1"
         :class="{
           'bg-warning-subtle': item.tags?.includes('maintenance'),
         }"
