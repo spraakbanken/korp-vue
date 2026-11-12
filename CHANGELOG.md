@@ -14,6 +14,10 @@ Versioning follows a `MAJOR`.`MINOR`.`PATCH` pattern, where:
 
 - Improved accessibility
 
+### Fixed
+
+- Clean link to default mode (not `?mode=default`)
+
 ## 10.1.0 (2026-11-10)
 
 ### Added

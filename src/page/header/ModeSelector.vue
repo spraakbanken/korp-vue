@@ -25,6 +25,8 @@ const lists = computed(() => {
 const currentModeLabel = computed(() =>
   locObj(settings["modes"]?.find((mode) => mode.mode == currentMode)?.label),
 )
+
+const getHref = (mode: string) => (mode == "default" ? window.location.pathname : `?mode=${mode}`)
 </script>
 
 <template>
@@ -40,7 +42,7 @@ const currentModeLabel = computed(() =>
     </button>
     <ul role="menu" class="dropdown-menu" aria-labelledby="mode-dropdown">
       <li v-for="{ mode, label } in lists.primary" :key="mode" role="menuitemradio">
-        <a class="dropdown-item" :href="`?mode=${mode}`" :class="{ active: mode == currentMode }">
+        <a class="dropdown-item" :href="getHref(mode)" :class="{ active: mode == currentMode }">
           {{ locObj(label) }}
         </a>
       </li>
@@ -48,7 +50,7 @@ const currentModeLabel = computed(() =>
         <hr class="dropdown-divider" />
       </li>
       <li v-for="{ mode, label } in lists.secondary" :key="mode" role="menuitemradio">
-        <a class="dropdown-item" :href="`?mode=${mode}`" :class="{ active: mode == currentMode }">
+        <a class="dropdown-item" :href="getHref(mode)" :class="{ active: mode == currentMode }">
           {{ locObj(label) }}
         </a>
       </li>
